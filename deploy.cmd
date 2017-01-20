@@ -63,7 +63,7 @@ IF DEFINED KUDU_SELECT_NODE_VERSION_CMD (
     SET /p NODE_EXE=<"%DEPLOYMENT_TEMP%\__nodeVersion.tmp"
     IF !ERRORLEVEL! NEQ 0 goto error
   )
-  
+
   IF EXIST "%DEPLOYMENT_TEMP%\__npmVersion.tmp" (
     SET /p NPM_JS_PATH=<"%DEPLOYMENT_TEMP%\__npmVersion.tmp"
     IF !ERRORLEVEL! NEQ 0 goto error
@@ -87,6 +87,10 @@ goto :EOF
 
 :Deployment
 echo Handling node.js deployment.
+
+echo Disabling Sslv3
+
+PowerShell -ExecutionPolicy Unrestricted %DEPLOYMENT_SOURCE%\DisableSslv3.ps1 >> %DEPLOYMENT_TEMP%\Startuplog.txt 2>&1
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
