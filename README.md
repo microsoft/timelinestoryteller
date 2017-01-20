@@ -12,9 +12,9 @@ For more information on the research that informed this project, see [timelinesr
 
 3. Install the required node modules listed in package.json.
 
-4. For local testing without access to Azure storage and Azure keyvault, comment out the `loginWithServicePrincipalSecret`, `authenticator`, and `createBlockBlobFromText` function calls. 
+4. For local testing without access to Azure storage and Azure keyvault, comment out the `loginWithServicePrincipalSecret`, `authenticator`, and `createBlockBlobFromText` function calls.
 
-5. Open a terminal at the toot of the repository and start the node server: `node app.js`
+5. Open a terminal at the root of the repository and start the node server: `node app.js`
 
 6. Open [localhost:3000](http://localhost:3000/)
 
