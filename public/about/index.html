@@ -1,0 +1,285 @@
+<!doctype html>
+<html xmnls="http://www.w3.org/1999/xhtml">
+<head>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="cache-control" content="no-cache, no-store">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <title>About Timeline Storyteller</title>
+  <link rel="stylesheet" href="../css/about.css" charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
+
+  <script type="text/javascript">
+  var appInsights=window.appInsights||function(config){
+    function i(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s="AuthenticatedUserContext",h="start",c="stop",l="Track",a=l+"Event",v=l+"Page",y=u.createElement(o),r,f;y.src=config.url||"https://az416426.vo.msecnd.net/scripts/a/ai.0.js";u.getElementsByTagName(o)[0].parentNode.appendChild(y);try{t.cookie=u.cookie}catch(p){}for(t.queue=[],t.version="1.0",r=["Event","Exception","Metric","PageView","Trace","Dependency"];r.length;)i("track"+r.pop());return i("set"+s),i("clear"+s),i(h+a),i(c+a),i(h+v),i(c+v),i("flush"),config.disableExceptionTracking||(r="onerror",i("_"+r),f=e[r],e[r]=function(config,i,u,e,o){var s=f&&f(config,i,u,e,o);return s!==!0&&t["_"+r](config,i,u,e,o),s}),t
+    }({
+        instrumentationKey:"3656860e-1ede-4e4c-bc26-4699f210a873"
+    });
+
+    window.appInsights=appInsights;
+    appInsights.trackPageView();
+  </script>
+
+</head>
+
+<body>
+
+	<div id="content-wrapper">
+
+		<div id="header-wrapper">
+			 <div id = "header">
+				<div id="logo">
+          <div>
+            <a href='https://microsoft.com'><img class='ms-logo' src='img/ms-logo.svg'></a>
+          </div>
+					<div id="page-title">
+						Timeline Storyteller
+					</div>
+				</div>
+				<!--/logo-->
+				<div id="nav" class="right">
+					<a href="">top</a>
+				</div>
+				<!--/nav-->
+			</div>
+			<!--/header-->
+		</div>
+
+		<div id="content">
+
+			<div id="left-column">
+
+				<h3>Contents:</h3>
+
+				<p><a href="#about">About</a></p>
+				<p><a href="#preparing">Preparing data</a></p>
+        <p><a href="#usage">Usage</a></p>
+				<p><a href="#code">Code</a></p>
+        <p><a href="#ack">Acknowledgements</a></p>
+
+				<h3>Project Team:</h3>
+
+				<div class="people-thumb">
+						<a href="http://mattbrehmer.github.io/" target="_blank"><img title="Matthew Brehmer" src="img/matt.png" alt="Matthew Brehmer" class="img-rounded"/></a>
+						<p><a href="http://mattbrehmer.github.io/" target="_blank">Matthew Brehmer</a></p>
+				</div>
+				<div class="people-thumb">
+						<a href="http://research.microsoft.com/en-us/um/people/bongshin/" target="_blank"><img title="Bongshin Lee" src="img/bongshin.png" alt="Bongshin Lee" class="img-rounded"/></a>
+						<p><a href="http://research.microsoft.com/en-us/um/people/bongshin/" target="_blank">Bongshin Lee</a></p>
+				</div>
+				<div class="people-thumb">
+						<a href="http://research.microsoft.com/en-us/um/people/nath/" target="_blank"><img title="Nathalie Henry Riche" src="img/nathalie.png" alt="Nathalie Henry Riche" class="img-rounded"/></a>
+						<p><a href="http://research.microsoft.com/en-us/um/people/nath/" target="_blank">Nathalie Henry Riche</a></p>
+				</div>
+
+			</div>
+			<!--/left-column-->
+
+			<div id="right-column">
+
+				<div class="section">
+
+						<a href="img/ui.png" target="_blank"><img src="img/ui-640.png" width="560" alt="Click to view in full resolution in a new tab" title="Click to view in full resolution in a new tab"></a>
+
+				</div>
+
+				<div class="section">
+					<span id="about" class="anchor"></span>
+					<div class="text">
+						<h3>About the project</h3>
+						<p>
+							<strong><a href="https://timelinestoryteller.azurewebsites.net/" target="_blank">Timeline Storyteller</a></strong> is an expressive visual storytelling environment for the expressive narrative visualization of timelines (event sequence data); a storyteller can use Timeline Storyteller to present different aspects of her/his data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. She / he can export images of a timeline or assemble and record a story about their data and present it within the application.
+						</p>
+            <p>
+              For information on the research that informed this project, see <strong><a href="https://timelinesrevisited.github.io/" target="_blank">timelinesrevisited.github.io</a></strong>.
+            </p>
+					</div>
+				</div>
+
+        <div class="section">
+					<span id="preparing" class="anchor"></span>
+					<div class="text">
+						<h3>Preparing your Data</h3>
+						<p>
+              Timeline Storyteller currently supports datasets of events in CSV, JSON, or Google Spreadsheet format.
+            </p>
+            <p>
+              Each event is specified by the following attributes:
+            </p>
+              <ul>
+                <li><strong>Required</strong>: <code>start_date</code>, a date formatted as YYYY, YYYY-MM-DD, or YYYY-MM-DD HH:MMZ (Z necessary for specifying UTC, otherwise HH:MM will be time-zone dependent). BC dates are permitted, e.g., -27, -13800000000.</li>
+                <li><strong>Optional</strong>: <code>end_date</code>, a date using same format as <code>start_date</code>.</li>
+                <li><strong>Optional</strong>: <code>category</code>, a string corresponding to the category of the event (which Timeline Storyteller encodes as colour).</li>
+                <li><strong>Optional</strong>: <code>facet</code>, a string corresponding to another category of the event (which Timeline Storyteller uses to create a faceted timeline layout; <code>category</code> and <code>facet</code> can be identical if desired).</li>
+                <li><strong>Optional</strong>: <code>content_text</code>, a string description of event (which Timeline Storyteller exposes as event annotations).</li>
+              </ul>
+
+              <h4>Example event in JSON:</h4>
+
+              <code>{
+                "start_date":"1775",
+                "end_date":"1783",
+                "content_text":"American Revolutionary War: an armed struggle for secession from the British Empire by the Thirteen Colonies that would subsequently become the United States.",
+                "facet":"North America",
+                "category":"North America"
+              },</code>
+
+              <h4>Example event in CSV:</h4>
+
+              <span>Header row:</span><br>
+              <code>start_date,end_date,content_text,facet,category</code>
+              <br>
+              <span>Example event row:</span><br>
+              <code>1775,1783,American Revolutionary War: an armed struggle for secession from the British Empire by the Thirteen Colonies that would subsequently become the United States.,North America,North America</code>
+
+              <h4>Example Google Spreasheet:</h4>
+              <p>The <a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous Creative People"</a> demo dataset used in Timeline Storyteller:</p>
+              <iframe width="560" height="320" src="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml?widget=true&amp;headers=false"></iframe>
+              <ul>
+                <li>URL for this dataset: <code>docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/edit#gid=633419171</code></li>
+                <li><strong>Required</strong>: Spreadsheet key for this dataset (between <code>.../d/..</code> and <code>../edit/..</code> in the URL): <code>1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M</code></li>
+                <li><strong>Required</strong>: Worksheet title key for this dataset: <code>dailyroutines</code></li>
+              </ul>
+					</div>
+				</div>
+
+        <div class="section">
+					<span id="usage" class="anchor"></span>
+					<div class="text">
+						<h3>Usage</h3>
+            <ol>
+              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 6).</li>
+
+              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a>.</li>
+
+              <li>Edit the canvas:
+                <ul>
+              	<li>Click on events to annotate with their <code>content_text</code> label; resize and reposition these labels; SHIFT + click to highlight events without showing label.</li>
+
+              	<li>Annotate the canvas with captions and images; resize and reposition captions and images.</li>
+
+               	<li>Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events), or by hiding non-matching events.</li>
+                </ul></li>
+              <li>Record current canvas as a scene, which retains labels, captions, and images; enter playback mode, navigate to previous / next recorded scene</li>
+
+              <li>Export current canvas as a PNG, SVG.</li>
+
+              <li>Export the series of scenes as an animated GIF or as a JSON Blob (.cdc extension)</li>
+            <ol>
+					</div>
+				</div>
+
+        <div class="section">
+					<span id="code" class="anchor"></span>
+					<div class="text">
+						<h3>Code</h3>
+						<p>
+							Timeline Storyteller is currently a research prototype. The source code for the project will be released at a later date.
+						</p>
+					</div>
+				</div>
+
+        <div class="section">
+					<span id="ack" class="anchor"></span>
+					<div class="text">
+						<h3>Acknowledgements</h3>
+            <h4>Demo dataset provenance:</h4>
+            <ul>
+              <li><a href="http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/" target="_blank">Great Painters of the 20th Century</a>: reproduction of infographic</li>
+
+              <li><a href="http://visual.ly/perspective-time" target="_blank">visual.ly's Perspective on Time</a>: reproduction of infographic</li>
+
+              <li><a href="http://www.brainpickings.org/2013/11/29/accurat-modern-library/" target="_blank">Modern Library Authors</a>: reproduction of infographic</li>
+
+              <li><a href="https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif" target="_blank">Priestley's Chart of Biography</a>: reproduction of infographic</li>
+
+              <li><a href="http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg" target="_blank">Kurzweil's Countdown to Singularity</a>: reproduction of infographic</li>
+
+              <li><a href="http://waitbutwhy.com/2014/05/life-weeks.html" target="_blank">Life of a Typical American</a>: reproduction of infographic</li>
+
+              <li><a href="https://podio.com/site/creative-routines" target="_blank">The Daily Routines of Famous Creative People</a>: reproduction of infographic</li>
+
+              <li><a href="http://bl.ocks.org/bunkat/2338034" target="_blank">East Asian Dynasties</a>: data included in bl.ocks code</li>
+
+              <li><a href="http://bl.ocks.org/rengel-de/5603464" target="_blank">Great Philosophers since the 8th Century BC</a>: data included in bl.ocks code</li>
+
+              <li><a href="http://nowherenearithaca.github.io/empires/index.html" target="_blank">History's Largest Empires</a>: scraped using <a href="https://ucbvislab.github.io/d3-deconstructor/" target="_blank">D3 deconstructor</a></li>
+
+              <li><a href="https://en.wikipedia.org/wiki/List_of_epidemics" target="_blank">Epidemics since the 14th Century</a>: generated using <a href="http://timelinecurator.org/" target="_blank">TimeLineCurator</a></li>
+
+              <li><a href="http://www.downloadexcelfiles.com/fr_en/download-excel-file-list-presidents-france" target="_blank">Presidents of France</a></li>
+
+              <li><a href="https://en.wikipedia.org/wiki/List_of_Chancellors_of_Germany" target="_blank">Chancellors of Germany</a></li>
+
+              <li><a href="http://www.downloadexcelfiles.com/it_en/download-excel-file-list-presidents-italy" target="_blank">Presidents of Italy</a></li>
+
+              <li><a href="http://www.downloadexcelfiles.com/jp_en/download-excel-file-list-prime-ministers-japan" target="_blank">Prime Ministers of Japan</a></li>
+
+              <li><a href="http://www.downloadexcelfiles.com/ca_en/download-excel-file-list-prime-ministers-canada" target="_blank">Prime Ministers of Canada</a></li>
+
+              <li><a href="https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json" target="_blank">Presidents of the USA</a></li>
+
+              <li><a href="http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-prime-ministers-uk" target="_blank">Prime Ministers of the UK</a></li>
+
+              <li><a href="http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html" target="_blank">C4-5 Hurricanes: 1910-2010</a></li>
+
+            </ul>
+
+            <h4>Open source software dependencies used in this project:</h4>
+            <ul>
+              <li><a href="http://d3js.org/" target="_blank">d3 v3.5.5</a>: for visual encoding, scales, animation (BSD LICENSE)</li>
+              <li><a href="https://github.com/d3/d3-time" target="_blank">d3-time v0.0.2</a>: for date parsing / temporal arithmetic (<a href="https://github.com/d3/d3-time/blob/master/LICENSE" target="_blank">LICENSE</a>)</li>
+              <li><a href="http://momentjs.com/" target="_blank">moment.js v2.10.6</a>: for date parsing / temporal arithmetic (MIT LICENSE)</li>
+              <li><a href="https://github.com/exupero/saveSvgAsPng" target="_blank">saveSvgAsPng.js</a>: for image export (MIT LICENSE)</li>
+              <li><a href="http://usablica.github.com/intro.js/" target="_blank">intro.js 2.3.0</a>: for tutorial (GNU AGPLv3 LICENSE)</li>
+              <li><a href="https://github.com/jnordberg/gif.js" target="_blank">gif.js</a>: for GIF exporting (MIT LICENSE)</li>
+              <li><a href="https://github.com/interactivethings/gsheets" target="_blank">gsheets 2.0.0</a>: for Google Spreadsheet import (BSD LICENSE)</li>
+            </ul>
+
+            <h4>Noun Project icons (<a href="https://creativecommons.org/licenses/by/3.0/us/" target="_blank">CC BY 3.0</a>) used in the user interface:</h4>
+            <ul>
+              <li>"<a href="https://thenounproject.com/term/check-mark/608852" target="_blank">check-mark</a>" by Arthur Shlain</li>
+              <li>"<a href="https://thenounproject.com/term/calendar/38869" target="_blank">calendar</a>" by Kiril Tomilov</li>
+              <li>"<a href="https://thenounproject.com/term/timeline/152347" target="_blank">timeline</a>" by Alecander Bickov</li>
+              <li>"<a href="https://thenounproject.com/term/gif-file/446903" target="_blank">gif-file</a>" by Pranav Grover</li>
+              <li>"<a href="https://thenounproject.com/term/png-file/446907" target="_blank">png-file</a>" by Pranav Grover</li>
+              <li>"<a href="https://thenounproject.com/term/svg-file/446904" target="_blank">svg-file</a>" by Pranav Grover</li>
+              <li>"<a href="https://thenounproject.com/term/json-file/446959" target="_blank">json-file</a>" by Pranav Grover</li>
+              <li>"<a href="https://thenounproject.com/term/csv-file/446962" target="_blank">csv-file</a>" by Pranav Grover</li>
+              <li>"<a href="https://thenounproject.com/term/drive/128372" target="_blank">drive</a>" by Denis Klyuchnikov</li>
+              <li>"<a href="https://thenounproject.com/term/grid/539919" target="_blank">grid</a>" by Doejo</li>
+              <li>"<a href="https://thenounproject.com/term/folder/43216" target="_blank">folder</a>" by iconoci</li>
+              <li>"<a href="https://thenounproject.com/term/filter/132317" target="_blank">filter</a>" by Creative Shell</li>
+              <li>"<a href="https://thenounproject.com/term/image/332296" target="_blank">image</a>" by Creative Shell</li>
+              <li>"<a href="https://thenounproject.com/term/quotation-mark/378366" target="_blank">quotation-mark</a>" by Veronika Krpciarova</li>
+            </ul>
+					</div>
+				</div>
+
+			</div>
+			<!--/right-column-->
+		</div>
+		<!--/content-->
+	</div>
+
+  <div id="footer">
+
+    <div id="footer_left">
+      <span class='footer_text_left'><a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>Contact the project team</a></span>
+    </div>
+
+    <div>
+      <span class='footer_text'><a title='Privacy & cookies' href='https://go.microsoft.com/fwlink/?LinkId=521839' target='_blank'>Privacy & cookies</a></span>
+      <span class='footer_text'><a title='Terms of use' href='https://go.microsoft.com/fwlink/?LinkID=760869' target='_blank'>Terms of use</a></span>
+      <span class='footer_text'><a title='Trademarks' href='http://go.microsoft.com/fwlink/?LinkId=506942' target='_blank'>Trademarks</a></span>
+      <span class='footer_text'><a title='About our ads' href='http://choice.microsoft.com/' target='_blank'>About our ads</a></span>
+      <span class='footer_text'>© 2017 Microsoft</span>
+    </div>
+
+  </div>
+
+</body>
+
+</html>

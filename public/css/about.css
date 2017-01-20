@@ -1,0 +1,507 @@
+@charset "UTF-8";
+
+.dimension_icon_rep {
+  position: relative;
+  background-color: #FFF;
+  border: 1.5px solid #2EAAE1;
+  /*transform: translateY(25%);*/
+  /*margin-bottom: 10px;*/
+}
+
+.dimension_icon_scale {
+  position: relative;
+  background-color: #FFF;
+  border: 1.5px solid #E84E1B;
+  /*transform: translateY(25%);*/
+  /*margin-bottom: 10px;*/
+}
+
+.dimension_icon_layout {
+  position: relative;
+  background-color: #FFF;
+  border: 1.5px solid #94C11E;
+  /*transform: translateY(25%);*/
+  /*margin-bottom: 10px;*/
+}
+
+/* Typeface, Text Size, Colour */
+body {
+	font-family: "Segoe UI Web Regular","wf_segoe-ui_normal","Segoe UI","Segoe UI Symbol","Myriad","Calibri","UnDotum","Optima","Tahoma","Century Gothic","Helvetica Neue","BBAlpha Sans","S60 Sans","Arial",sans-serif;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  top: 0px;
+  color: #333333;
+  background: #fff;
+  text-align: left;
+}
+
+h1 {
+font-variant: small-caps;
+font-size: 24px;
+font-weight: bold;
+margin: 0px 0px 0px 0;
+color: #333333;
+}
+
+h2 {
+font-variant: small-caps;
+
+font-size: 16px;
+font-weight: bold;
+color: #333333;
+margin: 0px 0 10px 0;
+}
+
+#nav a {
+font-variant: small-caps;
+
+font-size: 16px;
+text-align: right;
+padding: 0 0 0 15px;
+}
+
+a {
+  text-decoration: none;
+  color: #626262;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#page-title{
+
+font-size: 36px;
+width: 450px;
+height: 37px;
+clear:both;
+}
+
+#tagline{
+
+font-size: 14px;
+width: 450px;
+height: 20px;
+}
+
+
+/* Layout - Sizes and Positioning */
+
+p {
+margin: 0px 0px 6px 0px;
+}
+
+li {
+  margin: 0px 0px 10px 0px;
+}
+
+.left {
+float: left;
+}
+
+.right {
+text-align: right;
+float: right;
+}
+
+.block{
+margin: 25px 0px;
+margin-bottom: 30px;
+}
+
+#content-wrapper{
+max-width: 720px;
+min-width: 720px;
+width: 720px;
+margin: 0 auto 0px;
+top: 0px;
+}
+
+
+#content{
+max-width: 720px;
+min-width: 720px;
+width: 720px;
+margin: 0px 0px 0px 0px;
+padding-top:125px;
+}
+
+code {
+  background-color: #F2F2F2;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  border-radius: 3px;
+}
+
+.tab {
+  text-indent: 1em;
+}
+
+/* Header file */
+
+#header-wrapper{
+width: 100%;
+position: fixed;
+padding-top: 25px;
+left: 0px;
+padding:0;
+margin:0;
+background: #FFFFFF;
+margin: 0px 0px 0px 0px;
+z-index: 10;
+}
+
+#header{
+max-width: 715px;
+min-width: 715px;
+width: 715px;
+min-height: 75px;
+margin:0 auto 0px;
+padding-top: 25px;
+background: #FFFFFF;
+border-bottom: 1px solid #999;
+}
+
+#logo{
+width: 200px;
+height: 50px;
+float: left;
+}
+
+#nav{
+width: 400px;
+height: 20px;
+float: right;
+text-align: right;
+padding: 40px 0px 0px 0px;
+}
+
+#title {
+float:left;
+width: 430px;
+font-size: 32px;
+margin: 15px 0px 15px 0px;
+letter-spacing: 0.5px;
+padding: 0 0 0 0px;
+}
+
+.anchor {
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: -1;
+    visibility: hidden;
+    margin-top: -85px;
+}
+
+/* Main page (index) */
+
+#left-column {
+width: 100px;
+float: left;
+position: fixed;
+border: 1px solid #999;
+background: #F2F2F2;
+font-size: 12px;
+border-radius:10px 0px 0px 10px;
+padding: 10px 10px 10px 10px;
+}
+
+#people-images {
+float: right;
+text-align:right;
+}
+
+#left-column .people-thumb {
+float:right;
+margin: 0px 0px 10px 0px;
+width: 100px;
+}
+
+.gif_container {
+  /*-webkit-border-radius:10px;
+  -moz-border-radius:10px;
+  border-radius:10px;
+  box-shadow: 1px 1px 3px 0px grey;*/
+  -webkit-border-radius:10px;
+  -moz-border-radius:10px;
+  border-radius:10px;
+  box-shadow: 1px 1px 3px 0px grey;
+  border: 1px solid black;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.gif_container:hover {
+  box-shadow: 1px 1px 3px 0px black;
+  border: 1px solid #2A5DB0;
+  /*cursor: pointer;*/
+}
+
+.gallery_index {
+  background-color: #F5D328;
+  border: 1.5px solid black;
+  border-radius: 10px; /* one half of ( (border * 2) + height + padding ) */
+  color: black;
+  font: bold 10px "Century Gothic", Helvetica, Verdana, Tahoma;
+  height: 30px;
+  max-width: 30px;
+  padding: 5px 5px 5px 5px;
+  text-align: center;
+  position: relative;
+  bottom: 7.5px;
+}
+
+.gallery_index_invisible {
+  opacity: 0;
+}
+
+.transition_gif {
+	-webkit-clip-path: inset(1% 1% 1% 1%);
+	/*clip-path: inset(10% 2.5% 10% 2.5%);*/
+}
+
+#right-column {
+float: right;
+width: 560px;
+margin-bottom: 50px;
+padding: 0px 0px 0px 15px;
+}
+
+.bio{
+width: 549px;
+margin: 0px 0px 0px 0px;
+padding: 10px 0px 10px 0px;
+float: left;
+}
+
+.bio .text{
+float: left;
+width: 549px;
+}
+
+.news{
+width: 565px;
+margin: 0px 0px 0px -10px;
+padding: 0px 0px 0px 10px;
+float: left;
+background: #eeffff;
+border-radius:10px 10px 10px 10px;
+}
+
+.section{
+width: 555px;
+margin: 0px 0px 10px 0px;
+padding: 0px 0px 1px 0px;
+float: left;
+}
+
+.section-one-column{
+width: 720px;
+float: left;
+margin: 10px 0px 10px 0px;
+}
+
+.section .text{
+float: left;
+width: 560px;
+}
+
+.section .thumb{
+float: right;
+width: 140px;
+}
+
+
+/* Used for sectionlications page */
+.section-one-column .text{
+float: left;
+width: 470px;
+margin: 15px;
+}
+
+.section-one-column .thumb{
+float: left;
+width: 200px;
+margin: 10px;
+}
+
+.section-one-column .venue .name{
+font-style: italic;
+}
+
+.emph{
+font-weight: bold;
+}
+
+.title{
+font-weight: bold;
+}
+
+#sectionlications .award{
+font-style: italic;
+color: #669933;
+}
+
+#projects {
+float:left;
+width: 470px;
+margin-left:0px;
+}
+
+#footer {
+  bottom: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 1;
+  background: #F2F2F2;
+  border: 1px solid #999;
+  text-align: right;
+  vertical-align: middle;
+  width: 100%;
+  height: 25px;
+}
+
+#footer_left {
+  bottom: 0px;
+  left: 0px;
+  z-index: 1;
+  text-align: left;
+  vertical-align: middle;
+  margin-right: 0px;
+  height: 25px;
+  float: left;
+}
+
+#footer_right {
+  bottom: 0px;
+  right: 0px;
+  z-index: 1;
+  text-align: right;
+  vertical-align: middle;
+  margin-left: 0px;
+  height: 25px;
+  float: right;
+}
+
+.footer_text_left {
+  text-align: left;
+  margin-left: 24px;
+  font-size: .8em;
+  /*font-variant: small-caps;*/
+  color: #626262;
+  bottom: 0px;
+  text-decoration: none;
+}
+
+.footer_text {
+  text-align: right;
+  margin-right: 24px;
+  font-size: .8em;
+  /*font-variant: small-caps;*/
+  color: #626262;
+  bottom: 0px;
+  text-decoration: none;
+}
+
+
+#projects .summary{
+padding: 0;
+margin: 5px 25px 15px 25px;
+}
+
+/* For individual project pages */
+#project-one-column{
+  background: #fff;
+  max-width: 700px;
+  min-width: 600px;
+  height: 100%;
+  margin: 0 auto 0 20px;
+  padding: 5px 20px 15px 20px;
+
+  font-size: 12px;
+  line-height: 16px;
+  text-align: justify;
+}
+
+img {
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
+  box-shadow: 1px 1px 3px 0px grey;
+}
+
+.ms-logo {
+  height: 23px;
+  max-height: 23px;
+  display: block;
+  vertical-align: baseline;
+  -webkit-border-radius:0px;
+  -moz-border-radius:0px;
+  border-radius:0px;
+  box-shadow: none;
+}
+
+#project-one-column .authors {
+font-size: 17px;
+}
+
+#project-one-column .figure {
+margin: 25px 0px;
+margin-bottom: 30px;
+}
+#project-one-column .figure .image {
+margin-bottom: 6px;
+}
+#project-one-column .project-one-column .figure img {
+max-width: 625px; max-height: 400px;
+}
+#project-one-column .figure .imglink img {
+margin-bottom: 6px; border: 1px solid white;
+}
+#project-one-column .figure .imglink img:hover {
+border: 1px solid #0000FF;
+}
+#project-one-column .figure .caption {
+font-size: 11px;
+}
+
+.citation {
+margin-bottom: 20px; float: left;
+}
+.citation .thumb {
+float: left;
+padding-right: 12px;
+margin-top: 3px;
+}
+.citation .thumb img {
+border: 1px solid #fff;
+}
+.citation .section {
+border-bottom: none;
+}
+.citation .section .title {
+font-weight: bold;
+}/* display: inline; }*/
+.citation .section .authors {
+font-size: 12px !important;
+}/* display: inline; }*/
+.citation .section .venue {
+display: inline;
+}
+.citation .section .venue .name {
+font-style: italic;
+}
+.citation .section .note {
+font-weight: bold;
+}
+
+.block{
+margin: 25px 0px;
+margin-bottom: 30px;
+}

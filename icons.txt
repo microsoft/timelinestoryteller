@@ -1,0 +1,17 @@
+Some of the icons used in this project are from the Noun Project (thenounproject.com) and are available for use under a Creative Commons license (https://creativecommons.org/licenses/by/3.0/us/)
+
+Icon link and author:
+https://thenounproject.com/term/check-mark/608852 (Arthur Shlain)
+https://thenounproject.com/term/calendar/38869 (Kiril Tomilov)
+https://thenounproject.com/term/timeline/152347 (Alecander Bickov)
+https://thenounproject.com/term/gif-file/446903 (Pranav Grover)
+https://thenounproject.com/term/png-file/446907 (Pranav Grover)
+https://thenounproject.com/term/svg-file/446904 (Pranav Grover)
+https://thenounproject.com/term/drive/128372 (Denis Klyuchnikov)
+https://thenounproject.com/term/json-file/446959 (Pranav Grover)
+https://thenounproject.com/term/csv-file/446962 (Pranav Grover)
+https://thenounproject.com/term/grid/539919 (Doejo)
+https://thenounproject.com/term/filter/132317 (Creative Shell)
+https://thenounproject.com/term/folder/43216 (iconoci)
+https://thenounproject.com/term/image/332296 (Creative Shell)
+https://thenounproject.com/term/quotation-mark/378366 (Veronika Krpciarova)

@@ -1,0 +1,65 @@
+<!doctype html>
+<html xmnls="http://www.w3.org/1999/xhtml">
+<head>
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="cache-control" content="no-cache, no-store">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="0">
+  <title>Timeline Storyteller (Alpha)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" charset="UTF-8">
+  <!-- <link rel="stylesheet" href="css/introjs.min.css"> -->
+  <link rel="stylesheet" href="css/style.css" charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+
+  <script type="text/javascript">
+  var appInsights=window.appInsights||function(config){
+    function i(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},u=document,e=window,o="script",s="AuthenticatedUserContext",h="start",c="stop",l="Track",a=l+"Event",v=l+"Page",y=u.createElement(o),r,f;y.src=config.url||"https://az416426.vo.msecnd.net/scripts/a/ai.0.js";u.getElementsByTagName(o)[0].parentNode.appendChild(y);try{t.cookie=u.cookie}catch(p){}for(t.queue=[],t.version="1.0",r=["Event","Exception","Metric","PageView","Trace","Dependency"];r.length;)i("track"+r.pop());return i("set"+s),i("clear"+s),i(h+a),i(c+a),i(h+v),i(c+v),i("flush"),config.disableExceptionTracking||(r="onerror",i("_"+r),f=e[r],e[r]=function(config,i,u,e,o){var s=f&&f(config,i,u,e,o);return s!==!0&&t["_"+r](config,i,u,e,o),s}),t
+    }({
+        instrumentationKey:"3656860e-1ede-4e4c-bc26-4699f210a873"
+    });
+
+    window.appInsights=appInsights;
+    appInsights.trackPageView();
+  </script>
+
+</head>
+
+<body>
+
+</body>
+
+<!-- external dependencies -->
+<!-- use local versions during development -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js" charset="UTF-8"></script>
+
+<!-- external dependencies (local version) -->
+<!-- <script type="text/javascript" src="js/lib/socket.io.min.js"></script> -->
+<!-- <script type="text/javascript" src="js/lib/d3.min.js"></script> -->
+<!-- <script type="text/javascript" src="js/lib/moment.min.js"></script> -->
+<!-- <script type="text/javascript" src="js/lib/intro.min.js"></script> -->
+
+<!-- dependencies (local version only) -->
+<script type="text/javascript" src="js/lib/time.min.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/lib/saveSvgAsPng.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/lib/gif.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/lib/gif.worker.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/lib/gsheets.min.js" charset="UTF-8"></script>
+
+<script type="text/javascript" src="js/demoStory.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/demoData.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/configurableTL.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/radialAxis.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/calendarAxis.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/gridAxis.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/colors.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/annotateEvent.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/addCaption.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/addImage.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/js/main.js" charset="UTF-8"></script>
+
+</html>
