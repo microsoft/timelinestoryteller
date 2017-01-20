@@ -90,7 +90,7 @@ echo Handling node.js deployment.
 
 echo Disabling Sslv3
 
-PowerShell -ExecutionPolicy Unrestricted %DEPLOYMENT_SOURCE%\DisableSslv3.ps1 >> %DEPLOYMENT_TEMP%\Startuplog.txt 2>&1
+PowerShell -ExecutionPolicy Unrestricted "%DEPLOYMENT_SOURCE%\DisableSslv3.ps1" >> "%DEPLOYMENT_TEMP%\Startuplog.txt" 2>&1
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
