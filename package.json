@@ -19,12 +19,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattbrehmer/condorcet.git"
+    "url": "git+https://github.com/Microsoft/timelinestoryteller.git"
   },
   "author": "mabrehme@microsoft.com",
-  "license": "ISC",
+  "license": "",
   "bugs": {
-    "url": "https://github.com/mattbrehmer/condorcet/issues"
+    "url": "https://github.com/Microsoft/timelinestoryteller"
   },
-  "homepage": "https://github.com/mattbrehmer/condorcet#readme"
+  "homepage": "https://timelinestoryteller.azurewebsites.net/about/"
 }

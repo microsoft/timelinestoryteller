@@ -1,6 +1,6 @@
 # Timeline Storyteller
 
-An expressive visual storytelling environment for the expressive narrative visualization of timelines (event sequence data); a storyteller can use Timeline Storyteller to present different aspects of her/his data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. She / he can export images of a timeline or assemble and record a story about their data and present it within the application.
+A visual storytelling environment for the expressive narrative visualization of timelines (event sequence data); a storyteller can use Timeline Storyteller to present different aspects of her/his data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. She / he can export images of a timeline or assemble and record a story about their data and present it within the application.
 
 For more information on the research that informed this project, see [timelinesrevisited.github.io](https://timelinesrevisited.github.io/).
 
@@ -10,13 +10,13 @@ For more information on the research that informed this project, see [timelinesr
 
 2. Install [nodejs](https://nodejs.org/).
 
-3. Navigate to the parent directory of the repository.
+3. Install the required node modules listed in package.json.
 
-4. Install the socket.io node module: `npm install socket.io`
+4. For local testing without access to Azure storage and Azure keyvault, comment out the `loginWithServicePrincipalSecret`, `authenticator`, and `createBlockBlobFromText` function calls. 
 
-4. Start the node server: `node server.js`
+5. Open a terminal at the toot of the repository and start the node server: `node app.js`
 
-5. Open [localhost:8080](http://localhost:8080/)
+6. Open [localhost:3000](http://localhost:3000/)
 
 ## Usage
 
