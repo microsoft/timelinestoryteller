@@ -2843,13 +2843,16 @@ function formatAbbreviation(x) {
       }
     }
 
-    setTimeout(function () {
-      // gif.addFrame(document.getElementById('gif_frame' + gif_index), {delay: 1000});
-      scenes[scenes.length - 1].s_src = document.getElementById('gif_frame' + gif_index).src;
-      document.getElementById('gif_frame' + gif_index).remove();
-      gif_index++;
-      updateNavigationStepper();
-    },150)
+    var checkExist = setInterval(function() {
+       if (document.getElementById('gif_frame' + gif_index) != null) {
+          console.log('gif_frame' + gif_index + " Exists!");
+          scenes[scenes.length - 1].s_src = document.getElementById('gif_frame' + gif_index).src;
+          document.getElementById('gif_frame' + gif_index).remove();
+          gif_index++;
+          updateNavigationStepper();
+          clearInterval(checkExist);
+       }
+    }, 100); // check every 100ms
 
     return true;
   };
