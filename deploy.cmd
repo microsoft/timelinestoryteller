@@ -88,10 +88,6 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 
-echo Disabling Sslv3
-
-PowerShell -ExecutionPolicy Unrestricted .\DisableSslv3.ps1 >> "%DEPLOYMENT_TEMP%\Startuplog.txt" 2>&1
-
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"

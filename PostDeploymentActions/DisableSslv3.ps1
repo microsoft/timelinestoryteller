@@ -2,9 +2,9 @@
 # suite order. Change the cipherorder variable below to the order you want to set on the
 # server. Setting this requires a reboot to take effect.
 
-Write-Host "This is DisableSsl3.ps1"
+echo "this is DisableSslv3.ps1 local"
 
-Param(
+param (
  [parameter(Mandatory=$false)]
  [alias(sco)]
  [switch]$SetCipherOrder)
