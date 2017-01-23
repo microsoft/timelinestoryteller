@@ -35,7 +35,9 @@
 
   // login to azure
   msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials) {
-      if (err) return console.log(err);
+      if (err) {
+        return console.log(err);
+      }
 
       // authenticate with key vault with a service principal that we gave access in index.js
       var kvCredentials = new KeyVault.KeyVaultCredentials(authenticator);
@@ -43,13 +45,18 @@
 
       // get the secret's value
       keyVaultClient.getSecret(vaultUri, (err, result) => {
-        if (err) throw err;
-          blobSvc = azure.createBlobService(storageAccount,result.value);
-          blobSvc.createContainerIfNotExists('timelinestories', function(error, result, response) {
-            if(!error){
-              // Container exists and is private
-            }
-          });
+        if (err) {
+          io.sockets.emit('hello_from_server', { error: err });
+          throw err;
+        }
+        blobSvc = azure.createBlobService(storageAccount,result.value);
+        blobSvc.createContainerIfNotExists('timelinestories', function(error, result, response) {
+          if(!error){
+            io.sockets.emit('hello_from_server', { response: response });
+            console.log(response);
+            // Container exists and is private
+          }
+        });
       });
   });
 
@@ -59,7 +66,11 @@
 
     // Use the context to acquire an authentication token.
     return context.acquireTokenWithClientCredentials(challenge.resource, keyVaultSp, keyVaultSpSecret, function (err, tokenResponse) {
-        if (err) throw err;
+        if (err) {
+          io.sockets.emit('hello_from_server', { error: err });
+          console.log(err);
+          throw err;
+        }
         // Calculate the value to be set in the request's Authorization header and resume the call.
         var authorizationValue = tokenResponse.tokenType + ' ' + tokenResponse.accessToken;
 

@@ -2,11 +2,8 @@
 # suite order. Change the cipherorder variable below to the order you want to set on the
 # server. Setting this requires a reboot to take effect.
 
-echo "this is DisableSslv3.ps1 local"
-
-param (
+Param(
  [parameter(Mandatory=$false)]
- [alias(sco)]
  [switch]$SetCipherOrder)
 
 $regkeys = @(
