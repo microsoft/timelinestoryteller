@@ -43,6 +43,7 @@ var date_granularity,
     facets, //scale for facets (timelines)
     selected_facets = [],
     num_facets,
+    total_num_facets,
     num_facet_cols,
     num_facet_rows,
     segments, //scale for segments
@@ -69,7 +70,7 @@ var date_granularity,
       {"name":"Relative","icon":"img/s-rel.png","hint":"A relative scale is useful when comparing Faceted timelines with a common baseline at time zero."},
       {"name":"Log","icon":"img/s-log.png","hint":"A logarithmic scale is useful for timelines with a long period of time between the first and last events and a skewed distributions of events."},
       {"name":"Sequential","icon":"img/s-seq.png","hint":"A sequential scale is useful for showing simply the order and number of events."},
-      {"name":"Collapsed","icon":"img/s-intdur.png","hint":"A collapsed scale is a hybrid between the Sequential and Chronological, useful when there are large gaps in the chronology of the timeline."}],
+      {"name":"Collapsed","icon":"img/s-intdur.png","hint":"A collapsed scale is a hybrid between the Sequential and Chronological, useful when there are large gaps in the chronology of the timeline; the duration between events is encoded as the length of bars."}],
     layouts = [
       {"name":"Unified","icon":"img/l-uni.png","hint":"A unified layout is a single uninterrupted timeline and is useful when your data contains no facets."},
       {"name":"Faceted","icon":"img/l-fac.png","hint":"A faceted layout is useful when your have multiple timelines to compare."},
@@ -127,6 +128,7 @@ var date_granularity,
     email_address = "",
     usage_log = [],
     formatNumber = d3.format(".0f"),
+    range_text = "",
     socket = io({transports:['websocket']});
     // socket = io.connect('https//:timelinestoryteller.azurewebsites.net');
 
@@ -1127,7 +1129,10 @@ function formatAbbreviation(x) {
     d3.selectAll(".gdocs_info_element").style("display","none");
   });
 
-  var dataset_picker = d3.select("#import_div").append("div")
+  var data_picker = d3.select("#import_div").append("div")
+  .attr("id","data_picker");
+
+  var dataset_picker = d3.select("#data_picker").append("div")
   .attr("class","data_story_picker");
 
   dataset_picker.append("text")
@@ -1149,9 +1154,7 @@ function formatAbbreviation(x) {
   .on('change', function () {
     source = d3.select(this).property('value');
     if (source != ''){
-      d3.selectAll(".gdocs_info_element").style("display","none");
-      d3.select("#gdocs_info").style("height",0 + "px");
-      d3.select("#import_div").style("top",-210 + "px");
+
       source_format = 'demo_json';
       setTimeout(function () {
 
@@ -1171,29 +1174,29 @@ function formatAbbreviation(x) {
   .selectAll("option")
   .data([
     {"path":"","tl_name":""},
-    {"path":"epidemics","tl_name":"Epidemics since the 14th Century"},
-    {"path":"priestley","tl_name":"Priestley's Chart of Biography"},
-    {"path":"philosophers","tl_name":"Great Philosophers since the 8th Century BC"},
-    {"path":"dailyroutines","tl_name":"The Daily Routines of Famous Creative People"},
-    {"path":"painters","tl_name":"Great Painters of the 20th Century"},
-    {"path":"authors","tl_name":"Modern Library Authors"},
-    {"path":"ch_jp_ko","tl_name":"East Asian Dynasties"},
-    {"path":"empires","tl_name":"History's Largest Empires"},
-    {"path":"presidents","tl_name":"Presidents of the USA"},
+    {"path":"priestley","tl_name":"Priestley's Chart of Biography (faceted by occupation)"},
+    {"path":"philosophers","tl_name":"Great Philosophers since the 8th Century BC (faceted by region)"},
+    {"path":"empires","tl_name":"History's Largest Empires (faceted by region)"},
+    {"path":"ch_jp_ko","tl_name":"East Asian Dynasties (faceted by region)"},
+    {"path":"epidemics","tl_name":"Epidemics since the 14th Century (faceted by region)"},
     {"path":"prime_ministers","tl_name":"Prime Ministers of Canada"},
-    {"path":"uk_prime_ministers","tl_name":"Prime Ministers of the UK"},
-    {"path":"japan_prime_ministers","tl_name":"Prime Ministers of Japan"},
     {"path":"france_presidents","tl_name":"Presidents of France"},
-    {"path":"italy_presidents","tl_name":"Presidents of Italy"},
     {"path":"germany_chancellors","tl_name":"Chancellors of Germany"},
-    {"path":"heads_of_state","tl_name":"G7 Heads of State"},
-    {"path":"heads_of_state_since_1940","tl_name":"G7 Heads of State since 1940"},
-    {"path":"singularity","tl_name":"Kurzweil's Countdown to Singularity"},
-    {"path":"perspective_on_time","tl_name":"visual.ly's Perspective on Time"},
-    {"path":"hurricanes10y", "tl_name":"C4-5 Hurricanes: 2001-2010"}, //C4-5 hurricanes between 2001 and 2010
-    {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},//C4-5 hurricanes between 1960 and 2010
-    {"path":"hurricanes100y", "tl_name":"C4-5 Hurricanes: 1910-2010"},//C4-5 hurricanes between 1910 and 2010
-    {"path":"typical_american","tl_name":"Life of a Typical American"}
+    {"path":"italy_presidents","tl_name":"Presidents of Italy"},
+    {"path":"japan_prime_ministers","tl_name":"Prime Ministers of Japan"},
+    {"path":"uk_prime_ministers","tl_name":"Prime Ministers of the UK"},
+    {"path":"presidents","tl_name":"Presidents of the USA"},
+    {"path":"heads_of_state","tl_name":"G7 Heads of State (faceted by country)"},
+    {"path":"heads_of_state_since_1940","tl_name":"G7 Heads of State since 1940 (faceted by country)"},
+    {"path":"hurricanes10y", "tl_name":"C4-5 Hurricanes: 2001-2010"},
+    {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
+    {"path":"hurricanes100y", "tl_name":"C4-5 Hurricanes: 1910-2010"},
+    {"path":"dailyroutines","tl_name":"Podio's 'Daily Routines of Famous Creative People' (faceted by person)"},
+    {"path":"painters","tl_name":"Accurat's 'Great Painters of the 20th Century' (faceted by painter)"},
+    {"path":"authors","tl_name":"Accurat's 'Modern Library Authors' (faceted by author)"},
+    {"path":"singularity","tl_name":"Kurzweil's 'Countdown to Singularity' (4 billion years)"},
+    {"path":"perspective_on_time","tl_name":"visual.ly's 'Perspective on Time' (14 billion years)"},
+    {"path":"typical_american","tl_name":"Wait But Why's 'Life of a Typical American'"}
   ])
   .enter()
   .append("option")
@@ -1223,10 +1226,6 @@ function formatAbbreviation(x) {
     accept:".json"
   })
   .on("change", function () {
-
-    d3.selectAll(".gdocs_info_element").style("display","none");
-    d3.select("#gdocs_info").style("height",0 + "px");
-    d3.select("#import_div").style("top",-210 + "px");
 
     var file = this.files[0];
     reader.readAsText(file);
@@ -1274,10 +1273,6 @@ function formatAbbreviation(x) {
     accept: ".csv"
   })
   .on("change", function () {
-
-    d3.selectAll(".gdocs_info_element").style("display","none");
-    d3.select("#gdocs_info").style("height",0 + "px");
-    d3.select("#import_div").style("top",-210 + "px");
 
     var file = this.files[0];
     reader.readAsText(file);
@@ -1350,7 +1345,7 @@ function formatAbbreviation(x) {
     src: "img/gdocs.png"
   });
 
-  var story_picker = d3.select("#import_div").append("div")
+  var story_picker = d3.select("#data_picker").append("div")
   .attr("class","data_story_picker")
   .style('border-right','1px solid transparent');
 
@@ -1364,9 +1359,6 @@ function formatAbbreviation(x) {
     class: "inputfile"
   })
   .on("click", function () {
-    d3.selectAll(".gdocs_info_element").style("display","none");
-    d3.select("#gdocs_info").style("height",0 + "px");
-    d3.select("#import_div").style("top",-210 + "px");
 
     source = 'demoStory';
     console.log('demo story source');
@@ -1379,6 +1371,13 @@ function formatAbbreviation(x) {
     usage_log.push(log_event);
 
     source_format = 'demo_story';
+    d3.select("#timeline_metadata").style('display','none');
+    d3.selectAll(".gdocs_info_element").style("display","none");
+    d3.select("#import_div").style("top",-210 + "px");
+    d3.select("#gdocs_info").style("height",0 + "px");
+    d3.select("#gdoc_spreadsheet_key_input").property("value","");
+    d3.select("#gdoc_worksheet_title_input").property("value","");
+
     setTimeout(function () {
       loadTimeline();
     },500);
@@ -1407,10 +1406,6 @@ function formatAbbreviation(x) {
   })
   .on("change", function () {
 
-    d3.selectAll(".gdocs_info_element").style("display","none");
-    d3.select("#gdocs_info").style("height",0 + "px");
-    d3.select("#import_div").style("top",-210 + "px");
-
     var file = this.files[0];
     reader.readAsText(file);
 
@@ -1428,6 +1423,13 @@ function formatAbbreviation(x) {
       usage_log.push(log_event);
 
       source_format = 'story';
+      d3.select("#timeline_metadata").style('display','none');
+      d3.selectAll(".gdocs_info_element").style("display","none");
+      d3.select("#import_div").style("top",-210 + "px");
+      d3.select("#gdocs_info").style("height",0 + "px");
+      d3.select("#gdoc_spreadsheet_key_input").property("value","");
+      d3.select("#gdoc_worksheet_title_input").property("value","");
+
       setTimeout(function () {
         loadTimeline();
       },500);
@@ -1507,12 +1509,6 @@ function formatAbbreviation(x) {
         return true;
       };
 
-      d3.selectAll(".gdocs_info_element").style("display","none");
-      d3.select("#import_div").style("top",-210 + "px");
-      d3.select("#gdocs_info").style("height",0 + "px");
-      d3.select("#gdoc_spreadsheet_key_input").property("value","");
-      d3.select("#gdoc_worksheet_title_input").property("value","");
-
       timeline_json_data = sheet.data;
       source_format = 'gdoc';
       setTimeout(function () {
@@ -1527,6 +1523,46 @@ function formatAbbreviation(x) {
   .html("<span class='disclaimer_title'><br>A note about privacy:</span><br>" +
   "<span class='disclaimer_text'>This service enables you to create visually compelling timeline stories. Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication." +
   "<br>By using this service, you agree to <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>'s <a title='Privacy' href='https://go.microsoft.com/fwlink/?LinkId=521839'>Privacy Statement</a> and <a title='Terms of Use' href='https://go.microsoft.com/fwlink/?LinkID=760869'>Terms of Use</a>.</span>");
+
+  var timeline_metadata = d3.select("#import_div").append("div")
+  .attr("id","timeline_metadata")
+  .style('display','none');
+
+  var timeline_metadata_contents = timeline_metadata.append("div")
+  .attr("id","timeline_metadata_contents");
+
+  timeline_metadata.append("input")
+  .attr({
+    id: "draw_timeline",
+    class: "inputfile"
+  })
+  .on("click", function () {
+    d3.select("#timeline_metadata").style('display','none');
+    d3.selectAll(".gdocs_info_element").style("display","none");
+    d3.select("#import_div").style("top",-210 + "px");
+    d3.select("#gdocs_info").style("height",0 + "px");
+    d3.select("#gdoc_spreadsheet_key_input").property("value","");
+    d3.select("#gdoc_worksheet_title_input").property("value","");
+    drawTimeline (active_data);
+    updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
+  });
+
+  var draw_timeline_div = timeline_metadata.append("div")
+  .attr("id","draw_timeline_div");
+
+  draw_timeline_div.append("label")
+  .attr("for","draw_timeline")
+  .attr("class","import_label")
+  .append("img")
+  .attr({
+    name: "Draw Timeline",
+    id: "draw_timeline_label",
+    class: "img_btn_enabled import_label",
+    height: 40,
+    width: 40,
+    title: "Draw Timeline",
+    src: "img/draw.png"
+  });
 
   /**
   --------------------------------------------------------------------------------------
@@ -1832,6 +1868,15 @@ function formatAbbreviation(x) {
 
   function loadTimeline () {
 
+    d3.select("#disclaimer").style('display','none');
+    control_panel.selectAll("input").attr("class","img_btn_disabled")
+    d3.select("#filter_type_picker").selectAll("input").property("disabled",true);
+    d3.select("#filter_type_picker").selectAll("img").attr("class","img_btn_disabled");
+    d3.select('#playback_bar').selectAll('img').attr('class','img_btn_disabled');
+    d3.selectAll(".option_rb").select("input").property("disabled","true");
+    d3.selectAll(".option_rb").select("img").attr("class","img_btn_disabled");
+    d3.selectAll('.option_rb img').style('border','2px solid transparent');
+
     if (main_svg != undefined) {
       console.clear();
       main_svg.remove();
@@ -1849,7 +1894,6 @@ function formatAbbreviation(x) {
         timeline_vis.tl_scale("Chronological")
         .tl_layout("Unified")
         .tl_representation("Linear")
-        updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
         d3.selectAll('.gif_frame').remove()
         timeline_vis.resetCurve();
       }
@@ -1859,17 +1903,11 @@ function formatAbbreviation(x) {
       legend_panel.remove();
     }
 
-    control_panel.selectAll("input")
-    .attr("class","img_btn_enabled")
-
     filter_div = d3.select("body")
     .append("div")
     .attr("id","filter_div")
     .attr("class","control_div")
     .style("display","none");
-
-    d3.select("#filter_type_picker").selectAll("input").property("disabled",false);
-    d3.select("#filter_type_picker").selectAll("img").attr("class","img_btn_enabled");
 
     //initialize global variables accessed by multiple visualziations
     date_granularity = "years";
@@ -1905,7 +1943,7 @@ function formatAbbreviation(x) {
     .append('img')
     .attr({
       id: "record_scene_btn",
-      class: 'img_btn_enabled',
+      class: 'img_btn_disabled',
       src: 'img/record.png',
       height: 20,
       width: 20,
@@ -1923,7 +1961,7 @@ function formatAbbreviation(x) {
     .attr('height', 20)
     .attr('width', 20)
     .attr('src', 'img/prev.png')
-    .attr('class','img_btn_enabled')
+    .attr('class','img_btn_disabled')
     .attr('title','Previous Scene')
     .on('click', function() {
       goPreviousScene()
@@ -1935,7 +1973,7 @@ function formatAbbreviation(x) {
     .append('img')
     .attr('height', 20)
     .attr('width', 20)
-    .attr('class','img_btn_enabled')
+    .attr('class','img_btn_disabled')
     .attr("id","next_scene_btn")
     .attr('src', 'img/next.png')
     .attr('title','Next Scene')
@@ -2009,7 +2047,7 @@ function formatAbbreviation(x) {
     playback_cb_label.append("img")
     .attr({
       id: "play_scene_btn",
-      class: 'img_btn_enabled',
+      class: 'img_btn_disabled',
       src: 'img/play.png',
       height: 20,
       width: 20,
@@ -2167,18 +2205,6 @@ function formatAbbreviation(x) {
     else if (source_format == 'story' || source_format == 'demo_story'){
 
       playback_mode = true;
-      d3.select('#navigation_div').attr('class','control_div onhover')
-      d3.select("#caption_div").style("display","none");
-      d3.select("#image_div").style("display","none");
-      d3.select("#menu_div").style("left",-41 + "px");
-      d3.select('#menu_div').attr('class','control_div onhover');
-      d3.select("#import_div").style("top",-210 + "px");
-      d3.select('#import_div').attr('class','control_div onhover');
-      d3.select("#option_div").style("top",-95 + "px");
-      d3.select('#option_div').attr('class','control_div onhover')
-      d3.select("#filter_div").style("display","none");
-      d3.select("#footer").style("bottom",-25 + "px");
-      d3.select("#logo_div").style("top",-44 + "px");
 
       if (source_format == 'story') {
         var story = d3.json(source, function(error, story) {
@@ -2263,21 +2289,40 @@ function formatAbbreviation(x) {
 
     //check for earliest and latest numerical dates before parsing
     earliest_date = d3.min(data, function (d) {
-      return +d.start_date;
+      if (d.start_date instanceof Date) {
+        return d.start_date
+      }
+      else {
+        return +d.start_date;
+      }
     });
 
     latest_start_date = d3.max(data, function (d) {
-      return +d.start_date;
+      if (d.start_date instanceof Date) {
+        return d.start_date
+      }
+      else {
+        return +d.start_date;
+      }
     });
 
     latest_end_date = d3.max(data, function (d) {
-      return +d.end_date;
+      if (d.end_date instanceof Date) {
+        return d.end_date
+      }
+      else {
+        return +d.end_date;
+      }
     });
 
     //set flag for really epic time scales
-    if (earliest_date < -9999 || d3.max([latest_start_date,latest_end_date]) > 10000) {
-      date_granularity = "epochs";
+    if (isNumber(earliest_date)) {
+      if (earliest_date < -9999 || d3.max([latest_start_date,latest_end_date]) > 10000) {
+        date_granularity = "epochs";
+      }
     }
+
+    console.log("date_granularity after: " + date_granularity)
 
     parseDates(data); //parse all the date values, replace blank end_date values
 
@@ -2298,6 +2343,8 @@ function formatAbbreviation(x) {
     }));
 
     num_categories = categories.domain().length;
+
+    max_legend_item_width = 0;
 
     categories.domain().sort().forEach(function (item) {
 
@@ -2439,6 +2486,7 @@ function formatAbbreviation(x) {
     facets.domain().sort();
 
     num_facets = facets.domain().length;
+    total_num_facets = num_facets;
     num_facet_cols = Math.ceil(Math.sqrt(num_facets));
     num_facet_rows = Math.ceil(num_facets / num_facet_cols);
 
@@ -2656,7 +2704,33 @@ function formatAbbreviation(x) {
 
     measureTimeline (active_data);
 
-    drawTimeline (active_data);
+    if (source_format == "story" || source_format == "demo_story") {
+      d3.select('#navigation_div').attr('class','control_div onhover')
+      d3.select("#caption_div").style("display","none");
+      d3.select("#image_div").style("display","none");
+      d3.select("#menu_div").style("left",-41 + "px");
+      d3.select('#menu_div').attr('class','control_div onhover');
+      d3.select('#import_div').attr('class','control_div onhover');
+      d3.select("#option_div").style("top",-95 + "px");
+      d3.select('#option_div').attr('class','control_div onhover')
+      d3.select("#filter_div").style("display","none");
+      d3.select("#footer").style("bottom",-25 + "px");
+      d3.select("#logo_div").style("top",-44 + "px");
+      drawTimeline (active_data);
+    }
+    else {
+      d3.select('#timeline_metadata_contents')
+      .html(
+        "<span class='metadata_title'>About this data:</span>" +
+        "<p class='metadata_content'><strong>Cardinality & extent</strong>: " +
+        active_data.length + " unique events spanning " + range_text + " (Segment granularity: " + segment_granularity + ")</p>" +
+        "<p class='metadata_content'><strong>Event categories</strong>: ( " + num_categories + " ) .. " + categories.domain().join(" .. ") + "</p>" +
+        "<p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) .. " + facets.domain().join(" .. ") + "</p>"
+      );
+
+      timeline_metadata.style("display","inline");
+    }
+
   }
 
     /**
@@ -2768,6 +2842,13 @@ function formatAbbreviation(x) {
     .tl_representation(this.value)
     .height(height)
     .width(width));
+
+    if (timeline_vis.tl_representation() == "Curve" && !dirty_curve) {
+      d3.select('.timeline_frame').style("cursor","crosshair");
+    }
+    else {
+      d3.select('.timeline_frame').style("cursor","auto");
+    }
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
   });
@@ -3374,27 +3455,28 @@ function formatAbbreviation(x) {
       var format = function(d) {
         return formatAbbreviation(d);
       }
-      console.log("range: " + format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
-      ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf());
+      range_text = format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
+      ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf();
+
+      console.log("range: " + range_text);
 
       var log_event = {
         event_time: new Date().valueOf(),
         event_category: "preprocessing",
-        event_detail: "range: " + format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
-        ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf()
+        event_detail: "range: " + range_text
       }
       usage_log.push(log_event);
 
     }
     else {
-      console.log("range: " + moment(data.min_start_date).from(moment(data.max_end_date),true) +
-      ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD'));
+      range_text = moment(data.min_start_date).from(moment(data.max_end_date),true) +
+      ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD');
+      console.log("range: " + range_text);
 
       var log_event = {
         event_time: new Date().valueOf(),
         event_category: "preprocessing",
-        event_detail: "range: " + moment(data.min_start_date).from(moment(data.max_end_date),true) +
-        ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD')
+        event_detail: "range: " + range_text
       }
       usage_log.push(log_event);
     }
@@ -3514,6 +3596,11 @@ function formatAbbreviation(x) {
     CALL STANDALONE TIMELINE VISUALIZATIONS
     ---------------------------------------------------------------------------------------
     **/
+
+    control_panel.selectAll("input").attr("class","img_btn_enabled")
+    d3.select("#filter_type_picker").selectAll("input").property("disabled",false);
+    d3.select("#filter_type_picker").selectAll("img").attr("class","img_btn_enabled");
+    d3.select('#playback_bar').selectAll('img').attr('class','img_btn_enabled');
 
     if (source_format == 'story' || source_format == 'demo_story'){
       timeline_vis.tl_scale(scenes[0].s_scale)
@@ -4937,7 +5024,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Faceted":
-        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
+        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve" && total_num_facets > 1) {
           return false;
         }
         else {
@@ -5064,7 +5151,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Faceted":
-        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
+        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve" && total_num_facets > 1) {
           return "img_btn_enabled";
         }
         else {

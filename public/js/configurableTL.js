@@ -4158,6 +4158,7 @@ configurableTL: //a configurable timeline
     function dragEnd () {
 
       dirty_curve = true;
+      d3.select('.timeline_frame').style("cursor","auto");
 
       if (tl_representation == "Curve" && fresh_canvas) {
         d3.select("#active_line")
@@ -4335,6 +4336,8 @@ configurableTL: //a configurable timeline
         });
         active_line = undefined;
         fresh_canvas = true;
+
+        d3.select('.timeline_frame').style("cursor","crosshair");
 
         d3.select('#timecurve')
         .style('visibility', 'hidden')

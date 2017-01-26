@@ -250,8 +250,8 @@ select > option:hover {
 #option_div {
   top: 10px;
   left: 50%;
-  width:704px;
-  margin-left: -352px;
+  width:712px;
+  margin-left: -356px;
   position: fixed;
   padding-bottom: 5px;
   padding-left: 0px;
@@ -261,6 +261,9 @@ select > option:hover {
 
 .option_rb {
   margin-top: 20px;
+  vertical-align: top;
+  display: inline-block;
+  text-align: center;
 }
 
 .option_rb > input + img{ /* IMAGE STYLES */
@@ -312,6 +315,13 @@ select > option:hover {
   filter: grayscale(100%);
 }
 
+.option_rb_label {
+  font-weight: normal;
+  font-size: 9px;
+  display: block;
+  color: #777;
+}
+
 #intro_div {
   right: 10px;
   top: 10px;
@@ -358,6 +368,7 @@ select > option:hover {
 #disclaimer {
   justify-content: center;
   border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
   padding: 5px;
 }
 
@@ -377,8 +388,13 @@ select > option:hover {
   /*font-variant: small-caps;*/
   font-size: 12px;
   color: #333;
-  bottom: 0px;
   margin-left: -17px
+}
+
+.metadata_title {
+  /*font-variant: small-caps;*/
+  font-size: 12px;
+  color: #333;
 }
 
 .boilerplate_text {
@@ -396,7 +412,14 @@ select > option:hover {
   font-size: 10px;
   text-align: center;
   color: #333;
-  bottom: 0px;
+}
+
+.metadata_content {
+  font-weight: normal;
+  font-size: 10px;
+  text-align: left;
+  color: #333;
+  margin-right: 10px;
 }
 
 .footer_text_left {
@@ -437,22 +460,36 @@ select > option:hover {
   vertical-align: baseline;
 }
 
-.data_story_picker {
-  float: left;
-  display: flex;
-  justify-content: center;
+#data_picker {
+  width: 650px;
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
   border-top: 1px solid #999;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
   margin-top: 0px;
   margin-right: 0px;
   margin-left: 0px;
   margin-bottom: 0px;
-  width: 324px;
+  float: left;
+}
+
+.data_story_picker {
+  float: left;
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  width: 320px;
   border-right: 1px solid #999;
 }
 
-#gdocs_info {
+#timeline_metadata {
   width: 650px;
-  height: 0px;
   transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
   padding-left: 0px;
@@ -460,7 +497,36 @@ select > option:hover {
   padding-top: 0px;
   padding-bottom: 0px;
   float: left;
-  border-top: 1px solid #999;
+}
+
+#timeline_metadata_contents{
+  width: 600px;
+  float: left;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+}
+
+#draw_timeline_div {
+  float: left;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}
+
+#gdocs_info {
+  width: 650px;
+  height: 0px;
+  justify-content: center;
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  float: left;
+  border-bottom: 1px solid #999;
 }
 
 .gdocs_info_element {
@@ -473,13 +539,27 @@ select > option:hover {
 }
 
 .gdocs_info_element .text_input {
-  width: 300px;
-  margin-left: 5px;
+  padding-left: 5px;
   margin-bottom: 5px;
+  border-top: 1px solid #999;
+  border-bottom: 1px solid #999;
+  border-right: 1px solid #999;
+  border-left: none;
+}
+
+#gdoc_spreadsheet_key_input {
+  margin-left: 0px;
+  width: 315px;
+}
+
+#gdoc_worksheet_title_input {
+  margin-left: 0px;
+  width: 297px;
 }
 
 .gdocs_info_element .img_btn_enabled {
-  margin-left: 0px;
+  margin-left: 2px;
+  margin-top: 0px;
 }
 
 .inputfile {
