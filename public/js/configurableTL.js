@@ -675,7 +675,7 @@ configurableTL: //a configurable timeline
               usage_log.push(log_event);
               break;
 
-              case "Interim Duration":
+              case "Collapsed":
               //valid timeline scale
               timeline_scale = d3.scale.linear()
               .range([0,max_seq_index * 1.5 * unit_width - unit_width])
@@ -687,7 +687,7 @@ configurableTL: //a configurable timeline
                 return formatAbbreviation(d);
               };
 
-              //valid interim duration scale
+              //valid Collapsed scale
               data.forEach(function (item){
                 i++;
                 if (i == 0){
@@ -1383,7 +1383,7 @@ configurableTL: //a configurable timeline
           if (tl_layout != "Segmented" && tl_scale == "Chronological" && date_granularity == "years" && data.min_start_date.getUTCFullYear() < 0){
             timeline_axis.tickFormat(tick_format);
           }
-          else if (tl_scale == "Sequential" || tl_scale == "Interim Duration"){
+          else if (tl_scale == "Sequential" || tl_scale == "Collapsed"){
             timeline_axis.ticks(10);
             timeline_axis.tickSize(6,0);
             timeline_axis.tickFormat(function (d) {
@@ -1562,11 +1562,11 @@ configurableTL: //a configurable timeline
         /**
         ---------------------------------------------------------------------------------------
         AXES
-        Interim Duration Axis
+        Collapsed Axis
         ---------------------------------------------------------------------------------------
         **/
 
-        if (tl_representation == "Linear" && tl_scale == "Interim Duration" && tl_layout == "Unified") {
+        if (tl_representation == "Linear" && tl_scale == "Collapsed" && tl_layout == "Unified") {
           interim_duration_axis.ticks(2);
           interim_duration_axis.scale(interim_duration_scale);
 
@@ -1587,7 +1587,7 @@ configurableTL: //a configurable timeline
             return converted_tick;
           });
 
-          //update the interim duration axis for linear-interim_duration timeline
+          //update the Collapsed axis for linear-interim_duration timeline
           var interim_duration_axis_container = timeline_container.selectAll(".interim_duration_axis")
           .data([null]);
 
@@ -1606,16 +1606,16 @@ configurableTL: //a configurable timeline
           .style("opacity",1)
           .call(interim_duration_axis);
 
-          console.log("Interim Duration axis updated");
+          console.log("Collapsed axis updated");
 
           var log_event = {
             event_time: new Date().valueOf(),
             event_category: "axis_update",
-            event_detail: "Interim Duration axis updated"
+            event_detail: "Collapsed axis updated"
           }
           usage_log.push(log_event);
         }
-        else if (prev_tl_scale == "Interim Duration" && tl_scale != "Interim Duration") { //remove interim duration axis for non-interim_duration-scale timelines
+        else if (prev_tl_scale == "Collapsed" && tl_scale != "Collapsed") { //remove Collapsed axis for non-interim_duration-scale timelines
           timeline_container.selectAll(".interim_duration_axis")
           .transition()
           .duration(duration)
@@ -2554,7 +2554,7 @@ configurableTL: //a configurable timeline
                 }
                 break;
 
-                case "Interim Duration":
+                case "Collapsed":
                 rect_x = timeline_scale(d.seq_index) * unit_width;
                 break;
 
@@ -2609,7 +2609,7 @@ configurableTL: //a configurable timeline
                 rect_y = height - (track_height * d.track + track_height);
                 break;
 
-                case "Interim Duration":
+                case "Collapsed":
                 rect_y = height - (d.seq_track * track_height + track_height + (4 * unit_width));
                 break;
 
@@ -2747,7 +2747,7 @@ configurableTL: //a configurable timeline
 
         timeline_event_g_delayed_update.select("rect.time_elapsed")
         .attr("height", function (d) {
-          if (tl_scale != "Interim Duration" || d.time_elapsed == 0) {
+          if (tl_scale != "Collapsed" || d.time_elapsed == 0) {
             return 0;
           }
           else {

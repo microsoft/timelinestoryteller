@@ -65,22 +65,22 @@ var date_granularity,
     filter_result,
     timeline_vis = d3.configurableTL(),
     scales = [
-      {"name":"Chronological","icon":"img/s-chron.png"},
-      {"name":"Relative","icon":"img/s-rel.png"},
-      {"name":"Log","icon":"img/s-log.png"},
-      {"name":"Sequential","icon":"img/s-seq.png"},
-      {"name":"Interim Duration","icon":"img/s-intdur.png"}],
+      {"name":"Chronological","icon":"img/s-chron.png","hint":"A chronological scale is useful for showing absolute dates and times, like 2017, or 1999-12-31, or 6:37 PM."},
+      {"name":"Relative","icon":"img/s-rel.png","hint":"A relative scale is useful when comparing Faceted timelines with a common baseline at time zero."},
+      {"name":"Log","icon":"img/s-log.png","hint":"A logarithmic scale is useful for timelines with a long period of time between the first and last events and a skewed distributions of events."},
+      {"name":"Sequential","icon":"img/s-seq.png","hint":"A sequential scale is useful for showing simply the order and number of events."},
+      {"name":"Collapsed","icon":"img/s-intdur.png","hint":"A collapsed scale is a hybrid between the Sequential and Chronological, useful when there are large gaps in the chronology of the timeline."}],
     layouts = [
-      {"name":"Unified","icon":"img/l-uni.png"},
-      {"name":"Faceted","icon":"img/l-fac.png"},
-      {"name":"Segmented","icon":"img/l-seg.png"}],
+      {"name":"Unified","icon":"img/l-uni.png","hint":"A unified layout is a single uninterrupted timeline and is useful when your data contains no facets."},
+      {"name":"Faceted","icon":"img/l-fac.png","hint":"A faceted layout is useful when your have multiple timelines to compare."},
+      {"name":"Segmented","icon":"img/l-seg.png","hint":"A segmented layout splits a timeline into meaningful segments like centuries or days, depending on the extent of your timeline, and is useful for showing patterns or differences across segments, such as periodicity."}],
     representations = [
-      {"name":"Linear","icon":"img/r-lin.png"},
-      {"name":"Radial","icon":"img/r-rad.png"},
-      {"name":"Spiral","icon":"img/r-spi.png"},
-      {"name":"Curve","icon":"img/r-arb.png"},
-      {"name":"Calendar","icon":"img/r-cal.png"},
-      {"name":"Grid","icon":"img/r-grid.png"}],
+      {"name":"Linear","icon":"img/r-lin.png","hint":"A linear representation is read left-to-right and is the most familiar timeline representation."},
+      {"name":"Radial","icon":"img/r-rad.png","hint":"A radial representation is useful for showing cyclical patterns and ensures a square aspect ratio."},
+      {"name":"Spiral","icon":"img/r-spi.png","hint":"A spiral is a compact and playful way to show a sequence of events."},
+      {"name":"Curve","icon":"img/r-arb.png","hint":"A curve is a playful way to show a sequence of events. Drag to draw a curve on the canvas. Double click the canvas to reset the curve."},
+      {"name":"Calendar","icon":"img/r-cal.png","hint":"A calendar is a familiar representation compatible with a segmented layout, which segments by month and day. Don't use this representation if your timeline spans many years, or less than a day."},
+      {"name":"Grid","icon":"img/r-grid.png","hint":"A grid is useful in conjunction with a segmented layout for showing patterns of events across decades and centuries. Don't use this representation if you timeline spans many millenia or longer, or if your timeline spans less than a few years."}],
     unit_width = 15,
     track_height = unit_width * 1.5,
     // unit_width = 7.5, // Priestley style
@@ -297,7 +297,7 @@ function formatAbbreviation(x) {
         d3.select('#menu_div').attr('class','control_div onhover');
         d3.select("#import_div").style("top",-210 + "px");
         d3.select('#import_div').attr('class','control_div onhover');
-        d3.select("#option_div").style("top",-85 + "px");
+        d3.select("#option_div").style("top",-95 + "px");
         d3.select('#option_div').attr('class','control_div onhover')
         d3.select("#filter_div").style("display","none");
         d3.select("#footer").style("bottom",-25 + "px");
@@ -1571,11 +1571,17 @@ function formatAbbreviation(x) {
     width: 40,
     class: "img_btn_disabled",
     title: function (d) {
-      return d.name;
+      return d.hint;
     },
     src: function (d) {
       return d.icon;
     }
+  });
+
+  representation_rb_label.append("span")
+  .attr("class","option_rb_label")
+  .text(function(d){
+    return d.name;
   });
 
   //scale options
@@ -1613,11 +1619,17 @@ function formatAbbreviation(x) {
     width: 40,
     class: "img_btn_disabled",
     title: function (d) {
-      return d.name;
+      return d.hint;
     },
     src: function (d) {
       return d.icon;
     }
+  });
+
+  scale_rb_label.append("span")
+  .attr("class","option_rb_label")
+  .text(function(d){
+    return d.name;
   });
 
   //layout options
@@ -1656,11 +1668,17 @@ function formatAbbreviation(x) {
     width: 40,
     class: "img_btn_disabled",
     title: function (d) {
-      return d.name;
+      return d.hint;
     },
     src: function (d) {
       return d.icon;
     }
+  });
+
+  layout_rb_label.append("span")
+  .attr("class","option_rb_label")
+  .text(function(d){
+    return d.name;
   });
 
   d3.select("#caption_div").append("textarea")
@@ -1959,7 +1977,7 @@ function formatAbbreviation(x) {
         d3.select('#menu_div').attr('class','control_div onhover');
         d3.select("#import_div").style("top",-210 + "px");
         d3.select('#import_div').attr('class','control_div onhover');
-        d3.select("#option_div").style("top",-85 + "px");
+        d3.select("#option_div").style("top",-95 + "px");
         d3.select('#option_div').attr('class','control_div onhover')
         d3.select("#filter_div").style("display","none");
         d3.select("#footer").style("bottom",-25 + "px");
@@ -2156,7 +2174,7 @@ function formatAbbreviation(x) {
       d3.select('#menu_div').attr('class','control_div onhover');
       d3.select("#import_div").style("top",-210 + "px");
       d3.select('#import_div').attr('class','control_div onhover');
-      d3.select("#option_div").style("top",-85 + "px");
+      d3.select("#option_div").style("top",-95 + "px");
       d3.select('#option_div').attr('class','control_div onhover')
       d3.select("#filter_div").style("display","none");
       d3.select("#footer").style("bottom",-25 + "px");
@@ -4379,7 +4397,7 @@ function formatAbbreviation(x) {
         }
         break;
 
-        case "Interim Duration":
+        case "Collapsed":
         if (layout == "Unified") {
           //justifiable
           assignSequenceTracks(data,[]);
@@ -4891,7 +4909,7 @@ function formatAbbreviation(x) {
         }
         break;
 
-        case "Interim Duration":
+        case "Collapsed":
         if (representation == "Linear" && layout == "Unified") {
           return false;
         }
@@ -4919,7 +4937,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Faceted":
-        if (scale != "Interim Duration" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
+        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
           return false;
         }
         else {
@@ -4959,7 +4977,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Radial":
-        if (scale != "Log" && scale != "Interim Duration") {
+        if (scale != "Log" && scale != "Collapsed") {
           return false;
         }
         else {
@@ -5018,7 +5036,7 @@ function formatAbbreviation(x) {
         }
         break;
 
-        case "Interim Duration":
+        case "Collapsed":
         if (representation == "Linear" && layout == "Unified") {
           return "img_btn_enabled";
         }
@@ -5046,7 +5064,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Faceted":
-        if (scale != "Interim Duration" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
+        if (scale != "Collapsed" && representation != "Grid" && representation != "Calendar" && representation != "Curve") {
           return "img_btn_enabled";
         }
         else {
@@ -5086,7 +5104,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Radial":
-        if (scale != "Log" && scale != "Interim Duration") {
+        if (scale != "Log" && scale != "Collapsed") {
           return "img_btn_enabled";
         }
         else {
