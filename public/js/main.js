@@ -1531,10 +1531,11 @@ function formatAbbreviation(x) {
   var timeline_metadata_contents = timeline_metadata.append("div")
   .attr("id","timeline_metadata_contents");
 
-  timeline_metadata.append("input")
+  timeline_metadata.append("div")
   .attr({
     id: "draw_timeline",
-    class: "inputfile"
+    class: "img_btn_enabled import_label",
+    title: "Draw Timeline"
   })
   .on("click", function () {
     d3.select("#timeline_metadata").style('display','none');
@@ -1545,24 +1546,15 @@ function formatAbbreviation(x) {
     d3.select("#gdoc_worksheet_title_input").property("value","");
     drawTimeline (active_data);
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
-  });
-
-  var draw_timeline_div = timeline_metadata.append("div")
-  .attr("id","draw_timeline_div");
-
-  draw_timeline_div.append("label")
-  .attr("for","draw_timeline")
-  .attr("class","import_label")
-  .append("img")
-  .attr({
-    name: "Draw Timeline",
-    id: "draw_timeline_label",
-    class: "img_btn_enabled import_label",
-    height: 40,
-    width: 40,
-    title: "Draw Timeline",
-    src: "img/draw.png"
-  });
+  })
+  .append("text")
+  .attr("class","ui_label")
+  .style("color","black")
+  .style("cursor","pointer")
+  .style("position","relative")
+  .style("font-weight","bold")
+  .style("vertical-align","baseline")
+  .text("Click here to draw this timeline.");
 
   /**
   --------------------------------------------------------------------------------------

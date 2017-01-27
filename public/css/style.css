@@ -500,17 +500,22 @@ select > option:hover {
 }
 
 #timeline_metadata_contents{
-  width: 600px;
+  width: 630px;
   float: left;
   text-align: left;
   padding-left: 10px;
   padding-right: 10px;
-  padding-bottom: 5px;
+  padding-bottom: 0px;
 }
 
-#draw_timeline_div {
+#draw_timeline {
+  margin-left: 5px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  margin-top: 0px;
+  width: 640px;
+  height: 25px;
   float: left;
-  position: absolute;
   bottom: 0px;
   right: 0px;
 }
