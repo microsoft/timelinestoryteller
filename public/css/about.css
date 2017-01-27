@@ -1,5 +1,34 @@
 @charset "UTF-8";
 
+@media (max-width:979px) {
+  #header-wrapper{
+    position: absolute;
+  }
+
+  #left-column {
+    position: absolute;
+  }
+
+  #footer {
+    position: relative;
+    clear: both;
+  }
+}
+
+@media (min-width:980px) {
+  #header-wrapper{
+    position: fixed;
+  }
+
+  #left-column {
+    position: fixed;
+  }
+
+  #footer {
+    position: fixed;
+  }
+}
+
 .dimension_icon_rep {
   position: relative;
   background-color: #FFF;
@@ -33,6 +62,8 @@ body {
   color: #333333;
   background: #fff;
   text-align: left;
+  min-height: 100%;
+  position: relative;
 }
 
 h1 {
@@ -115,6 +146,7 @@ min-width: 720px;
 width: 720px;
 margin: 0 auto 0px;
 top: 0px;
+padding-bottom: 25px;
 }
 
 
@@ -145,7 +177,6 @@ code {
 
 #header-wrapper{
 width: 100%;
-position: fixed;
 padding-top: 25px;
 left: 0px;
 padding:0;
@@ -204,7 +235,6 @@ padding: 0 0 0 0px;
 #left-column {
 width: 100px;
 float: left;
-position: fixed;
 border: 1px solid #999;
 background: #F2F2F2;
 font-size: 12px;
@@ -357,7 +387,6 @@ margin-left:0px;
 #footer {
   bottom: 0px;
   left: 0px;
-  position: fixed;
   z-index: 1;
   background: #F2F2F2;
   border: 1px solid #999;
@@ -365,6 +394,7 @@ margin-left:0px;
   vertical-align: middle;
   width: 100%;
   height: 25px;
+  width: 100%;
 }
 
 #footer_left {
