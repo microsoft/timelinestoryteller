@@ -9,6 +9,7 @@
   <meta http-equiv="expires" content="0">
   <title>About Timeline Storyteller</title>
   <link rel="stylesheet" href="../css/about.css" charset="UTF-8">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
   <link rel="icon" type="image/x-icon" href="../img/favicon.ico">
 
   <script type="text/javascript">
@@ -21,6 +22,9 @@
     window.appInsights=appInsights;
     appInsights.trackPageView();
   </script>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 
 </head>
 
@@ -55,8 +59,8 @@
 
 				<p><a href="#about">About</a></p>
 				<p><a href="#preparing">Preparing data</a></p>
-        <p><a href="#usage">Usage</a></p>
-				<p><a href="#code">Code</a></p>
+        <p><a href="#usage">Usage overview</a></p>
+				<p><a href="#code">Source code</a></p>
         <p><a href="#ack">Acknowledgements</a></p>
 
 				<h3>Project Team:</h3>
@@ -90,18 +94,20 @@
 					<div class="text">
 						<h3>About the project</h3>
 						<p>
-							<strong><a href="https://timelinestoryteller.azurewebsites.net/" target="_blank">Timeline Storyteller</a></strong> is an expressive visual storytelling environment for the expressive narrative visualization of timelines (event sequence data); a storyteller can use Timeline Storyteller to present different aspects of her/his data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. She / he can export images of a timeline or assemble and record a story about their data and present it within the application.
+							<strong><a href="https://timelinestoryteller.com" target="_blank">Timeline Storyteller</a></strong> is an expressive visual storytelling environment for presenting timelines (i.e., sequences of events). You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
 						</p>
-            <p>
-              For information on the research that informed this project, see <strong><a href="https://timelinesrevisited.github.io/" target="_blank">timelinesrevisited.github.io</a></strong>.
-            </p>
 					</div>
+          <div class="text">
+            <p>
+              <br>To learn more about the academic research that informed this project, see <strong><a href="https://timelinesrevisited.github.io/" target="_blank">timelinesrevisited.github.io</a></strong>.
+            </p>
+          </div>
 				</div>
 
         <div class="section">
 					<span id="preparing" class="anchor"></span>
 					<div class="text">
-						<h3>Preparing your Data</h3>
+						<h3>Preparing your data</h3>
 						<p>
               Timeline Storyteller currently supports datasets of events in CSV, JSON, or Google Spreadsheet format.
             </p>
@@ -116,31 +122,51 @@
                 <li><strong>Optional</strong>: <code>content_text</code>, a string description of event (which Timeline Storyteller exposes as event annotations).</li>
               </ul>
 
-              <h4>Example event in JSON:</h4>
+              <h4>Example events in JSON:</h4>
 
-              <code>{
-                "start_date":"1775",
-                "end_date":"1783",
-                "content_text":"American Revolutionary War: an armed struggle for secession from the British Empire by the Thirteen Colonies that would subsequently become the United States.",
-                "facet":"North America",
-                "category":"North America"
-              },</code>
+              <h5>Example 1:</h5>
+              <pre><code class="json">
+{
+  "start_date":"1775",
+  "end_date":"1783",
+  "content_text":"American Revolutionary War.",
+  "facet":"North America",
+  "category":"North America"
+},
+              </code></pre>
 
-              <h4>Example event in CSV:</h4>
+              <h5>Example 2 (small-scale timeline):</h5>
+              <pre><code class="json">
+{
+  "facet":"Hugo, Victor",
+  "category":"other",
+  "start_date":"2015-07-10 11:00Z",
+  "end_date":"2015-07-10 11:59Z",
+  "content_text":"Taking an ice bath on the roof"
+},
+              </code></pre>
 
-              <span>Header row:</span><br>
-              <code>start_date,end_date,content_text,facet,category</code>
-              <br>
-              <span>Example event row:</span><br>
-              <code>1775,1783,American Revolutionary War: an armed struggle for secession from the British Empire by the Thirteen Colonies that would subsequently become the United States.,North America,North America</code>
+              <h5>Example 3 (epoch scale timeline):</h5>
+              <pre><code class="json">
+{
+  "content_text":"Human ancestors walk upright",
+  "start_date":"-4200000",
+  "end_date":""
+},
+              </code></pre>
 
-              <h4>Example Google Spreasheet:</h4>
+
+              <h4>Example CSV / Google Spreadsheet:</h4>
+
               <p>The <a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous Creative People"</a> demo dataset used in Timeline Storyteller:</p>
               <iframe width="560" height="320" src="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml?widget=true&amp;headers=false"></iframe>
+              <h5>Loading Google Spreadsheets</h5>
               <ul>
-                <li>URL for this dataset: <code>docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/edit#gid=633419171</code></li>
+                <li>Refer to the URL of a spreadsheet, such as: <a href="http://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/edit#gid=633419171" target="_blank"><code>docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/edit#gid=633419171</code></a></li>
+                <li>Ensure that the spreadsheet is published (open the Google Spreadsheet 'File' menu, select 'Publish to the Web').</li>
                 <li><strong>Required</strong>: Spreadsheet key for this dataset (between <code>.../d/..</code> and <code>../edit/..</code> in the URL): <code>1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M</code></li>
                 <li><strong>Required</strong>: Worksheet title key for this dataset: <code>dailyroutines</code></li>
+                <li>Enter the spreadsheet key and worksheet title into Timeline Storyteller's load dialog.</li>
               </ul>
 					</div>
 				</div>
@@ -148,25 +174,39 @@
         <div class="section">
 					<span id="usage" class="anchor"></span>
 					<div class="text">
-						<h3>Usage</h3>
+						<h3>Usage overview</h3>
             <ol>
-              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 6).</li>
+              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 5).</li>
 
-              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a>.</li>
+              <img src="img/load.png" width="520" alt="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story" title="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story">
+
+              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a>. Mouseover these options to view a tooltip that describes how they might be useful.</li>
+
+              <img src="img/menu.png" width="520" alt="Select a combination of representation, scale, and layout from the menu at the top of the screen" title="Select a combination of representation, scale, and layout from the menu at the top of the screen">
 
               <li>Edit the canvas:
                 <ul>
               	<li>Click on events to annotate with their <code>content_text</code> label; resize and reposition these labels; SHIFT + click to highlight events without showing label.</li>
 
+                <img src="img/annotation.png" width="480" alt="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label" title="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label">
+
               	<li>Annotate the canvas with captions and images; resize and reposition captions and images.</li>
 
+                <img src="img/caption.png" width="480" alt="Annotate the canvas with captions and images; resize and reposition captions and images." title="Annotate the canvas with captions and images; resize and reposition captions and images.">
+
                	<li>Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events), or by hiding non-matching events.</li>
+
+                <img src="img/filter.png" width="240" alt="Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events), or by hiding non-matching events." title="Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events), or by hiding non-matching events.">
+
                 </ul></li>
+
               <li>Record current canvas as a scene, which retains labels, captions, and images; enter playback mode, navigate to previous / next recorded scene</li>
 
-              <li>Export current canvas as a PNG, SVG.</li>
+              <img src="img/record.png" width="520" alt="Record current canvas as a scene, which retains labels, captions, and images" title="Record current canvas as a scene, which retains labels, captions, and images">
 
-              <li>Export the series of scenes as an animated GIF or as a JSON Blob (.cdc extension)</li>
+              <li>Export the current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob (.cdc extension). By providing an email address you agree that Microsoft may contact you to request feedback and for user research. You may withdraw this consent at any time. You can also opt out and not share your content with Microsoft.</li>
+
+              <img src="img/export.png" width="520" alt="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob" title="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob">
             <ol>
 					</div>
 				</div>
@@ -174,10 +214,29 @@
         <div class="section">
 					<span id="code" class="anchor"></span>
 					<div class="text">
-						<h3>Code</h3>
+						<h3>Source code</h3>
 						<p>
-							Timeline Storyteller is currently a research prototype. The source code for the project will be released at a later date.
+							Timeline Storyteller is a research prototype under development at <a href="https://www.microsoft.com/en-us/research/" target="_blank">Microsoft Research</a>, deployed as an <a href="https://azure.microsoft.com/en-us/services/app-service/web/" target="_blank">Azure web app</a>. We plan to release the code as open source in the coming months.
 						</p>
+
+            <h4>Open source software dependencies used in this project:</h4>
+            <h5>Client-side:</h5>
+            <ul>
+              <li><a href="http://d3js.org/" target="_blank">d3 v3.5.5</a>: for visual encoding, scales, animation</li>
+              <li><a href="https://github.com/d3/d3-time" target="_blank">d3-time v0.0.2</a>: for date parsing / temporal arithmetic</li>
+              <li><a href="http://momentjs.com/" target="_blank">moment.js v2.10.6</a>: for date parsing / temporal arithmetic</li>
+              <li><a href="https://github.com/exupero/saveSvgAsPng" target="_blank">saveSvgAsPng.js</a>: for image export</li>
+              <li><a href="http://usablica.github.com/intro.js/" target="_blank">intro.js 2.3.0</a>: for tour</li>
+              <li><a href="https://github.com/jnordberg/gif.js" target="_blank">gif.js</a>: for GIF exporting</li>
+              <li><a href="https://github.com/interactivethings/gsheets" target="_blank">gsheets 2.0.0</a>: for Google Spreadsheet import</li>
+            </ul>
+            <h5>Server-side:</h5>
+            <ul>
+              <li><a href="https://nodejs.org/en/" target="_blank">Node.js</a></li>
+              <li><a href="http://expressjs.com/" target="_blank">Express</a></li>
+              <li><a href="http://socket.io/" target="_blank">Socket.io</a></li>
+            </ul>
+
 					</div>
 				</div>
 
@@ -187,27 +246,18 @@
 						<h3>Acknowledgements</h3>
             <h4>Demo dataset provenance:</h4>
             <ul>
-              <li><a href="http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/" target="_blank">Great Painters of the 20th Century</a>: reproduction of infographic</li>
 
-              <li><a href="http://visual.ly/perspective-time" target="_blank">visual.ly's Perspective on Time</a>: reproduction of infographic</li>
+              <li><a href="https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif" target="_blank">Joseph Priestley's Chart of Biography</a></li>
 
-              <li><a href="http://www.brainpickings.org/2013/11/29/accurat-modern-library/" target="_blank">Modern Library Authors</a>: reproduction of infographic</li>
+              <li>Great Philosophers since the 8th Century BC: data from <a href="http://bl.ocks.org/rengel-de/5603464" target="_blank">a bl.ocks.org Block by rengel-de</a></li>
 
-              <li><a href="https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif" target="_blank">Priestley's Chart of Biography</a>: reproduction of infographic</li>
+              <li><a href="http://nowherenearithaca.github.io/empires/index.html" target="_blank">History's Largest Empires by Edward Lee</a> (scraped using <a href="https://ucbvislab.github.io/d3-deconstructor/" target="_blank">D3 Deconstructor (UC Berkeley VisLab)</a>)</li>
 
-              <li><a href="http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg" target="_blank">Kurzweil's Countdown to Singularity</a>: reproduction of infographic</li>
+              <li>East Asian Dynasties: data from <a href="http://bl.ocks.org/bunkat/2338034" target="_blank">a bl.ocks.org Block by bunkat</a></li>
 
-              <li><a href="http://waitbutwhy.com/2014/05/life-weeks.html" target="_blank">Life of a Typical American</a>: reproduction of infographic</li>
+              <li><a href="https://en.wikipedia.org/wiki/List_of_epidemics" target="_blank">Epidemics since the 14th Century</a> (generated using <a href="http://timelinecurator.org/" target="_blank">TimeLineCurator (UBC InfoVis Group)</a>)</li>
 
-              <li><a href="https://podio.com/site/creative-routines" target="_blank">The Daily Routines of Famous Creative People</a>: reproduction of infographic</li>
-
-              <li><a href="http://bl.ocks.org/bunkat/2338034" target="_blank">East Asian Dynasties</a>: data included in bl.ocks code</li>
-
-              <li><a href="http://bl.ocks.org/rengel-de/5603464" target="_blank">Great Philosophers since the 8th Century BC</a>: data included in bl.ocks code</li>
-
-              <li><a href="http://nowherenearithaca.github.io/empires/index.html" target="_blank">History's Largest Empires</a>: scraped using <a href="https://ucbvislab.github.io/d3-deconstructor/" target="_blank">D3 deconstructor</a></li>
-
-              <li><a href="https://en.wikipedia.org/wiki/List_of_epidemics" target="_blank">Epidemics since the 14th Century</a>: generated using <a href="http://timelinecurator.org/" target="_blank">TimeLineCurator</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/ca_en/download-excel-file-list-prime-ministers-canada" target="_blank">Prime Ministers of Canada</a></li>
 
               <li><a href="http://www.downloadexcelfiles.com/fr_en/download-excel-file-list-presidents-france" target="_blank">Presidents of France</a></li>
 
@@ -217,25 +267,25 @@
 
               <li><a href="http://www.downloadexcelfiles.com/jp_en/download-excel-file-list-prime-ministers-japan" target="_blank">Prime Ministers of Japan</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/ca_en/download-excel-file-list-prime-ministers-canada" target="_blank">Prime Ministers of Canada</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-prime-ministers-uk" target="_blank">Prime Ministers of the UK</a></li>
 
               <li><a href="https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json" target="_blank">Presidents of the USA</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-prime-ministers-uk" target="_blank">Prime Ministers of the UK</a></li>
-
               <li><a href="http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html" target="_blank">C4-5 Hurricanes: 1910-2010</a></li>
 
-            </ul>
+              <li><a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous Creative People" by Podio</a></li>
 
-            <h4>Open source software dependencies used in this project:</h4>
-            <ul>
-              <li><a href="http://d3js.org/" target="_blank">d3 v3.5.5</a>: for visual encoding, scales, animation (BSD LICENSE)</li>
-              <li><a href="https://github.com/d3/d3-time" target="_blank">d3-time v0.0.2</a>: for date parsing / temporal arithmetic (<a href="https://github.com/d3/d3-time/blob/master/LICENSE" target="_blank">LICENSE</a>)</li>
-              <li><a href="http://momentjs.com/" target="_blank">moment.js v2.10.6</a>: for date parsing / temporal arithmetic (MIT LICENSE)</li>
-              <li><a href="https://github.com/exupero/saveSvgAsPng" target="_blank">saveSvgAsPng.js</a>: for image export (MIT LICENSE)</li>
-              <li><a href="http://usablica.github.com/intro.js/" target="_blank">intro.js 2.3.0</a>: for tutorial (GNU AGPLv3 LICENSE)</li>
-              <li><a href="https://github.com/jnordberg/gif.js" target="_blank">gif.js</a>: for GIF exporting (MIT LICENSE)</li>
-              <li><a href="https://github.com/interactivethings/gsheets" target="_blank">gsheets 2.0.0</a>: for Google Spreadsheet import (BSD LICENSE)</li>
+              <li><a href="https://www.flickr.com/photos/accurat/8961090259/" target="_blank">"Visualizing painters' lives" by Accurat</a></li>
+
+
+              <li><a href="https://www.flickr.com/photos/accurat/11052331736" target="_blank">"From first published to masterpieces" by Accurat</a></li>
+
+              <li><a href="http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg" target="_blank">"Countdown to Singularity" by Ray Kurzweil</a></li>
+
+              <li><a href="http://visual.ly/perspective-time" target="_blank">"A Perspective on Time" by mayra.artes for Wait But Why</a></li>
+
+              <li><a href="http://waitbutwhy.com/2014/05/life-weeks.html" target="_blank">"Life of a Typical American" by Tim Urban for Wait But Why</a></li>
+
             </ul>
 
             <h4>Noun Project icons (<a href="https://creativecommons.org/licenses/by/3.0/us/" target="_blank">CC BY 3.0</a>) used in the user interface:</h4>

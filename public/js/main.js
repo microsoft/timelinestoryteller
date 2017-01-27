@@ -1192,10 +1192,10 @@ function formatAbbreviation(x) {
     {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
     {"path":"hurricanes100y", "tl_name":"C4-5 Hurricanes: 1910-2010"},
     {"path":"dailyroutines","tl_name":"Podio's 'Daily Routines of Famous Creative People' (faceted by person)"},
-    {"path":"painters","tl_name":"Accurat's 'Great Painters of the 20th Century' (faceted by painter)"},
-    {"path":"authors","tl_name":"Accurat's 'Modern Library Authors' (faceted by author)"},
+    {"path":"painters","tl_name":"Accurat's 'Visualizing painters' lives' (faceted by painter)"},
+    {"path":"authors","tl_name":"Accurat's 'From first published to masterpieces' (faceted by author)"},
     {"path":"singularity","tl_name":"Kurzweil's 'Countdown to Singularity' (4 billion years)"},
-    {"path":"perspective_on_time","tl_name":"visual.ly's 'Perspective on Time' (14 billion years)"},
+    {"path":"perspective_on_time","tl_name":"Wait But Why's 'A Perspective on Time' (14 billion years)"},
     {"path":"typical_american","tl_name":"Wait But Why's 'Life of a Typical American'"}
   ])
   .enter()
