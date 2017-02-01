@@ -1038,7 +1038,7 @@ function formatAbbreviation(x) {
   .attr("class","menu_label")
   .attr("for","opt_out_cb")
   .style('vertical-align','text-top')
-  .text("Don't share content with microsoft");
+  .text("Don't share content with Microsoft");
 
 
   /**
@@ -1099,7 +1099,7 @@ function formatAbbreviation(x) {
 
   var boilerplate = d3.select("#import_div").append("div")
   .attr("id","boilerplate")
-  .html("<span class='boilerplate_title'>Timeline Storyteller (Alpha)</span>");
+  .html("<span class='boilerplate_title'>Timeline Storyteller (Alpha release)</span>");
 
   boilerplate.append('input')
   .attr({
@@ -1868,6 +1868,8 @@ function formatAbbreviation(x) {
     d3.selectAll(".option_rb").select("input").property("disabled","true");
     d3.selectAll(".option_rb").select("img").attr("class","img_btn_disabled");
     d3.selectAll('.option_rb img').style('border','2px solid transparent');
+    d3.select("#menu_div").style("left",-50 + "px");
+    d3.select("#navigation_div").style("bottom", -100 + "px");
 
     if (main_svg != undefined) {
       console.clear();
@@ -2052,7 +2054,12 @@ function formatAbbreviation(x) {
       return (window.innerWidth * 0.9 - 120 - 12) + 'px';
     })
     .append('svg')
-    .attr('id','stepper_svg');
+    .attr('id','stepper_svg')
+    .append('text')
+    .attr('id','stepper_svg_placeholder')
+    .attr('y',25)
+    .attr('dy','0.25em')
+    .text('Recorded timeline scenes will appear here.');
 
     window.onresize = function(e) {
       d3.select('#stepper_container').style('width', function () {
@@ -2197,6 +2204,8 @@ function formatAbbreviation(x) {
     else if (source_format == 'story' || source_format == 'demo_story'){
 
       playback_mode = true;
+
+      d3.select('#stepper_svg_placeholder').remove();
 
       if (source_format == 'story') {
         var story = d3.json(source, function(error, story) {
@@ -2852,6 +2861,8 @@ function formatAbbreviation(x) {
   **/
 
   function recordScene () {
+
+    d3.select('#stepper_svg_placeholder').remove();
 
     record_width = width;
     record_height = height;
@@ -3589,7 +3600,8 @@ function formatAbbreviation(x) {
     ---------------------------------------------------------------------------------------
     **/
 
-    control_panel.selectAll("input").attr("class","img_btn_enabled")
+    control_panel.selectAll("input").attr("class","img_btn_enabled");
+    d3.select("#navigation_div").style("bottom", 30 + "px");
     d3.select("#filter_type_picker").selectAll("input").property("disabled",false);
     d3.select("#filter_type_picker").selectAll("img").attr("class","img_btn_enabled");
     d3.select('#playback_bar').selectAll('img').attr('class','img_btn_enabled');
@@ -3598,6 +3610,9 @@ function formatAbbreviation(x) {
       timeline_vis.tl_scale(scenes[0].s_scale)
       .tl_layout(scenes[0].s_layout)
       .tl_representation(scenes[0].s_representation);
+    }
+    else {
+      d3.select("#menu_div").style("left",10 + "px");
     }
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());

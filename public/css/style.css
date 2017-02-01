@@ -161,7 +161,7 @@ text {
 }
 
 #menu_div {
-  left: 10px;
+  left: -50px;
   top: 50%;
   width: 34px;
   height: 320px;
@@ -699,7 +699,7 @@ select > option:hover {
   left: 50%;
   width: 90%;
   margin-left: -45%;
-  bottom: 30px;
+  bottom: -100px;
   position: fixed;
   padding-bottom: 5px;
   padding-left: 0px;
@@ -734,6 +734,11 @@ select > option:hover {
   height: 50px;
   padding: 0px;
   float: left;
+}
+
+#stepper_svg_placeholder {
+  fill: #ccc;
+  font-size: 0.8em;
 }
 
 .frame_hover {
