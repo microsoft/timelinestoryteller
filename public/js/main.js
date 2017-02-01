@@ -593,6 +593,54 @@ function formatAbbreviation(x) {
     }
   });
 
+  control_panel.append("hr")
+  .attr("class","menu_hr");
+
+  control_panel.append("text")
+  .attr("class","menu_label")
+  .text("\n" + "Clear");
+
+  control_panel.append('input')
+  .attr({
+    type: "image",
+    name: "Clear annotations, captions, images",
+    class: 'img_btn_disabled',
+    src: 'img/clear.png',
+    height: 30,
+    width: 30,
+    title: "Clear annotations, captions, images"
+  })
+  .on('click', function() {
+
+    console.log("clear annotations");
+
+    var log_event = {
+      event_time: new Date().valueOf(),
+      event_category: "annotation",
+      event_detail: "clear annotations"
+    }
+    usage_log.push(log_event);
+
+    main_svg.selectAll(".timeline_caption").remove();
+
+    main_svg.selectAll(".timeline_image").remove();
+
+    main_svg.selectAll(".event_annotation").remove();
+
+    d3.selectAll('.timeline_event_g').each(function () {
+      this.__data__.selected = false;
+    });
+
+    d3.selectAll(".event_span")
+    .attr("filter", "none")
+    .style("stroke","#fff")
+    .style("stroke-width","0.25px");
+
+    d3.selectAll(".event_span_component")
+    .style("stroke","#fff")
+    .style("stroke-width","0.25px");
+  });
+
   /**
   ---------------------------------------------------------------------------------------
   FILTER TYPE OPTIONS
@@ -2724,7 +2772,7 @@ function formatAbbreviation(x) {
       .html(
         "<span class='metadata_title'>About this data:</span>" +
         "<p class='metadata_content'><strong>Cardinality & extent</strong>: " +
-        active_data.length + " unique events spanning " + range_text + " (Segment granularity: " + segment_granularity + ")</p>" +
+        active_data.length + " unique events spanning " + range_text + " (Granularity: " + segment_granularity + ")</p>" +
         "<p class='metadata_content'><strong>Event categories</strong>: ( " + num_categories + " ) .. " + categories.domain().join(" .. ") + "</p>" +
         "<p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) .. " + facets.domain().join(" .. ") + "</p>"
       );
@@ -3281,43 +3329,24 @@ function formatAbbreviation(x) {
     legend_x = scene.s_legend_x;
     legend_y = scene.s_legend_y;
 
-    //remove captions that are not in the scene
-    main_svg.selectAll(".timeline_caption")[0].forEach( function (caption) {
-      var i = 0;
-      while (i < scene.s_captions.length && scene.s_captions[i].caption_id != caption.id) {
-        i++;
-      }
-      if (i == scene.s_captions.length) {
-        // caption is not in the scene
+    main_svg.selectAll(".timeline_caption").remove();
 
-        d3.select("#" + caption.id).remove();
-      }
+    main_svg.selectAll(".timeline_image").remove();
+
+    main_svg.selectAll(".event_annotation").remove();
+
+    d3.selectAll('.timeline_event_g').each(function () {
+      this.__data__.selected = false;
     });
 
-    //remove images that are not in the scene
-    main_svg.selectAll(".timeline_image")[0].forEach( function (image) {
-      var i = 0;
-      while (i < scene.s_images.length && scene.s_images[i].image_id != image.id) {
-        i++;
-      }
-      if (i == scene.s_images.length) {
-        // image is not in the scene
+    d3.selectAll(".event_span")
+    .attr("filter", "none")
+    .style("stroke","#fff")
+    .style("stroke-width","0.25px");
 
-        d3.select("#" + image.id).remove();
-      }
-    });
-
-    //remove annotations that are not in the scene
-    main_svg.selectAll(".event_annotation")[0].forEach( function (annotation) {
-      var i = 0;
-      while (i < scene.s_annotations.length && scene.s_annotations[i].annotation_id != annotation.id) {
-        i++;
-      }
-      if (i == scene.s_annotations.length) {
-        // annotation is not in the scene
-        d3.select("#" + annotation.id).remove();
-      }
-    });
+    d3.selectAll(".event_span_component")
+    .style("stroke","#fff")
+    .style("stroke-width","0.25px");
 
     //delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
     setTimeout(function () {
@@ -3894,8 +3923,14 @@ function formatAbbreviation(x) {
           bc_end = item.end_date;
         }
 
-        //if yes, set_fine_start date to start of year
-        item.start_date = moment((new Date(item.start_date)));
+        //convert start_date to date object
+        item.start_date = moment((new Date(item.start_date))).toDate();
+        item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
+
+        //convert end_date to date object
+        item.end_date = moment((new Date(item.end_date))).toDate();
+        item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
+
         item.event_id = i;
         active_event_list.push(i);
         i++;
@@ -3903,16 +3938,13 @@ function formatAbbreviation(x) {
         // is end_date = start_date?
         if (item.end_date == item.start_date) {
           //if yes, set end_date to end of year
-          item.end_date = moment((new Date(item.end_date))).endOf("year").toDate();
+          item.end_date = moment(item.end_date).endOf("year").toDate();
         }
 
         //if end year given, set end_date to end of that year as date object
         else {
-          item.end_date = moment((new Date(item.end_date))).endOf("year").toDate();
+          item.end_date = moment(item.end_date).endOf("year").toDate();
         }
-
-        //convert start_date to date object
-        item.start_date = item.start_date.add(1, 'd').toDate();
 
         //if start_date before 1 AD, set year manually
         if (bc_start) {
@@ -4036,7 +4068,10 @@ function formatAbbreviation(x) {
       var w = (effective_width - padding.left - padding.right - unit_width),
       d = (data.max_end_date.getTime() - data.min_start_date.getTime());
 
-      if (segment_granularity == "days" || layout == "Segmented") {
+      if (segment_granularity == "days") {
+        min_width = 0;
+      }
+      else if (layout == "Segmented") {
         min_width = 0;
       }
       else {
@@ -4995,7 +5030,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Log":
-        if (representation == "Linear" && (representation == "Linear" || layout == "Segmented")) {
+        if (representation == "Linear" && layout != "Segmented") {
           return false;
         }
         else {
@@ -5122,7 +5157,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Log":
-        if (representation == "Linear" && (representation == "Linear" || layout == "Segmented")) {
+        if (representation == "Linear" && layout != "Segmented") {
           return "img_btn_enabled";
         }
         else {

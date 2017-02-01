@@ -164,8 +164,8 @@ text {
   left: -50px;
   top: 50%;
   width: 34px;
-  height: 320px;
-  margin-top: -198px;
+  height: 380px;
+  margin-top: -190px;
   position: fixed;
   padding: 5px;
 }
@@ -1083,7 +1083,7 @@ select > option:hover {
 
 .path_end_indicator {
   fill: none;
-  stroke: #777;
+  stroke: #fff;
 }
 
 #timecurve{

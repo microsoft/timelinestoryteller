@@ -1005,6 +1005,9 @@ configurableTL: //a configurable timeline
               timeline_scale = d3.scale.log()
               .range([0,width - unit_width]);
 
+              log_bounds = -1 * Math.abs(data.max_end_date.valueOf() - data.min_start_date.valueOf()) - 1;
+              timeline_scale.domain([log_bounds,-1]);
+
               switch (segment_granularity) {
                 case "days":
                 log_bounds = -1 * time.hour.count(data.min_start_date, data.max_end_date) - 1;
@@ -1021,31 +1024,31 @@ configurableTL: //a configurable timeline
                 case "months":
                 log_bounds = -1 * time.week.count(data.min_start_date, data.max_end_date) - 1;
                 tick_format = function (d) {
-                  return (d + 1) + " weeks"
+                  return d + " weeks"
                 }
                 break;
                 case "years":
                 log_bounds = -1 * time.month.count(data.min_start_date, data.max_end_date) - 1;
                 tick_format = function (d) {
-                  return (d + 1) + " months"
+                  return d + " months"
                 }
                 break;
                 case "decades":
                 log_bounds = -1 * Math.abs(data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) - 1;
                 tick_format = function (d) {
-                  return (d + 1) + " years"
+                  return d + " years"
                 }
                 break;
                 case "centuries":
                 log_bounds = -1 * Math.abs(data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) - 1;
                 tick_format = function (d) {
-                  return (d + 1) + " years"
+                  return d + " years"
                 }
                 break;
                 case "millenia":
                 log_bounds = -1 * Math.abs(data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) - 1;
                 tick_format = function (d) {
-                  return (d + 1) + " years"
+                  return d + " years"
                 }
                 break;
                 default:
@@ -1055,7 +1058,7 @@ configurableTL: //a configurable timeline
                 }
                 break;
               }
-              timeline_scale.domain([log_bounds,0]);
+              timeline_scale.domain([log_bounds,-1]);
               console.log(tl_scale + " scale updated with " + segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date);
 
               var log_event = {
@@ -1064,6 +1067,7 @@ configurableTL: //a configurable timeline
                 event_detail: tl_scale + " scale updated with " + segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date
               }
               usage_log.push(log_event);
+              break;
 
               break;
 
@@ -1633,8 +1637,10 @@ configurableTL: //a configurable timeline
 
         if (tl_representation == "Radial" && tl_layout == "Unified"){
 
-
-          radial_axis_quantiles = timeline_scale_segments;
+          if (radial_axis_quantiles != timeline_scale_segments){
+            d3.selectAll('.radial_tracks').remove();
+            radial_axis_quantiles = timeline_scale_segments
+          }
 
           radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
@@ -1667,6 +1673,11 @@ configurableTL: //a configurable timeline
           })
           .style("opacity",0)
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
+
+          var radial_axis_early_update = timeline_container.selectAll(".radial_axis_container")
+          .transition()
+          .delay(change_delay)
+          .duration(duration)
 
           var radial_axis_update = timeline_container.selectAll(".radial_axis_container")
           .transition()
@@ -1733,7 +1744,10 @@ configurableTL: //a configurable timeline
             radial_axis.track_bounds(max_num_tracks + 1);
           }
           else {
-            radial_axis_quantiles = timeline_scale_segments;
+            if (radial_axis_quantiles != timeline_scale_segments){
+              d3.selectAll('.radial_tracks').remove();
+              radial_axis_quantiles = timeline_scale_segments
+            }
             radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
             if (tl_scale == "Chronological") {
@@ -1832,7 +1846,10 @@ configurableTL: //a configurable timeline
         if (tl_representation == "Radial" && tl_layout == "Segmented"){
 
           radial_axis.radial_axis_units("Segments");
-          radial_axis_quantiles = timeline_scale_segments;
+          if (radial_axis_quantiles != timeline_scale_segments){
+            d3.selectAll('.radial_tracks').remove();
+            radial_axis_quantiles = timeline_scale_segments
+          }
           radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
           //get radial_axis_quantiles of timeline_scale_segments for radial axis ticks
@@ -2049,6 +2066,8 @@ configurableTL: //a configurable timeline
 
           console.log("event " + d.event_id + " clicked");
 
+          d3.select(this).moveToFront();
+
           var log_event = {
             event_time: new Date().valueOf(),
             event_category: "event_click",
@@ -2261,21 +2280,21 @@ configurableTL: //a configurable timeline
 
         var timeline_event_g_update = timeline_event_g.transition()
         .delay(function (d, i) {
-          return change_delay * 2 + duration + i / data.length * duration;
+          return change_delay * 2 + duration + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
         var timeline_event_g_delayed_update = timeline_event_g.transition()
-        .delay(function (d, i) {
-          return change_delay * 2 + duration * 2 + i / data.length * duration;
+        .delay(function (d, i) {          
+          return change_delay * 2 + duration * 2 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
         var timeline_event_g_final_update = timeline_event_g.transition()
         .delay(function (d, i) {
-          return change_delay * 2 + duration * 3 + i / data.length * duration;
+          return change_delay * 2 + duration * 3 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
@@ -3136,7 +3155,7 @@ configurableTL: //a configurable timeline
             event_span_component = time.month.range(time.month.floor(d.start_date),time.month.ceil(d.end_date));
             break;
             case "centuries":
-            event_span_component = d3.range(d.start_date.getUTCFullYear(),d.end_date.getUTCFullYear()+1);
+            event_span_component = d3.range(d.start_date.getUTCFullYear(),d.end_date.getUTCFullYear());
             break;
             case "millenia":
             event_span_component = d3.range(d.start_date.getUTCFullYear(),d.end_date.getUTCFullYear()+1,10);
@@ -4232,7 +4251,7 @@ configurableTL: //a configurable timeline
         label += format(today - item.start_date.valueOf()) + " years ago";
       }
       else if (date_granularity == "years") {
-        if (item.start_date.getUTCFullYear() == item.end_date.getUTCFullYear()) {
+        if (moment(item.start_date).format('YYYY') == moment(item.end_date).format('YYYY')) {
           label += item.start_date.getUTCFullYear();
         }
         else {
@@ -4240,7 +4259,7 @@ configurableTL: //a configurable timeline
         }
       }
       else {
-        if (moment(item.start_date).format('MMM D, YYYY') == moment(item.end_date).format('MMM D, YYYY')) {
+        if (moment(item.start_date).format('MMM D') == moment(item.end_date).format('MMM D')) {
           label += moment(item.start_date).format('MMMM Do, YYYY');
         }
         else {
