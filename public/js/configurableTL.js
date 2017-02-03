@@ -1382,25 +1382,31 @@ configurableTL: //a configurable timeline
           timeline_axis.ticks(10);
           timeline_axis.tickSize(6,0);
           timeline_axis.tickFormat(undefined);
+          timeline_axis.tickValues(undefined);
 
           if (tl_layout != "Segmented" && tl_scale == "Chronological" && date_granularity == "years" && data.min_start_date.getUTCFullYear() < 0){
             timeline_axis.tickFormat(tick_format);
+            timeline_axis.tickValues(undefined);
           }
           else if (tl_scale == "Sequential" || tl_scale == "Collapsed"){
             timeline_axis.ticks(10);
             timeline_axis.tickSize(6,0);
+            timeline_axis.tickValues(d3.range(0,max_seq_index * 1.5 * unit_width - unit_width,unit_width * 10))
             timeline_axis.tickFormat(function (d) {
-              return Math.round(d / unit_width);
+              return d / unit_width;
             });
           }
           else if (tl_scale == "Log") {
             timeline_axis.ticks(10, tick_format);
             timeline_axis.tickSize(6,0);
+            timeline_axis.tickValues(undefined);
           }
           else if (tl_scale == "Relative" || date_granularity == "epochs") {
             timeline_axis.tickFormat(tick_format);
+            timeline_axis.tickValues(undefined);
           }
           else if (tl_layout == "Segmented") {
+            timeline_axis.tickValues(undefined);
             timeline_axis.tickFormat(function (d) {
               var converted_tick = d
               switch (segment_granularity) {
@@ -1438,6 +1444,7 @@ configurableTL: //a configurable timeline
             });
           }
           else {
+            timeline_axis.tickValues(undefined);
             timeline_axis.tickFormat(undefined);
           }
 
@@ -1448,15 +1455,13 @@ configurableTL: //a configurable timeline
           var timeline_axis_enter = timeline_axis_container.enter()
           .append("g")
           .attr("class","timeline_axis")
-          .style("opacity",0)
-          .call(timeline_axis);
+          .style("opacity",0);
 
           var bottom_timeline_axis_enter = timeline_axis_container.enter()
           .append("g")
           .attr("class","timeline_axis")
           .attr("id","bottom_timeline_axis")
-          .style("opacity",0)
-          .call(timeline_axis);
+          .style("opacity",0);
 
           var timeline_axis_update = timeline_container.select(".timeline_axis")
           .transition()
@@ -1590,8 +1595,7 @@ configurableTL: //a configurable timeline
           .append("g")
           .attr("class","interim_duration_axis")
           .attr("transform", "translate(" + max_seq_index * 1.5 * unit_width + "," + (height - unit_width * 4) + ")")
-          .style("opacity",0)
-          .call(interim_duration_axis);
+          .style("opacity",0);
 
           var interim_duration_axis_update = timeline_container.selectAll(".interim_duration_axis")
           .transition()
@@ -1632,6 +1636,8 @@ configurableTL: //a configurable timeline
             radial_axis_quantiles = timeline_scale_segments;
           }
 
+          radial_axis.duration(duration);
+
           radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
           if (tl_scale == "Chronological") {
@@ -1661,13 +1667,11 @@ configurableTL: //a configurable timeline
               this.parentNode.insertBefore(this, firstChild);
             }
           })
-          .style("opacity",0)
-          .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
+          .style("opacity",0);
 
           var radial_axis_update = timeline_container.selectAll(".radial_axis_container")
           .transition()
-          .delay(0)
-          .duration(0)
+          .duration(duration)
           .style("opacity",1)
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
 
@@ -1684,8 +1688,13 @@ configurableTL: //a configurable timeline
 
           timeline_container.selectAll(".radial_axis_container")
           .transition()
-          .duration(duration)
-          .style("opacity",0);
+          .duration(duration * 3)
+          .style('opacity',0);
+
+          timeline_container.selectAll(".radial_axis_container")
+          .transition()
+          .delay(duration * 3)
+          .remove();
         }
 
         /**
@@ -1695,6 +1704,8 @@ configurableTL: //a configurable timeline
         **/
 
         if (tl_representation == "Radial" && tl_layout == "Faceted"){
+
+          radial_axis.duration(duration);
 
           if (tl_scale == "Relative") {
             radial_axis_quantiles = [];
@@ -1749,15 +1760,13 @@ configurableTL: //a configurable timeline
           var faceted_radial_axis_enter = faceted_radial_axis.enter()
           .append("g")
           .attr("class", "faceted_radial_axis")
-          .style("opacity",0)
-          .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / num_facet_cols / 2).y_pos(height / num_facet_rows / 2));
+          .style("opacity",0);
 
           facet_number = 0;
 
           var faceted_radial_axis_update = timeline_facet.selectAll(".faceted_radial_axis")
           .transition()
-          .delay(0)
-          .duration(0)
+          .duration(duration)
           .style("opacity",1)
           .attr("transform", function (){
             var offset_x,
@@ -1803,8 +1812,13 @@ configurableTL: //a configurable timeline
 
           timeline_container.selectAll(".faceted_radial_axis")
           .transition()
-          .duration(duration)
-          .style("opacity",0);
+          .duration(duration * 3)
+          .style('opacity',0);
+
+          timeline_container.selectAll(".faceted_radial_axis")
+          .transition()
+          .delay(duration * 3)
+          .remove();
         }
 
         /**
@@ -1814,6 +1828,8 @@ configurableTL: //a configurable timeline
         **/
 
         if (tl_representation == "Radial" && tl_layout == "Segmented"){
+
+          radial_axis.duration(duration);
 
           radial_axis.radial_axis_units("Segments");
           if (radial_axis_quantiles != timeline_scale_segments){
@@ -1838,12 +1854,10 @@ configurableTL: //a configurable timeline
           var segmented_radial_axis_enter = segmented_radial_axis.enter()
           .append("g")
           .attr("class", "segmented_radial_axis")
-          .style("opacity",0)
-          .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / num_segment_cols / 2).y_pos(height / num_segment_rows / 2));
+          .style("opacity",0);
 
           var segmented_radial_axis_update = timeline_segment.selectAll(".segmented_radial_axis")
           .transition()
-          .delay(0)
           .duration(0)
           .style("opacity",1)
           .attr("transform", function (){
@@ -1890,8 +1904,13 @@ configurableTL: //a configurable timeline
 
           timeline_container.selectAll(".segmented_radial_axis")
           .transition()
-          .duration(duration)
-          .style("opacity",0);
+          .duration(duration * 3)
+          .style('opacity',0);
+
+          timeline_container.selectAll(".segmented_radial_axis")
+          .transition()
+          .delay(duration * 3)
+          .remove();
         }
 
         /**
@@ -1913,8 +1932,7 @@ configurableTL: //a configurable timeline
           var calendar_axis_enter = calendar_axis_container.enter()
           .append("g")
           .attr("class","calendar_axis")
-          .style("opacity",0)
-          .call(calendar_axis);
+          .style("opacity",0);
 
           var calendar_axis_update = timeline_container.selectAll(".calendar_axis")
           .transition()
@@ -1969,8 +1987,7 @@ configurableTL: //a configurable timeline
           var grid_axis_enter = grid_axis_container.enter()
           .append("g")
           .attr("class","grid_axis")
-          .style("opacity",0)
-          .call(grid_axis.min_year(grid_min).max_year(grid_max));
+          .style("opacity",0);
 
           var grid_axis_update = timeline_container.selectAll(".grid_axis")
           .transition()
@@ -2536,11 +2553,11 @@ configurableTL: //a configurable timeline
                 break;
 
                 case "Collapsed":
-                rect_x = timeline_scale(d.seq_index) * unit_width;
+                rect_x = timeline_scale(d.seq_index) * unit_width + 0.5 * unit_width;
                 break;
 
                 case "Sequential":
-                rect_x = timeline_scale(d.seq_index) * unit_width;
+                rect_x = timeline_scale(d.seq_index) * unit_width + 0.5 * unit_width;
                 break;
               }
             }
@@ -2656,7 +2673,7 @@ configurableTL: //a configurable timeline
             }
           }
           else if (tl_representation == "Spiral" && tl_scale == "Sequential") {
-            rect_y = d.spiral_y;
+            rect_y = d.spiral_y + buffer;
           }
           else {
             rect_y = 0;
@@ -2711,7 +2728,7 @@ configurableTL: //a configurable timeline
             return 0;
           }
           else {
-            return timeline_scale(d.seq_index) * unit_width - unit_width;
+            return timeline_scale(d.seq_index) * unit_width - 0.5 * unit_width;
           }
         })
         .attr("y", function (d) {

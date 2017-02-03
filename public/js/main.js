@@ -5593,23 +5593,17 @@ function formatAbbreviation(x) {
     playback_intro.start();
   }
 
+  d3.select("body")
+  .append("div")
+  .attr("id","hint_div")
+  .html('<div data-hint="Click on the [TOUR] button for a tour of the interface." data-hintPosition="bottom-left" data-position="bottom-left-aligned"></div>');
+
   var intro_div = d3.select("body")
   .append("div")
   .attr("id","intro_div")
   .attr("class","control_div");
 
-  intro_div.append("div")
-  .html('<div data-hint="Click on the [TOUR] button for a tour of the interface." data-hintPosition="bottom-left" data-position="bottom-left-aligned"></div>');
-
   introJs().addHints();
-
-  intro_div.append("div")
-  .attr("class","intro_btn")
-  .html("<a title='About & getting started' href='/about/' target='_blank'><img src='img/q.png' width=30 height=30 class='img_btn_enabled'></img></a>");
-
-  intro_div.append("div")
-  .attr("class","intro_btn")
-  .html("<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'><img src='img/mail.png' width=30 height=30 class='img_btn_enabled'></img></a>");
 
   intro_div.append('input')
   .attr({
@@ -5633,5 +5627,13 @@ function formatAbbreviation(x) {
       playbackIntro();
     }
   });
+
+  intro_div.append("div")
+  .attr("class","intro_btn")
+  .html("<a title='About & getting started' href='/about/' target='_blank'><img src='img/q.png' width=30 height=30 class='img_btn_enabled'></img></a>");
+
+  intro_div.append("div")
+  .attr("class","intro_btn")
+  .html("<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'><img src='img/mail.png' width=30 height=30 class='img_btn_enabled'></img></a>");
 
 })();

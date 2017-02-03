@@ -363,8 +363,18 @@ select > option:hover {
   padding: 5px;
 }
 
+#hint_div {
+  right: 140px;
+  top: 20px;
+  position: fixed;
+  padding: 5px;
+}
+
+.introjs-hint-dot {
+  border: 10px solid rgba(255,165,0,0.7);
+}
+
 #export_div {
-  position: absolute;
   text-align: center;
   position: fixed;
   padding: 5px 5px 5px 5px;
@@ -386,7 +396,7 @@ select > option:hover {
 
 #import_div {
   text-align: center;
-  position: absolute;
+  position: fixed;
   top: -70px;
   left: 50%;
   width: 650px;
