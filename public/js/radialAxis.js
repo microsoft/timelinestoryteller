@@ -66,13 +66,17 @@ radialAxis: //a reusable radial axis
           return "rad_track" + i;
         })
         .attr("d", d3.svg.arc()
-        .innerRadius(centre_radius - track_height)
-        .outerRadius(centre_radius - track_height)
+        .innerRadius(0)
+        .outerRadius(0)
         .startAngle(0)
-        .endAngle(radial_axis_scale(final_quantile)))
+        .endAngle(0))
+        .style('opacity',0)
         .attr("transform", function () {
           return "translate(" + x_pos + " ," + y_pos + ")"
         });
+
+        var radial_axis_tracks_early_update = radial_axis_tracks.transition()
+        .duration(duration);
 
         var radial_axis_tracks_update = radial_axis_tracks.transition()
         .delay(function (d, i) {
@@ -84,7 +88,19 @@ radialAxis: //a reusable radial axis
         .duration(duration)
         .remove();
 
+        radial_axis_tracks_early_update.selectAll(".rad_track")
+        .style('opacity',0)
+        .attr("d", d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(0)
+        .startAngle(0)
+        .endAngle(0))
+        .attr("transform", function () {
+          return "translate(" + x_pos + " ," + y_pos + ")"
+        })
+
         radial_axis_tracks_update.selectAll(".rad_track")
+        .style('opacity',1)
         .attr("d", d3.svg.arc()
         .innerRadius(function (d) {
           return centre_radius + d * track_height;
@@ -93,10 +109,7 @@ radialAxis: //a reusable radial axis
           return centre_radius + d * track_height;
         })
         .startAngle(0)
-        .endAngle(radial_axis_scale(final_quantile)))
-        .attr("transform", function () {
-          return "translate(" + x_pos + " ," + y_pos + ")"
-        });
+        .endAngle(radial_axis_scale(final_quantile)));
 
         radial_axis_tracks_exit.selectAll(".rad_track")
         .attr("d", d3.svg.arc()
@@ -123,14 +136,11 @@ radialAxis: //a reusable radial axis
         radial_axis_tick_enter.append("path")
         .attr("class","radial_axis_tick_path")
         .attr("d", d3.svg.arc()
-        .innerRadius(centre_radius - track_height)
-        .outerRadius(centre_radius + track_bounds * track_height - 0.25 * unit_width)
-        .startAngle(function (d) {
-          return radial_axis_scale(d);
-        })
-        .endAngle(function (d) {
-          return radial_axis_scale(d);
-        }))
+        .innerRadius(0)
+        .outerRadius(0)
+        .startAngle(0)
+        .endAngle(0))
+        .style('opacity',0)
         .attr("transform", function () {
           return "translate(" + x_pos + " ," + y_pos + ")"
         });
@@ -139,25 +149,18 @@ radialAxis: //a reusable radial axis
         .attr("class","radial_axis_tick_label")
         .attr('text-anchor','middle')
         .attr('dominant-baseline','central')
-        .attr("x", function (d) {
-          return (centre_radius + track_bounds * track_height + 0.5 * unit_width) * Math.sin(radial_axis_scale(d));
+        .attr("x", 0)
+        .attr("y", 0)
+        .style('opacity',0)
+        .attr("transform", function () {
+          return "translate(" + x_pos + " ," + y_pos + ")"
         })
-        .attr("y", function (d) {
-          return -1 * (centre_radius + track_bounds * track_height + 0.5 *  unit_width) * Math.cos(radial_axis_scale(d));
-        })
-        .attr("transform", function (d) {
-          var angle = radial_axis_scale(d) * (180 / Math.PI);
-          if (angle > 90 && angle <= 180) {
-            angle = angle + 180;
-          }
-          else if (angle < 270 && angle > 180) {
-            angle = angle - 180;
-          }
-          return "translate(" + x_pos + " ," + y_pos + ")rotate(" + angle + "," + (centre_radius + track_bounds * track_height + 0.5 * unit_width) * Math.sin(radial_axis_scale(d)) + " ," + (-1 * (centre_radius + track_bounds * track_height + 0.5 * unit_width) * Math.cos(radial_axis_scale(d))) + ")"
-        })
-        .text(function (d,i) {
-          return formatTick(d,i);
+        .text(function (d) {
+          return "";
         });
+
+        var radial_axis_tick_early_update = radial_axis_tick.transition()
+        .duration(duration);
 
         var radial_axis_tick_update = radial_axis_tick.transition()
         .delay(function (d, i) {
@@ -165,7 +168,19 @@ radialAxis: //a reusable radial axis
         })
         .duration(duration);
 
+        radial_axis_tick_early_update.select("path")
+        .style('opacity',0)
+        .attr("d", d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(0)
+        .startAngle(0)
+        .endAngle(0))
+        .attr("transform", function () {
+          return "translate(" + x_pos + " ," + y_pos + ")"
+        })
+
         radial_axis_tick_update.select("path")
+        .style('opacity',1)
         .attr("d", d3.svg.arc()
         .innerRadius(centre_radius - track_height)
         .outerRadius(centre_radius + track_bounds * track_height - 0.25 * unit_width)
@@ -174,12 +189,21 @@ radialAxis: //a reusable radial axis
         })
         .endAngle(function (d) {
           return radial_axis_scale(d);
-        }))
+        }));
+
+        radial_axis_tick_early_update.select("text")
+        .style('opacity',0)
+        .attr("x", 0)
+        .attr("y", 0)
         .attr("transform", function () {
           return "translate(" + x_pos + " ," + y_pos + ")"
+        })
+        .text(function (d) {
+          return "";
         });
 
         radial_axis_tick_update.select("text")
+        .style('opacity',1)
         .attr("x", function (d) {
           return (centre_radius + track_bounds * track_height + 0.5 * unit_width) * Math.sin(radial_axis_scale(d));
         })

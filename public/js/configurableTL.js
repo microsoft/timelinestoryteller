@@ -32,8 +32,7 @@ configurableTL: //a configurable timeline
     render_path = undefined,
     active_line = undefined,
     fresh_canvas = true,
-    previous_segment_granularity,
-    change_delay = duration;
+    previous_segment_granularity;
 
     d3.selection.prototype.moveToFront = function() {
       return this.each(function(){
@@ -165,7 +164,7 @@ configurableTL: //a configurable timeline
 
         timeline_container_update.select("#timecurve")
         .transition()
-        .delay(change_delay * 2)
+        .delay(0)
         .duration(duration)
         .style('visibility', function () {
           if (tl_representation != 'Curve') {
@@ -1461,7 +1460,7 @@ configurableTL: //a configurable timeline
 
           var timeline_axis_update = timeline_container.select(".timeline_axis")
           .transition()
-          .delay(change_delay * 2)
+          .delay(0)
           .duration(duration)
           .style("opacity",1)
           .call(timeline_axis);
@@ -1471,23 +1470,20 @@ configurableTL: //a configurable timeline
           .style("fill", "#666")
           .style("font-weight","normal");
 
-          timeline_axis_update.selectAll("path")
-          .style("animation", "dash 2s linear forwards");
-
           // //vertical axis ticks in Priestley style
           // timeline_axis_update.selectAll("text")
           // .attr("transform", "rotate(30)");
 
           timeline_axis_update.selectAll(".tick line")
           .delay(function (d, i) {
-            return change_delay * 2 + i * duration / timeline_axis_update.selectAll(".tick line")[0].length;
+            return i * duration / timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y1",-6)
           .attr("y2", 0);
 
           var bottom_timeline_axis_update = timeline_container.select("#bottom_timeline_axis")
           .transition()
-          .delay(change_delay * 2)
+          .delay(0)
           .duration(duration)
           .style("opacity",1)
           .call(timeline_axis);
@@ -1495,20 +1491,19 @@ configurableTL: //a configurable timeline
           //vertical axis ticks in Priestley style
           bottom_timeline_axis_update.selectAll("text")
           .delay(function (d, i) {
-            return change_delay * 2 + i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
+            return i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y", height + 18);
           // .attr("transform", "translate(6," + (height + 18) + ")rotate(330)");
 
           bottom_timeline_axis_update.select(".domain")
-          .style("animation", "dash 2s linear forwards")
           .attr("transform", function () {
             return "translate(0," + height + ")";
           });
 
           bottom_timeline_axis_update.selectAll(".tick line")
           .delay(function (d, i) {
-            return change_delay * 2 + i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
+            return i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y1", 0)
           .attr("y2", height + 6);
@@ -1536,9 +1531,6 @@ configurableTL: //a configurable timeline
           .attr("y1", -6)
           .attr("y2", -6);
 
-          timeline_axis_hide.select(".domain")
-          .style("animation", "undash 1s linear forwards");
-
           var bottom_timeline_axis_hide = timeline_container.select("#bottom_timeline_axis")
           .transition()
           .duration(duration);
@@ -1546,8 +1538,7 @@ configurableTL: //a configurable timeline
           bottom_timeline_axis_hide.select(".domain")
           .attr("transform", function () {
             return "translate(0,0)";
-          })
-          .style("animation", "undash 1s linear forwards");
+          });
 
           bottom_timeline_axis_hide.selectAll("text")
           .attr("y", -12);
@@ -1604,7 +1595,7 @@ configurableTL: //a configurable timeline
 
           var interim_duration_axis_update = timeline_container.selectAll(".interim_duration_axis")
           .transition()
-          .delay(change_delay * 2)
+          .delay(0)
           .duration(duration)
           .attr("transform", "translate(" + max_seq_index * 1.5 * unit_width + "," + (height - unit_width * 4) + ")")
           .style("opacity",1)
@@ -1638,8 +1629,7 @@ configurableTL: //a configurable timeline
         if (tl_representation == "Radial" && tl_layout == "Unified"){
 
           if (radial_axis_quantiles != timeline_scale_segments){
-            d3.selectAll('.radial_tracks').remove();
-            radial_axis_quantiles = timeline_scale_segments
+            radial_axis_quantiles = timeline_scale_segments;
           }
 
           radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
@@ -1674,20 +1664,12 @@ configurableTL: //a configurable timeline
           .style("opacity",0)
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
 
-          var radial_axis_early_update = timeline_container.selectAll(".radial_axis_container")
-          .transition()
-          .delay(change_delay)
-          .duration(duration)
-
           var radial_axis_update = timeline_container.selectAll(".radial_axis_container")
           .transition()
-          .delay(change_delay * 2)
-          .duration(duration)
+          .delay(0)
+          .duration(0)
           .style("opacity",1)
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
-
-          radial_axis_update.selectAll("path")
-          .style("animation", "dash 2s linear forwards");
 
           console.log("Unified Radial axis updated");
 
@@ -1699,10 +1681,6 @@ configurableTL: //a configurable timeline
           usage_log.push(log_event);
         }
         else if (prev_tl_representation == "Radial" && prev_tl_layout == "Unified" && (tl_representation != "Radial" || tl_layout != "Unified")) {
-
-          timeline_container.selectAll(".radial_axis_container").selectAll("path")
-          .transition()
-          .style("animation", "undash 1s linear forwards");
 
           timeline_container.selectAll(".radial_axis_container")
           .transition()
@@ -1745,8 +1723,7 @@ configurableTL: //a configurable timeline
           }
           else {
             if (radial_axis_quantiles != timeline_scale_segments){
-              d3.selectAll('.radial_tracks').remove();
-              radial_axis_quantiles = timeline_scale_segments
+              radial_axis_quantiles = timeline_scale_segments;
             }
             radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
@@ -1779,8 +1756,8 @@ configurableTL: //a configurable timeline
 
           var faceted_radial_axis_update = timeline_facet.selectAll(".faceted_radial_axis")
           .transition()
-          .delay(change_delay * 2)
-          .duration(duration)
+          .delay(0)
+          .duration(0)
           .style("opacity",1)
           .attr("transform", function (){
             var offset_x,
@@ -1813,9 +1790,6 @@ configurableTL: //a configurable timeline
           })
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / num_facet_cols / 2).y_pos(height / num_facet_rows / 2));
 
-          faceted_radial_axis_update.selectAll("path")
-          .style("animation", "dash 2s linear forwards");
-
           console.log("Faceted Radial axis updated");
 
           var log_event = {
@@ -1826,10 +1800,6 @@ configurableTL: //a configurable timeline
           usage_log.push(log_event);
         }
         else if (prev_tl_representation == "Radial" && prev_tl_layout == "Faceted" && (tl_representation != "Radial" || tl_layout != "Faceted")) {
-
-          timeline_container.selectAll(".faceted_radial_axis").selectAll("path")
-          .transition()
-          .style("animation", "undash 1s linear forwards");
 
           timeline_container.selectAll(".faceted_radial_axis")
           .transition()
@@ -1847,8 +1817,7 @@ configurableTL: //a configurable timeline
 
           radial_axis.radial_axis_units("Segments");
           if (radial_axis_quantiles != timeline_scale_segments){
-            d3.selectAll('.radial_tracks').remove();
-            radial_axis_quantiles = timeline_scale_segments
+            radial_axis_quantiles = timeline_scale_segments;
           }
           radial_axis.final_quantile(timeline_scale_segments[timeline_scale_segments.length - 1]);
 
@@ -1874,8 +1843,8 @@ configurableTL: //a configurable timeline
 
           var segmented_radial_axis_update = timeline_segment.selectAll(".segmented_radial_axis")
           .transition()
-          .delay(change_delay * 2)
-          .duration(duration)
+          .delay(0)
+          .duration(0)
           .style("opacity",1)
           .attr("transform", function (){
             var offset_x,
@@ -1907,9 +1876,6 @@ configurableTL: //a configurable timeline
           })
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / num_segment_cols / 2).y_pos(height / num_segment_rows / 2));
 
-          segmented_radial_axis_update.selectAll("path")
-          .style("animation", "dash 2s linear forwards");
-
           console.log("Segmented Radial axis updated");
 
           var log_event = {
@@ -1921,10 +1887,6 @@ configurableTL: //a configurable timeline
 
         }
         else if (prev_tl_representation == "Radial" && prev_tl_layout == "Segmented" && (tl_representation != "Radial" || tl_layout != "Segmented")) {
-
-          timeline_container.selectAll(".segmented_radial_axis").selectAll("path")
-          .transition()
-          .style("animation", "undash 1s linear forwards");
 
           timeline_container.selectAll(".segmented_radial_axis")
           .transition()
@@ -1956,7 +1918,7 @@ configurableTL: //a configurable timeline
 
           var calendar_axis_update = timeline_container.selectAll(".calendar_axis")
           .transition()
-          .delay(change_delay * 2)
+          .delay(0)
           .duration(duration)
           .style("opacity",1)
           .call(calendar_axis);
@@ -2012,7 +1974,7 @@ configurableTL: //a configurable timeline
 
           var grid_axis_update = timeline_container.selectAll(".grid_axis")
           .transition()
-          .delay(change_delay * 2)
+          .delay(0)
           .duration(duration)
           .style("opacity",1)
           .call(grid_axis.min_year(grid_min).max_year(grid_max));
@@ -2274,27 +2236,27 @@ configurableTL: //a configurable timeline
         **/
 
         var timeline_event_g_early_update = timeline_event_g.transition()
-        .delay(change_delay * 2)
+        .delay(0)
         .duration(duration)
         .call(transitionLog);
 
         var timeline_event_g_update = timeline_event_g.transition()
         .delay(function (d, i) {
-          return change_delay * 2 + duration + (data.length - i) / data.length * duration;
+          return duration + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
         var timeline_event_g_delayed_update = timeline_event_g.transition()
-        .delay(function (d, i) {          
-          return change_delay * 2 + duration * 2 + (data.length - i) / data.length * duration;
+        .delay(function (d, i) {
+          return duration * 2 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
         var timeline_event_g_final_update = timeline_event_g.transition()
         .delay(function (d, i) {
-          return change_delay * 2 + duration * 3 + (data.length - i) / data.length * duration;
+          return duration * 3 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
@@ -4230,13 +4192,6 @@ configurableTL: //a configurable timeline
 
     function transitionLog (transition) {
       console.log(transition.delay() + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "transition",
-        event_detail: transition.delay() + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms."
-      }
-      usage_log.push(log_event);
     };
 
     function eventLabel (item) {

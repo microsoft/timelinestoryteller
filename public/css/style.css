@@ -62,6 +62,18 @@ a:hover {
   margin: 2px;
 }
 
+.filter_header_icon {
+  cursor: default;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;
+  -moz-box-shadow: #FEFFFF 0px 1px 1px ;
+  box-shadow: #FEFFFF 0px 1px 1px ;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px5px;
+  margin: 2px;
+}
+
 .intro_btn {
   width: 36px;
   height: 36px;
@@ -164,8 +176,8 @@ text {
   left: -50px;
   top: 50%;
   width: 34px;
-  height: 380px;
-  margin-top: -190px;
+  height: 372px;
+  margin-top: -186px;
   position: fixed;
   padding: 5px;
 }
@@ -178,7 +190,7 @@ text {
 
 .menu_hr {
   margin-bottom: 0px;
-  margin-top: 4px
+  margin-top: 5px
 }
 
 .menu_rb > input:disabled + img{ /* IMAGE STYLES */
@@ -203,6 +215,11 @@ text {
   border: 1px solid #f00;
 }
 
+#menu_div input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 
 #export_formats .img_btn_disabled, #control_panel .img_btn_disabled{
   opacity: 0.3;
@@ -211,19 +228,35 @@ text {
 #filter_div {
   left: 56px;
   top: 50%;
-  width: 34px;
-  margin-top: -50px;
+  height: 372px;
+  margin-top: -186px;
   padding: 5px;
   position: fixed;
 }
 
+.filter_div_section {
+  position: relative;
+}
+
+.filter_div_header {
+  float: left;
+  width: 44px;
+  margin: 5px;
+  top: 50%;
+  transform: translate(0%,50%);
+}
+
+.filter_div_header text {
+  margin-left: -5px;
+}
+
+
 .filter_label {
   display: block;
-  margin-right: 100%;
 }
 
 .filter_select {
-  display: none;
+  margin-top: 5px;
   width: 225px;
   font-size: 10px;
   border: solid #999 1px;
@@ -645,7 +678,7 @@ select > option:hover {
 }
 
 #caption_div {
-  margin-top: -120px;
+  margin-top: -95px;
 }
 
 .caption_frame, .image_frame {
@@ -679,7 +712,7 @@ select > option:hover {
 }
 
 #image_div {
-  margin-top: -85px;
+  margin-top: -55px;
 }
 
 .onhover {

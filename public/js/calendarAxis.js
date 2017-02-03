@@ -27,7 +27,7 @@ calendarAxis: //a reusable calendar axis
 
         var min_year = data[0];
 
-        year_number = -1;
+        var year_number = -1;
 
         var year_grid_enter = year_grid.enter()
         .append("g")

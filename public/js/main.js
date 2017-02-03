@@ -503,6 +503,11 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
+    d3.select("#filter_div").style("display","none");
+    d3.select("#caption_div").style("display","none");
+    d3.select("#image_div").style("display","none");
+    d3.select("#export_div").style("top",-185 + "px");
+
     console.log("open import panel");
 
     var log_event = {
@@ -529,9 +534,11 @@ function formatAbbreviation(x) {
 
   control_panel.append("text")
   .attr("class","menu_label")
-  .text("\n" + "Add");
+  .style("font-size","9px")
+  .text("Annotate");
 
   control_panel.append('input')
+  .style("margin-bottom","0px")
   .attr({
     type: "image",
     name: "Add caption",
@@ -572,6 +579,7 @@ function formatAbbreviation(x) {
     width: 30,
     title: "Add image"
   })
+  .style("margin-bottom","0px")
   .on('click', function() {
 
     console.log("open image dialog");
@@ -593,22 +601,15 @@ function formatAbbreviation(x) {
     }
   });
 
-  control_panel.append("hr")
-  .attr("class","menu_hr");
-
-  control_panel.append("text")
-  .attr("class","menu_label")
-  .text("\n" + "Clear");
-
   control_panel.append('input')
   .attr({
     type: "image",
-    name: "Clear annotations, captions, images",
+    name: "Clear labels, captions, & images",
     class: 'img_btn_disabled',
     src: 'img/clear.png',
     height: 30,
     width: 30,
-    title: "Clear annotations, captions, images"
+    title: "Clear annotations, captions, & images"
   })
   .on('click', function() {
 
@@ -652,7 +653,7 @@ function formatAbbreviation(x) {
 
   control_panel.append("text")
   .attr("class","menu_label")
-  .text("\n" + "Filter");
+  .text("Filter");
 
   //filter type options
   var filter_type_picker = control_panel.append("g")
@@ -693,6 +694,7 @@ function formatAbbreviation(x) {
       return 'img/filter.png';
     }
   })
+  .style("margin-bottom","0px")
   .on("click", function(){
 
     console.log("open filter dialog");
@@ -796,11 +798,12 @@ function formatAbbreviation(x) {
   });
 
   control_panel.append("hr")
+  .style("margin-bottom","0px")
   .attr("class","menu_hr");
 
   control_panel.append("text")
   .attr("class","menu_label")
-  .text("\n" + "Export");
+  .text("Export");
 
   control_panel.append('input')
   .attr({
@@ -813,6 +816,11 @@ function formatAbbreviation(x) {
     title: "Export"
   })
   .on('click', function() {
+
+    d3.select("#filter_div").style("display","none");
+    d3.select("#caption_div").style("display","none");
+    d3.select("#image_div").style("display","none");
+    d3.select("#import_div").style("top",-210 + "px");
 
     console.log("show export panel");
 
@@ -2436,21 +2444,53 @@ function formatAbbreviation(x) {
       categories.range(["#E45641"]);
     }
 
+    filter_div.append('input')
+    .attr({
+      type: "image",
+      name: "Hide filter panel",
+      id: "export_close_btn",
+      class: 'img_btn_enabled',
+      src: 'img/close.png',
+      height: 15,
+      width: 15,
+      title: "Hide filter panel"
+    })
+    .style('position','absolute')
+    .style('top','0px')
+    .style('left','5px')
+    .style('margin-top','5px')
+    .on('click', function() {
+      d3.select("#filter_div").style("display","none");
+
+      console.log("hide filter panel");
+
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "export",
+        event_detail: "hide filter panel"
+      }
+      usage_log.push(log_event);
+    });
+
     filter_div.append("text")
     .attr("class","menu_label filter_label")
     .style("margin-right","auto")
-    .style("font-size","8px")
     .text("Filter by:");
 
     filter_div.append("hr")
     .attr("class","menu_hr");
 
-    filter_div.append("text")
+    var category_filter = filter_div.append("div")
+    .attr('class','filter_div_section');
+
+    var category_filter_header = category_filter.append("div")
+    .attr('class','filter_div_header');
+
+    category_filter_header.append("text")
     .attr("class","menu_label filter_label")
-    .style("font-size","8px")
     .text("Category");
 
-    filter_div.append("label")
+    category_filter_header.append("label")
     .attr("for","category_picker")
     .style("display","block")
     .style("margin-right","100%")
@@ -2458,37 +2498,18 @@ function formatAbbreviation(x) {
     .append("img")
     .attr({
       name: "Filter by event category",
-      class: "img_btn_enabled",
+      class: "filter_header_icon",
       height: 30,
       width: 30,
       title: "Filter by event category",
       src: "img/categories.png"
-    })
-    .on("click", function(){
-
-      console.log("toggle category filter");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "filter",
-        event_detail: "toggle category filter"
-      }
-      usage_log.push(log_event);
-
-      if (d3.select("#category_picker").style("display") == "none") {
-        d3.select("#category_picker").style("display","block");
-        d3.select("#filter_div").style("width","auto");
-      }
-      else {
-        d3.select("#category_picker").style("display","none");
-        d3.select("#filter_div").style("width","34px");
-      }
     });
 
     var all_categories = ["( All )"];
 
-    var category_picker = filter_div.append("select")
+    var category_picker = category_filter.append("select")
     .attr("class","filter_select")
+    .attr("size",8)
     .attr("id","category_picker")
     .attr({
       multiple: true
@@ -2548,12 +2569,17 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    filter_div.append("text")
+    var facet_filter = filter_div.append("div")
+    .attr('class','filter_div_section');
+
+    var facet_filter_header = facet_filter.append("div")
+    .attr('class','filter_div_header');
+
+    facet_filter_header.append("text")
     .attr("class","menu_label filter_label")
-    .style("font-size","8px")
     .text("Facet");
 
-    filter_div.append("label")
+    facet_filter_header.append("label")
     .attr("for","facet_picker")
     .style("display","block")
     .style("margin-right","100%")
@@ -2561,37 +2587,18 @@ function formatAbbreviation(x) {
     .append("img")
     .attr({
       name: "Filter by event facet",
-      class: "img_btn_enabled",
+      class: "filter_header_icon",
       height: 30,
       width: 30,
       title: "Filter by event facet",
       src: "img/facets.png"
-    })
-    .on("click", function(){
-
-      console.log("toggle facet filter");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "filter",
-        event_detail: "toggle facet filter"
-      }
-      usage_log.push(log_event);
-
-      if (d3.select("#facet_picker").style("display") == "none") {
-        d3.select("#facet_picker").style("display","block");
-        d3.select("#filter_div").style("width","auto");
-      }
-      else {
-        d3.select("#facet_picker").style("display","none");
-        d3.select("#filter_div").style("width","34px");
-      }
     });
 
     var all_facets = ["( All )"];
 
-    var facet_picker = filter_div.append("select")
+    var facet_picker = facet_filter.append("select")
     .attr("class","filter_select")
+    .attr("size",7)
     .attr("id","facet_picker")
     .attr({
       multiple: true
@@ -2672,12 +2679,17 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    filter_div.append("text")
+    var segment_filter = filter_div.append("div")
+    .attr('class','filter_div_section');
+
+    var segment_filter_header = segment_filter.append("div")
+    .attr('class','filter_div_header');
+
+    segment_filter_header.append("text")
     .attr("class","menu_label filter_label")
-    .style("font-size","8px")
     .text("Segment");
 
-    filter_div.append("label")
+    segment_filter_header.append("label")
     .attr("for","segment_picker")
     .style("display","block")
     .style("margin-right","100%")
@@ -2685,38 +2697,19 @@ function formatAbbreviation(x) {
     .append("img")
     .attr({
       name: "Filter by chronological segment",
-      class: "img_btn_enabled",
+      class: "filter_header_icon",
       height: 30,
       width: 30,
       title: "Filter by chronological segment",
       src: "img/segments.png"
-    })
-    .on("click", function(){
-
-      console.log("toggle segment filter");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "filter",
-        event_detail: "toggle segment filter"
-      }
-      usage_log.push(log_event);
-
-      if (d3.select("#segment_picker").style("display") == "none") {
-        d3.select("#segment_picker").style("display","block");
-        d3.select("#filter_div").style("width","auto");
-      }
-      else {
-        d3.select("#segment_picker").style("display","none");
-        d3.select("#filter_div").style("width","34px");
-      }
     });
 
     var all_segments = ["( All )"];
 
-    var segment_picker = filter_div.append("select")
+    var segment_picker = segment_filter.append("select")
     .attr("id","segment_picker")
     .attr("class","filter_select")
+    .attr("size",7)
     .attr({
       multiple: true
     })
