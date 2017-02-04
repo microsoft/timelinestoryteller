@@ -66,22 +66,22 @@ var date_granularity,
     filter_result,
     timeline_vis = d3.configurableTL(),
     scales = [
-      {"name":"Chronological","icon":"img/s-chron.png","hint":"A chronological scale is useful for showing absolute dates and times, like 2017, or 1999-12-31, or 6:37 PM."},
-      {"name":"Relative","icon":"img/s-rel.png","hint":"A relative scale is useful when comparing Faceted timelines with a common baseline at time zero."},
-      {"name":"Log","icon":"img/s-log.png","hint":"A logarithmic scale is useful for timelines with a long period of time between the first and last events and a skewed distributions of events."},
-      {"name":"Sequential","icon":"img/s-seq.png","hint":"A sequential scale is useful for showing simply the order and number of events."},
-      {"name":"Collapsed","icon":"img/s-intdur.png","hint":"A collapsed scale is a hybrid between the Sequential and Chronological, useful when there are large gaps in the chronology of the timeline; the duration between events is encoded as the length of bars."}],
+      {"name":"Chronological","icon":"img/s-chron.png","hint":"A <span class='rb_hint_scale_highlight'>Chronological</span> scale is useful for showing absolute dates and times, like 2017, or 1999-12-31, or 6:37 PM."},
+      {"name":"Relative","icon":"img/s-rel.png","hint":"A <span class='rb_hint_scale_highlight'>Relative</span> scale is useful when comparing <span class='rb_hint_layout_highlight'>Faceted</span> timelines with a common baseline at time 'zero'.<br>For example, consider a timeline of person 'A' who lived between 1940 to 2010 and person 'B' who lived between 1720 and 1790. <br>A <span class='rb_hint_scale_highlight'>Relative</span> scale in this case would span from 0 to 70 years."},
+      {"name":"Log","icon":"img/s-log.png","hint":"A base-10 <span class='rb_hint_scale_highlight'>Logarithmic</span> scale is useful for long-spanning timelines and a skewed distributions of events. <br> This scale is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation."},
+      {"name":"Sequential","icon":"img/s-seq.png","hint":"A <span class='rb_hint_scale_highlight'>Sequential</span> scale is useful for showing simply the order and number of events."},
+      {"name":"Collapsed","icon":"img/s-intdur.png","hint":"A <span class='rb_hint_scale_highlight'>Collapsed</span> scale is a hybrid between <span class='rb_hint_scale_highlight'>Sequential</span> and <span class='rb_hint_scale_highlight'>Chronological</span>, and is useful for showing uneven distributions of events. <br>It is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation and <span class='rb_hint_layout_highlight'>Unified</span> layout. The duration between events is encoded as the length of bars."}],
     layouts = [
-      {"name":"Unified","icon":"img/l-uni.png","hint":"A unified layout is a single uninterrupted timeline and is useful when your data contains no facets."},
-      {"name":"Faceted","icon":"img/l-fac.png","hint":"A faceted layout is useful when your have multiple timelines to compare."},
-      {"name":"Segmented","icon":"img/l-seg.png","hint":"A segmented layout splits a timeline into meaningful segments like centuries or days, depending on the extent of your timeline, and is useful for showing patterns or differences across segments, such as periodicity."}],
+      {"name":"Unified","icon":"img/l-uni.png","hint":"A <span class='rb_hint_layout_highlight'>Unified</span> layout is a single uninterrupted timeline and is useful when your data contains no facets."},
+      {"name":"Faceted","icon":"img/l-fac.png","hint":"A <span class='rb_hint_layout_highlight'>Faceted</span> layout is useful when you have multiple timelines to compare."},
+      {"name":"Segmented","icon":"img/l-seg.png","hint":"A <span class='rb_hint_layout_highlight'>Segmented</span> layout splits a timeline into meaningful segments like centuries or days, depending on the extent of your timeline.<br>It is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and is useful for showing patterns or differences across segments, such as periodicity."}],
     representations = [
-      {"name":"Linear","icon":"img/r-lin.png","hint":"A linear representation is read left-to-right and is the most familiar timeline representation."},
-      {"name":"Radial","icon":"img/r-rad.png","hint":"A radial representation is useful for showing cyclical patterns and ensures a square aspect ratio."},
-      {"name":"Spiral","icon":"img/r-spi.png","hint":"A spiral is a compact and playful way to show a sequence of events."},
-      {"name":"Curve","icon":"img/r-arb.png","hint":"A curve is a playful way to show a sequence of events. Drag to draw a curve on the canvas. Double click the canvas to reset the curve."},
-      {"name":"Calendar","icon":"img/r-cal.png","hint":"A calendar is a familiar representation compatible with a segmented layout, which segments by month and day. Don't use this representation if your timeline spans many years, or less than a day."},
-      {"name":"Grid","icon":"img/r-grid.png","hint":"A grid is useful in conjunction with a segmented layout for showing patterns of events across decades and centuries. Don't use this representation if you timeline spans many millenia or longer, or if your timeline spans less than a few years."}],
+      {"name":"Linear","icon":"img/r-lin.png","hint":"A <span class='rb_hint_rep_highlight'>Linear</span> representation is read left-to-right and is the most familiar timeline representation."},
+      {"name":"Radial","icon":"img/r-rad.png","hint":"A <span class='rb_hint_rep_highlight'>Radial</span> representation is useful for showing cyclical patterns. <br>It has the added benefit of a square aspect ratio."},
+      {"name":"Spiral","icon":"img/r-spi.png","hint":"A <span class='rb_hint_rep_highlight'>Spiral</span> is a compact and playful way to show a sequence of events. <br>It has a square aspect ratio and is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale."},
+      {"name":"Curve","icon":"img/r-arb.png","hint":"A <span class='rb_hint_rep_highlight'>Curve</span> is a playful way to show a sequence of events.<br> It is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale and a <span class='rb_hint_layout_highlight'>Unified</span> layout.<br>Drag to draw a curve on the canvas; double click the canvas to reset the curve."},
+      {"name":"Calendar","icon":"img/r-cal.png","hint":"A month-week-day <span class='rb_hint_rep_highlight'>Calendar</span> is a familiar representation that is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. <br>This representation does not currently support timelines spanning decades or longer."},
+      {"name":"Grid","icon":"img/r-grid.png","hint":"A 10x10 <span class='rb_hint_rep_highlight'>Grid</span> representation is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. <br>This representation is ideal for timelines spanning decades or centuries."}],
     unit_width = 15,
     track_height = unit_width * 1.5,
     // unit_width = 7.5, // Priestley style
@@ -1609,7 +1609,7 @@ function formatAbbreviation(x) {
   .style("cursor","pointer")
   .style("position","relative")
   .style("font-weight","bold")
-  .style("vertical-align","baseline")
+  .style("vertical-align","sub")
   .text("Click here to draw this timeline.");
 
   /**
@@ -1634,7 +1634,15 @@ function formatAbbreviation(x) {
   .enter();
 
   var representation_rb_label = representation_rb.append("label")
-  .attr("class", "option_rb");
+  .attr("class", "option_rb")
+  .on("mouseover", function(d){
+    var rb_hint = representation_picker.append("div")
+    .attr('id','rb_hint')
+    .html(d.hint);
+  })
+  .on("mouseout", function(d){
+    d3.select('#rb_hint').remove();
+  });
 
   representation_rb_label.append("input")
   .attr({
@@ -1654,9 +1662,6 @@ function formatAbbreviation(x) {
     height: 40,
     width: 40,
     class: "img_btn_disabled",
-    title: function (d) {
-      return d.hint;
-    },
     src: function (d) {
       return d.icon;
     }
@@ -1682,7 +1687,15 @@ function formatAbbreviation(x) {
   .enter();
 
   var scale_rb_label = scale_rb.append("label")
-  .attr("class", "option_rb");
+  .attr("class", "option_rb")
+  .on("mouseover", function(d){
+    var rb_hint = scale_picker.append("div")
+    .attr('id','rb_hint')
+    .html(d.hint);
+  })
+  .on("mouseout", function(d){
+    d3.select('#rb_hint').remove();
+  });
 
   scale_rb_label.append("input")
   .attr({
@@ -1702,9 +1715,6 @@ function formatAbbreviation(x) {
     height: 40,
     width: 40,
     class: "img_btn_disabled",
-    title: function (d) {
-      return d.hint;
-    },
     src: function (d) {
       return d.icon;
     }
@@ -1731,7 +1741,15 @@ function formatAbbreviation(x) {
   .enter();
 
   var layout_rb_label = layout_rb.append("label")
-  .attr("class", "option_rb");
+  .attr("class", "option_rb")
+  .on("mouseover", function(d){
+    var rb_hint = layout_picker.append("div")
+    .attr('id','rb_hint')
+    .html(d.hint);
+  })
+  .on("mouseout", function(d){
+    d3.select('#rb_hint').remove();
+  });
 
   layout_rb_label.append("input")
   .attr({
@@ -1751,9 +1769,6 @@ function formatAbbreviation(x) {
     height: 40,
     width: 40,
     class: "img_btn_disabled",
-    title: function (d) {
-      return d.hint;
-    },
     src: function (d) {
       return d.icon;
     }
@@ -2764,10 +2779,10 @@ function formatAbbreviation(x) {
       d3.select('#timeline_metadata_contents')
       .html(
         "<span class='metadata_title'>About this data:</span>" +
-        "<p class='metadata_content'><strong>Cardinality & extent</strong>: " +
-        active_data.length + " unique events spanning " + range_text + " (Granularity: " + segment_granularity + ")</p>" +
-        "<p class='metadata_content'><strong>Event categories</strong>: ( " + num_categories + " ) .. " + categories.domain().join(" .. ") + "</p>" +
-        "<p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) .. " + facets.domain().join(" .. ") + "</p>"
+        "<div style='width:630px; clear:both;'><img src='img/timeline.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Cardinality & extent</strong>: " +
+        active_data.length + " unique events spanning " + range_text + " <br><strong>Granularity</strong>: " + segment_granularity + "</p></div>" +
+        "<div style='width:630px; clear:both;'><img src='img/categories.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Event categories</strong>: ( " + num_categories + " ) .. " + categories.domain().join(" .. ") + "</p></div>" +
+        "<div style='width:630px; clear:both;'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) .. " + facets.domain().join(" .. ") + "</p></div>"
       );
 
       timeline_metadata.style("display","inline");
@@ -5081,7 +5096,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Calendar":
-        if (scale == "Chronological" && layout == "Segmented") {
+        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years"].indexOf(segment_granularity) != -1)) {
           return false;
         }
         else {
@@ -5090,7 +5105,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented") {
+        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return false;
         }
         else {
@@ -5208,7 +5223,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Calendar":
-        if (scale == "Chronological" && layout == "Segmented") {
+        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years"].indexOf(segment_granularity) != -1)) {
           return "img_btn_enabled";
         }
         else {
@@ -5217,7 +5232,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented") {
+        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return "img_btn_enabled";
         }
         else {

@@ -1951,10 +1951,16 @@ configurableTL: //a configurable timeline
           usage_log.push(log_event);
         }
         else if (prev_tl_representation == "Calendar" && tl_representation != "Calendar") {
+
           timeline_container.selectAll(".calendar_axis")
           .transition()
-          .duration(duration)
-          .style("opacity",0);
+          .duration(duration * 3)
+          .style('opacity',0);
+
+          timeline_container.selectAll(".calendar_axis")
+          .transition()
+          .delay(duration * 3)
+          .remove();
         }
 
         /**
@@ -2006,10 +2012,16 @@ configurableTL: //a configurable timeline
           usage_log.push(log_event);
         }
         else if (prev_tl_representation == "Grid" && tl_representation != "Grid") {
+
           timeline_container.selectAll(".grid_axis")
           .transition()
-          .duration(duration)
-          .style("opacity",0);
+          .duration(duration * 3)
+          .style('opacity',0);
+
+          timeline_container.selectAll(".grid_axis")
+          .transition()
+          .delay(duration * 3)
+          .remove();
         }
 
         /**
