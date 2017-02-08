@@ -1617,7 +1617,7 @@ function formatAbbreviation(x) {
   .style("color","white")
   .style("cursor","pointer")
   .style("position","relative")
-  .text("Click to draw this timeline.");
+  .text("Draw this timeline");
 
   /**
   --------------------------------------------------------------------------------------
@@ -2890,7 +2890,7 @@ function formatAbbreviation(x) {
       .attr('class','timeline_metadata_contents_div')
       .style('border-top','1px solid #999')
       .html(
-        "<p class='metadata_content'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().join(" .. ") + "</p>");
+        "<p class='metadata_content'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().slice(1,30).join(" .. ") + "</p>");
 
 
       timeline_metadata.style("display","inline");
