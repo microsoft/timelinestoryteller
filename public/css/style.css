@@ -176,8 +176,8 @@ text {
   left: -50px;
   top: 50%;
   width: 34px;
-  height: 372px;
-  margin-top: -186px;
+  height: 380px;
+  margin-top: -190px;
   position: fixed;
   padding: 5px;
 }
@@ -228,8 +228,8 @@ text {
 #filter_div {
   left: 56px;
   top: 50%;
-  height: 372px;
-  margin-top: -186px;
+  height: 380px;
+  margin-top: -190px;
   padding: 5px;
   position: fixed;
 }
@@ -495,6 +495,49 @@ select > option:hover {
   margin-right: 10px;
 }
 
+.category_element {
+  width: auto;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
+input[type="color"]::-moz-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-moz-color-swatch {
+	border: none;
+}
+
+.colorpicker_wrapper {
+  float: left;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  margin-top: 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  padding: 0;
+}
+
+.colorpicker {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+  margin-right: 5px;
+  margin-top: 2px;
+  padding: 0;
+  opacity: 0;
+}
+
+.colorpicker_wrapper:hover {
+  border: 1px solid #f00;
+}
+
 .footer_text_left {
   text-align: left;
   font-size: .8em;
@@ -579,6 +622,11 @@ select > option:hover {
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 0px;
+}
+
+.timeline_metadata_contents_div{
+  width: 630px;
+  clear: both;
 }
 
 #draw_timeline {

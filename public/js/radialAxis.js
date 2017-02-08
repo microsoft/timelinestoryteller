@@ -342,31 +342,20 @@ radialAxis: //a reusable radial axis
         }
       }
       else if (radial_axis_units == "Relative") {
-        switch (segment_granularity) {
-          case "days":
-          radial_axis_tick_label = Math.round(d / 3600000) + " H";
-          break;
-          case "weeks":
+        if (date_granularity == "epochs") {
+          radial_axis_tick_label = formatAbbreviation(d);
+        }
+        else if ((max_end_age / 86400000) > 1000) {
+          radial_axis_tick_label = Math.round(d / 31536000730) + " Y";
+        }
+        else if ((max_end_age / 86400000) > 100) {
+          radial_axis_tick_label = Math.round(d / 2628000000) + " M";
+        }
+        else if ((max_end_age / 86400000) > 2) {
           radial_axis_tick_label = Math.round(d / 86400000) + " D";
-          break;
-          case "months":
-          radial_axis_tick_label = Math.round(d / 604800000) + " W";
-          break;
-          case "years":
-          radial_axis_tick_label = Math.round(d / 2678400000) + " M";
-          break;
-          case "decades":
-          radial_axis_tick_label = Math.round(d / 31536000730) + " Y";
-          break;
-          case "centuries":
-          radial_axis_tick_label = Math.round(d / 31536000730) + " Y";
-          break;
-          case "millenia":
-          radial_axis_tick_label = Math.round(d / 31536000730) + " Y";
-          break;
-          case "epochs":
-          radial_axis_tick_label = "";
-          break;
+        }
+        else {
+          radial_axis_tick_label = Math.round(d / 3600000) + " H";
         }
       }
       return radial_axis_tick_label;

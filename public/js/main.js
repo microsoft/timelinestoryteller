@@ -112,7 +112,6 @@ var date_granularity,
     dirty_curve = false,
     record_width = width,
     record_height = height,
-    filter_transition = false,
     reader = new FileReader(),
     gif = new GIF({
       workers: 2,
@@ -129,6 +128,9 @@ var date_granularity,
     usage_log = [],
     formatNumber = d3.format(".0f"),
     range_text = "",
+    color_palette = [],
+    color_swap_target = 0,
+    use_custom_palette = false,
     socket = io({transports:['websocket']});
     // socket = io.connect('https//:timelinestoryteller.azurewebsites.net');
 
@@ -611,8 +613,9 @@ function formatAbbreviation(x) {
     width: 30,
     title: "Clear annotations, captions, & images"
   })
-  .on('click', function() {
+  .on('click', clearCanvas);
 
+  function clearCanvas() {
     console.log("clear annotations");
 
     var log_event = {
@@ -640,7 +643,7 @@ function formatAbbreviation(x) {
     d3.selectAll(".event_span_component")
     .style("stroke","#fff")
     .style("stroke-width","0.25px");
-  });
+  };
 
   /**
   ---------------------------------------------------------------------------------------
@@ -1010,32 +1013,22 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    if (!opt_out) {
-      timeline_story = {
-        'timeline_json_data':timeline_json_data,
-        'name':"timeline_story.cdc",
-        'scenes':scenes,
-        'usage_log': usage_log,
-        'caption_list':caption_list,
-        'annotation_list':annotation_list,
-        'image_list':image_list,
-        'author':email_address,
-        'timestamp':new Date().valueOf()
-      };
-    }
-    else {
-      timeline_story = {
-        'usage_log': usage_log,
-        'author':email_address,
-        'timestamp':new Date().valueOf()
-      };
-    }
+    timeline_story = {
+      'timeline_json_data':timeline_json_data,
+      'name':"timeline_story.cdc",
+      'scenes':scenes,
+      'color_palette':categories.range(),
+      'usage_log': usage_log,
+      'caption_list':caption_list,
+      'annotation_list':annotation_list,
+      'image_list':image_list,
+      'author':email_address,
+      'timestamp':new Date().valueOf()
+    };
+
     var story_json = JSON.stringify(timeline_story);
     var blob = new Blob([story_json], {type: "application/json"});
     var url  = URL.createObjectURL(blob);
-
-    console.log(story_json);
-    socket.emit('export_event', story_json); // raise an event on the server
 
     var a = document.createElement('a');
     a.download    = "timeline_story.cdc";
@@ -1044,6 +1037,19 @@ function formatAbbreviation(x) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+
+    if (opt_out) {
+      timeline_story = {
+        'usage_log': usage_log,
+        'author':email_address,
+        'timestamp':new Date().valueOf()
+      };
+    }
+
+    story_json = JSON.stringify(timeline_story);
+
+    console.log(story_json);
+    socket.emit('export_event', story_json); // raise an event on the server
 
   });
 
@@ -1595,6 +1601,7 @@ function formatAbbreviation(x) {
   })
   .on("click", function () {
     d3.select("#timeline_metadata").style('display','none');
+    d3.select("#timeline_metadata_contents").html('');
     d3.selectAll(".gdocs_info_element").style("display","none");
     d3.select("#import_div").style("top",-210 + "px");
     d3.select("#gdocs_info").style("height",0 + "px");
@@ -1932,6 +1939,7 @@ function formatAbbreviation(x) {
   function loadTimeline () {
 
     d3.select("#disclaimer").style('display','none');
+    d3.select("#timeline_metadata_contents").html('');
     control_panel.selectAll("input").attr("class","img_btn_disabled")
     d3.select("#filter_type_picker").selectAll("input").property("disabled",true);
     d3.select("#filter_type_picker").selectAll("img").attr("class","img_btn_disabled");
@@ -1941,6 +1949,7 @@ function formatAbbreviation(x) {
     d3.selectAll('.option_rb img').style('border','2px solid transparent');
     d3.select("#menu_div").style("left",-50 + "px");
     d3.select("#navigation_div").style("bottom", -100 + "px");
+    use_custom_palette = false;
 
     if (main_svg != undefined) {
       console.clear();
@@ -1981,7 +1990,11 @@ function formatAbbreviation(x) {
     max_num_seq_tracks = 0;
     legend_rect_size = unit_width;
     legend_spacing = 5;
+    categories = undefined;
     categories = d3.scale.ordinal(); //scale for event types
+    if (color_palette != undefined) {
+      categories.range(color_palette);
+    }
     facets = d3.scale.ordinal(); //scale for facets (timelines)
     segments = d3.scale.ordinal(); //scale for segments
     present_segments = d3.scale.ordinal();
@@ -2283,6 +2296,10 @@ function formatAbbreviation(x) {
 
           timeline_json_data = story.timeline_json_data;
 
+          if (story.color_palette != undefined) {
+            color_palette = story.color_palette;
+            use_custom_palette = true;
+          }
           scenes = story.scenes;
           caption_list = story.caption_list;
           image_list = story.image_list;
@@ -2322,6 +2339,10 @@ function formatAbbreviation(x) {
 
         timeline_json_data = story.timeline_json_data;
 
+        if (story.color_palette != undefined) {
+          color_palette = story.color_palette
+          use_custom_palette = true;
+        }
         scenes = story.scenes;
         caption_list = story.caption_list;
         image_list = story.image_list;
@@ -2446,17 +2467,36 @@ function formatAbbreviation(x) {
 
     //assign colour labels to categories if # categories < 12
     if (num_categories <= 20 && num_categories >= 11) {
-      categories.range(colorSchemes.schema5);
+      var temp_palette = colorSchemes.schema5();
+      categories.range(temp_palette);
+      temp_palette = undefined;
     }
     else if (num_categories <= 10 && num_categories >= 3) {
-      categories.range(colorSchemes.schema2);
+      var temp_palette = colorSchemes.schema2();
+      categories.range(temp_palette);
+      temp_palette = undefined;
     }
     else if (num_categories == 2) {
-      categories.range(["#E45641","#44B3C2"]);
+      var temp_palette = ["#E45641","#44B3C2"];
+      categories.range(temp_palette);
+      temp_palette = undefined;
     }
     else {
       // categories.range(["#000"]); // black used in Priestley style
-      categories.range(["#E45641"]);
+      var temp_palette = ["#E45641"];
+      categories.range(temp_palette);
+      temp_palette = undefined;
+    }
+    if (use_custom_palette) {
+      categories.range(color_palette);
+      console.log("custom palette: " + categories.range())
+
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "color palette",
+        event_detail: "custom palette: " + categories.range()
+      }
+      usage_log.push(log_event);
     }
 
     filter_div.append('input')
@@ -2613,7 +2653,7 @@ function formatAbbreviation(x) {
 
     var facet_picker = facet_filter.append("select")
     .attr("class","filter_select")
-    .attr("size",7)
+    .attr("size",8)
     .attr("id","facet_picker")
     .attr({
       multiple: true
@@ -2777,13 +2817,81 @@ function formatAbbreviation(x) {
     }
     else {
       d3.select('#timeline_metadata_contents')
+      .append('span')
+      .attr("class","metadata_title")
+      .text("About this data:");
+
+      d3.select('#timeline_metadata_contents')
+      .append('div')
+      .attr('class','timeline_metadata_contents_div')
+      .html("<img src='img/timeline.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Cardinality & extent</strong>: " +
+        active_data.length + " unique events spanning " + range_text + " <br><strong>Granularity</strong>: " + segment_granularity + "</p>")
+
+      var category_metadata = d3.select('#timeline_metadata_contents')
+      .append('div')
+      .attr('class','timeline_metadata_contents_div');
+
+      category_metadata
+      .append('img')
+      .style('width','36px')
+      .style('float','left')
+      .style('padding-right','5px')
+      .attr('src','img/categories.png')
+
+      var category_metadata_p = category_metadata
+      .append('p')
+      .attr('class','metadata_content')
+      .html("<strong>Event categories</strong>: ( " + num_categories + " ) <em><strong>Note</strong>: click on the swatches to assign colors to categories.</em><br>")
+
+      var category_metadata_element = category_metadata_p.selectAll('.category_element')
+      .data(categories.domain().sort())
+      .enter()
+      .append('g')
+      .attr('class','category_element');
+
+      category_metadata_element.append('div')
+      .attr('class','colorpicker_wrapper')
+      .style('background-color',categories)
+      .append('input')
+      .attr('type','color')
+      .attr('class','colorpicker')
+      .attr('value',categories)
+      .on('mouseover', function(d,i){
+        color_swap_target = categories.range().indexOf(this.value)
+        console.log("category " + i + ": " + d + " / " + this.value + " (index # " + color_swap_target + ")");
+      })
+      .on('change', function(d,i) {
+        d3.select(this.parentNode).style('background-color',this.value);
+
+        var temp_palette = categories.range();
+
+        temp_palette[color_swap_target] = this.value;
+        categories.range(temp_palette)
+        temp_palette = undefined;
+        use_custom_palette = true;
+
+        console.log("category " + i + ": " + d + " now uses " + this.value);
+        var log_event = {
+          event_time: new Date().valueOf(),
+          event_category: "color_palette_change",
+          event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
+        }
+        usage_log.push(log_event);
+      })
+
+      category_metadata_element.append('span')
+      .attr('class','metadata_content')
+      .style('float','left')
+      .text(function(d){
+        return " " + d + " ..";
+      });
+
+      d3.select('#timeline_metadata_contents')
+      .append('div')
+      .attr('class','timeline_metadata_contents_div')
       .html(
-        "<span class='metadata_title'>About this data:</span>" +
-        "<div style='width:630px; clear:both;'><img src='img/timeline.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Cardinality & extent</strong>: " +
-        active_data.length + " unique events spanning " + range_text + " <br><strong>Granularity</strong>: " + segment_granularity + "</p></div>" +
-        "<div style='width:630px; clear:both;'><img src='img/categories.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Event categories</strong>: ( " + num_categories + " ) .. " + categories.domain().join(" .. ") + "</p></div>" +
-        "<div style='width:630px; clear:both;'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) .. " + facets.domain().join(" .. ") + "</p></div>"
-      );
+        "<img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().join(" .. ") + "</p>");
+
 
       timeline_metadata.style("display","inline");
     }
@@ -2797,6 +2905,8 @@ function formatAbbreviation(x) {
     **/
 
   d3.selectAll("#scale_picker input[name=scale_rb]").on("change", function() {
+
+    clearCanvas();
 
     console.log("scale change: " + this.value);
 
@@ -2830,6 +2940,8 @@ function formatAbbreviation(x) {
 
   d3.selectAll("#layout_picker input[name=layout_rb]").on("change", function() {
 
+    clearCanvas();
+
     console.log("layout change: " + this.value);
 
     var log_event = {
@@ -2861,6 +2973,8 @@ function formatAbbreviation(x) {
   **/
 
   d3.selectAll("#representation_picker input[name=representation_rb]").on("change", function() {
+
+    clearCanvas();
 
     console.log("representation change: " + this.value);
 
@@ -3182,6 +3296,8 @@ function formatAbbreviation(x) {
   }
 
   function changeScene (scene_index) {
+
+    clearCanvas();
 
     updateNavigationStepper()
 
@@ -5273,7 +5389,7 @@ function formatAbbreviation(x) {
   //highlight matches and de-emphasize (grey-out) mismatches
   dispatch.on("highlight", function (selected_categories, selected_facets, selected_segments) {
 
-    filter_transition = true;
+    clearCanvas();
 
     var timeline_events = d3.selectAll(".timeline_event_g");
     var matches, mismatches,
@@ -5339,9 +5455,31 @@ function formatAbbreviation(x) {
       }
     });
 
+    // d3.selectAll('.timeline_event_g').each(function(d){
+    //   if (active_event_list.indexOf(d.event_id) == -1) {
+    //     d3.select(this).selectAll('.event_span')
+    //     .transition()
+    //     .duration(1200)
+    //     .attr("filter", "url(#greyscale)");
+    //     d3.select(this).selectAll('.event_span_component')
+    //     .transition()
+    //     .duration(1200)
+    //     .attr("filter", "url(#greyscale)");
+    //   }
+    //   else {
+    //     d3.select(this).selectAll('.event_span')
+    //     .transition()
+    //     .duration(1200)
+    //     .attr("filter", "none");
+    //     d3.select(this).selectAll('.event_span_component')
+    //     .transition()
+    //     .duration(1200)
+    //     .attr("filter", "none");
+    //   }
+    // })
+
     main_svg.call(timeline_vis.duration(1200));
 
-    filter_transition = false;
     prev_active_event_list = active_event_list;
 
   });
@@ -5349,7 +5487,7 @@ function formatAbbreviation(x) {
   //remove mismatches
   dispatch.on("remove", function (selected_categories, selected_facets, selected_segments) {
 
-    filter_transition = true;
+    clearCanvas();
 
     prev_active_event_list = active_event_list;
     active_event_list = [];
@@ -5487,7 +5625,6 @@ function formatAbbreviation(x) {
 
     }
 
-    filter_transition = false;
     prev_active_event_list = active_event_list;
 
   });

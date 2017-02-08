@@ -34,11 +34,11 @@ configurableTL: //a configurable timeline
     fresh_canvas = true,
     previous_segment_granularity;
 
-    d3.selection.prototype.moveToFront = function() {
-      return this.each(function(){
-        this.parentNode.appendChild(this);
-      });
-    };
+    // d3.selection.prototype.moveToFront = function() {
+    //   return this.each(function(){
+    //     this.parentNode.appendChild(this);
+    //   });
+    // };
 
     function configurableTL (selection) {
 
@@ -973,13 +973,13 @@ configurableTL: //a configurable timeline
                 .domain([0,max_end_age])
                 tick_format = function (d) {
                   var converted_tick = d;
-                  if (time.year.count(data.min_start_date,data.max_end_date) > 3) {
+                  if ((max_end_age / 86400000) > 1000) {
                     converted_tick = Math.round(d / 31536000730) + " years";
                   }
-                  else if (time.day.count(data.min_start_date,data.max_end_date) > 31) {
+                  else if ((max_end_age / 86400000) > 100) {
                     converted_tick = Math.round(d / 2628000000) + " months";
                   }
-                  else if (time.day.count(data.min_start_date,data.max_end_date) > 2) {
+                  else if ((max_end_age / 86400000) > 2) {
                     converted_tick = Math.round(d / 86400000) + " days";
                   }
                   else {
@@ -988,12 +988,12 @@ configurableTL: //a configurable timeline
                   return converted_tick;
                 };
               }
-              console.log(tl_scale + " scale updated with " + date_granularity + " date granularity and range: 0 - " + data.max_end_age);
+              console.log(tl_scale + " scale updated with " + date_granularity + " date granularity and range: 0 - " + max_end_age);
 
               var log_event = {
                 event_time: new Date().valueOf(),
                 event_category: "scale_update",
-                event_detail: tl_scale + " scale updated with " + date_granularity + " date granularity and range: 0 - " + data.max_end_age
+                event_detail: tl_scale + " scale updated with " + date_granularity + " date granularity and range: 0 - " + max_end_age
               }
               usage_log.push(log_event);
 
@@ -2057,7 +2057,7 @@ configurableTL: //a configurable timeline
 
           console.log("event " + d.event_id + " clicked");
 
-          d3.select(this).moveToFront();
+          // d3.select(this).moveToFront();
 
           var log_event = {
             event_time: new Date().valueOf(),
@@ -2324,7 +2324,7 @@ configurableTL: //a configurable timeline
               }
             }
           }
-          else if (active_event_list.indexOf(d.event_id) != -1 && (d.selected || d.annotated)) {
+          else if (active_event_list.indexOf(d.event_id) != -1 && d.selected) {
             return 1;
           }
           else if (active_event_list.indexOf(d.event_id) != -1) {
@@ -2810,7 +2810,7 @@ configurableTL: //a configurable timeline
               }
             }
           }
-          else if (active_event_list.indexOf(d.event_id) != -1 && (d.selected || d.annotated)) {
+          else if (active_event_list.indexOf(d.event_id) != -1 && d.selected) {
             return 1;
           }
           else if (active_event_list.indexOf(d.event_id) != -1) {
@@ -3211,7 +3211,7 @@ configurableTL: //a configurable timeline
               }
             }
           }
-          else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1 && (d3.select(this.parentNode).datum().selected || d3.select(this.parentNode).datum().annotated)) {
+          else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1 && d3.select(this.parentNode).datum().selected) {
             return 1;
           }
           else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1) {
@@ -3590,7 +3590,7 @@ configurableTL: //a configurable timeline
               }
             }
           }
-          else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1 && (d3.select(this.parentNode).datum().selected || d3.select(this.parentNode).datum().annotated)) {
+          else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1 && d3.select(this.parentNode).datum().selected) {
             return 1;
           }
           else if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) != -1) {
