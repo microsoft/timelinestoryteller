@@ -1540,6 +1540,8 @@ function formatAbbreviation(x) {
   .attr("id","gdoc_spreadsheet_confirm_div")
   .attr("class","gdocs_info_element")
   .append("input")
+  .style('margin-top', '-27px')
+  .style('float', 'right')
   .attr({
     type: "image",
     name: "Confirm Google Spreadsheet Data",
@@ -1582,9 +1584,9 @@ function formatAbbreviation(x) {
 
   var disclaimer = d3.select("#import_div").append("div")
   .attr("id","disclaimer")
-  .html("<span class='disclaimer_title'><br>A note about privacy:</span><br>" +
-  "<span class='disclaimer_text'>This service enables you to create visually compelling timeline stories. Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication." +
-  "<br>By using this service, you agree to <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>'s <a title='Privacy' href='https://go.microsoft.com/fwlink/?LinkId=521839'>Privacy Statement</a> and <a title='Terms of Use' href='https://go.microsoft.com/fwlink/?LinkID=760869'>Terms of Use</a>.</span>");
+  .html("<span class='disclaimer_title'style='clear:both'>This is an expressive visual storytelling environment for presenting timelines.</span><span class='disclaimer_text'><br><strong>A note about privacy</strong>: </span>" +
+  "<span class='disclaimer_text'>Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication. " +
+  "By using this service, you agree to <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>'s <a title='Privacy' href='https://go.microsoft.com/fwlink/?LinkId=521839'>Privacy Statement</a> and <a title='Terms of Use' href='https://go.microsoft.com/fwlink/?LinkID=760869'>Terms of Use</a>.</span>");
 
   var timeline_metadata = d3.select("#import_div").append("div")
   .attr("id","timeline_metadata")
@@ -1611,13 +1613,11 @@ function formatAbbreviation(x) {
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
   })
   .append("text")
-  .attr("class","ui_label")
-  .style("color","black")
+  .attr("class","boilerplate_title")
+  .style("color","white")
   .style("cursor","pointer")
   .style("position","relative")
-  .style("font-weight","bold")
-  .style("vertical-align","sub")
-  .text("Click here to draw this timeline.");
+  .text("Click to draw this timeline.");
 
   /**
   --------------------------------------------------------------------------------------
@@ -2819,29 +2819,24 @@ function formatAbbreviation(x) {
       d3.select('#timeline_metadata_contents')
       .append('span')
       .attr("class","metadata_title")
+      .style('text-decoration','underline')
       .text("About this data:");
 
       d3.select('#timeline_metadata_contents')
       .append('div')
       .attr('class','timeline_metadata_contents_div')
-      .html("<img src='img/timeline.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Cardinality & extent</strong>: " +
+      .html("<p class='metadata_content'><img src='img/timeline.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Cardinality & extent</strong>: " +
         active_data.length + " unique events spanning " + range_text + " <br><strong>Granularity</strong>: " + segment_granularity + "</p>")
 
       var category_metadata = d3.select('#timeline_metadata_contents')
       .append('div')
-      .attr('class','timeline_metadata_contents_div');
-
-      category_metadata
-      .append('img')
-      .style('width','36px')
-      .style('float','left')
-      .style('padding-right','5px')
-      .attr('src','img/categories.png')
+      .attr('class','timeline_metadata_contents_div')
+      .style('border-top','1px solid #999');
 
       var category_metadata_p = category_metadata
       .append('p')
       .attr('class','metadata_content')
-      .html("<strong>Event categories</strong>: ( " + num_categories + " ) <em><strong>Note</strong>: click on the swatches to assign colors to categories.</em><br>")
+      .html("<img src='img/categories.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Event categories</strong>: ( " + num_categories + " ) <em><strong>Note</strong>: click on the swatches to assign custom colors to categories.</em><br>")
 
       var category_metadata_element = category_metadata_p.selectAll('.category_element')
       .data(categories.domain().sort())
@@ -2851,6 +2846,7 @@ function formatAbbreviation(x) {
 
       category_metadata_element.append('div')
       .attr('class','colorpicker_wrapper')
+      .attr("filter", "url(#drop-shadow)")
       .style('background-color',categories)
       .append('input')
       .attr('type','color')
@@ -2886,15 +2882,20 @@ function formatAbbreviation(x) {
         return " " + d + " ..";
       });
 
+      category_metadata.append('p')
+      .html('<br>');
+
       d3.select('#timeline_metadata_contents')
       .append('div')
       .attr('class','timeline_metadata_contents_div')
+      .style('border-top','1px solid #999')
       .html(
-        "<img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><p class='metadata_content'><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().join(" .. ") + "</p>");
+        "<p class='metadata_content'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().join(" .. ") + "</p>");
 
 
       timeline_metadata.style("display","inline");
     }
+
 
   }
 

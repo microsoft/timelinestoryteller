@@ -515,13 +515,16 @@ input[type="color"]::-moz-color-swatch {
 
 .colorpicker_wrapper {
   float: left;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   margin-right: 5px;
   margin-top: 2px;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 1px solid #999;
   padding: 0;
+  box-shadow: #999 0px 1px 1px;
+  -webkit-box-shadow: #999 0px 1px 1px;
+  -moz-box-shadow: #999 0px 1px 1px ;
 }
 
 .colorpicker {
@@ -634,11 +637,32 @@ input[type="color"]::-moz-color-swatch {
   margin-left: 5px;
   margin-bottom: 5px;
   margin-top: 0px;
-  width: 640px;
+  width: 320px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   height: 25px;
-  float: left;
   bottom: 0px;
   right: 0px;
+  border-radius: 10px;
+  background-color: #ff7f0e;
+  border-color: #da6600;
+  background: #ff7f0e;
+  background-image: -webkit-linear-gradient(top, #ff7f0e, #da6600);
+  background-image: -moz-linear-gradient(top, #ff7f0e, #da6600);
+  background-image: -ms-linear-gradient(top, #ff7f0e, #da6600);
+  background-image: -o-linear-gradient(top, #ff7f0e, #da6600);
+  background-image: linear-gradient(to bottom, #ff7f0e, #da6600);
+}
+
+#draw_timeline:hover {
+  background-color: #da6600;
+  border-color: #ff7f0e;
+  background: #da6600;
+  background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);
+  background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);
+  background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);
+  background-image: -o-linear-gradient(top, #da6600, #ff7f0e);
+  background-image: linear-gradient(to bottom, #da6600, #ff7f0e);
 }
 
 #gdocs_info {
@@ -781,6 +805,8 @@ input[type="color"]::-moz-color-swatch {
   stroke: none;
   cursor: move;
   box-shadow: 2px 2px 2px #888888;
+  -webkit-box-shadow: 2px 2px 2px #888888;
+  -moz-box-shadow: 2px 2px 2px #888888;
 }
 
 .caption_label {
@@ -869,6 +895,8 @@ input[type="color"]::-moz-color-swatch {
   border: 1px solid #999;
   z-index: 1;
   box-shadow: 2px 2px 2px #888888;
+  -webkit-box-shadow: 2px 2px 2px #888888;
+  -moz-box-shadow: 2px 2px 2px #888888;
   border-radius: 10px;
   text-align: center;
   position: absolute;
