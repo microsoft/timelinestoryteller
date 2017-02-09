@@ -441,6 +441,7 @@ select > option:hover {
   border-top: 1px solid #999;
   border-bottom: 1px solid #999;
   padding: 5px;
+  clear: both;
 }
 
 .boilerplate_title {
@@ -610,6 +611,7 @@ input[type="color"]::-moz-color-swatch {
 #timeline_metadata {
   width: 650px;
   transition: all 0.5s ease;
+  border-top: 1px solid #999;
   -webkit-transition: all 0.5s ease;
   padding-left: 0px;
   padding-right: 0px;
@@ -676,7 +678,6 @@ input[type="color"]::-moz-color-swatch {
   padding-top: 0px;
   padding-bottom: 0px;
   float: left;
-  border-bottom: 1px solid #999;
 }
 
 .gdocs_info_element {
@@ -686,6 +687,8 @@ input[type="color"]::-moz-color-swatch {
   transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
   margin: 0px;
+  float: left;
+  height: 27px;
 }
 
 .gdocs_info_element .text_input {
@@ -778,11 +781,11 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .annotation_control {
-  border: 0.25px solid #aaa;
+  border: 1px solid white;
 }
 
 .annotation_control:hover {
-  border: 0.5px solid #000;
+  border: 1px solid #999;
 }
 
 .annotation_delete:hover {
@@ -795,8 +798,8 @@ input[type="color"]::-moz-color-swatch {
 
 .caption_frame, .image_frame {
   fill:#fff;
-  stroke:none;
-  stroke-width:0.5px;
+  stroke-width: 1px;
+  stroke:transparent;
 }
 
 .caption_drag_area, .annotation_drag_area, .image_drag_area {

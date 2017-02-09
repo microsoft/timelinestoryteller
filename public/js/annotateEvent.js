@@ -132,7 +132,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     d3.select(this).select(".annotation_frame")
     .transition()
     .duration(500)
-    .style("stroke","transparent")
+    .style("stroke","white")
     .attr("filter", "none");
   });
 
@@ -176,7 +176,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .attr('y', y_pos + y_anno_offset);
 
     d3.select(this.parentNode).select("#annotation_delete")
-    .attr('x', x_pos + x_anno_offset + label_width + annotation_buffer + 10)
+    .attr('x', x_pos + x_anno_offset + label_width + annotation_buffer + 15)
     .attr('y', y_pos + y_anno_offset);
 
     var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
@@ -248,7 +248,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .call(wrap,label_width - 7.5);
 
     d3.select(this.parentNode).select("#annotation_delete")
-    .attr('x', x_pos + x_anno_offset + label_width + annotation_buffer + 10)
+    .attr('x', x_pos + x_anno_offset + label_width + annotation_buffer + 15)
     .attr('y', y_pos + y_anno_offset);
 
     var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
@@ -307,8 +307,8 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr('title','resize label')
   .attr("x", x_pos + x_anno_offset + label_width + annotation_buffer)
   .attr("y", y_pos + y_anno_offset)
-  .attr("width",10)
-  .attr("height",10)
+  .attr("width",15)
+  .attr("height",15)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0.1)
@@ -318,10 +318,10 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("class","annotation_control annotation_delete")
   .attr("id","annotation_delete")
   .attr('title','remove label')
-  .attr("x", x_pos + x_anno_offset + label_width + annotation_buffer + 10)
+  .attr("x", x_pos + x_anno_offset + label_width + annotation_buffer + 15)
   .attr("y", y_pos + y_anno_offset)
-  .attr("width",10)
-  .attr("height",10)
+  .attr("width",15)
+  .attr("height",15)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0.1)
@@ -373,35 +373,6 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("y", y_pos + y_anno_offset)
   .attr("width",label_width + 7.5)
   .on("click", function () {
-
-  })
-  .on("dblclick", function () {
-
-    console.log("event " + item_index + " annotation removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation removed"
-    }
-    usage_log.push(log_event);
-
-    var corresponding_event = d3.select("#event_g" + item_index);
-
-    corresponding_event[0][0].__data__.selected = false;
-
-    //highlighting not used in Priestley style
-
-    corresponding_event.selectAll(".event_span")
-    .attr("filter", "none")
-    .style("stroke","#fff")
-    .style("stroke-width","0.25px");
-
-    corresponding_event.selectAll(".event_span_component")
-    .style("stroke","#fff")
-    .style("stroke-width","0.25px");
-
-    d3.select(this.parentNode).remove();
 
   })
   .call(drag);

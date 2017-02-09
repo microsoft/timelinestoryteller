@@ -36,7 +36,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     d3.select(this).select(".caption_frame")
     .transition()
     .duration(500)
-    .style("stroke","none")
+    .style("stroke","white")
     .attr("filter", "none");
   });
 
@@ -82,7 +82,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + unit_width + 10)
+    .attr('x', x_pos + caption_width + unit_width + 15)
     .attr('y', y_pos);
   })
   .on("dragend", function() {
@@ -123,7 +123,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr("width", caption_width + 7.5);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + unit_width + 10)
+    .attr('x', x_pos + caption_width + unit_width + 15)
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select(".caption_drag_area")
@@ -158,8 +158,8 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr('title','resize caption')
   .attr("x", x_pos + caption_width + unit_width)
   .attr("y", y_pos)
-  .attr("width",10)
-  .attr("height",10)
+  .attr("width",15)
+  .attr("height",15)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
@@ -169,10 +169,10 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("class","annotation_control annotation_delete")
   .attr("id","caption_delete")
   .attr('title','remove caption')
-  .attr("x", x_pos + caption_width + unit_width + 10)
+  .attr("x", x_pos + caption_width + unit_width + 15)
   .attr("y", y_pos)
-  .attr("width",10)
-  .attr("height",10)
+  .attr("width",15)
+  .attr("height",15)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
@@ -203,19 +203,6 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("x", x_pos)
   .attr("y", y_pos)
   .attr("width",caption_width + 7.5)
-  .on("dblclick", function () {
-
-    console.log("caption " + caption_index + " removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " removed"
-    }
-    usage_log.push(log_event);
-
-    d3.select(this.parentNode).remove();
-  })
   .call(drag);
 
   caption_label.attr("dy",1 + "em")

@@ -631,18 +631,18 @@ function formatAbbreviation(x) {
 
     main_svg.selectAll(".event_annotation").remove();
 
-    d3.selectAll('.timeline_event_g').each(function () {
-      this.__data__.selected = false;
-    });
+    // d3.selectAll('.timeline_event_g').each(function () {
+    //   this.__data__.selected = false;
+    // });
 
-    d3.selectAll(".event_span")
-    .attr("filter", "none")
-    .style("stroke","#fff")
-    .style("stroke-width","0.25px");
-
-    d3.selectAll(".event_span_component")
-    .style("stroke","#fff")
-    .style("stroke-width","0.25px");
+    // d3.selectAll(".event_span")
+    // .attr("filter", "none")
+    // .style("stroke","#fff")
+    // .style("stroke-width","0.25px");
+    //
+    // d3.selectAll(".event_span_component")
+    // .style("stroke","#fff")
+    // .style("stroke-width","0.25px");
   };
 
   /**
@@ -1386,7 +1386,7 @@ function formatAbbreviation(x) {
       d3.selectAll(".gdocs_info_element").style("display","none");
     }
     else {
-      d3.select("#gdocs_info").style("height",25 + "px");
+      d3.select("#gdocs_info").style("height",27 + "px");
       setTimeout(function () {
         d3.selectAll(".gdocs_info_element").style("display","inline");
       },500);
@@ -1521,17 +1521,18 @@ function formatAbbreviation(x) {
   .append("input")
   .attr({
     type: 'text',
-    placeholder: "Spreadsheet Key",
+    placeholder: "Published spreadsheet URL",
     class: "text_input",
     id: "gdoc_spreadsheet_key_input"
   });
 
   gdocs_info.append("div")
+  .attr("id","gdoc_spreadsheet_title_div")
   .attr("class","gdocs_info_element")
   .append("input")
   .attr({
     type: 'text',
-    placeholder: "Worksheet Title",
+    placeholder: "Worksheet title (tab name)",
     class: "text_input",
     id: "gdoc_worksheet_title_input"
   });
@@ -1539,9 +1540,8 @@ function formatAbbreviation(x) {
   gdocs_info.append("div")
   .attr("id","gdoc_spreadsheet_confirm_div")
   .attr("class","gdocs_info_element")
+  .style('width','20px')
   .append("input")
-  .style('margin-top', '-27px')
-  .style('float', 'right')
   .attr({
     type: "image",
     name: "Confirm Google Spreadsheet Data",
@@ -1555,6 +1555,8 @@ function formatAbbreviation(x) {
   .on('click', function() {
 
     gdoc_key = d3.select("#gdoc_spreadsheet_key_input").property("value");
+    gdoc_key = gdoc_key.replace(/.*\/d\//g,'');
+    gdoc_key = gdoc_key.replace(/\/.*$/g,'');
     gdoc_worksheet = d3.select("#gdoc_worksheet_title_input").property("value");
     console.log("gdoc spreadsheet " + gdoc_worksheet + " added using key \"" + gdoc_key + "\"");
 
@@ -1584,7 +1586,7 @@ function formatAbbreviation(x) {
 
   var disclaimer = d3.select("#import_div").append("div")
   .attr("id","disclaimer")
-  .html("<span class='disclaimer_title'style='clear:both'>This is an expressive visual storytelling environment for presenting timelines.</span><span class='disclaimer_text'><br><strong>A note about privacy</strong>: </span>" +
+  .html("<span class='disclaimer_title'style='clear:both'>An expressive visual storytelling environment for presenting timelines.</span><span class='disclaimer_text'><br><strong>A note about privacy</strong>: </span>" +
   "<span class='disclaimer_text'>Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication. " +
   "By using this service, you agree to <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>'s <a title='Privacy' href='https://go.microsoft.com/fwlink/?LinkId=521839'>Privacy Statement</a> and <a title='Terms of Use' href='https://go.microsoft.com/fwlink/?LinkID=760869'>Terms of Use</a>.</span>");
 
@@ -2831,7 +2833,7 @@ function formatAbbreviation(x) {
       var category_metadata = d3.select('#timeline_metadata_contents')
       .append('div')
       .attr('class','timeline_metadata_contents_div')
-      .style('border-top','1px solid #999');
+      .style('border-top','1px dashed #999');
 
       var category_metadata_p = category_metadata
       .append('p')
@@ -2888,9 +2890,10 @@ function formatAbbreviation(x) {
       d3.select('#timeline_metadata_contents')
       .append('div')
       .attr('class','timeline_metadata_contents_div')
-      .style('border-top','1px solid #999')
+      .style('border-top','1px dashed #999')
       .html(
-        "<p class='metadata_content'><img src='img/l-fac.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: ( " + num_facets + " ) " + facets.domain().slice(1,30).join(" .. ") + "</p>");
+        "<p class='metadata_content'><img src='img/facets.png' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: " +
+        ((facets.domain().length > 1) ? ("( " + num_facets + " ) " + facets.domain().slice(0,30).join(" .. ")) : '(none)')  + "</p>");
 
 
       timeline_metadata.style("display","inline");

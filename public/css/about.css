@@ -537,17 +537,11 @@ margin-bottom: 30px;
 }
 
 #draw_timeline {
-  margin-left: 5px;
-  margin-left: 5px;
-  margin-bottom: 5px;
-  margin-top: 0px;
   width: 560px;
   padding-top: 15px;
   padding-bottom: 15px;
   height: 25px;
-  bottom: 0px;
-  right: 0px;
-  border-radius: 10px;
+  border-radius: 25px;
   background-color: #ff7f0e;
   border-color: #da6600;
   background: #ff7f0e;
@@ -565,6 +559,7 @@ margin-bottom: 30px;
   background-color: #da6600;
   border-color: #ff7f0e;
   background: #da6600;
+  border: 1px solid #ff7f0e;
   background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);
   background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);
   background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);
