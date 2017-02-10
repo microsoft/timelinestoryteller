@@ -312,7 +312,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("height",15)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
-  .style("opacity",0.1)
+  .style("opacity",0)
   .call(resize);
 
   annotation_resizer.append('title')
@@ -328,7 +328,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("height",15)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
-  .style("opacity",0.1)
+  .style("opacity",0)
   .on('click', function(){
     var corresponding_event = d3.select("#event_g" + item_index);
 

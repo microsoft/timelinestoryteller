@@ -2366,6 +2366,14 @@ configurableTL: //a configurable timeline
         })
         .style("pointer-events", function(d){
           return "none";
+        })
+        .style("fill", function (d) {
+          if (d.category == undefined) {
+            return "#E45641";
+          }
+          else {
+            return categories(d.category);
+          }
         });
 
         timeline_event_g_update.select("rect.event_span")
@@ -2852,6 +2860,14 @@ configurableTL: //a configurable timeline
         })
         .style("pointer-events", function(d){
           return "none";
+        })
+        .style("fill", function (d) {
+          if (d.category == undefined) {
+            return "#E45641";
+          }
+          else {
+            return categories(d.category);
+          }
         });
 
         timeline_event_g_update.select("path.event_span")
@@ -3253,6 +3269,14 @@ configurableTL: //a configurable timeline
         })
         .style("pointer-events", function(d){
           return "none";
+        })
+        .style("fill", function (d) {
+          if (categories.domain()[0] == undefined) {
+            return "#E45641";
+          }
+          else {
+            return categories(d3.select(this.parentNode).datum().category);
+          }
         });
 
         timeline_event_g_update.selectAll("rect.event_span_component")
@@ -3639,6 +3663,14 @@ configurableTL: //a configurable timeline
           }
           else {
             return "none";
+          }
+        })
+        .style("fill", function (d) {
+          if (categories.domain()[0] == undefined) {
+            return "#E45641";
+          }
+          else {
+            return categories(d3.select(this.parentNode).datum().category);
           }
         });
 

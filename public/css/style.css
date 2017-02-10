@@ -539,6 +539,10 @@ input[type="color"]::-moz-color-swatch {
   opacity: 0;
 }
 
+.colorpicker:hover {
+  border: 1px solid #f00;
+}
+
 .colorpicker_wrapper:hover {
   border: 1px solid #f00;
 }
@@ -924,6 +928,10 @@ input[type="color"]::-moz-color-swatch {
   position: absolute;
   transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
+  padding-bottom: 105px;
+  padding-top: 100px;
+  padding-left: 75px;
+  padding-right: 70px;
 }
 
 .legend {
@@ -956,9 +964,10 @@ input[type="color"]::-moz-color-swatch {
   stroke: #f00;
 }
 
-.legend_element text {
+.legend_element_g text {
   fill: #666;
   font-size: 12px;
+  cursor:pointer;
 }
 
 .legend_element rect {

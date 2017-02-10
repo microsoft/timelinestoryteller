@@ -14,8 +14,8 @@ GLOBAL VARIABLES
 **/
 
 //global dimensions
-var margin = {top: 100, right: 70, bottom: 105, left: 70},
-    padding = {top: 100, right: 70, bottom: 105, left: 70},
+var margin = {top: 100, right: 70, bottom: 105, left: 75},
+    padding = {top: 100, right: 70, bottom: 105, left: 75},
     window_width = window.innerWidth,
     window_height = window.innerHeight,
     width,
@@ -894,6 +894,8 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
+    d3.selectAll('foreignObject').remove();
+
     console.log("exporting main_svg as PNG");
 
     var log_event = {
@@ -919,6 +921,8 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
+    d3.selectAll('foreignObject').remove();
+
     console.log("exporting main_svg as SVG");
 
     var log_event = {
@@ -929,6 +933,7 @@ function formatAbbreviation(x) {
     usage_log.push(log_event);
 
     saveSvg(document.getElementById("main_svg"), "timeline_image.svg", {backgroundColor: "white"});
+
   });
 
   export_formats.append('input')
@@ -942,6 +947,8 @@ function formatAbbreviation(x) {
     title: "Export animated GIF"
   })
   .on('click', function() {
+
+    d3.selectAll('foreignObject').remove();
 
     gif.frames = [];
     var gif_scenes = scenes;
@@ -993,6 +1000,7 @@ function formatAbbreviation(x) {
       d3.selectAll('.gif_frame').remove();
     },150 + 150 * gif.frames.length)
     gif_scenes = [];
+
   });
 
   export_formats.append('input')
@@ -1006,6 +1014,9 @@ function formatAbbreviation(x) {
     title: "Export story"
   })
   .on('click', function() {
+
+    d3.selectAll('foreignObject').remove();
+
     console.log('exporting story as .cdc');
 
     var log_event = {
@@ -2014,10 +2025,10 @@ function formatAbbreviation(x) {
     main_svg = d3.select("body")
     .append("svg")
     .attr("id", "main_svg")
-    .style('margin-top',margin.top + 'px')
-    .style('margin-bottom',margin.bottom + 'px')
-    .style('margin-left',margin.left + 'px')
-    .style('margin-right',margin.right + 'px');
+    .style('padding-right',padding.right + 'px')
+    .style('padding-top',padding.top + 'px')
+    .style('padding-bottom',padding.bottom + 'px')
+    .style('padding-left',padding.left + 'px');
     // .style("top", d3.select("#option_div")[0][0].getBoundingClientRect().height);
 
     navigation_div = d3.select("body")
@@ -3135,6 +3146,8 @@ function formatAbbreviation(x) {
 
   function recordScene () {
 
+    d3.selectAll('foreignObject').remove();
+
     d3.select('#stepper_svg_placeholder').remove();
 
     record_width = width;
@@ -3901,15 +3914,38 @@ function formatAbbreviation(x) {
       //setup legend
       legend_panel = main_svg.append('svg')
       .attr('height', 35 + track_height * (num_categories + 1) + 5)
-      .attr('width', max_legend_item_width + 10 + unit_width + 10)
+      .attr('width', max_legend_item_width + 10 + unit_width + 10 + 20)
+      .attr('id','legend_panel')
       .attr('class','legend')
       .on("mouseover", function () {
+        if (d3.selectAll('foreignObject')[0].length == 0) {
+          addLegendColorPicker();
+        }
         d3.select(this).select('.legend_rect').attr("filter", "url(#drop-shadow)")
+        d3.select(this).select('#legend_expand_btn').style('opacity',1).attr("filter", "url(#drop-shadow)");
       })
       .on("mouseout", function () {
         d3.select(this).select('.legend_rect').attr("filter", "none")
+        d3.select(this).select('#legend_expand_btn').style('opacity',0.1).attr("filter", "none");
       })
-      .on("dblclick", function () {
+      .call(legendDrag);
+
+      legend_panel.append("rect")
+      .attr('class','legend_rect')
+      .attr('height',track_height * (num_categories + 1))
+      .attr('width', max_legend_item_width + 5 + unit_width + 10)
+      .append("title")
+      .text("Click on a color swatch to select a custom color for that category.");
+
+      legend_panel.append("svg:image")
+      .attr('id','legend_expand_btn')
+      .attr("x", max_legend_item_width + 5 + unit_width + 10)
+      .attr("y", 0)
+      .attr("width",15)
+      .attr("height",15)
+      .attr("xlink:href","/img/expand.png")
+      .style("opacity",0.1)
+      .on("click", function () {
 
         if (legend_expanded) {
 
@@ -3940,21 +3976,19 @@ function formatAbbreviation(x) {
           expandLegend();
         }
       })
-      .call(legendDrag);
+      .append("title")
+      .text("Expand / collapse legend.");
 
-      legend_panel.append("title")
-      .text("Double click to hide legend.")
-
-      legend_panel.append("rect")
-      .attr('class','legend_rect')
-      .attr('height',track_height * (num_categories + 1))
-      .attr('width', max_legend_item_width + 5 + unit_width + 10);
-
-      legend = legend_panel.selectAll('.legend_element')
+      legend = legend_panel.selectAll('.legend_element_g')
       .data(categories.domain().sort())
       .enter()
       .append('g')
-      .attr('class','legend_element');
+      .attr('class','legend_element_g');
+
+      legend.append("title")
+      .text(function(d){
+        return d;
+      })
 
       legend.attr('transform', function(d, i) {
         return ('translate(0,' + (35 + (i + 1) * track_height) + ')');
@@ -4024,14 +4058,12 @@ function formatAbbreviation(x) {
       legend.append('rect')
       .attr('class','legend_element')
       .attr('x', legend_spacing)
+      .attr('y', 2)
       .attr('width', legend_rect_size)
       .attr('height', legend_rect_size)
       .attr('transform', 'translate(0,-35)')
       .style('fill', categories)
-      .append("title")
-      .text(function (d) {
-        return d;
-      });
+      .append("title");
 
       legend.append('text')
       .attr('class','legend_element')
@@ -4054,6 +4086,51 @@ function formatAbbreviation(x) {
     }
   };
 
+  function addLegendColorPicker () {
+
+    d3.selectAll(".legend_element_g").append('foreignObject')
+    .attr('width', legend_rect_size)
+    .attr('height', legend_rect_size)
+    .attr('transform', 'translate(' + legend_spacing + ',-35)')
+    .append("xhtml:body")
+    .append('input')
+    .attr('type','color')
+    .attr("filter", "url(#drop-shadow)")
+    .attr('class','colorpicker')
+    .attr('value',categories)
+    .style('height',(legend_rect_size - 2) + "px")
+    .style('width',(legend_rect_size - 2) + "px")
+    .style('opacity',1)
+    .on('mouseover', function(d,i){
+      color_swap_target = categories.range().indexOf(this.value)
+      console.log("category " + i + ": " + d + " / " + this.value + " (index # " + color_swap_target + ")");
+    })
+    .on('change', function(d,i) {
+      var new_color = this.value;
+      d3.select(".legend").selectAll(".legend_element_g rect").each( function () {
+        if(this.__data__ == d) {
+          d3.select(this).style('fill',new_color);
+        }
+      })
+      var temp_palette = categories.range();
+
+      temp_palette[color_swap_target] = this.value;
+      categories.range(temp_palette)
+      temp_palette = undefined;
+      use_custom_palette = true;
+
+      main_svg.call(timeline_vis.duration(1200));
+
+      console.log("category " + i + ": " + d + " now uses " + this.value);
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "color_palette_change",
+        event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
+      }
+      usage_log.push(log_event);
+    });
+  };
+
   function expandLegend () {
 
     d3.select(".legend")
@@ -4064,22 +4141,29 @@ function formatAbbreviation(x) {
     .duration(500)
     .attr('height',track_height * (num_categories + 1))
     .attr('width', max_legend_item_width + 5 + unit_width + 10)
+    d3.select(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(500)
+    .attr('x',max_legend_item_width + 5 + unit_width + 10);
     d3.select(".legend").select(".legend_title")
     .transition()
     .duration(500)
     .attr('dx','0em')
     .attr('transform', 'translate(5,0)rotate(0)');
-    d3.select(".legend").selectAll(".legend_element text")
+    d3.select(".legend").selectAll(".legend_element_g text")
     .transition()
     .duration(500)
     .style("fill-opacity", "1")
     .style("display", "inline")
     .attr('transform', 'translate(0,-35)');
-    d3.select(".legend").selectAll(".legend_element rect")
+    d3.select(".legend").selectAll(".legend_element_g rect")
     .transition()
     .duration(500)
     .attr('transform', 'translate(0,-35)');
-
+    d3.select(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(500)
+    .attr('transform', 'translate(' + legend_spacing + ',-35)');
   };
 
   function collapseLegend () {
@@ -4093,21 +4177,29 @@ function formatAbbreviation(x) {
     .duration(500)
     .attr('height', 35 + track_height * (num_categories + 1))
     .attr('width', 25)
+    d3.select(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(500)
+    .attr('x',25);
     d3.select(".legend").select(".legend_title")
     .transition()
     .duration(500)
     .attr('dx','-4.3em')
     .attr('transform', 'translate(0,0)rotate(270)');
-    d3.select(".legend").selectAll(".legend_element text")
+    d3.select(".legend").selectAll(".legend_element_g text")
     .transition()
     .duration(500)
     .style("fill-opacity", "0")
     .style("display", "none")
     .attr('transform', 'translate(0,0)');
-    d3.select(".legend").selectAll(".legend_element rect")
+    d3.select(".legend").selectAll(".legend_element_g rect")
     .transition()
     .duration(500)
     .attr('transform', 'translate(0,0)');
+    d3.select(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(500)
+    .attr('transform', 'translate(' + legend_spacing + ',0)');
 
   };
 

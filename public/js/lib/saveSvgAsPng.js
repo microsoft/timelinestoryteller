@@ -256,7 +256,7 @@ THE SOFTWARE.
       if(options.canvg) {
         options.canvg(canvas, src);
       } else {
-        context.drawImage(src, 0, 0);
+        context.drawImage(src, -70, -100);
       }
 
       if(options.backgroundColor){
