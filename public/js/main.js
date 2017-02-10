@@ -16,6 +16,8 @@ GLOBAL VARIABLES
 //global dimensions
 var margin = {top: 100, right: 70, bottom: 105, left: 70},
     padding = {top: 100, right: 70, bottom: 105, left: 70},
+    window_width = window.innerWidth,
+    window_height = window.innerHeight,
     width,
     height;
 
@@ -167,8 +169,8 @@ function formatAbbreviation(x) {
 
     socket.emit('hello_from_client', { hello: 'server' })
 
-    width = window.innerWidth - margin.right - margin.left - getScrollbarWidth(),
-    height = window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()
+    width = window_width - margin.right - margin.left - getScrollbarWidth(),
+    height = window_height - margin.top - margin.bottom - getScrollbarWidth()
 
     var log_event = {
       event_time: new Date().valueOf(),
@@ -1017,6 +1019,8 @@ function formatAbbreviation(x) {
       'timeline_json_data':timeline_json_data,
       'name':"timeline_story.cdc",
       'scenes':scenes,
+      'width':window.innerWidth,
+      'height':window.innerHeight,
       'color_palette':categories.range(),
       'usage_log': usage_log,
       'caption_list':caption_list,
@@ -1953,6 +1957,9 @@ function formatAbbreviation(x) {
     d3.select("#navigation_div").style("bottom", -100 + "px");
     use_custom_palette = false;
 
+    window_width = window.innerWidth;
+    window_height = window.innerHeight;
+
     if (main_svg != undefined) {
       console.clear();
       main_svg.remove();
@@ -1960,7 +1967,7 @@ function formatAbbreviation(x) {
       navigation_div.remove();
       timeline_vis.prev_tl_representation("None");
 
-      if (source_format != 'story') {
+      if (source_format != 'story' && source_format != 'demo_story') {
         caption_index = 0;
         image_index = 0;
         scenes = [];
@@ -2006,7 +2013,11 @@ function formatAbbreviation(x) {
 
     main_svg = d3.select("body")
     .append("svg")
-    .attr("id", "main_svg");
+    .attr("id", "main_svg")
+    .style('margin-top',margin.top + 'px')
+    .style('margin-bottom',margin.bottom + 'px')
+    .style('margin-left',margin.left + 'px')
+    .style('margin-right',margin.right + 'px');
     // .style("top", d3.select("#option_div")[0][0].getBoundingClientRect().height);
 
     navigation_div = d3.select("body")
@@ -2137,7 +2148,7 @@ function formatAbbreviation(x) {
     playback_bar.append('div')
     .attr('id','stepper_container')
     .style('width', function () {
-      return (window.innerWidth * 0.9 - 120 - 12) + 'px';
+      return (window_width * 0.9 - 120 - 12) + 'px';
     })
     .append('svg')
     .attr('id','stepper_svg')
@@ -2149,7 +2160,7 @@ function formatAbbreviation(x) {
 
     window.onresize = function(e) {
       d3.select('#stepper_container').style('width', function () {
-        return (window.innerWidth * 0.9 - 120 - 12 - 5) + 'px';
+        return (window_width * 0.9 - 120 - 12 - 5) + 'px';
       });
     };
 
@@ -2309,11 +2320,55 @@ function formatAbbreviation(x) {
           caption_index = story.caption_list.length - 1;
           image_index = story.image_list.length - 1;
 
+          var min_story_width = window_width,
+              max_story_width = window_width,
+              min_story_height = window_height;
+
           scenes.forEach(function (d,i){
             if (d.s_order == undefined) {
               d.s_order = i;
             }
+            if ((d.s_width + margin.left + margin.right + getScrollbarWidth()) < min_story_width) {
+              min_story_width = (d.s_width + margin.left + margin.right + getScrollbarWidth());
+            }
+            if ((d.s_width + margin.left + margin.right + getScrollbarWidth()) > max_story_width) {
+              max_story_width = (d.s_width + margin.left + margin.right + getScrollbarWidth());
+            }
+            if ((d.s_height + margin.top + margin.bottom + getScrollbarWidth()) < min_story_height) {
+              min_story_height = (d.s_height + margin.top + margin.bottom + getScrollbarWidth());
+            }
           })
+
+          if (story.width == undefined) {
+            if (max_story_width > window_width) {
+              story.width = max_story_width;
+            }
+            else {
+              story.width  = min_story_width;
+            }
+          }
+          if (story.height == undefined) {
+            story.height = min_story_height;
+          }
+
+          console.log("s_width: " + story.width + "; window_width: " + window_width);
+
+          if (story.width != window_width) {
+            var diff_width = (window_width - story.width) / 2;
+            var new_margin_left = margin.left + diff_width,
+                new_margin_right = margin.right + diff_width;
+            if (new_margin_left < 0) {
+              new_margin_left = 0;
+            }
+            if (new_margin_right < 0) {
+              new_margin_right = 0;
+            }
+            window_width = story.width;
+            d3.select('#main_svg')
+            .style('margin-left',new_margin_left + 'px')
+            .style('margin-right',new_margin_right + 'px');
+          }
+          window_height = story.height;
 
           story.timeline_json_data.forEach(function (d) {
             unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
@@ -2352,11 +2407,55 @@ function formatAbbreviation(x) {
         caption_index = story.caption_list.length - 1;
         image_index = story.image_list.length - 1;
 
+        var min_story_width = window_width,
+            max_story_width = window_width,
+            min_story_height = window_height;
+
         scenes.forEach(function (d,i){
           if (d.s_order == undefined) {
             d.s_order = i;
           }
+          if ((d.s_width + margin.left + margin.right + getScrollbarWidth()) < min_story_width) {
+            min_story_width = (d.s_width + margin.left + margin.right + getScrollbarWidth());
+          }
+          if ((d.s_width + margin.left + margin.right + getScrollbarWidth()) > max_story_width) {
+            max_story_width = (d.s_width + margin.left + margin.right + getScrollbarWidth());
+          }
+          if ((d.s_height + margin.top + margin.bottom + getScrollbarWidth()) < min_story_height) {
+            min_story_height = (d.s_height + margin.top + margin.bottom + getScrollbarWidth());
+          }
         })
+
+        if (story.width == undefined) {
+          if (max_story_width > window_width) {
+            story.width = max_story_width;
+          }
+          else {
+            story.width  = min_story_width;
+          }
+        }
+        if (story.height == undefined) {
+          story.height = min_story_height;
+        }
+
+        console.log("s_width: " + story.width + "; window_width: " + window_width);
+
+        if (story.width != window_width) {
+          var diff_width = (window_width - story.width) / 2;
+          var new_margin_left = margin.left + diff_width,
+              new_margin_right = margin.right + diff_width;
+          if (new_margin_left < 0) {
+            new_margin_left = 0;
+          }
+          if (new_margin_right < 0) {
+            new_margin_right = 0;
+          }
+          window_width = story.width;
+          d3.select('#main_svg')
+          .style('margin-left',new_margin_left + 'px')
+          .style('margin-right',new_margin_right + 'px');
+        }
+        window_height = story.height;
 
         story.timeline_json_data.forEach(function (d) {
           unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
@@ -2925,12 +3024,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", d3.max([width, window.innerWidth - margin.right - margin.left - getScrollbarWidth()]))
-    .attr("height", d3.max([height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+    .attr("width", width)
+    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_scale(this.value)
-    .height(height)
+    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
     .width(width));
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
@@ -2959,12 +3058,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", d3.max([width, window.innerWidth - margin.right - margin.left - getScrollbarWidth()]))
-    .attr("height", d3.max([height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+    .attr("width", width)
+    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_layout(this.value)
-    .height(height)
+    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
     .width(width));
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
@@ -3010,12 +3109,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", d3.max([width, window.innerWidth - margin.right - margin.left - getScrollbarWidth()]))
-    .attr("height", d3.max([height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+    .attr("width", width)
+    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_representation(this.value)
-    .height(height)
+    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
     .width(width));
 
     if (timeline_vis.tl_representation() == "Curve" && !dirty_curve) {
@@ -3240,7 +3339,7 @@ function formatAbbreviation(x) {
     navigation_step_svg.selectAll('.framePoint')
     .on('mouseover', function (d,i) {
 
-      var x_pos = d3.min([+d3.select(this).select('rect').attr('x') + 100,window.innerWidth - margin.right - margin.left - getScrollbarWidth() - 300]);
+      var x_pos = d3.min([+d3.select(this).select('rect').attr('x') + 100,window_width - margin.right - margin.left - getScrollbarWidth() - 300]);
 
       var img_src = d3.select(this).select('image').attr('href');
 
@@ -3355,14 +3454,14 @@ function formatAbbreviation(x) {
       //resize the main svg to accommodate the scene
       main_svg.transition()
       .duration(1200)
-      .attr("width", d3.max([width, scene.s_width, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]))
-      .attr("height", d3.max([height, scene.s_height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+      .attr("width", width)
+      .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
       //set the scene's scale, layout, representation
       timeline_vis.tl_scale(scene.s_scale)
       .tl_layout(scene.s_layout)
       .tl_representation(scene.s_representation)
-      .height(d3.max([height, scene.s_height]))
+      .height(d3.max([height, scene.s_height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
       .width(d3.max([width, scene.s_width]));
     }
 
@@ -3778,8 +3877,8 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", d3.max([width, window.innerWidth - margin.right - margin.left - getScrollbarWidth()]))
-    .attr("height", d3.max([height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+    .attr("width", width)
+    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     timeline_vis.previous_segment_granularity(segment_granularity);
 
@@ -4186,8 +4285,8 @@ function formatAbbreviation(x) {
         return time.minute.floor(d.end_date);
       });
 
-      if (width > (window.innerWidth - margin.right - margin.left - getScrollbarWidth())) {
-        effective_width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+      if (width > (window_width - margin.right - margin.left - getScrollbarWidth())) {
+        effective_width = window_width - margin.right - margin.left - getScrollbarWidth();
       }
       else {
         effective_width = width;
@@ -4537,7 +4636,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = num_tracks * track_height + 1.5 * track_height + margin.top + margin.bottom;
           break;
 
@@ -4553,7 +4652,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = (max_num_tracks * track_height + 1.5 * track_height) * num_facets + margin.top + margin.bottom;
           break;
 
@@ -4569,7 +4668,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = (num_tracks * track_height + 1.5 * track_height) * num_segments + margin.top + margin.bottom;
           break;
         }
@@ -4588,7 +4687,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = (max_num_tracks * track_height + 1.5 * track_height) * num_facets + margin.top + margin.bottom;
         }
         else {
@@ -4620,7 +4719,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = num_tracks * track_height + 1.5 * track_height + margin.top + margin.bottom;
         }
         else if (layout == "Faceted") {
@@ -4635,7 +4734,7 @@ function formatAbbreviation(x) {
           }
           usage_log.push(log_event);
 
-          width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          width = window_width - margin.right - margin.left - getScrollbarWidth();
           height = (max_num_tracks * track_height + 1.5 * track_height) * num_facets + margin.top + margin.bottom;
         }
         else {
@@ -4686,7 +4785,7 @@ function formatAbbreviation(x) {
           max_seq_index = d3.max(data, function (d) { return d.seq_index }) + 1;
           width = d3.max([
             max_seq_index * 1.5 * unit_width + margin.left + margin.right,
-            window.innerWidth - margin.right - margin.left - getScrollbarWidth()
+            window_width - margin.right - margin.left - getScrollbarWidth()
           ]);
           height = num_seq_tracks * track_height + 1.5 * track_height + margin.top + margin.bottom;
         }
@@ -4696,7 +4795,7 @@ function formatAbbreviation(x) {
           max_seq_index = d3.max(data, function (d) { return d.seq_index }) + 1;
           width = d3.max([
             max_seq_index * 1.5 * unit_width + margin.left + margin.right,
-            window.innerWidth - margin.right - margin.left - getScrollbarWidth()
+            window_width - margin.right - margin.left - getScrollbarWidth()
           ]);
           height = (max_num_seq_tracks * track_height + 1.5 * track_height) * num_facets + margin.top + margin.bottom;
         }
@@ -4722,7 +4821,7 @@ function formatAbbreviation(x) {
 
       centre_radius = 50;
 
-      var effective_size = window.innerWidth - margin.right - padding.right - margin.left - padding.left - getScrollbarWidth();
+      var effective_size = window_width - margin.right - padding.right - margin.left - padding.left - getScrollbarWidth();
 
       switch (scale) {
 
@@ -4989,11 +5088,11 @@ function formatAbbreviation(x) {
 
           width = d3.max([
             spiral_dim + spiral_padding + margin.right + margin.left,
-            window.innerWidth - margin.right - margin.left - getScrollbarWidth()
+            window_width - margin.right - margin.left - getScrollbarWidth()
           ]);
           height = d3.max([
             spiral_dim + spiral_padding + margin.top + margin.bottom,
-            window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()
+            window_height - margin.top - margin.bottom - getScrollbarWidth()
           ]);
         }
         else if (layout == "Faceted") {
@@ -5025,14 +5124,14 @@ function formatAbbreviation(x) {
           spiral_dim = d3.max([(max_x + 2 * spiral_padding) - (min_x - 2 * spiral_padding),(max_y + 2 * spiral_padding) - (min_y - 2 * spiral_padding)]);
 
           var facet_number = 0,
-          effective_size = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
+          effective_size = window_width - margin.right - margin.left - getScrollbarWidth();
 
           num_facet_cols = d3.min([num_facet_cols,Math.floor(effective_size / spiral_dim)]);
           num_facet_rows = Math.ceil(num_facets / num_facet_cols);
 
           width = d3.max([
             num_facet_cols * spiral_dim + margin.right + margin.left,
-            window.innerWidth - margin.right - margin.left - getScrollbarWidth()
+            window_width - margin.right - margin.left - getScrollbarWidth()
           ]);
           height = num_facet_rows * spiral_dim + margin.top + margin.bottom;
         }
@@ -5064,8 +5163,8 @@ function formatAbbreviation(x) {
         //justifiable
         assignSequenceTracks(data,[]);
         max_seq_index = d3.max(data, function (d) { return d.seq_index }) + 1;
-        width = window.innerWidth - margin.right - margin.left - getScrollbarWidth();
-        height = window.innerHeight - margin.top - margin.bottom - getScrollbarWidth();
+        width = window_width - margin.right - margin.left - getScrollbarWidth();
+        height = window_height - margin.top - margin.bottom - getScrollbarWidth();
       }
       else {
         //not justifiable
@@ -5597,8 +5696,8 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", d3.max([width, window.innerWidth - margin.right - margin.left - getScrollbarWidth()]))
-    .attr("height", d3.max([height, window.innerHeight - margin.top - margin.bottom - getScrollbarWidth()]));
+    .attr("width", width)
+    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (timeline_vis.tl_representation() == "Grid"){
@@ -5615,7 +5714,9 @@ function formatAbbreviation(x) {
         d3.selectAll(".timeline_event_g").remove();
       }
     }
-    main_svg.call(timeline_vis.duration(1200).height(height).width(width));
+    main_svg.call(timeline_vis.duration(1200)
+    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
+    .width(width));
 
     if (reset_segmented_layout) {
 

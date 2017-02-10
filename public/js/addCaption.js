@@ -40,9 +40,6 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr("filter", "none");
   });
 
-  timeline_caption.append("title")
-  .text("double click to remove caption.");
-
   var drag = d3.behavior.drag()
   .origin(function () {
     var t = d3.select(this);
@@ -78,11 +75,11 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr('y', y_pos + unit_width);
 
     d3.select(this.parentNode).select(".frame_resizer")
-    .attr('x', x_pos + caption_width + unit_width)
+    .attr('x', x_pos + caption_width + 7.5)
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + unit_width + 15)
+    .attr('x', x_pos + caption_width + 7.5 + 15)
     .attr('y', y_pos);
   })
   .on("dragend", function() {
@@ -108,7 +105,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     };
   })
   .on("drag", function () {
-    d3.select(this).attr('x', d3.max([x_pos + caption_width + unit_width, x_pos + unit_width + (d3.event.x - x_pos)]));
+    d3.select(this).attr('x', d3.max([x_pos + caption_width + 7.5, x_pos + 7.5 + (d3.event.x - x_pos)]));
 
     caption_width = d3.max([min_caption_width,d3.event.x - x_pos]);
 
@@ -123,7 +120,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr("width", caption_width + 7.5);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + unit_width + 15)
+    .attr('x', x_pos + caption_width + 7.5 + 15)
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select(".caption_drag_area")
@@ -156,7 +153,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   timeline_caption.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize caption')
-  .attr("x", x_pos + caption_width + unit_width)
+  .attr("x", x_pos + caption_width + 7.5)
   .attr("y", y_pos)
   .attr("width",15)
   .attr("height",15)
@@ -169,7 +166,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("class","annotation_control annotation_delete")
   .attr("id","caption_delete")
   .attr('title','remove caption')
-  .attr("x", x_pos + caption_width + unit_width + 15)
+  .attr("x", x_pos + caption_width + 7.5 + 15)
   .attr("y", y_pos)
   .attr("width",15)
   .attr("height",15)

@@ -2,6 +2,7 @@
 
 body, input, textarea, select, text {
   font-family: "Segoe UI Web Regular","wf_segoe-ui_normal","Segoe UI","Segoe UI Symbol","Myriad","Calibri","UnDotum","Optima","Tahoma","Century Gothic","Helvetica Neue","BBAlpha Sans","S60 Sans","Arial",sans-serif;
+  margin: 0px;
 }
 
 a {
@@ -922,10 +923,8 @@ input[type="color"]::-moz-color-swatch {
 
 #main_svg {
   position: absolute;
-  margin-top: 100px;
-  margin-left: 70px;
-  margin-right: 70px;
-  margin-bottom: 100px;
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
 }
 
 .legend {
@@ -976,7 +975,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .timeline_frame {
-  fill:#fff;
+  fill:transparent;
   opacity: 0.1;
   stroke: none;
 }

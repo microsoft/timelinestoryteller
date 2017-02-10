@@ -15,6 +15,8 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   orig_image_height = image_height,
   min_image_width = 10;
 
+  var scaling_ratio = 1;
+
   var timeline_image = d3.select('#main_svg').append("g")
   .attr("id","image" + image_index)
   .attr("class","timeline_image");
@@ -67,9 +69,6 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     .attr("filter", "none");
   });
 
-  timeline_image.append("title")
-  .text("double click to remove image.");
-
   var drag = d3.behavior.drag()
   .origin(function () {
     var t = d3.select(this);
@@ -95,6 +94,11 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     d3.select(this)
     .attr('x', x_pos)
     .attr('y', y_pos);
+
+    d3.select(this.parentNode).select("clipPath").select('circle')
+    .attr('cx',x_pos + image_width / 2)
+    .attr('cy',y_pos + (image_height * scaling_ratio) / 2)
+    .attr('r',image_width / 2);
 
     d3.select(this.parentNode).select(".image_frame")
     .attr('x', x_pos)
@@ -138,7 +142,8 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     d3.select(this).attr('x', d3.max([x_pos + image_width, x_pos + (d3.event.x - x_pos)]));
 
     image_width = d3.max([min_image_width,d3.event.x - x_pos]);
-    var scaling_ratio = image_width / orig_image_weight;
+
+    scaling_ratio = image_width / orig_image_weight;
 
     var i = 0;
 
@@ -147,6 +152,11 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     }
     image_list[i].i_width = image_width;
     image_list[i].i_height = image_height * scaling_ratio;
+
+    d3.select(this.parentNode).select("clipPath").select('circle')
+    .attr('cx',x_pos + image_width / 2)
+    .attr('cy',y_pos + (image_height * scaling_ratio) / 2)
+    .attr('r',image_width / 2);
 
     d3.select(this.parentNode).select(".image_frame")
     .attr("width", image_width)
@@ -172,9 +182,42 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     usage_log.push(log_event);
   });
 
+  var image_defs = timeline_image.append("defs");
+
+  var circle_clip_path = image_defs.append('clipPath')
+  .attr('id','circlepath')
+  .append('circle')
+  .attr('cx',x_pos + image_width / 2)
+  .attr('cy',y_pos + image_height / 2)
+  .attr('r',image_width / 2);
+
   var image_frame = timeline_image.append("svg:image")
   .attr("xlink:href", image_url)
-  .attr("class","image_frame")  
+  .attr("class","image_frame")
+  .attr("clip-path", function(){
+    if (timeline_vis.tl_representation() == "Radial") {
+      return "url(#circlepath)";
+    }
+    else {
+      return "none";
+    }
+  })
+  .style('clip-path', function(){
+    if (timeline_vis.tl_representation() == "Radial") {
+      return "circle()";
+    }
+    else {
+      return "none";
+    }
+  })
+  .style('-webkit-clip-path', function(){
+    if (timeline_vis.tl_representation() == "Radial") {
+      return "circle()";
+    }
+    else {
+      return "none";
+    }
+  })
   .attr("x", x_pos)
   .attr("y", y_pos)
   .attr("width",image_width)
