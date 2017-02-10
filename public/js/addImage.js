@@ -49,22 +49,22 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .on("mouseover", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",1);
     d3.select(this).select(".image_frame")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("stroke","#999")
     .attr("filter", "url(#drop-shadow)");
   })
   .on("mouseout", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",0);
     d3.select(this).select(".image_frame")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("stroke","none")
     .attr("filter", "none");
   });
@@ -223,7 +223,7 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("width",image_width)
   .attr("height",image_height)
 
-  timeline_image.append("svg:image")
+  var image_resizer = timeline_image.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize image')
   .attr("x", x_pos + image_width)
@@ -234,6 +234,9 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
   .call(resize);
+
+  image_resizer.append('title')
+  .text('Resize image');
 
   timeline_image.append("svg:image")
   .attr("class","annotation_control annotation_delete")
@@ -257,7 +260,9 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     usage_log.push(log_event);
 
     d3.select(this.parentNode).remove();
-  });
+  })
+  .append('title')
+  .text('Remove image');
 
   var image_drag_area = timeline_image.append("rect")
   .attr("class","image_drag_area")

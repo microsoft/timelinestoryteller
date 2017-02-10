@@ -20,22 +20,22 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   timeline_caption.on("mouseover", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",1);
     d3.select(this).select(".caption_frame")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("stroke","#999")
     .attr("filter", "url(#drop-shadow)");
   })
   .on("mouseout", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",0);
     d3.select(this).select(".caption_frame")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("stroke","white")
     .attr("filter", "none");
   });
@@ -150,7 +150,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("width",caption_width + 7.5);
   // .attr("filter", "url(#drop-shadow)");
 
-  timeline_caption.append("svg:image")
+  var caption_resizer = timeline_caption.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize caption')
   .attr("x", x_pos + caption_width + 7.5)
@@ -161,6 +161,9 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
   .call(resize);
+
+  caption_resizer.append('title')
+  .text('Resize caption');
 
   timeline_caption.append("svg:image")
   .attr("class","annotation_control annotation_delete")
@@ -185,7 +188,9 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     usage_log.push(log_event);
 
     d3.select(this.parentNode).remove();
-  });
+  })
+  .append('title')
+  .text('Remove caption');
 
   var caption_label = timeline_caption.append("text")
   .attr("class","caption_label")

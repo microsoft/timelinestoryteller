@@ -3635,6 +3635,8 @@ function formatAbbreviation(x) {
           }
 
           annotateEvent(annotation.content_text,item_x_pos,item_y_pos,annotation.x_offset,annotation.y_offset,annotation.x_anno_offset,annotation.y_anno_offset,annotation.label_width,annotation.item_index,annotation.count);
+
+          d3.select('#event' + annotation.item_index + "_0").transition().duration(50).style('opacity',1);
         }
       });
 

@@ -111,28 +111,29 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
 
   var event_annotation =  d3.select('#main_svg').append("g")
   .attr("id","event" + item_index + "_" + annotation_index)
-  .attr("class","event_annotation");
+  .attr("class","event_annotation")
+  .style('opacity',0);
 
   event_annotation.on("mouseover", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",1);
     d3.select(this).select(".annotation_frame")
     .transition()
-    .duration(500)
-    .style("stroke","#999")
+    .duration(250)
+    .style("stroke","#f00")
     .attr("filter", "url(#drop-shadow)");
   })
   .on("mouseout", function () {
     d3.select(this).selectAll(".annotation_control")
     .transition()
-    .duration(500)
+    .duration(250)
     .style("opacity",0);
     d3.select(this).select(".annotation_frame")
     .transition()
-    .duration(500)
-    .style("stroke","white")
+    .duration(250)
+    .style("stroke","transparent")
     .attr("filter", "none");
   });
 
@@ -302,7 +303,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("width",label_width + 7.5)
   // .attr("filter", "url(#drop-shadow)");
 
-  event_annotation.append("svg:image")
+  var annotation_resizer = event_annotation.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize label')
   .attr("x", x_pos + x_anno_offset + label_width + 7.5)
@@ -313,6 +314,9 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0.1)
   .call(resize);
+
+  annotation_resizer.append('title')
+  .text('Resize label');
 
   event_annotation.append("svg:image")
   .attr("class","annotation_control annotation_delete")
@@ -351,7 +355,9 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .style("stroke-width","0.25px");
 
     d3.select(this.parentNode).remove();
-  });
+  })
+  .append('title')
+  .text('Remove label');
 
   event_annotation.append("circle")
   .attr("class","annotation_circle")

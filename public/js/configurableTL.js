@@ -2052,6 +2052,10 @@ configurableTL: //a configurable timeline
           return "event_g" + d.event_id;
         });
 
+        timeline_event_g_enter
+        .append('title')
+        .text('Click to pin or unpin an event label.')
+
         //define event behaviour
         timeline_event_g_enter.on("click", function (d, i){
 
@@ -2129,7 +2133,12 @@ configurableTL: //a configurable timeline
               }
               usage_log.push(log_event);
 
+              d3.select('#event' + d.event_id + "_-1").remove();
+
               annotateEvent(d.content_text,item_x_pos,item_y_pos,(x_pos - item_x_pos),(y_pos - item_y_pos),50,50,d3.min([d.content_text.length * 10,100]),d.event_id,d.annotation_count);
+
+              d3.select('#event' + d.event_id + "_" + d.annotation_count).transition().duration(50).style('opacity',1);
+
               d.annotation_count++;
             }
             else {
@@ -2184,8 +2193,37 @@ configurableTL: //a configurable timeline
           .selectAll(".event_span_component")
           .style("stroke","#f00")
           .style("stroke-width","0.5px");
+
+          if (d3.select("#event" + d.event_id + "_" + (d.annotation_count - 1) + ".event_annotation")[0][0] == null) {
+            var x_pos = d3.event.x,
+            y_pos = d3.event.y;
+
+            var item_x_pos = 0;
+            var item_y_pos = 0;
+
+            if (tl_representation != "Radial") {
+              item_x_pos = d.rect_x_pos + d.rect_offset_x + padding.left + unit_width * 0.5;
+              item_y_pos = d.rect_y_pos + d.rect_offset_y + padding.top + unit_width * 0.5;
+            }
+            else {
+              item_x_pos = d.path_x_pos + d.path_offset_x + padding.left;
+              item_y_pos = d.path_y_pos + d.path_offset_y + padding.top;
+            }
+
+            annotateEvent(d.content_text,item_x_pos,item_y_pos,(x_pos - item_x_pos),(y_pos - item_y_pos),50,50,d3.min([d.content_text.length * 10,100]),d.event_id,-1);
+
+            d3.select('#event' + d.event_id + "_-1 rect.annotation_frame").style('stroke','#f00');
+
+            d3.select('#event' + d.event_id + "_-1").transition().duration(250).style('opacity',1);
+          }
+
         })
         .on("mouseout", function (d) {
+
+          d3.select('#event' + d.event_id + "_-1").transition().duration(100).style('opacity',0);
+
+          d3.select('#event' + d.event_id + "_-1").transition().delay(100).remove();
+
           d3.select(this)
           .selectAll(".event_span")
           .attr("filter", "none")
@@ -2206,14 +2244,7 @@ configurableTL: //a configurable timeline
             .style("stroke","#f00")
             .style("stroke-width","1px");
           }
-        });
-
-        //print contents for events, shown only on mouseover
-        timeline_event_g_enter.append("title")
-        .text(function (d){
-          var event_label = eventLabel(d)
-          return event_label;
-        });
+        })
 
         //add rect events for linear timelines
         timeline_event_g_enter.append("rect")
@@ -2293,12 +2324,6 @@ configurableTL: //a configurable timeline
         timeline_event_g_update.attr("id", function (d) {
           return "event_g" + d.event_id;
         })
-
-        timeline_event_g_update.select("title")
-        .text(function (d){
-          var event_label = eventLabel(d)
-          return event_label;
-        });
 
         /**
         ---------------------------------------------------------------------------------------

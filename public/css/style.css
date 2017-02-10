@@ -782,11 +782,9 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .annotation_control {
-  border: 1px solid white;
-}
-
-.annotation_control:hover {
-  border: 1px solid #999;
+  border: 1px solid transparent;
+  stroke-width: 1px;
+  stroke: transparent;
 }
 
 .annotation_delete:hover {
@@ -804,9 +802,10 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .caption_drag_area, .annotation_drag_area, .image_drag_area {
-  fill: #fff;
+  fill: transparent;
   fill-opacity: 0;
-  stroke: none;
+  stroke-width: 1px;
+  stroke: transparent;
   cursor: move;
   box-shadow: 2px 2px 2px #888888;
   -webkit-box-shadow: 2px 2px 2px #888888;
