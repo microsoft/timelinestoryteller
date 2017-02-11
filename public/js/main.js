@@ -2025,10 +2025,10 @@ function formatAbbreviation(x) {
     main_svg = d3.select("body")
     .append("svg")
     .attr("id", "main_svg")
-    .style('padding-right',padding.right + 'px')
-    .style('padding-top',padding.top + 'px')
-    .style('padding-bottom',padding.bottom + 'px')
-    .style('padding-left',padding.left + 'px');
+    .style('margin-right',margin.right + 'px')
+    .style('margin-top',margin.top + 'px')
+    .style('margin-bottom',margin.bottom + 'px')
+    .style('margin-left',margin.left + 'px');
     // .style("top", d3.select("#option_div")[0][0].getBoundingClientRect().height);
 
     navigation_div = d3.select("body")
