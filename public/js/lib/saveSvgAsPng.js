@@ -256,7 +256,7 @@ THE SOFTWARE.
       if(options.canvg) {
         options.canvg(canvas, src);
       } else {
-        context.drawImage(src, -70, -100);
+        context.drawImage(src, (-1 * parseInt(d3.select('#main_svg').style('margin-left'))), (-1 * parseInt(d3.select('#main_svg').style('margin-top'))));
       }
 
       if(options.backgroundColor){
