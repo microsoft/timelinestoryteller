@@ -109,7 +109,7 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select("#image_delete")
-    .attr('x', x_pos + image_width + 15)
+    .attr('x', x_pos + image_width + 20)
     .attr('y', y_pos);
   })
   .on("dragend", function() {
@@ -163,7 +163,7 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     .attr("height", image_height * scaling_ratio);
 
     d3.select(this.parentNode).select("#image_delete")
-    .attr('x', x_pos + image_width + 15)
+    .attr('x', x_pos + image_width + 20)
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select(".image_drag_area")
@@ -228,8 +228,8 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr('title','resize image')
   .attr("x", x_pos + image_width)
   .attr("y", y_pos)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
@@ -242,10 +242,10 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("class","annotation_control annotation_delete")
   .attr("id","image_delete")
   .attr('title','remove image')
-  .attr("x", x_pos + image_width + 15)
+  .attr("x", x_pos + image_width + 20)
   .attr("y", y_pos)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)

@@ -49,7 +49,6 @@ var date_granularity,
     num_facet_cols,
     num_facet_rows,
     segments, //scale for segments
-    timeline_segments = [],
     present_segments,
     selected_segments = [],
     num_segments,
@@ -64,7 +63,7 @@ var date_granularity,
     global_max_end_date,
     max_end_age,
     max_seq_index,
-    dispatch = d3.dispatch("highlight", "remove"),
+    dispatch = d3.dispatch("Emphasize", "remove"),
     filter_result,
     timeline_vis = d3.configurableTL(),
     scales = [
@@ -92,7 +91,7 @@ var date_granularity,
     spiral_dim = 0,
     centre_radius = 50,
     max_item_index = 0,
-    filter_type = "Highlight",
+    filter_type = "Emphasize",
     caption_index = 0,
     image_index = 0,
     active_data = [],
@@ -660,48 +659,17 @@ function formatAbbreviation(x) {
   .attr("class","menu_label")
   .text("Filter");
 
-  //filter type options
-  var filter_type_picker = control_panel.append("g")
-  .attr("id","filter_type_picker");
-
-  var filter_type_rb = filter_type_picker.selectAll("g")
-  .data(["Highlight","Hide"])
-  .enter();
-
-  var filter_type_rb_label = filter_type_rb.append("label")
-  .attr("class", "menu_rb");
-
-  filter_type_rb_label.append("input")
+  control_panel.append('input')
   .attr({
-    type: "radio",
-    name: "filter_type_rb",
-    value: function (d) {
-      return d;
-    }
-  })
-  .property("disabled",true)
-  .property("checked", function (d) {
-    return d == "Highlight";
-  });
-
-  filter_type_rb_label.append("img")
-  .attr({
-    class: "img_btn_disabled",
+    type: "image",
+    name: "Filter",
+    class: 'img_btn_disabled',
+    src: 'img/filter.png',
     height: 30,
     width: 30,
-    title: function (d) {
-      return d;
-    },
-    src: function (d) {
-      if (d == "Highlight")
-      return 'img/highlight.png';
-      else
-      return 'img/filter.png';
-    }
+    title: "Filter"
   })
-  .style("margin-bottom","0px")
-  .on("click", function(){
-
+  .on('click', function () {
     console.log("open filter dialog");
 
     var log_event = {
@@ -718,56 +686,6 @@ function formatAbbreviation(x) {
       d3.select("#filter_div").style("display","inline");
       else
       d3.select("#filter_div").style("display","none");
-    }
-  });
-
-  d3.selectAll("#filter_type_picker input[name=filter_type_rb]").on("change", function() {
-
-    d3.select("#filter_div").style("display", "inline");
-
-    console.log("filter type changed: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "filter",
-      event_detail: "filter type changed: " + this.value
-    }
-    usage_log.push(log_event);
-
-    filter_type = this.value;
-    if (filter_type == "Hide") {
-      var trigger_remove_filter = false;
-      if (selected_categories[0].length != 1 || selected_categories[0][0].value != "( All )") {
-        trigger_remove_filter = true;
-      }
-      else if (selected_facets[0].length != 1 || selected_facets[0][0].value != "( All )"){
-        trigger_remove_filter = true;
-      }
-      else if (selected_segments[0].length != 1 || selected_segments[0][0].value != "( All )"){
-        trigger_remove_filter = true;
-      }
-
-      if (trigger_remove_filter) {
-        dispatch.highlight(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
-        dispatch.remove(selected_categories, selected_facets, selected_segments);
-      }
-    }
-    else if (filter_type == "Highlight") {
-      active_data = all_data;
-      var trigger_remove_filter = false;
-      if (selected_categories[0].length != 1 || selected_categories[0][0].value != "( All )") {
-        trigger_remove_filter = true;
-      }
-      else if (selected_facets[0].length != 1 || selected_facets[0][0].value != "( All )"){
-        trigger_remove_filter = true;
-      }
-      else if (selected_segments[0].length != 1 || selected_segments[0][0].value != "( All )"){
-        trigger_remove_filter = true;
-      }
-      if (trigger_remove_filter) {
-        dispatch.remove(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
-        dispatch.highlight(selected_categories, selected_facets, selected_segments);
-      }
     }
   });
 
@@ -1265,9 +1183,7 @@ function formatAbbreviation(x) {
     {"path":"presidents","tl_name":"Presidents of the USA"},
     {"path":"heads_of_state","tl_name":"G7 Heads of State (faceted by country)"},
     {"path":"heads_of_state_since_1940","tl_name":"G7 Heads of State since 1940 (faceted by country)"},
-    {"path":"hurricanes10y", "tl_name":"C4-5 Hurricanes: 2001-2010"},
     {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
-    {"path":"hurricanes100y", "tl_name":"C4-5 Hurricanes: 1910-2010"},
     {"path":"dailyroutines","tl_name":"Podio's 'Daily Routines of Famous Creative People' (faceted by person)"},
     {"path":"painters","tl_name":"Accurat's 'Visualizing painters' lives' (faceted by painter)"},
     {"path":"authors","tl_name":"Accurat's 'From first published to masterpieces' (faceted by author)"},
@@ -2642,10 +2558,114 @@ function formatAbbreviation(x) {
     filter_div.append("text")
     .attr("class","menu_label filter_label")
     .style("margin-right","auto")
-    .text("Filter by:");
+    .text("Filter Options");
 
     filter_div.append("hr")
     .attr("class","menu_hr");
+
+    //filter type options
+    var filter_type_picker = filter_div.append("div")
+    .attr("id","filter_type_picker")
+    .attr("class","filter_div_section");
+
+    filter_type_picker.append("div")
+    .attr('class','filter_div_header')
+    .append("text")
+    .attr("class","menu_label filter_label")
+    .text("Filter Mode:");
+
+    var filter_type_rb = filter_type_picker.selectAll("g")
+    .data(["Emphasize","Hide"])
+    .enter();
+
+    var filter_type_rb_label = filter_type_rb.append("label")
+    .attr("class", "menu_rb");
+
+    filter_type_rb_label.append("input")
+    .attr({
+      type: "radio",
+      name: "filter_type_rb",
+      value: function (d) {
+        return d;
+      }
+    })
+    .property("disabled",false)
+    .property("checked", function (d) {
+      return d == "Emphasize";
+    });
+
+    filter_type_rb_label.append("img")
+    .attr({
+      class: "img_btn_enabled",
+      height: 30,
+      width: 30,
+      title: function (d) {
+        return d;
+      },
+      src: function (d) {
+        if (d == "Emphasize")
+        return 'img/highlight.png';
+        else
+        return 'img/hide.png';
+      }
+    })
+    .style("margin-bottom","0px");
+
+    filter_type_rb_label.append("span")
+    .attr('class','option_rb_label')
+    .html(function(d){
+      return d;
+    })
+
+    d3.selectAll("#filter_type_picker input[name=filter_type_rb]").on("change", function() {
+
+      d3.select("#filter_div").style("display", "inline");
+
+      console.log("filter type changed: " + this.value);
+
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "filter",
+        event_detail: "filter type changed: " + this.value
+      }
+      usage_log.push(log_event);
+
+      filter_type = this.value;
+      if (filter_type == "Hide") {
+        var trigger_remove_filter = false;
+        if (selected_categories[0].length != 1 || selected_categories[0][0].value != "( All )") {
+          trigger_remove_filter = true;
+        }
+        else if (selected_facets[0].length != 1 || selected_facets[0][0].value != "( All )"){
+          trigger_remove_filter = true;
+        }
+        else if (selected_segments[0].length != 1 || selected_segments[0][0].value != "( All )"){
+          trigger_remove_filter = true;
+        }
+
+        if (trigger_remove_filter) {
+          dispatch.Emphasize(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
+          dispatch.remove(selected_categories, selected_facets, selected_segments);
+        }
+      }
+      else if (filter_type == "Emphasize") {
+        active_data = all_data;
+        var trigger_remove_filter = false;
+        if (selected_categories[0].length != 1 || selected_categories[0][0].value != "( All )") {
+          trigger_remove_filter = true;
+        }
+        else if (selected_facets[0].length != 1 || selected_facets[0][0].value != "( All )"){
+          trigger_remove_filter = true;
+        }
+        else if (selected_segments[0].length != 1 || selected_segments[0][0].value != "( All )"){
+          trigger_remove_filter = true;
+        }
+        if (trigger_remove_filter) {
+          dispatch.remove(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
+          dispatch.Emphasize(selected_categories, selected_facets, selected_segments);
+        }
+      }
+    });
 
     var category_filter = filter_div.append("div")
     .attr('class','filter_div_section');
@@ -2690,8 +2710,8 @@ function formatAbbreviation(x) {
       if (filter_type == "Hide") {
         dispatch.remove(selected_categories, selected_facets, selected_segments);
       }
-      else if (filter_type == "Highlight") {
-        dispatch.highlight(selected_categories, selected_facets, selected_segments);
+      else if (filter_type == "Emphasize") {
+        dispatch.Emphasize(selected_categories, selected_facets, selected_segments);
       }
     })
     .selectAll("option")
@@ -2779,8 +2799,8 @@ function formatAbbreviation(x) {
       if (filter_type == "Hide") {
         dispatch.remove(selected_categories, selected_facets, selected_segments);
       }
-      else if (filter_type == "Highlight") {
-        dispatch.highlight(selected_categories, selected_facets, selected_segments);
+      else if (filter_type == "Emphasize") {
+        dispatch.Emphasize(selected_categories, selected_facets, selected_segments);
       }
     })
     .selectAll("option")
@@ -2876,7 +2896,7 @@ function formatAbbreviation(x) {
     var segment_picker = segment_filter.append("select")
     .attr("id","segment_picker")
     .attr("class","filter_select")
-    .attr("size",7)
+    .attr("size",8)
     .attr({
       multiple: true
     })
@@ -2889,8 +2909,8 @@ function formatAbbreviation(x) {
       if (filter_type == "Hide") {
         dispatch.remove(selected_categories, selected_facets, selected_segments);
       }
-      else if (filter_type == "Highlight") {
-        dispatch.highlight(selected_categories, selected_facets, selected_segments);
+      else if (filter_type == "Emphasize") {
+        dispatch.Emphasize(selected_categories, selected_facets, selected_segments);
       }
     })
     .selectAll("option")
@@ -3035,12 +3055,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", width)
+    .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_scale(this.value)
-    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
+    .height(height)
     .width(width));
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
@@ -3069,12 +3089,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", width)
+    .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_layout(this.value)
-    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
+    .height(height)
     .width(width));
 
     updateRadioBttns(timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
@@ -3120,12 +3140,12 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", width)
+    .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_representation(this.value)
-    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
+    .height(height)
     .width(width));
 
     if (timeline_vis.tl_representation() == "Curve" && !dirty_curve) {
@@ -3467,7 +3487,7 @@ function formatAbbreviation(x) {
       //resize the main svg to accommodate the scene
       main_svg.transition()
       .duration(1200)
-      .attr("width", width)
+      .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
       .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
       //set the scene's scale, layout, representation
@@ -3539,23 +3559,23 @@ function formatAbbreviation(x) {
       .property("checked", function (d, i){
         return d == "Hide";
       });
-      if (filter_type == "Highlight") {
-        dispatch.highlight(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
+      if (filter_type == "Emphasize") {
+        dispatch.Emphasize(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
       }
       filter_type = "Hide";
       dispatch.remove(scene.s_categories, scene.s_facets, scene.s_segments);
     }
-    else if (scene.s_filter_type == "Highlight") {
+    else if (scene.s_filter_type == "Emphasize") {
       d3.selectAll("#filter_type_picker input[name=filter_type_rb]")
       .property("checked", function (d, i){
-        return d == "Highlight";
+        return d == "Emphasize";
       });
       if (filter_type == "Hide") {
         active_data = all_data;
         dispatch.remove(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
       }
-      filter_type = "Highlight";
-      dispatch.highlight(scene.s_categories, scene.s_facets, scene.s_segments);
+      filter_type = "Emphasize";
+      dispatch.Emphasize(scene.s_categories, scene.s_facets, scene.s_segments);
     }
 
     //where is the legend in the scene?
@@ -3814,50 +3834,12 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    switch (segment_granularity) {
-      case "days":
-      timeline_segments = time.day.range(time.day.floor(data.min_start_date),time.day.ceil(data.max_end_date));
-      break;
-      case "weeks":
-      timeline_segments = time.week.range(time.week.floor(data.min_start_date),time.week.ceil(data.max_end_date));
-      break;
-      case "months":
-      timeline_segments = time.month.range(time.month.floor(data.min_start_date),time.month.ceil(data.max_end_date));
-      break;
-      case "years":
-      timeline_segments = time.year.range(time.utcYear.floor(data.min_start_date),time.utcYear.ceil(data.max_end_date));
-      break;
-      case "decades":
-      var start = Math.floor(data.min_start_date.getUTCFullYear() / 10) * 10;
-      if (data.max_end_date.getUTCFullYear() % 10 == 0) {
-        var end = Math.ceil(data.max_end_date.getUTCFullYear() / 10 + 1) * 10;
-      }
-      else {
-        var end = Math.ceil(data.max_end_date.getUTCFullYear() / 10) * 10;
-      }
-      timeline_segments = d3.range(start,end,10);
-      break;
-      case "centuries":
-      var start = Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100;
-      var end = Math.ceil(data.max_end_date.getUTCFullYear() / 100) * 100;
-      timeline_segments = d3.range(start,end,100);
-      break;
-      case "millenia":
-      var start = Math.floor(data.min_start_date.getUTCFullYear() / 1000) * 1000;
-      var end = Math.ceil(data.max_end_date.getUTCFullYear() / 1000) * 1000;
-      timeline_segments = d3.range(start,end,1000);
-      break;
-      case "epochs":
-      timeline_segments = [data.min_start_date.valueOf()];
-      break
-      default:
-      timeline_segments = [];
-      break;
-    }
+    //determine event categories from data
+    segments.domain(data.map(function (d) {
+      return d.segment;
+    }));
 
-    segments.domain(timeline_segments);
-
-    num_segments = timeline_segments.length;
+    num_segments = segments.domain().length;
     num_segment_cols = Math.ceil(Math.sqrt(num_segments));
     num_segment_rows = Math.ceil(num_segments / num_segment_cols);
 
@@ -3892,7 +3874,7 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", width)
+    .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     timeline_vis.previous_segment_granularity(segment_granularity);
@@ -3922,11 +3904,11 @@ function formatAbbreviation(x) {
           addLegendColorPicker();
         }
         d3.select(this).select('.legend_rect').attr("filter", "url(#drop-shadow)")
-        d3.select(this).select('#legend_expand_btn').style('opacity',1).attr("filter", "url(#drop-shadow)");
+        d3.select(this).select('#legend_expand_btn').style('opacity',1);
       })
       .on("mouseout", function () {
         d3.select(this).select('.legend_rect').attr("filter", "none")
-        d3.select(this).select('#legend_expand_btn').style('opacity',0.1).attr("filter", "none");
+        d3.select(this).select('#legend_expand_btn').style('opacity',0.1);
       })
       .call(legendDrag);
 
@@ -3939,11 +3921,12 @@ function formatAbbreviation(x) {
 
       legend_panel.append("svg:image")
       .attr('id','legend_expand_btn')
-      .attr("x", max_legend_item_width + 5 + unit_width + 10)
+      .attr("x", max_legend_item_width + 5 + unit_width - 10)
       .attr("y", 0)
-      .attr("width",15)
-      .attr("height",15)
-      .attr("xlink:href","/img/expand.png")
+      .attr("width",20)
+      .attr("height",20)
+      .attr("xlink:href","/img/min.png")
+      .style("cursor","pointer")
       .style("opacity",0.1)
       .on("click", function () {
 
@@ -4144,7 +4127,7 @@ function formatAbbreviation(x) {
     d3.select(".legend").select("#legend_expand_btn")
     .transition()
     .duration(500)
-    .attr('x',max_legend_item_width + 5 + unit_width + 10);
+    .attr('x',max_legend_item_width + 5 + unit_width - 10);
     d3.select(".legend").select(".legend_title")
     .transition()
     .duration(500)
@@ -4674,16 +4657,13 @@ function formatAbbreviation(x) {
       segment = moment(item).year().toString();
       break;
       case "decades":
-      var decade = Math.floor(item.getUTCFullYear() / 10) * 10;
-      segment = decade.toString();
+      segment = (Math.floor(item.getUTCFullYear() / 10) * 10).toString() + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 10) * 10).toString();
       break;
       case "centuries":
-      var century = Math.floor(item.getUTCFullYear() / 100) * 100;
-      segment = century.toString();
+      segment = (Math.floor(item.getUTCFullYear() / 100) * 100).toString()  + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 100) * 100).toString();
       break;
       case "millenia":
-      var millenia = Math.floor(item.getUTCFullYear() / 1000) * 1000;
-      segment = millenia.toString();
+      segment = (Math.floor(item.getUTCFullYear() / 1000) * 1000).toString()  + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 1000) * 1000).toString();
       break;
       case "epochs":
       segment = "";
@@ -5584,7 +5564,7 @@ function formatAbbreviation(x) {
   };
 
   //highlight matches and de-emphasize (grey-out) mismatches
-  dispatch.on("highlight", function (selected_categories, selected_facets, selected_segments) {
+  dispatch.on("Emphasize", function (selected_categories, selected_facets, selected_segments) {
 
     clearCanvas();
 
@@ -5627,7 +5607,7 @@ function formatAbbreviation(x) {
 
       var log_event = {
         event_time: new Date().valueOf(),
-        event_category: "highlight",
+        event_category: "Emphasize",
         event_detail: matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events"
       }
       usage_log.push(log_event);
@@ -5638,7 +5618,7 @@ function formatAbbreviation(x) {
 
       var log_event = {
         event_time: new Date().valueOf(),
-        event_category: "highlight",
+        event_category: "Emphasize",
         event_detail: matches[0].length + " events"
       }
       usage_log.push(log_event);
@@ -5790,7 +5770,7 @@ function formatAbbreviation(x) {
 
     main_svg.transition()
     .duration(1200)
-    .attr("width", width)
+    .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
 
     if (timeline_vis.tl_layout() == "Segmented") {
@@ -5809,7 +5789,7 @@ function formatAbbreviation(x) {
       }
     }
     main_svg.call(timeline_vis.duration(1200)
-    .height(d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]))
+    .height(height)
     .width(width));
 
     if (reset_segmented_layout) {

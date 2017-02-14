@@ -177,7 +177,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .attr('y', y_pos + y_anno_offset);
 
     d3.select(this.parentNode).select("#annotation_delete")
-    .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 15)
+    .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 20)
     .attr('y', y_pos + y_anno_offset);
 
     var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
@@ -249,7 +249,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .call(wrap,label_width - 7.5);
 
     d3.select(this.parentNode).select("#annotation_delete")
-    .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 15)
+    .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 20)
     .attr('y', y_pos + y_anno_offset);
 
     var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
@@ -308,8 +308,8 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr('title','resize label')
   .attr("x", x_pos + x_anno_offset + label_width + 7.5)
   .attr("y", y_pos + y_anno_offset)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
@@ -322,10 +322,10 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("class","annotation_control annotation_delete")
   .attr("id","annotation_delete")
   .attr('title','remove label')
-  .attr("x", x_pos + x_anno_offset + label_width + 7.5 + 15)
+  .attr("x", x_pos + x_anno_offset + label_width + 7.5 + 20)
   .attr("y", y_pos + y_anno_offset)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)

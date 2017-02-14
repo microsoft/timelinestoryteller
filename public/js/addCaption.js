@@ -79,7 +79,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + 7.5 + 15)
+    .attr('x', x_pos + caption_width + 7.5 + 20)
     .attr('y', y_pos);
   })
   .on("dragend", function() {
@@ -120,7 +120,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr("width", caption_width + 7.5);
 
     d3.select(this.parentNode).select("#caption_delete")
-    .attr('x', x_pos + caption_width + 7.5 + 15)
+    .attr('x', x_pos + caption_width + 7.5 + 20)
     .attr('y', y_pos);
 
     d3.select(this.parentNode).select(".caption_drag_area")
@@ -155,8 +155,8 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr('title','resize caption')
   .attr("x", x_pos + caption_width + 7.5)
   .attr("y", y_pos)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)
@@ -169,10 +169,10 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("class","annotation_control annotation_delete")
   .attr("id","caption_delete")
   .attr('title','remove caption')
-  .attr("x", x_pos + caption_width + 7.5 + 15)
+  .attr("x", x_pos + caption_width + 7.5 + 20)
   .attr("y", y_pos)
-  .attr("width",15)
-  .attr("height",15)
+  .attr("width",20)
+  .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
   .style("opacity",0)

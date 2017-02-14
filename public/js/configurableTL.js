@@ -473,36 +473,13 @@ configurableTL: //a configurable timeline
               segment_label = moment(d).format('YYYY');
               break;
               case "decades":
-              segment_label = d + "s";
+              segment_label = d;
               break;
               case "centuries":
-              segment_label = d + "s";
+              segment_label = d;
               break;
               case "millenia":
-              if (d == -1000) {
-                segment_label = "1st Millenium BC";
-              }
-              else if (d == -2000) {
-                segment_label = "2nd Millenium BC";
-              }
-              else if (d == -3000) {
-                segment_label = "3rd Millenium BC";
-              }
-              else if (d < -3000) {
-                segment_label = (d / -1000) + "th Millenium BC";
-              }
-              else if (d == 0) {
-                segment_label = "1st Millenium AD";
-              }
-              else if (d == 1000) {
-                segment_label = "2nd Millenium AD";
-              }
-              else if (d == 2000) {
-                segment_label = "3rd Millenium AD";
-              }
-              else if (d > 3000) {
-                segment_label = (d / -1000) + "th Millenium AD";
-              }
+              segment_label = d;
               break;
               case "epochs":
               segment_label = "";
@@ -2052,10 +2029,6 @@ configurableTL: //a configurable timeline
           return "event_g" + d.event_id;
         });
 
-        timeline_event_g_enter
-        .append('title')
-        .text('Click to pin or unpin an event label.')
-
         //define event behaviour
         timeline_event_g_enter.on("click", function (d, i){
 
@@ -2188,13 +2161,16 @@ configurableTL: //a configurable timeline
           .selectAll(".event_span")
           .attr("filter", "url(#drop-shadow)")
           .style("stroke","#f00")
-          .style("stroke-width","1.25px");
+          .style("stroke-width","1.25px")
+          .style('cursor','url("../img/pin.png"),auto');
           d3.select(this)
           .selectAll(".event_span_component")
           .style("stroke","#f00")
-          .style("stroke-width","0.5px");
+          .style("stroke-width","0.5px")
+          .style('cursor','url("../img/pin.png"),auto');
 
-          if (d3.select("#event" + d.event_id + "_" + (d.annotation_count - 1) + ".event_annotation")[0][0] == null) {
+          if ((d3.select("#event" + d.event_id + "_" + (d.annotation_count - 1) + ".event_annotation")[0][0] == null) && (d3.select("#event" + d.event_id + "_0.event_annotation")[0][0] == null)) {
+
             var x_pos = d3.event.x,
             y_pos = d3.event.y;
 
@@ -2340,7 +2316,7 @@ configurableTL: //a configurable timeline
             if (filter_type == "Hide") {
               return 0;
             }
-            else if (filter_type == "Highlight") {
+            else if (filter_type == "Emphasize") {
               if (active_event_list.indexOf(d.event_id) == -1) {
                 return 0.1;
               }
@@ -2834,7 +2810,7 @@ configurableTL: //a configurable timeline
             if (filter_type == "Hide") {
               return 0;
             }
-            else if (filter_type == "Highlight") {
+            else if (filter_type == "Emphasize") {
               if (active_event_list.indexOf(d.event_id) == -1) {
                 return 0.1;
               }
@@ -3243,7 +3219,7 @@ configurableTL: //a configurable timeline
             if (filter_type == "Hide") {
               return 0;
             }
-            else if (filter_type == "Highlight") {
+            else if (filter_type == "Emphasize") {
               if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) == -1) {
                 return 0.1;
               }
@@ -3630,7 +3606,7 @@ configurableTL: //a configurable timeline
             if (filter_type == "Hide") {
               return 0;
             }
-            else if (filter_type == "Highlight") {
+            else if (filter_type == "Emphasize") {
               if (active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) == -1) {
                 return 0.1;
               }
