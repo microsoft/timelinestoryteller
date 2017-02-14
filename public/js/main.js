@@ -283,7 +283,9 @@ function formatAbbreviation(x) {
     }
     if (d3.event.keyCode == 82 && d3.event.altKey) {
       //recover legend
-      recordScene();
+      if (!playback_mode) {
+        recordScene();
+      }
     }
     else if (playback_mode && d3.event.keyCode == 39) {
       goNextScene()
@@ -295,7 +297,7 @@ function formatAbbreviation(x) {
       //toggle playback mode
       if (!playback_mode) {
         playback_mode = true;
-        d3.select('#navigation_div').attr('class','control_div onhover')
+        d3.select("#record_scene_btn").attr("class","img_btn_disabled");
         d3.select("#caption_div").style("display","none");
         d3.select("#image_div").style("display","none");
         d3.select("#menu_div").style("left",-41 + "px");
@@ -307,10 +309,13 @@ function formatAbbreviation(x) {
         d3.select("#filter_div").style("display","none");
         d3.select("#footer").style("bottom",-25 + "px");
         d3.select("#logo_div").style("top",-44 + "px");
+        d3.select("#intro_div").style("top",-44 + "px");
+        d3.select("#hint_div").style("top",-44 + "px");
+        d3.select(".introjs-hints").style("opacity",0);
       }
       else {
         playback_mode = false;
-        d3.select('#navigation_div').attr('class','control_div');
+        d3.select("#record_scene_btn").attr("class","img_btn_enabled");
         d3.select("#option_div").style("top", 10 + "px");
         d3.select('#option_div').attr('class','control_div');
         d3.select('#import_div').attr('class','control_div');
@@ -318,6 +323,9 @@ function formatAbbreviation(x) {
         d3.select('#menu_div').attr('class','control_div')
         d3.select("#footer").style("bottom",0 + "px");
         d3.select("#logo_div").style("top",10 + "px");
+        d3.select("#intro_div").style("top",10 + "px");
+        d3.select("#hint_div").style("top",20 + "px");
+        d3.select(".introjs-hints").style("opacity",1);
       }
     }
     else if (d3.event.keyCode == 46 && d3.select('#caption_div').style('display') == 'none' && d3.select('#image_div').style('display') == 'none' && d3.select("#import_div").style("top") == -210 + "px"){
@@ -1181,7 +1189,6 @@ function formatAbbreviation(x) {
     {"path":"japan_prime_ministers","tl_name":"Prime Ministers of Japan"},
     {"path":"uk_prime_ministers","tl_name":"Prime Ministers of the UK"},
     {"path":"presidents","tl_name":"Presidents of the USA"},
-    {"path":"heads_of_state","tl_name":"G7 Heads of State (faceted by country)"},
     {"path":"heads_of_state_since_1940","tl_name":"G7 Heads of State since 1940 (faceted by country)"},
     {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
     {"path":"dailyroutines","tl_name":"Podio's 'Daily Routines of Famous Creative People' (faceted by person)"},
@@ -1968,7 +1975,9 @@ function formatAbbreviation(x) {
       title: "Record Scene"
     })
     .on('click', function() {
-      recordScene();
+      if (!playback_mode) {
+        recordScene();
+      }
     });
 
     playback_bar.append("div")
@@ -2026,7 +2035,7 @@ function formatAbbreviation(x) {
         }
         usage_log.push(log_event);
 
-        d3.select('#navigation_div').attr('class','control_div onhover')
+        d3.select("#record_scene_btn").attr("class","img_btn_disabled");
         d3.select("#caption_div").style("display","none");
         d3.select("#image_div").style("display","none");
         d3.select("#menu_div").style("left",-41 + "px");
@@ -2038,6 +2047,9 @@ function formatAbbreviation(x) {
         d3.select("#filter_div").style("display","none");
         d3.select("#footer").style("bottom",-25 + "px");
         d3.select("#logo_div").style("top",-44 + "px");
+        d3.select("#intro_div").style("top",-44 + "px");
+        d3.select("#hint_div").style("top",-44 + "px");
+        d3.select(".introjs-hints").style("opacity",0);
       }
       else {
         playback_mode = false;
@@ -2051,7 +2063,7 @@ function formatAbbreviation(x) {
         }
         usage_log.push(log_event);
 
-        d3.select('#navigation_div').attr('class','control_div');
+        d3.select("#record_scene_btn").attr("class","img_btn_enabled");
         d3.select("#option_div").style("top", 10 + "px");
         d3.select('#option_div').attr('class','control_div');
         d3.select('#import_div').attr('class','control_div');
@@ -2059,6 +2071,9 @@ function formatAbbreviation(x) {
         d3.select('#menu_div').attr('class','control_div')
         d3.select("#footer").style("bottom",0 + "px");
         d3.select("#logo_div").style("top",10 + "px");
+        d3.select("#intro_div").style("top",10 + "px");
+        d3.select("#hint_div").style("top",20 + "px");
+        d3.select(".introjs-hints").style("opacity",1);
       }
     });
 
@@ -2934,7 +2949,8 @@ function formatAbbreviation(x) {
     measureTimeline (active_data);
 
     if (source_format == "story" || source_format == "demo_story") {
-      d3.select('#navigation_div').attr('class','control_div onhover')
+
+      d3.select("#record_scene_btn").attr("class","img_btn_disabled");
       d3.select("#caption_div").style("display","none");
       d3.select("#image_div").style("display","none");
       d3.select("#menu_div").style("left",-41 + "px");
@@ -2945,6 +2961,9 @@ function formatAbbreviation(x) {
       d3.select("#filter_div").style("display","none");
       d3.select("#footer").style("bottom",-25 + "px");
       d3.select("#logo_div").style("top",-44 + "px");
+      d3.select("#hint_div").style("top",-44 + "px");
+      d3.select("#intro_div").style("top",-44 + "px");
+      d3.select(".introjs-hints").style("opacity",0);
       drawTimeline (active_data);
     }
     else {
@@ -3056,7 +3075,7 @@ function formatAbbreviation(x) {
     main_svg.transition()
     .duration(1200)
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+    .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_scale(this.value)
@@ -3090,7 +3109,7 @@ function formatAbbreviation(x) {
     main_svg.transition()
     .duration(1200)
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+    .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_layout(this.value)
@@ -3121,18 +3140,13 @@ function formatAbbreviation(x) {
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (this.value == "Grid"){
-        d3.selectAll(".timeline_event_g").remove();
         segment_granularity = "centuries";
       }
       else if (this.value == "Calendar") {
-        d3.selectAll(".timeline_event_g").remove();
         segment_granularity = "weeks";
       }
       else {
-        segment_granularity = getSegmentGranularity(active_data.min_start_date,active_data.max_end_date);
-        if (timeline_vis.previous_segment_granularity() != segment_granularity) {
-          d3.selectAll(".timeline_event_g").remove();
-        }
+        segment_granularity = timeline_vis.previous_segment_granularity();
       }
     }
 
@@ -3141,7 +3155,7 @@ function formatAbbreviation(x) {
     main_svg.transition()
     .duration(1200)
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+    .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
     main_svg.call(timeline_vis.duration(1200)
     .tl_representation(this.value)
@@ -3460,18 +3474,13 @@ function formatAbbreviation(x) {
     //is the new scene a segmented grid or calendar? if so, re-segment the events
     if (scene.s_layout == "Segmented") {
       if (scene.s_representation == "Grid"){
-        d3.selectAll(".timeline_event_g").remove();
         segment_granularity = "centuries";
       }
       else if (scene.s_representation == "Calendar") {
-        d3.selectAll(".timeline_event_g").remove();
         segment_granularity = "weeks";
       }
       else {
-        segment_granularity = getSegmentGranularity(active_data.min_start_date,active_data.max_end_date);
-        if (timeline_vis.previous_segment_granularity() != segment_granularity) {
-          d3.selectAll(".timeline_event_g").remove();
-        }
+        segment_granularity = timeline_vis.previous_segment_granularity();
       }
     }
 
@@ -3488,7 +3497,7 @@ function formatAbbreviation(x) {
       main_svg.transition()
       .duration(1200)
       .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-      .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+      .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
       //set the scene's scale, layout, representation
       timeline_vis.tl_scale(scene.s_scale)
@@ -3669,7 +3678,7 @@ function formatAbbreviation(x) {
 
           annotateEvent(annotation.content_text,item_x_pos,item_y_pos,annotation.x_offset,annotation.y_offset,annotation.x_anno_offset,annotation.y_anno_offset,annotation.label_width,annotation.item_index,annotation.count);
 
-          d3.select('#event' + annotation.item_index + "_0").transition().duration(50).style('opacity',1);
+          d3.select('#event' + annotation.item_index + "_" + annotation.count).transition().duration(50).style('opacity',1);
         }
       });
 
@@ -3875,7 +3884,7 @@ function formatAbbreviation(x) {
     main_svg.transition()
     .duration(1200)
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+    .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
     timeline_vis.previous_segment_granularity(segment_granularity);
 
@@ -4359,7 +4368,8 @@ function formatAbbreviation(x) {
         return d.start_date;
       });
       data.max_end_date = d3.max(data, function (d) {
-        return time.minute.floor(d.end_date);
+        // console.log(d.end_date)
+        return d.end_date;
       });
 
       if (width > (window_width - margin.right - margin.left - getScrollbarWidth())) {
@@ -4368,6 +4378,8 @@ function formatAbbreviation(x) {
       else {
         effective_width = width;
       }
+
+
 
       var w = (effective_width - padding.left - padding.right - unit_width),
       d = (data.max_end_date.getTime() - data.min_start_date.getTime());
@@ -4645,22 +4657,22 @@ function formatAbbreviation(x) {
 
     switch (segment_granularity) {
       case "days":
-      segment = moment(item.end_date).year().toString() + "." + moment(item.end_date).month().toString() + "." + moment(item.end_date).date().toString();
+      segment = moment(item.end_date).format('MMM Do');
       break;
       case "weeks":
-      segment = moment(item).year().toString() + "." + moment(item).isoWeek().toString();
+      segment = moment(item).format('WW / YY');
       break;
       case "months":
-      segment = moment(item).year().toString() + "." + moment(item).month().toString();
+      segment = moment(item).format('MM-YY (MMM)');
       break;
       case "years":
-      segment = moment(item).year().toString();
+      segment = moment(item).format('YYYY');
       break;
       case "decades":
-      segment = (Math.floor(item.getUTCFullYear() / 10) * 10).toString() + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 10) * 10).toString();
+      segment = (Math.floor(item.getUTCFullYear() / 10) * 10).toString() + "s";
       break;
       case "centuries":
-      segment = (Math.floor(item.getUTCFullYear() / 100) * 100).toString()  + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 100) * 100).toString();
+      segment = (Math.floor(item.getUTCFullYear() / 100) * 100).toString()  + "s";
       break;
       case "millenia":
       segment = (Math.floor(item.getUTCFullYear() / 1000) * 1000).toString()  + " - " + ( Math.ceil((item.getUTCFullYear() + 1) / 1000) * 1000).toString();
@@ -5389,7 +5401,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Calendar":
-        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years","decades"].indexOf(segment_granularity) != -1)) {
           return false;
         }
         else {
@@ -5398,7 +5410,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return false;
         }
         else {
@@ -5516,7 +5528,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Calendar":
-        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["weeks","months","years","decades"].indexOf(segment_granularity) != -1)) {
           return "img_btn_enabled";
         }
         else {
@@ -5525,7 +5537,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return "img_btn_enabled";
         }
         else {
@@ -5730,7 +5742,17 @@ function formatAbbreviation(x) {
       usage_log.push(log_event);
     }
 
-    measureTimeline(active_data);
+    // measureTimeline(active_data);
+
+    active_data.min_start_date = d3.min(active_data, function (d) {
+      return d.start_date;
+    });
+    active_data.max_start_date = d3.max(active_data, function (d) {
+      return d.start_date;
+    });
+    active_data.max_end_date = d3.max(active_data, function (d) {
+      return time.minute.floor(d.end_date);
+    });
 
     all_data.min_start_date = active_data.min_start_date;
     all_data.max_end_date = active_data.max_end_date;
@@ -5748,7 +5770,7 @@ function formatAbbreviation(x) {
     num_facet_cols = Math.ceil(Math.sqrt(num_facets));
     num_facet_rows = Math.ceil(num_facets / num_facet_cols);
 
-    console.log("num facets: " + num_facet_cols)
+    console.log("num facets: " + num_facet_cols);
 
     var log_event = {
       event_time: new Date().valueOf(),
@@ -5756,6 +5778,16 @@ function formatAbbreviation(x) {
       event_detail: "num facets: " + num_facet_cols
     }
     usage_log.push(log_event);
+
+    segments.domain(active_data.map(function (d) {
+      return d.segment;
+    }));
+
+    segments.domain().sort();
+
+    num_segments = segments.domain().length;
+    num_segment_cols = Math.ceil(Math.sqrt(num_segments));
+    num_segment_rows = Math.ceil(num_segments / num_segment_cols);
 
     determineSize(active_data,timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
@@ -5771,7 +5803,7 @@ function formatAbbreviation(x) {
     main_svg.transition()
     .duration(1200)
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
-    .attr("height", d3.max([height, (window_height - margin.top - margin.bottom - getScrollbarWidth())]));
+    .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (timeline_vis.tl_representation() == "Grid"){
@@ -5781,11 +5813,7 @@ function formatAbbreviation(x) {
         segment_granularity = "weeks";
       }
       else {
-        segment_granularity = getSegmentGranularity(active_data.min_start_date,active_data.max_end_date);
-      }
-      if (timeline_vis.tl_representation() != "Calendar" && timeline_vis.tl_representation() != "Grid" && timeline_vis.previous_segment_granularity() != segment_granularity) {
-        reset_segmented_layout = true;
-        d3.selectAll(".timeline_event_g").remove();
+        segment_granularity = timeline_vis.previous_segment_granularity()
       }
     }
     main_svg.call(timeline_vis.duration(1200)
@@ -5929,7 +5957,7 @@ function formatAbbreviation(x) {
   .attr("id","hint_div")
   .html('<div data-hint="Click on the [TOUR] button for a tour of the interface." data-hintPosition="bottom-left" data-position="bottom-left-aligned"></div>');
 
-  var intro_div = d3.select("body")
+  var intro_div = d3.select("#hint_div")
   .append("div")
   .attr("id","intro_div")
   .attr("class","control_div");

@@ -404,6 +404,8 @@ select > option:hover {
   top: 20px;
   position: fixed;
   padding: 5px;
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
 }
 
 .introjs-hint-dot {

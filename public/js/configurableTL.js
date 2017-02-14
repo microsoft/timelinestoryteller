@@ -455,37 +455,10 @@ configurableTL: //a configurable timeline
 
           timeline_segment_update.select("text.segment_title")
           .text(function (d) {
-            if ( tl_layout != "Segmented" || tl_representation == "Calendar" || tl_representation == "Grid") {
+            if ( tl_layout != "Segmented" || tl_representation == "Calendar" || tl_representation == "Grid" || segment_granularity == "epochs") {
               return "";
             }
-            var segment_label;
-            switch (segment_granularity) {
-              case "days":
-              segment_label = moment(d).format('MMM DD / YY');
-              break;
-              case "weeks":
-              segment_label = moment(d).format('WW / YY');
-              break;
-              case "months":
-              segment_label = moment(d).format('MMM YYYY');
-              break;
-              case "years":
-              segment_label = moment(d).format('YYYY');
-              break;
-              case "decades":
-              segment_label = d;
-              break;
-              case "centuries":
-              segment_label = d;
-              break;
-              case "millenia":
-              segment_label = d;
-              break;
-              case "epochs":
-              segment_label = "";
-              break;
-            }
-            return segment_label;
+            return d;
           })
           .attr("transform", function () {
             var offset_x = 0,
@@ -1383,7 +1356,12 @@ configurableTL: //a configurable timeline
             timeline_axis.tickValues(undefined);
           }
           else if (tl_layout == "Segmented") {
-            timeline_axis.tickValues(undefined);
+            if (segment_granularity == "decades") {
+                timeline_axis.tickValues(d3.range(0,120,12));
+            }
+            else {
+              timeline_axis.tickValues(undefined);
+            }
             timeline_axis.tickFormat(function (d) {
               var converted_tick = d
               switch (segment_granularity) {
@@ -1394,18 +1372,13 @@ configurableTL: //a configurable timeline
                 converted_tick = moment().weekday(d).format('ddd');
                 break;
                 case "months":
-                converted_tick = moment().date(d).format('Do');;
+                converted_tick = moment().date(d).format('Do');
                 break;
                 case "years":
-                if ((d - 1) % 4 == 0) {
-                  converted_tick = "";
-                }
-                else {
-                  converted_tick = moment().week(d + 1).format('MMM');
-                }
+                converted_tick = moment().week(d + 1).format('MMM');
                 break;
                 case "decades":
-                converted_tick = d + " months";
+                converted_tick = (d / 12) + " years";
                 break;
                 case "centuries":
                 converted_tick = d + " years";
