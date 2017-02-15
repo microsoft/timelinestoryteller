@@ -5743,7 +5743,7 @@ function formatAbbreviation(x) {
       usage_log.push(log_event);
     }
 
-    // measureTimeline(active_data);
+    measureTimeline(active_data);
 
     active_data.min_start_date = d3.min(active_data, function (d) {
       return d.start_date;
