@@ -3869,6 +3869,7 @@ function formatAbbreviation(x) {
     d3.select('#playback_bar').selectAll('img').attr('class','img_btn_enabled');
 
     if (source_format == 'story' || source_format == 'demo_story'){
+      d3.select("#record_scene_btn").attr("class","img_btn_disabled");
       timeline_vis.tl_scale(scenes[0].s_scale)
       .tl_layout(scenes[0].s_layout)
       .tl_representation(scenes[0].s_representation);
