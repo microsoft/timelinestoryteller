@@ -18,6 +18,8 @@ var margin = {top: 100, right: 70, bottom: 105, left: 75},
     padding = {top: 100, right: 70, bottom: 105, left: 75},
     window_width = window.innerWidth,
     window_height = window.innerHeight,
+    effective_filter_width,
+    effective_filter_height,
     width,
     height;
 
@@ -239,6 +241,53 @@ function formatAbbreviation(x) {
     usage_log.push(log_event);
   });
 
+  var filterDrag = d3.behavior.drag()
+  .origin(function () {
+    var t = d3.select('#filter_div');
+
+    return {
+      x: parseInt(t.style("left")),
+      y: parseInt(t.style("top"))
+    };
+
+  })
+  .on("drag", function () {
+
+    var x_pos = d3.event.x;
+    var y_pos = d3.event.y;
+
+    if (x_pos < (10 + parseInt(d3.select('#menu_div').style('width')) + 10)) {
+      x_pos = (10 + parseInt(d3.select('#menu_div').style('width')) + 10);
+    }
+    else if (x_pos >= effective_filter_width) {
+      x_pos = effective_filter_width - 10;
+    }
+
+    if (y_pos < (180 + parseInt(d3.select('#option_div').style('height')) + 20)) {
+      y_pos = (180 + parseInt(d3.select('#option_div').style('height')) + 20);
+    }
+    else if (y_pos >= effective_filter_height + 155) {
+      y_pos = effective_filter_height + 155;
+    }
+
+    d3.select('#filter_div')
+    .style("left", x_pos + "px")
+    .style("top", y_pos + "px");
+  })
+  .on("dragend", function () {
+    var filter_x = d3.select("#filter_div").style("left");
+    var filter_y = d3.select("#filter_div").style("top");
+
+    console.log("filter options moved to: " + filter_x + ", " + filter_y);
+
+    var log_event = {
+      event_time: new Date().valueOf(),
+      event_category: "filter",
+      event_detail: "filter options moved to: " + filter_x + ", " + filter_y
+    }
+    usage_log.push(log_event);
+  });
+
   // http://stackoverflow.com/questions/986937/how-can-i-get-the-browsers-scrollbar-sizes
   function getScrollbarWidth() {
     var outer = document.createElement("div");
@@ -329,47 +378,52 @@ function formatAbbreviation(x) {
       }
     }
     else if (d3.event.keyCode == 46 && d3.select('#caption_div').style('display') == 'none' && d3.select('#image_div').style('display') == 'none' && d3.select("#import_div").style("top") == -210 + "px"){
-      //delete current scene unless image or caption div is open
-      console.log("scene " + current_scene_index + " deleted.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "deletion",
-        event_detail: "scene " + current_scene_index + " deleted."
-      }
-      usage_log.push(log_event);
-
-      var scene_deleted = false,
-      i = 0;
-      while (!scene_deleted) {
-        if (scenes[i].s_order == current_scene_index) {
-          scenes.splice(i,1);
-          d3.select('#frame' + i).remove();
-          scene_deleted = true;
-        }
-        i++;
-      }
-      scenes.forEach(function (d,i){
-        if (scenes[i].s_order > current_scene_index) {
-          scenes[i].s_order--;
-        }
-      })
-      current_scene_index--;
-      if (current_scene_index < 0) {
-        if (scenes.length > 0){
-          current_scene_index = scenes.length - 1;
-          changeScene(current_scene_index);
-        }
-        else {
-          current_scene_index = -1;
-        }
-      }
-      else {
-        changeScene(current_scene_index);
-      }
-      updateNavigationStepper();
+      deleteScene();
     }
   });
+
+  function deleteScene() {
+    d3.selectAll(".frame_hover").remove();
+    //delete current scene unless image or caption div is open
+    console.log("scene " + current_scene_index + " deleted.");
+
+    var log_event = {
+      event_time: new Date().valueOf(),
+      event_category: "deletion",
+      event_detail: "scene " + current_scene_index + " deleted."
+    }
+    usage_log.push(log_event);
+
+    var scene_deleted = false,
+    i = 0;
+    while (!scene_deleted) {
+      if (scenes[i].s_order == current_scene_index) {
+        scenes.splice(i,1);
+        d3.select('#frame' + i).remove();
+        scene_deleted = true;
+      }
+      i++;
+    }
+    scenes.forEach(function (d,i){
+      if (scenes[i].s_order > current_scene_index) {
+        scenes[i].s_order--;
+      }
+    })
+    current_scene_index--;
+    if (current_scene_index < 0) {
+      if (scenes.length > 0){
+        current_scene_index = scenes.length - 1;
+        changeScene(current_scene_index);
+      }
+      else {
+        current_scene_index = -1;
+      }
+    }
+    else {
+      changeScene(current_scene_index);
+    }
+    updateNavigationStepper();
+  };
 
   function goNextScene(){
     //next scene
@@ -690,8 +744,12 @@ function formatAbbreviation(x) {
     if (d3.select(this).attr("class") == "img_btn_enabled"){
       d3.select("#caption_div").style("display","none");
       d3.select("#image_div").style("display","none");
-      if (d3.select("#filter_div").style("display") == "none")
-      d3.select("#filter_div").style("display","inline");
+      if (d3.select("#filter_div").style("display") == "none") {
+        d3.select("#filter_div").style("display","inline");
+        effective_filter_width = window.innerWidth - parseInt(d3.select('#filter_div').style('width')) - getScrollbarWidth() - 10;
+
+        effective_filter_height = window.innerHeight - parseInt(d3.select('#filter_div').style('height')) - 25 - getScrollbarWidth() - parseInt(d3.select('#navigation_div').style('height')) - 10;
+      }
       else
       d3.select("#filter_div").style("display","none");
     }
@@ -820,18 +878,20 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
-    d3.selectAll('foreignObject').remove();
+    if (opt_out || email_address != "") {
+      d3.selectAll('foreignObject').remove();
 
-    console.log("exporting main_svg as PNG");
+      console.log("exporting main_svg as PNG");
 
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "exporting main_svg as PNG"
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "export",
+        event_detail: "exporting main_svg as PNG"
+      }
+      usage_log.push(log_event);
+
+      saveSvgAsPng(document.getElementById("main_svg"), "timeline_image.png", {backgroundColor: "white"});
     }
-    usage_log.push(log_event);
-
-    saveSvgAsPng(document.getElementById("main_svg"), "timeline_image.png", {backgroundColor: "white"});
 
   });
 
@@ -847,18 +907,20 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
-    d3.selectAll('foreignObject').remove();
+    if (opt_out || email_address != "") {
+      d3.selectAll('foreignObject').remove();
 
-    console.log("exporting main_svg as SVG");
+      console.log("exporting main_svg as SVG");
 
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "exporting main_svg as SVG"
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "export",
+        event_detail: "exporting main_svg as SVG"
+      }
+      usage_log.push(log_event);
+
+      saveSvg(document.getElementById("main_svg"), "timeline_image.svg", {backgroundColor: "white"});
     }
-    usage_log.push(log_event);
-
-    saveSvg(document.getElementById("main_svg"), "timeline_image.svg", {backgroundColor: "white"});
 
   });
 
@@ -874,58 +936,60 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
-    d3.selectAll('foreignObject').remove();
+    if (opt_out || email_address != "") {
+      d3.selectAll('foreignObject').remove();
 
-    gif.frames = [];
-    var gif_scenes = scenes;
-    if (gif_scenes.length > 0) {
+      gif.frames = [];
+      var gif_scenes = scenes;
+      if (gif_scenes.length > 0) {
 
-      console.log("exporting story as animated GIF");
+        console.log("exporting story as animated GIF");
 
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting story as animated GIF"
+        var log_event = {
+          event_time: new Date().valueOf(),
+          event_category: "export",
+          event_detail: "exporting story as animated GIF"
+        }
+        usage_log.push(log_event);
+
+        gif_scenes.sort(function(a, b) {
+          return parseFloat(a.s_order) - parseFloat(b.s_order);
+        });
+        gif_scenes.forEach(function (d,i){
+          var img =  document.createElement('img');
+          img.style.display = "none";
+          img.id = "gif_frame" + i;
+          img.src = d.s_src;
+          document.body.appendChild(img);
+          d3.select("#gif_frame" + i).attr('class','gif_frame');
+          setTimeout(function () {
+            gif.addFrame(document.getElementById('gif_frame' + i), {delay: 1000});
+          },150)
+        })
       }
-      usage_log.push(log_event);
+      else {
 
-      gif_scenes.sort(function(a, b) {
-        return parseFloat(a.s_order) - parseFloat(b.s_order);
-      });
-      gif_scenes.forEach(function (d,i){
-        var img =  document.createElement('img');
-        img.style.display = "none";
-        img.id = "gif_frame" + i;
-        img.src = d.s_src;
-        document.body.appendChild(img);
-        d3.select("#gif_frame" + i).attr('class','gif_frame');
+        console.log("exporting main_svg as GIF");
+
+        var log_event = {
+          event_time: new Date().valueOf(),
+          event_category: "export",
+          event_detail: "exporting main_svg as GIF"
+        }
+        usage_log.push(log_event);
+
+        svgAsPNG(document.getElementById("main_svg"), -1, {backgroundColor: "white"});
+
         setTimeout(function () {
-          gif.addFrame(document.getElementById('gif_frame' + i), {delay: 1000});
+          gif.addFrame(document.getElementById('gif_frame-1'));
         },150)
-      })
-    }
-    else {
-
-      console.log("exporting main_svg as GIF");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting main_svg as GIF"
       }
-      usage_log.push(log_event);
-
-      svgAsPNG(document.getElementById("main_svg"), -1, {backgroundColor: "white"});
-
       setTimeout(function () {
-        gif.addFrame(document.getElementById('gif_frame-1'));
-      },150)
+        gif.render();
+        d3.selectAll('.gif_frame').remove();
+      },150 + 150 * gif.frames.length)
+      gif_scenes = [];
     }
-    setTimeout(function () {
-      gif.render();
-      d3.selectAll('.gif_frame').remove();
-    },150 + 150 * gif.frames.length)
-    gif_scenes = [];
 
   });
 
@@ -941,56 +1005,59 @@ function formatAbbreviation(x) {
   })
   .on('click', function() {
 
-    d3.selectAll('foreignObject').remove();
+    if (opt_out || email_address != "") {
 
-    console.log('exporting story as .cdc');
+      d3.selectAll('foreignObject').remove();
 
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: 'exporting story as .cdc'
-    }
-    usage_log.push(log_event);
+      console.log('exporting story as .cdc');
 
-    timeline_story = {
-      'timeline_json_data':timeline_json_data,
-      'name':"timeline_story.cdc",
-      'scenes':scenes,
-      'width':window.innerWidth,
-      'height':window.innerHeight,
-      'color_palette':categories.range(),
-      'usage_log': usage_log,
-      'caption_list':caption_list,
-      'annotation_list':annotation_list,
-      'image_list':image_list,
-      'author':email_address,
-      'timestamp':new Date().valueOf()
-    };
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "export",
+        event_detail: 'exporting story as .cdc'
+      }
+      usage_log.push(log_event);
 
-    var story_json = JSON.stringify(timeline_story);
-    var blob = new Blob([story_json], {type: "application/json"});
-    var url  = URL.createObjectURL(blob);
-
-    var a = document.createElement('a');
-    a.download    = "timeline_story.cdc";
-    a.href        = url;
-    a.textContent = "Download timeline_story.cdc";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    if (opt_out) {
       timeline_story = {
+        'timeline_json_data':timeline_json_data,
+        'name':"timeline_story.cdc",
+        'scenes':scenes,
+        'width':window.innerWidth,
+        'height':window.innerHeight,
+        'color_palette':categories.range(),
         'usage_log': usage_log,
+        'caption_list':caption_list,
+        'annotation_list':annotation_list,
+        'image_list':image_list,
         'author':email_address,
         'timestamp':new Date().valueOf()
       };
+
+      var story_json = JSON.stringify(timeline_story);
+      var blob = new Blob([story_json], {type: "application/json"});
+      var url  = URL.createObjectURL(blob);
+
+      var a = document.createElement('a');
+      a.download    = "timeline_story.cdc";
+      a.href        = url;
+      a.textContent = "Download timeline_story.cdc";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      if (opt_out) {
+        timeline_story = {
+          'usage_log': usage_log,
+          'author':email_address,
+          'timestamp':new Date().valueOf()
+        };
+      }
+
+      story_json = JSON.stringify(timeline_story);
+
+      console.log(story_json);
+      socket.emit('export_event', story_json); // raise an event on the server
     }
-
-    story_json = JSON.stringify(timeline_story);
-
-    console.log(story_json);
-    socket.emit('export_event', story_json); // raise an event on the server
 
   });
 
@@ -1041,7 +1108,7 @@ function formatAbbreviation(x) {
   .attr("class","menu_label")
   .attr("for","opt_out_cb")
   .style('vertical-align','text-top')
-  .text("Don't share content with Microsoft");
+  .text(" Don't share content with Microsoft");
 
 
   /**
@@ -1143,7 +1210,7 @@ function formatAbbreviation(x) {
   .text("Load timeline data");
 
   var demo_dataset_picker_label = dataset_picker.append("label")
-  .attr("class","import_label");
+  .attr("class","import_label demo_dataset_label");
 
   var showDropdown = function (element) {
     var event = document.createEvent('MouseEvents');
@@ -1204,10 +1271,12 @@ function formatAbbreviation(x) {
   .text(function(d) { return d.tl_name; });
 
   demo_dataset_picker_label.append("img")
+  .style('border','0px solid transparent')
+  .style('margin','0px')
   .attr({
     name: "Load Demo Data",
     id: "demo_dataset_picker_label",
-    class: "img_btn_enabled import_label",
+    class: "img_btn_enabled",
     height: 40,
     width: 40,
     title: "Load Demo Data",
@@ -1394,7 +1463,7 @@ function formatAbbreviation(x) {
     height: 40,
     width: 40,
     title: "Load Demo Story",
-    src: "img/demo.png"
+    src: "img/demo_story.png"
   });
 
   story_picker.append("input")
@@ -1924,7 +1993,9 @@ function formatAbbreviation(x) {
     .append("div")
     .attr("id","filter_div")
     .attr("class","control_div")
-    .style("display","none");
+    .style("display","none")
+    .style("transition","all 0.05s ease")
+    .style("-webkit-transition","all 0.05s ease");
 
     //initialize global variables accessed by multiple visualziations
     date_granularity = "years";
@@ -2573,7 +2644,9 @@ function formatAbbreviation(x) {
     filter_div.append("text")
     .attr("class","menu_label filter_label")
     .style("margin-right","auto")
-    .text("Filter Options");
+    .text("Filter Options")
+    .style('cursor','move')
+    .call(filterDrag);
 
     filter_div.append("hr")
     .attr("class","menu_hr");
@@ -3289,7 +3362,7 @@ function formatAbbreviation(x) {
     .data(scenes);
 
     var navigation_step_exit = navigation_step.exit().transition()
-    .duration(1000)
+    .delay(1000)
     .remove();
 
     var navigation_step_update = navigation_step.transition()

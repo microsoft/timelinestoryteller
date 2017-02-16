@@ -36,10 +36,11 @@ a:hover {
   background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);
   background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);
   filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);
+  user-select: none;
 }
 
 .img_btn_enabled:hover {
-  border: 1px solid #ADADAD;
+  border: 1px solid #ff0000;
   background-color: #d9dddd;
   background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));
   background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);
@@ -61,11 +62,13 @@ a:hover {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px5px;
   margin: 2px;
+  user-select: none;
 }
 
 .filter_header_icon {
   cursor: default;
   border: 1px solid transparent;
+  user-select: none;
   border-radius: 5px;
   -webkit-box-shadow: #FEFFFF 0px 1px 1px ;
   -moz-box-shadow: #FEFFFF 0px 1px 1px ;
@@ -123,6 +126,7 @@ text {
   height: 25px;
   transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
+  user-select:none;
 }
 
 #footer_left {
@@ -239,6 +243,7 @@ text {
   margin-top: -166px;
   padding: 5px;
   position: fixed;
+  min-width: 280px;
 }
 
 .filter_div_section {
@@ -268,6 +273,7 @@ text {
   width: 225px;
   font-size: 10px;
   border: solid #999 1px;
+  cursor:pointer;
 }
 
 .filter_select option:focus {
@@ -298,6 +304,7 @@ select > option:hover {
   padding-left: 0px;
   padding-right: 0px;
   padding-top: 5px;
+  user-select:none;
 }
 
 .option_rb {
@@ -361,6 +368,7 @@ select > option:hover {
   font-size: 9px;
   display: block;
   color: #777;
+  user-select:none;
 }
 
 #rb_hint {
@@ -421,6 +429,7 @@ select > option:hover {
   left: 50%;
   width: 650px;
   margin-left: -325px;
+  user-select:none;
 }
 
 #export_formats {
@@ -439,6 +448,7 @@ select > option:hover {
   left: 50%;
   width: 650px;
   margin-left: -325px;
+  user-select:none;
 }
 
 #boilerplate {
@@ -585,6 +595,7 @@ input[type="color"]::-moz-color-swatch {
   padding: 5px;
   transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
+  user-select: none;
 }
 
 .ms-logo {
@@ -743,12 +754,12 @@ input[type="color"]::-moz-color-swatch {
   width: 40px;
   height: 40px;
   opacity: 0;
-  margin-top: 24px;
-  background: transparent;
+  border: 0px solid transparent;
   cursor: pointer;
   position: absolute;
   z-index: 1;
   font-size: 10px;
+  background: transparent;
 }
 
 .import_label > select + img {
@@ -760,6 +771,35 @@ input[type="color"]::-moz-color-swatch {
 }
 .import_label {
   margin-top: 10px;
+}
+
+.demo_dataset_label {
+  border: 1px solid #cccccc;
+  width: 40px;
+  height: 40px;
+  margin-right: 2px;
+  margin-top: 20px;
+  border-radius: 5px;
+  background-color: #f4f5f5;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));
+  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);
+  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);
+  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);
+  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);
+  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);
+  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);
+}
+
+.demo_dataset_label:hover {
+  border: 1px solid #ff0000;
+  background-color: #d9dddd;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));
+  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);
+  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);
+  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);
+  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);
+  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);
+  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);
 }
 
 .annotation_div {

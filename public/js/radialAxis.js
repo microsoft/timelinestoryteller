@@ -89,6 +89,7 @@ radialAxis: //a reusable radial axis
         .duration(duration);
 
         var radial_axis_tracks_exit = radial_axis_tracks.exit().transition()
+        .delay(duration)
         .duration(duration)
         .remove();
 
@@ -110,6 +111,9 @@ radialAxis: //a reusable radial axis
         .endAngle(radial_axis_scale(final_quantile)));
 
         radial_axis_tracks_exit.selectAll(".rad_track")
+        .attr("transform", function () {
+          return "translate(" + x_pos + " ," + y_pos + ")"
+        })
         .attr("d", d3.svg.arc()
         .innerRadius(function (d) {
           return centre_radius;
