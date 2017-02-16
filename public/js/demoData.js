@@ -3364,55 +3364,6 @@ var dailyroutines = [
 		"start_date":"2015-07-10 23:00Z",
 		"end_date":"2015-07-10 23:59Z",
 		"content_text":"Painting"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"food / leisure",
-		"start_date":"2015-07-10 00:00Z",
-		"end_date":"2015-07-10 02:59Z",
-		"content_text":"Listening to music, drinking, smoking"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"sleep",
-		"start_date":"2015-07-10 03:00Z",
-		"end_date":"2015-07-10 11:59Z",
-		"content_text":"Sleeping"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"food / leisure",
-		"start_date":"2015-07-10 12:00Z",
-		"end_date":"2015-07-10 12:59Z",
-		"content_text":"Reading and thinking in bed"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"food / leisure",
-		"start_date":"2015-07-10 13:00Z",
-		"end_date":"2015-07-10 13:59Z",
-		"content_text":"Having lunch"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"day job / admin",
-		"start_date":"2015-07-10 14:00Z",
-		"end_date":"2015-07-10 14:59Z",
-		"content_text":"Running errands, responding to mail"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"creative work",
-		"start_date":"2015-07-10 15:00Z",
-		"end_date":"2015-07-10 19:59Z",
-		"content_text":"Writing"
-	},
-	{
-		"facet":"Styron, William",
-		"category":"food / leisure",
-		"start_date":"2015-07-10 20:00Z",
-		"end_date":"2015-07-10 23:59Z",
-		"content_text":"Having dinner with family, then listening to music, drinking, smoking"
 	}
 ];
 
