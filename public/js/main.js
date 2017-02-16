@@ -1249,6 +1249,7 @@ function formatAbbreviation(x) {
     {"path":"empires","tl_name":"History's Largest Empires (faceted by region)"},
     {"path":"ch_jp_ko","tl_name":"East Asian Dynasties (faceted by region)"},
     {"path":"epidemics","tl_name":"Epidemics since the 14th Century (faceted by region)"},
+    {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
     {"path":"prime_ministers","tl_name":"Prime Ministers of Canada"},
     {"path":"france_presidents","tl_name":"Presidents of France"},
     {"path":"germany_chancellors","tl_name":"Chancellors of Germany"},
@@ -1257,7 +1258,6 @@ function formatAbbreviation(x) {
     {"path":"uk_prime_ministers","tl_name":"Prime Ministers of the UK"},
     {"path":"presidents","tl_name":"Presidents of the USA"},
     {"path":"heads_of_state_since_1940","tl_name":"G7 Heads of State since 1940 (faceted by country)"},
-    {"path":"hurricanes50y", "tl_name":"C4-5 Hurricanes: 1960-2010"},
     {"path":"dailyroutines","tl_name":"Podio's 'Daily Routines of Famous Creative People' (faceted by person)"},
     {"path":"painters","tl_name":"Accurat's 'Visualizing painters' lives' (faceted by painter)"},
     {"path":"authors","tl_name":"Accurat's 'From first published to masterpieces' (faceted by author)"},
@@ -1276,7 +1276,6 @@ function formatAbbreviation(x) {
   .attr({
     name: "Load Demo Data",
     id: "demo_dataset_picker_label",
-    class: "img_btn_enabled",
     height: 40,
     width: 40,
     title: "Load Demo Data",
