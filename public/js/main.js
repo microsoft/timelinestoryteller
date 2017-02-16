@@ -3519,8 +3519,6 @@ function formatAbbreviation(x) {
 
   function changeScene (scene_index) {
 
-    clearCanvas();
-
     updateNavigationStepper()
 
     var scene_found = false,
@@ -5650,8 +5648,6 @@ function formatAbbreviation(x) {
 
   //highlight matches and de-emphasize (grey-out) mismatches
   dispatch.on("Emphasize", function (selected_categories, selected_facets, selected_segments) {
-
-    clearCanvas();
 
     var timeline_events = d3.selectAll(".timeline_event_g");
     var matches, mismatches,
