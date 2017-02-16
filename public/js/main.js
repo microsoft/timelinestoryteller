@@ -2338,7 +2338,7 @@ function formatAbbreviation(x) {
             story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
           }
           else {
-            story_tz_offset = 0;
+            story_tz_offset = new Date().getTimezoneOffset() - 480;
           }
 
           var min_story_width = window_width,
@@ -2432,7 +2432,7 @@ function formatAbbreviation(x) {
           story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
         }
         else {
-          story_tz_offset = 0;
+          story_tz_offset = new Date().getTimezoneOffset() - 480;
         }
 
         var min_story_width = window_width,
