@@ -134,6 +134,7 @@ var date_granularity,
     color_palette = [],
     color_swap_target = 0,
     use_custom_palette = false,
+    story_tz_offset = 0,
     socket = io({transports:['websocket']});
     // socket = io.connect('https//:timelinestoryteller.azurewebsites.net');
 
@@ -1030,6 +1031,7 @@ function formatAbbreviation(x) {
         'annotation_list':annotation_list,
         'image_list':image_list,
         'author':email_address,
+        'tz_offset':new Date().getTimezoneOffset(),
         'timestamp':new Date().valueOf()
       };
 
@@ -2332,6 +2334,13 @@ function formatAbbreviation(x) {
           caption_index = story.caption_list.length - 1;
           image_index = story.image_list.length - 1;
 
+          if (story.tz_offset != undefined) {
+            story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
+          }
+          else {
+            story_tz_offset = 0;
+          }
+
           var min_story_width = window_width,
               max_story_width = window_width,
               min_story_height = window_height;
@@ -2418,6 +2427,13 @@ function formatAbbreviation(x) {
         annotation_list = story.annotation_list;
         caption_index = story.caption_list.length - 1;
         image_index = story.image_list.length - 1;
+
+        if (story.tz_offset != undefined) {
+          story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
+        }
+        else {
+          story_tz_offset = 0;
+        }
 
         var min_story_width = window_width,
             max_story_width = window_width,
@@ -3708,7 +3724,7 @@ function formatAbbreviation(x) {
         }
         if (i < scene.s_captions.length) {
           // caption is in the scene
-          addCaption(caption.caption_text,caption.caption_width,caption.x_rel_pos,caption.y_rel_pos,caption.c_index);
+          addCaption(caption.caption_text,caption.caption_width * 1.1,caption.x_rel_pos,caption.y_rel_pos,caption.c_index);
         }
       });
 
@@ -4309,11 +4325,23 @@ function formatAbbreviation(x) {
 
         //convert start_date to date object
         item.start_date = moment((new Date(item.start_date))).toDate();
-        item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
+
+        if (source_format == 'story' || source_format == 'demo_story') {
+          item.start_date = new Date(item.start_date.valueOf() + (story_tz_offset * 60000));
+        }
+        else {
+          item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
+        }
 
         //convert end_date to date object
         item.end_date = moment((new Date(item.end_date))).toDate();
-        item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
+
+        if (source_format == 'story' || source_format == 'demo_story') {
+          item.end_date = new Date(item.end_date.valueOf() + (story_tz_offset * 60000));
+        }
+        else {
+          item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
+        }
 
         item.event_id = i;
         active_event_list.push(i);
@@ -4350,7 +4378,12 @@ function formatAbbreviation(x) {
         //check for start_date string validity
         if (moment(item.start_date).isValid()) {
           item.start_date = moment(item.start_date).startOf("hour").toDate(); // account for UTC offset
-          item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
+          if (source_format == 'story' || source_format == 'demo_story') {
+            item.start_date = new Date(item.start_date.valueOf() + (story_tz_offset * 60000));
+          }
+          else {
+            item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
+          }
           item.event_id = i;
           active_event_list.push(i);
           i++;
@@ -4363,7 +4396,12 @@ function formatAbbreviation(x) {
         //check for end_date string validity
         if (moment(item.end_date).isValid()) {
           item.end_date = moment(item.end_date).endOf("hour").toDate(); // account for UTC offset
-          item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
+          if (source_format == 'story' || source_format == 'demo_story') {
+            item.end_date = new Date(item.end_date.valueOf() + (story_tz_offset * 60000));
+          }
+          else {
+            item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
+          }
         }
         else {
           item.end_date = undefined;
