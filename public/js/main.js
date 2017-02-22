@@ -1540,7 +1540,7 @@ function formatAbbreviation(x) {
   .append("input")
   .attr({
     type: 'text',
-    placeholder: "Worksheet title (tab name)",
+    placeholder: "OPTIONAL: Worksheet title (tab name)",
     class: "text_input",
     id: "gdoc_worksheet_title_input"
   });
@@ -1576,19 +1576,51 @@ function formatAbbreviation(x) {
     usage_log.push(log_event);
 
     source_format = 'gdoc';
-    gsheets.getWorksheet(gdoc_key,gdoc_worksheet,function(err,sheet) {
 
-      if (err != null) {
-        alert(err);
-        return true;
-      };
+    if (gdoc_worksheet != "") {
+      gsheets.getWorksheet(gdoc_key,gdoc_worksheet,function(err,sheet) {
 
-      timeline_json_data = sheet.data;
-      source_format = 'gdoc';
-      setTimeout(function () {
-        loadTimeline();
-      },500);
-    });
+        if (err != null) {
+          alert(err);
+          return true;
+        };
+
+        timeline_json_data = sheet.data;
+        source_format = 'gdoc';
+        setTimeout(function () {
+          loadTimeline();
+        },500);
+      });
+    }
+    else {
+      var worksheet_id;
+
+      gsheets.getSpreadsheet(gdoc_key,function(err,sheet) {
+        if (err != null) {
+          alert(err);
+          return true;
+        };
+
+        console.log("worksheet id: " + sheet.worksheets[0].id)
+
+        setTimeout(function () {
+          worksheet_id = sheet.worksheets[0].id;
+          gsheets.getWorksheetById(gdoc_key,worksheet_id,function(err,sheet) {
+
+            if (err != null) {
+              alert(err);
+              return true;
+            };
+
+            timeline_json_data = sheet.data;
+            source_format = 'gdoc';
+            setTimeout(function () {
+              loadTimeline();
+            },500);
+          });
+        },500);
+      });
+    }
 
   });
 
