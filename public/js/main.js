@@ -5551,7 +5551,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented" && (["centuries","millenia"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return false;
         }
         else {
@@ -5678,7 +5678,7 @@ function formatAbbreviation(x) {
         break;
 
         case "Grid":
-        if (scale == "Chronological" && layout == "Segmented" && (["centuries","millenia"].indexOf(segment_granularity) != -1)) {
+        if (scale == "Chronological" && layout == "Segmented" && (["decades","centuries","millenia"].indexOf(segment_granularity) != -1)) {
           return "img_btn_enabled";
         }
         else {

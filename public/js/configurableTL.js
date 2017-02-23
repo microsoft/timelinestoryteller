@@ -3406,8 +3406,8 @@ configurableTL: //a configurable timeline
               y_pos = -1 * (centre_radius + d3.select(this.parentNode).datum().track * track_height + track_height) * Math.cos(y_cos);
             }
             else if (tl_layout == "Segmented" && tl_representation == "Grid" && tl_scale == "Chronological") {
-              if (segment_granularity == "centuries" || segment_granularity == "millenia"){
-                y_pos = getYGridPosition(d,Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100);
+              if (["decades","centuries","millenia"].indexOf(segment_granularity) != -1){
+                y_pos = getYGridPosition(d.getUTCFullYear(),Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100);
               }
               else if (segment_granularity == "epochs") {
                 y_pos = 0;
@@ -3519,8 +3519,8 @@ configurableTL: //a configurable timeline
               x_pos = (centre_radius + d3.select(this.parentNode).datum().track * track_height + track_height) * Math.sin(x_sin);
             }
             else if (tl_layout == "Segmented" && tl_representation == "Grid" && tl_scale == "Chronological") {
-              if (segment_granularity == "centuries" || segment_granularity == "millenia"){
-                x_pos = d3.max([0,getXGridPosition(d)]);
+              if (["decades","centuries","millenia"].indexOf(segment_granularity) != -1){
+                x_pos = d3.max([0,getXGridPosition(d.getUTCFullYear())]);
               }
               else if (segment_granularity == "epochs") {
                 x_pos = 0;
