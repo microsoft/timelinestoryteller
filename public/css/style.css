@@ -835,11 +835,11 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .annotation_control {
-  border: 1px solid transparent;
+  border: 1px solid #ccc;
   stroke-width: 1px;
-  stroke: transparent;
+  stroke: #ccc;
   cursor: pointer;
-  fill: #ccc;
+  fill: transparent;
 }
 
 #caption_div {
