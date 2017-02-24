@@ -74,11 +74,11 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     .attr('x', x_pos + 7.5)
     .attr('y', y_pos + unit_width);
 
-    d3.select(this.parentNode).select(".frame_resizer")
+    d3.select(this.parentNode).selectAll(".frame_resizer")
     .attr('x', x_pos + caption_width + 7.5)
     .attr('y', y_pos);
 
-    d3.select(this.parentNode).select("#caption_delete")
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + caption_width + 7.5 + 20)
     .attr('y', y_pos);
   })
@@ -116,10 +116,14 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
     }
     caption_list[i].caption_width = caption_width;
 
+    d3.select(this.parentNode).selectAll(".frame_resizer")
+    .attr('x', x_pos + caption_width + 7.5)
+    .attr('y', y_pos);
+
     d3.select(this.parentNode).select(".caption_frame")
     .attr("width", caption_width + 7.5);
 
-    d3.select(this.parentNode).select("#caption_delete")
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + caption_width + 7.5 + 20)
     .attr('y', y_pos);
 
@@ -150,7 +154,7 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("width",caption_width + 7.5);
   // .attr("filter", "url(#drop-shadow)");
 
-  var caption_resizer = timeline_caption.append("svg:image")
+  timeline_caption.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize caption')
   .attr("x", x_pos + caption_width + 7.5)
@@ -159,7 +163,21 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  var caption_resizer = timeline_caption.append("rect")
+  .attr("class","annotation_control frame_resizer")
+  .attr("x", x_pos + caption_width + 7.5)
+  .attr("y", y_pos)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .call(resize);
 
   caption_resizer.append('title')
@@ -167,7 +185,6 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
 
   timeline_caption.append("svg:image")
   .attr("class","annotation_control annotation_delete")
-  .attr("id","caption_delete")
   .attr('title','remove caption')
   .attr("x", x_pos + caption_width + 7.5 + 20)
   .attr("y", y_pos)
@@ -175,7 +192,21 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  timeline_caption.append("rect")
+  .attr("class","annotation_control annotation_delete")
+  .attr("x", x_pos + caption_width + 7.5 + 20)
+  .attr("y", y_pos)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .on('click', function(){
 
     console.log("caption " + caption_index + " removed");

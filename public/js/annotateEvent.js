@@ -172,11 +172,11 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .attr('x', x_pos + x_anno_offset + 7.5)
     .attr('y', y_pos + y_anno_offset + annotation_buffer);
 
-    d3.select(this.parentNode).select(".frame_resizer")
+    d3.select(this.parentNode).selectAll(".frame_resizer")
     .attr('x', x_pos + x_anno_offset + label_width + 7.5)
     .attr('y', y_pos + y_anno_offset);
 
-    d3.select(this.parentNode).select("#annotation_delete")
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 20)
     .attr('y', y_pos + y_anno_offset);
 
@@ -248,7 +248,11 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
     .text(content_text)
     .call(wrap,label_width - 7.5);
 
-    d3.select(this.parentNode).select("#annotation_delete")
+    d3.select(this.parentNode).selectAll(".frame_resizer")
+    .attr('x', x_pos + x_anno_offset + label_width + 7.5)
+    .attr('y', y_pos + y_anno_offset);
+
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + x_anno_offset + label_width + 7.5 + 20)
     .attr('y', y_pos + y_anno_offset);
 
@@ -303,7 +307,7 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("width",label_width + 7.5)
   // .attr("filter", "url(#drop-shadow)");
 
-  var annotation_resizer = event_annotation.append("svg:image")
+  event_annotation.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize label')
   .attr("x", x_pos + x_anno_offset + label_width + 7.5)
@@ -312,7 +316,21 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  var annotation_resizer = event_annotation.append("rect")
+  .attr("class","annotation_control frame_resizer")
+  .attr("x", x_pos + x_anno_offset + label_width + 7.5)
+  .attr("y", y_pos + y_anno_offset)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .call(resize);
 
   annotation_resizer.append('title')
@@ -328,7 +346,21 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  event_annotation.append("rect")
+  .attr("class","annotation_control annotation_delete")
+  .attr("x", x_pos + x_anno_offset + label_width + 7.5 + 20)
+  .attr("y", y_pos + y_anno_offset)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .on('click', function(){
     var corresponding_event = d3.select("#event_g" + item_index);
 

@@ -153,8 +153,7 @@ configurableTL: //a configurable timeline
         CURVE-specific timeline
         --*/
 
-        d3.select('.timeline')
-        .append('path')
+        timeline_container_enter.append('path')
         .attr('id', 'timecurve')
         .style('visibility','hidden');
 

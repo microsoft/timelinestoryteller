@@ -838,10 +838,8 @@ input[type="color"]::-moz-color-swatch {
   border: 1px solid transparent;
   stroke-width: 1px;
   stroke: transparent;
-}
-
-.annotation_delete:hover {
   cursor: pointer;
+  fill: #ccc;
 }
 
 #caption_div {
@@ -942,6 +940,12 @@ input[type="color"]::-moz-color-swatch {
 #stepper_svg_placeholder {
   fill: #ccc;
   font-size: 0.8em;
+}
+
+.scene_delete rect {
+  fill: transparent;
+  stroke: #ccc;
+  stroke-width: '1px';
 }
 
 .frame_hover {

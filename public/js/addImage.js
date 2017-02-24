@@ -104,11 +104,11 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     .attr('x', x_pos)
     .attr('y', y_pos);
 
-    d3.select(this.parentNode).select(".frame_resizer")
+    d3.select(this.parentNode).selectAll(".frame_resizer")
     .attr('x', x_pos + image_width)
     .attr('y', y_pos);
 
-    d3.select(this.parentNode).select("#image_delete")
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + image_width + 20)
     .attr('y', y_pos);
   })
@@ -162,7 +162,11 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
     .attr("width", image_width)
     .attr("height", image_height * scaling_ratio);
 
-    d3.select(this.parentNode).select("#image_delete")
+    d3.select(this.parentNode).selectAll(".frame_resizer")
+    .attr('x', x_pos + image_width)
+    .attr('y', y_pos);
+
+    d3.select(this.parentNode).selectAll(".annotation_delete")
     .attr('x', x_pos + image_width + 20)
     .attr('y', y_pos);
 
@@ -223,7 +227,7 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("width",image_width)
   .attr("height",image_height)
 
-  var image_resizer = timeline_image.append("svg:image")
+  timeline_image.append("svg:image")
   .attr("class","annotation_control frame_resizer")
   .attr('title','resize image')
   .attr("x", x_pos + image_width)
@@ -232,7 +236,21 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("height",20)
   .attr("xlink:href","/img/expand.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  var image_resizer = timeline_image.append("rect")
+  .attr("class","annotation_control frame_resizer")
+  .attr("x", x_pos + image_width)
+  .attr("y", y_pos)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .call(resize);
 
   image_resizer.append('title')
@@ -240,7 +258,6 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
 
   timeline_image.append("svg:image")
   .attr("class","annotation_control annotation_delete")
-  .attr("id","image_delete")
   .attr('title','remove image')
   .attr("x", x_pos + image_width + 20)
   .attr("y", y_pos)
@@ -248,7 +265,21 @@ addImage = function (image_url,x_rel_pos,y_rel_pos,image_width,image_height,imag
   .attr("height",20)
   .attr("xlink:href","/img/delete.png")
   .attr("filter", "url(#drop-shadow)")
+  .style("opacity",0);
+
+  timeline_image.append("rect")
+  .attr("class","annotation_control annotation_delete")
+  .attr("x", x_pos + image_width + 20)
+  .attr("y", y_pos)
+  .attr("width",20)
+  .attr("height",20)
   .style("opacity",0)
+  .on('mouseover', function(){
+    d3.select(this).style('stroke','#f00')
+  })
+  .on('mouseout', function(){
+    d3.select(this).style('stroke','#ccc')
+  })
   .on('click', function(){
     console.log("image " + image_index + " removed");
 

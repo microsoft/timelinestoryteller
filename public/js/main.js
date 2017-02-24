@@ -383,49 +383,6 @@ function formatAbbreviation(x) {
     }
   });
 
-  function deleteScene() {
-    d3.selectAll(".frame_hover").remove();
-    //delete current scene unless image or caption div is open
-    console.log("scene " + current_scene_index + " deleted.");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "deletion",
-      event_detail: "scene " + current_scene_index + " deleted."
-    }
-    usage_log.push(log_event);
-
-    var scene_deleted = false,
-    i = 0;
-    while (!scene_deleted) {
-      if (scenes[i].s_order == current_scene_index) {
-        scenes.splice(i,1);
-        d3.select('#frame' + i).remove();
-        scene_deleted = true;
-      }
-      i++;
-    }
-    scenes.forEach(function (d,i){
-      if (scenes[i].s_order > current_scene_index) {
-        scenes[i].s_order--;
-      }
-    })
-    current_scene_index--;
-    if (current_scene_index < 0) {
-      if (scenes.length > 0){
-        current_scene_index = scenes.length - 1;
-        changeScene(current_scene_index);
-      }
-      else {
-        current_scene_index = -1;
-      }
-    }
-    else {
-      changeScene(current_scene_index);
-    }
-    updateNavigationStepper();
-  };
-
   function goNextScene(){
     //next scene
     if (scenes.length < 2) {
@@ -3354,6 +3311,12 @@ function formatAbbreviation(x) {
     // if (height > gif.options.height)
     //   gif.setOptions({height: height})
 
+    for (var i = 0; i < scenes.length; i++){
+      if (scenes[i].s_order > current_scene_index) {
+        scenes[i].s_order++;
+      }
+    }
+
     var scene = {
       s_width: width,
       s_height: height,
@@ -3375,15 +3338,10 @@ function formatAbbreviation(x) {
       s_order: current_scene_index + 1
     };
     scenes.push(scene);
+
     current_scene_index++;
 
     svgAsPNG(document.getElementById("main_svg"), gif_index, {backgroundColor: "white"});
-
-    for (var i = 0; i < scenes.length - 1; i ++){
-      if (scenes[i].s_order >= scenes[scenes.length - 1].s_order) {
-        scenes[i].s_order++;
-      }
-    }
 
     var checkExist = setInterval(function() {
        if (document.getElementById('gif_frame' + gif_index) != null) {
@@ -3421,13 +3379,15 @@ function formatAbbreviation(x) {
     .attr('id', function(d,i){
       return 'frame' + d.s_order;
     })
-    .style('cursor','pointer')
-    .on('click', function (d,i) {
-      current_scene_index = +d3.select(this).attr('id').substr(5);
-      changeScene(current_scene_index);
-    });
+    .attr('transform', function(d,i){
+      return "translate(" + (d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + ",0)";
+    })
+    .style('cursor','pointer');
 
-    navigation_step_update.attr('id', function(d,i){
+    navigation_step_update.attr('transform', function(d,i){
+      return "translate(" + (d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + ",0)";
+    })
+    .attr('id', function(d,i){
       return 'frame' + d.s_order;
     });
 
@@ -3443,47 +3403,25 @@ function formatAbbreviation(x) {
 
     navigation_step_enter.append('rect')
     .attr('fill', 'white')
-    .attr('x', function(d,i){
-      return d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5;
-    })
-    .attr('y', 0)
     .attr('width', STEPPER_STEP_WIDTH)
     .attr('height', STEPPER_STEP_WIDTH)
     .style('stroke', function (d,i){
       if (d.s_order == current_scene_index) {
-        return '#666';
+        return '#f00';
       }
       else {
-        return '#999';
+        return '#ccc';
       }
     })
-    .style('stroke-width', function(d,i){
-      if (d.s_order == current_scene_index) {
-        return '3px';
-      }
-      else {
-        return '1px';
-      }
-    });
+    .style('stroke-width', '3px');
 
     navigation_step_update.select("rect")
-    .attr('x', function(d,i){
-      return d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5;
-    })
     .style('stroke', function (d,i){
       if (d.s_order == current_scene_index) {
-        return '#666';
+        return '#f00';
       }
       else {
-        return '#999';
-      }
-    })
-    .style('stroke-width', function(d,i){
-      if (d.s_order == current_scene_index) {
-        return '3px';
-      }
-      else {
-        return '1px';
+        return '#ccc';
       }
     });
 
@@ -3491,39 +3429,108 @@ function formatAbbreviation(x) {
     .attr("xlink:href", function(d,i) {
       return d.s_src;
     })
-    .attr('x', function(d,i){
-      return d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5 + 2;
-    })
+    .attr('x', 2)
     .attr('y', 2)
     .attr('width', STEPPER_STEP_WIDTH - 4)
-    .attr('height', STEPPER_STEP_WIDTH - 4);
+    .attr('height', STEPPER_STEP_WIDTH - 4)
+    .on('click', function (d,i) {
+      current_scene_index = +d3.select(this.parentNode).attr('id').substr(5);
+      changeScene(current_scene_index);
+    });
 
-    navigation_step_update.select("image")
-    .attr('x', function(d,i){
-      return d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5 + 2;
+    var navigation_step_delete = navigation_step_enter.append('g')
+    .attr("class","scene_delete")
+    .style("opacity",0);
+
+    navigation_step_delete.append("svg:image")
+    .attr("class","annotation_control annotation_delete")
+
+    .attr('title','Delete Scene')
+    .attr("x", STEPPER_STEP_WIDTH - 17)
+    .attr("y", 2)
+    .attr("width",15)
+    .attr("height",15)
+    .attr("xlink:href","/img/delete.png");
+
+    navigation_step_delete.append('rect')
+    .attr('title','Delete Scene')
+    .attr("x", STEPPER_STEP_WIDTH - 17)
+    .attr("y", 2)
+    .attr("width",15)
+    .attr("height",15)
+    .on('mouseover', function(){
+      d3.select(this).style('stroke','#f00')
     })
+    .on('mouseout', function(){
+      d3.select(this).style('stroke','#ccc')
+    })
+    .on('click', function(d,i){
+      d3.select('#frame' + d.s_order).remove();
+      d3.selectAll(".frame_hover").remove();
+      //delete current scene unless image or caption div is open
+      console.log("scene " + (d.s_order + 1) + " deleted.");
+
+      var log_event = {
+        event_time: new Date().valueOf(),
+        event_category: "deletion",
+        event_detail: "scene " + (d.s_order + 1) + " deleted."
+      }
+      usage_log.push(log_event);
+
+      for (var j = 0; j < scenes.length; j++) {
+        if (scenes[j].s_order == d.s_order) {
+          scenes.splice(j,1);
+        }
+      }
+
+      for (var j = 0; j < scenes.length; j++) {
+        if (scenes[j].s_order > d.s_order) {
+          scenes[j].s_order--;
+        }
+      }
+
+      if (current_scene_index > d.s_order) {
+        current_scene_index--;
+      }
+
+      updateNavigationStepper();
+
+      if (current_scene_index == d.s_order) { // is current scene to be deleted?
+        if (current_scene_index == scenes.length - 1) { // is it the final scene?
+          current_scene_index = 0; // set current scene to first scene
+        }
+        else { // current scene is not the last scene
+          current_scene_index--; // set current scene to previous scene
+          if (current_scene_index < 0) { // did you delete the first scene?
+            current_scene_index = scenes.length - 1; // set current to last scene
+          }
+        }
+
+        if (scenes.length == 0){ // are there no more scenes left?
+          current_scene_index = -1; // set current scene to -1
+        }
+        else {
+          changeScene(current_scene_index);
+        }
+
+      }
+
+    })
+    .append('title')
+    .text('Delete Scene');
 
     navigation_step_svg.selectAll('.framePoint')
     .on('mouseover', function (d,i) {
 
-      var x_pos = d3.min([+d3.select(this).select('rect').attr('x') + 100,window_width - margin.right - margin.left - getScrollbarWidth() - 300]);
+      var x_pos = d3.min([(d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + 100,window.innerWidth - margin.right - margin.left - getScrollbarWidth() - 300]);
 
       var img_src = d3.select(this).select('image').attr('href');
 
-      if (d.s_order == current_scene_index) {
-        d3.select(this).select('rect')
-        .style('stroke-width', '3px')
-        .style("stroke", function(){
-          return '#666';
-        })
-      }
-      else {
-        d3.select(this).select('rect')
-        .style('stroke-width', '3px')
-        .style("stroke", function(){
-          return '#f00';
-        })
-      }
+      d3.select(this).select('rect')
+      .style("stroke", '#666');
+
+      d3.select(this).select('.scene_delete')
+      .style("opacity", 1);
 
       var frame_hover = d3.select("body").append('div')
       .attr('class','frame_hover')
@@ -3543,18 +3550,19 @@ function formatAbbreviation(x) {
     })
     .on('mouseout', function (d,i) {
 
+      d3.select(this).select('.scene_delete')
+      .style("opacity", 0);
+
       if (d.s_order == current_scene_index) {
         d3.select(this).select('rect')
-        .style('stroke-width', '3px')
         .style("stroke", function(){
-          return '#666';
+          return '#f00';
         })
       }
       else {
         d3.select(this).select('rect')
-        .style('stroke-width', '1px')
         .style("stroke", function(){
-          return '#999';
+          return '#ccc';
         })
       }
 
@@ -3573,7 +3581,7 @@ function formatAbbreviation(x) {
     i = 0,
     scene = scenes[0];
 
-    while (!scene_found) {
+    while (!scene_found && i < scenes.length) {
       if (scenes[i].s_order == scene_index){
         scene_found = true;
         scene = scenes[i];
@@ -3680,6 +3688,10 @@ function formatAbbreviation(x) {
       scene_delay = 1200 * 4;
     }
 
+    selected_categories = scene.s_categories;
+    selected_facets = scene.s_facets;
+    selected_segments = scene.s_segments;
+
     //what type of filtering is used in the scene?
     if (scene.s_filter_type == "Hide") {
       d3.selectAll("#filter_type_picker input[name=filter_type_rb]")
@@ -3690,7 +3702,7 @@ function formatAbbreviation(x) {
         dispatch.Emphasize(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
       }
       filter_type = "Hide";
-      dispatch.remove(scene.s_categories, scene.s_facets, scene.s_segments);
+      dispatch.remove(selected_categories, selected_facets, selected_segments);
     }
     else if (scene.s_filter_type == "Emphasize") {
       d3.selectAll("#filter_type_picker input[name=filter_type_rb]")
@@ -3702,7 +3714,7 @@ function formatAbbreviation(x) {
         dispatch.remove(d3.select("#category_picker").select("option"), d3.select("#facet_picker").select("option"), d3.select("#segment_picker").select("option"));
       }
       filter_type = "Emphasize";
-      dispatch.Emphasize(scene.s_categories, scene.s_facets, scene.s_segments);
+      dispatch.Emphasize(selected_categories, selected_facets, selected_segments);
     }
 
     //where is the legend in the scene?
