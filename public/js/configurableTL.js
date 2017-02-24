@@ -31,8 +31,7 @@ configurableTL: //a configurable timeline
     grid_axis = d3.gridAxis(),
     render_path = undefined,
     active_line = undefined,
-    fresh_canvas = true,
-    previous_segment_granularity;
+    fresh_canvas = true;
 
     // d3.selection.prototype.moveToFront = function() {
     //   return this.each(function(){
@@ -3406,7 +3405,17 @@ configurableTL: //a configurable timeline
             }
             else if (tl_layout == "Segmented" && tl_representation == "Grid" && tl_scale == "Chronological") {
               if (["decades","centuries","millenia"].indexOf(segment_granularity) != -1){
-                y_pos = getYGridPosition(d.getUTCFullYear(),Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100);
+
+                var grid_year;
+
+                if (isNumber(d)){
+                  grid_year = d;
+                }
+                else {
+                  grid_year = d.getUTCFullYear();
+                }
+
+                y_pos = getYGridPosition(grid_year,Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100);
               }
               else if (segment_granularity == "epochs") {
                 y_pos = 0;
@@ -3518,14 +3527,24 @@ configurableTL: //a configurable timeline
               x_pos = (centre_radius + d3.select(this.parentNode).datum().track * track_height + track_height) * Math.sin(x_sin);
             }
             else if (tl_layout == "Segmented" && tl_representation == "Grid" && tl_scale == "Chronological") {
+
+              var grid_year;
+
+              if (isNumber(d)){
+                grid_year = d;
+              }
+              else {
+                grid_year = d.getUTCFullYear();
+              }
+
               if (["decades","centuries","millenia"].indexOf(segment_granularity) != -1){
-                x_pos = d3.max([0,getXGridPosition(d.getUTCFullYear())]);
+                x_pos = d3.max([0,getXGridPosition(grid_year)]);
               }
               else if (segment_granularity == "epochs") {
                 x_pos = 0;
               }
               else {
-                x_pos = d3.max([0,getXGridPosition(d.getUTCFullYear())]);
+                x_pos = d3.max([0,getXGridPosition(grid_year)]);
               }
             }
             else if (tl_layout == "Segmented" && tl_representation == "Calendar" && tl_scale == "Chronological") {
@@ -4484,15 +4503,6 @@ configurableTL: //a configurable timeline
         return radial_axis_quantiles;
       }
       radial_axis_quantiles = x;
-      return configurableTL;
-    };
-
-    //getter / setter for current segment granularity
-    configurableTL.previous_segment_granularity = function (x) {
-      if (!arguments.length) {
-        return previous_segment_granularity;
-      }
-      previous_segment_granularity = x;
       return configurableTL;
     };
 
