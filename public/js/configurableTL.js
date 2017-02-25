@@ -924,7 +924,7 @@ configurableTL: //a configurable timeline
                   if ((max_end_age / 86400000) > 1000) {
                     converted_tick = Math.round(d / 31536000730) + " years";
                   }
-                  else if ((max_end_age / 86400000) > 100) {
+                  else if ((max_end_age / 86400000) > 120) {
                     converted_tick = Math.round(d / 2628000000) + " months";
                   }
                   else if ((max_end_age / 86400000) > 2) {
@@ -1164,7 +1164,7 @@ configurableTL: //a configurable timeline
               }
               else {
                 timeline_scale.domain([0,max_end_age * 1.05]);
-                timeline_scale_segments = d3.range(0,Math.round(max_end_age / 86400000));
+                timeline_scale_segments = d3.range(0,Math.round((max_end_age + 86400000) / 86400000));
               }
               console.log(tl_scale + " scale updated with " + date_granularity + " date granularity and range: 0 - " + data.max_end_age);
 

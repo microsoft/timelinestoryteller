@@ -158,6 +158,15 @@ function formatAbbreviation(x) {
   }
 }
 
+//function for checking if string is a number
+//stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
+function isNumber (n) {
+
+  "use strict";
+
+  return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
 (function () {
 
   "use strict";
@@ -921,7 +930,7 @@ function formatAbbreviation(x) {
           document.body.appendChild(img);
           d3.select("#gif_frame" + i).attr('class','gif_frame');
           setTimeout(function () {
-            gif.addFrame(document.getElementById('gif_frame' + i), {delay: 1000});
+            gif.addFrame(document.getElementById('gif_frame' + i), {delay: 1500});
           },150)
         })
       }
@@ -2944,19 +2953,11 @@ function formatAbbreviation(x) {
       item.segment = getSegment(item.start_date);
     });
 
-    //determine facets (separate timelines) from data
-    present_segments.domain(data.map(function (d) {
-      return d.segment;
+    var segment_list = getSegmentList(data.min_start_date,data.max_end_date);
+
+    present_segments.domain(segment_list.map(function (d) {
+      return d;
     }));
-
-    console.log("# segments: " + present_segments.domain().length);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "# segments: " + present_segments.domain().length
-    }
-    usage_log.push(log_event);
 
     var segment_filter = filter_div.append("div")
     .attr('class','filter_div_section');
@@ -3223,7 +3224,7 @@ function formatAbbreviation(x) {
         segment_granularity = "weeks";
       }
       else {
-        segment_granularity = timeline_vis.previous_segment_granularity();
+        segment_granularity = getSegmentGranularity(global_min_start_date,global_max_end_date);
       }
     }
 
@@ -3606,7 +3607,7 @@ function formatAbbreviation(x) {
         segment_granularity = "weeks";
       }
       else {
-        segment_granularity = timeline_vis.previous_segment_granularity();
+        segment_granularity = getSegmentGranularity(global_min_start_date,global_max_end_date);
       }
     }
 
@@ -3973,10 +3974,20 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    //determine event categories from data
-    segments.domain(data.map(function (d) {
-      return d.segment;
+    var segment_list = getSegmentList(data.min_start_date,data.max_end_date);
+
+    segments.domain(segment_list.map(function (d) {
+      return d;
     }));
+
+    console.log("segments (" + segments.domain().length + "): " + segments.domain());
+
+    var log_event = {
+      event_time: new Date().valueOf(),
+      event_category: "preprocessing",
+      event_detail: "segments (" + segments.domain().length + "): " + segments.domain()
+    }
+    usage_log.push(log_event);
 
     num_segments = segments.domain().length;
     num_segment_cols = Math.ceil(Math.sqrt(num_segments));
@@ -4017,7 +4028,7 @@ function formatAbbreviation(x) {
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
-    timeline_vis.previous_segment_granularity(segment_granularity);
+    // timeline_vis.previous_segment_granularity(segment_granularity);
 
     global_min_start_date = data.min_start_date;
     global_max_end_date = data.max_end_date;
@@ -4837,11 +4848,84 @@ function formatAbbreviation(x) {
     return segment;
   };
 
-  //function for checking if string is a number
-  //stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
-  function isNumber (n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  };
+  function getSegmentList(start_date,end_date) {
+
+    var segments_domain = [];
+    switch (segment_granularity) {
+
+      case "days":
+      var day_array = d3.time.days(start_date,end_date);
+      day_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "weeks":
+      var week_array = d3.time.weeks(d3.time.week.floor(start_date),d3.time.week.ceil(end_date));
+      week_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "months":
+      var month_array = d3.time.months(d3.time.month.floor(start_date),d3.time.month.ceil(end_date));
+      month_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "years":
+      var year_array = d3.time.years(d3.time.year.floor(start_date),d3.time.year.ceil(end_date));
+      year_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "decades":
+      var min_decade_start_date = d3.time.year.floor(start_date);
+      var min_decade_offset = start_date.getUTCFullYear() % 10;
+      if (min_decade_offset < 0) {
+        min_decade_offset += 10;
+      }
+      min_decade_start_date.setUTCFullYear(start_date.getUTCFullYear() - min_decade_offset);
+      var decade_array = d3.time.years(d3.time.year.floor(min_decade_start_date),d3.time.year.ceil(end_date),10);
+      decade_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "centuries":
+      var min_century_start_date = d3.time.year.floor(start_date);
+      var min_century_offset = start_date.getUTCFullYear() % 100;
+      if (min_century_offset < 0) {
+        min_century_offset += 100;
+      }
+      min_century_start_date.setUTCFullYear(start_date.getUTCFullYear() - min_century_offset);
+      var century_array = d3.time.years(d3.time.year.floor(min_century_start_date),d3.time.year.ceil(end_date),100);
+      century_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "millenia":
+      var min_millenia_start_date = d3.time.year.floor(start_date);
+      var min_millenia_offset = start_date.getUTCFullYear() % 1000;
+      if (min_millenia_offset < 0) {
+        min_millenia_offset += 1000;
+      }
+      min_millenia_start_date.setUTCFullYear(start_date.getUTCFullYear() - min_millenia_offset);
+      var millenia_array = d3.time.years(d3.time.year.floor(min_millenia_start_date),d3.time.year.ceil(end_date),1000);
+      millenia_array.forEach(function (d) {
+        segments_domain.push(getSegment(d));
+      });
+      break;
+
+      case "epochs":
+      segments_domain = [""];
+      break;
+    }
+    return segments_domain;
+  }
 
   //resizes the timeline container based on combination of scale, layout, representation
   function determineSize(data, scale, layout, representation) {
@@ -5832,7 +5916,7 @@ function formatAbbreviation(x) {
     prev_active_event_list = active_event_list;
     active_event_list = [];
 
-    timeline_vis.previous_segment_granularity(segment_granularity);
+    // timeline_vis.previous_segment_granularity(segment_granularity);
 
     var matches, mismatches,
     selected_category_values = [],
@@ -5930,11 +6014,32 @@ function formatAbbreviation(x) {
     }
     usage_log.push(log_event);
 
-    segments.domain(active_data.map(function (d) {
-      return d.segment;
+    if (timeline_vis.tl_layout() == "Segmented") {
+      if (timeline_vis.tl_representation() == "Grid"){
+        segment_granularity = "centuries";
+      }
+      else if (timeline_vis.tl_representation() == "Calendar") {
+        segment_granularity = "weeks";
+      }
+      else {
+        segment_granularity = getSegmentGranularity(global_min_start_date,global_max_end_date);
+      }
+    }
+
+    var segment_list = getSegmentList(active_data.min_start_date,active_data.max_end_date);
+
+    segments.domain(segment_list.map(function (d) {
+      return d;
     }));
 
-    segments.domain().sort();
+    console.log("segments (" + segments.domain().length + "): " + segments.domain());
+
+    var log_event = {
+      event_time: new Date().valueOf(),
+      event_category: "preprocessing",
+      event_detail: "segments (" + segments.domain().length + "): " + segments.domain()
+    }
+    usage_log.push(log_event);
 
     num_segments = segments.domain().length;
     num_segment_cols = Math.ceil(Math.sqrt(num_segments));
@@ -5956,17 +6061,6 @@ function formatAbbreviation(x) {
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
-    if (timeline_vis.tl_layout() == "Segmented") {
-      if (timeline_vis.tl_representation() == "Grid"){
-        segment_granularity = "centuries";
-      }
-      else if (timeline_vis.tl_representation() == "Calendar") {
-        segment_granularity = "weeks";
-      }
-      else {
-        segment_granularity = timeline_vis.previous_segment_granularity()
-      }
-    }
     main_svg.call(timeline_vis.duration(1200)
     .height(height)
     .width(width));

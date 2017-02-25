@@ -352,7 +352,7 @@ radialAxis: //a reusable radial axis
         else if ((max_end_age / 86400000) > 1000) {
           radial_axis_tick_label = Math.round(d / 31536000730) + " years";
         }
-        else if ((max_end_age / 86400000) > 100) {
+        else if ((max_end_age / 86400000) > 120) {
           radial_axis_tick_label = Math.round(d / 2628000000) + " months";
         }
         else if ((max_end_age / 86400000) > 2) {
