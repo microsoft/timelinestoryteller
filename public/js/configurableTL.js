@@ -1393,7 +1393,36 @@ configurableTL: //a configurable timeline
           }
           else {
             timeline_axis.tickValues(undefined);
-            timeline_axis.tickFormat(undefined);
+            timeline_axis.tickFormat(function (d) {
+              var converted_tick = d
+              switch (segment_granularity) {
+                case "days":
+                converted_tick = moment(d).format('hA');
+                break;
+                case "weeks":
+                converted_tick = moment(d).format('MMM D');
+                break;
+                case "months":
+                converted_tick = moment(d).format('MMM D');
+                break;
+                case "years":
+                converted_tick = moment(d).format('YYYY');
+                break;
+                case "decades":
+                converted_tick = moment(d).format('YYYY');
+                break;
+                case "centuries":
+                converted_tick = moment(d).format('YYYY');
+                break;
+                case "millenia":
+                converted_tick = moment(d).format('YYYY');
+                break;
+                case "epochs":
+                converted_tick = formatAbbreviation(d);
+                break;
+              }
+              return converted_tick;
+            });
           }
 
           //update the timeline axis for linear timelines
