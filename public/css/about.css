@@ -28,6 +28,10 @@
   }
 }
 
+video {
+  border: 1px solid #ccc;
+}
+
 .dimension_icon_rep {
   position: relative;
   background-color: #FFF;
