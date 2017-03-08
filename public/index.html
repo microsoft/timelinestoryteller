@@ -59,9 +59,7 @@
 
 			<div id="left-column">
 
-				<h3>Contents:</h3>
-
-				<p><a href="#about">About</a></p>
+        <p><a href="#examples">Examples</a></p>
 				<p><a href="#preparing">Preparing data</a></p>
         <p><a href="#usage">Usage overview</a></p>
 				<p><a href="#code">Source code</a></p>
@@ -94,20 +92,25 @@
 				</div>
 
         <div class="section" style="margin-bottom:0px">
-            <a href="app/" target="_blank" id="launch_btn"><div id="draw_timeline" class="img_btn_enabled import_label" title="Open Timeline Storyteller"><text class="boilerplate_title" style="color: white; cursor: pointer; position: relative;">Open Timeline Storyteller</text></div></a>
+          <div class="text">
+            <p>
+              <a href="app/" target="_blank" id="launch_btn"><div id="draw_timeline" class="img_btn_enabled import_label" title="Open Timeline Storyteller"><text class="boilerplate_title" style="color: white; cursor: pointer; position: relative;">Open Timeline Storyteller</text></div></a>
+            </p>
+          </div>
         </div>
 
 				<div class="section">
 					<span id="about" class="anchor"></span>
 					<div class="text">
-						<h3>About the project</h3>
 						<p>
-							<strong><a href="app/" target="_blank">Timeline Storyteller</a></strong> is an expressive browser-based visual storytelling environment for presenting timelines (i.e., sequences of events).
+							<strong><a href="app/" target="_blank">Timeline Storyteller</a></strong> is an expressive browser-based visual storytelling environment for presenting timelines.
 						</p>
             <p>
-              <br>You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
+              You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
             </p>
-            <img style="box-shadow: none;" src="img/dims.png" width="560" alt="A palette of timeline representations, scales, and layouts." title="A palette of timeline representations, scales, and layouts.">
+            <p>
+              <img style="box-shadow: none;" src="img/dims.png" width="560" alt="A palette of timeline representations, scales, and layouts." title="A palette of timeline representations, scales, and layouts.">
+            </p>
             <p>
               To learn more about the research that informed this project, see <strong><a href="https://timelinesrevisited.github.io/" target="_blank">timelinesrevisited.github.io</a></strong>, which includes a survey of timeline tools and more than 200 bespoke timelines.
             </p>
@@ -115,6 +118,7 @@
 				</div>
 
         <div class="section">
+          <span id="examples" class="anchor"></span>
             <h3>Examples</h3>
 						<video width="560" height="350" controls><source src="img/dailyroutines.mp4" type="video/mp4">Your browser does not support the video tag</video>
 
@@ -178,10 +182,11 @@
               <iframe width="560" height="320" src="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml?widget=true&amp;headers=false"></iframe>
               <h5>Loading Google Spreadsheets</h5>
               <ul>
-                <li>Refer to the URL of a spreadsheet, such as: <a href="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml" target="_blank"><code>https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml</code></a></li>
+                <li>Refer to the URL of a spreadsheet, such as: <a href="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml" target="_blank"><code>https://docs.google.com/spreadsheets</code><br><code>/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml</code></a></li>
                 <li>Ensure that the spreadsheet is published (open the Google Spreadsheet 'File' menu, select 'Publish to the Web').</li>
+                <li>Ensure that <code>start_date</code> and <code>end_date</code> columns are formatted as text and not as dates (e.g., <code>'1926-06-29</code>).</li>
                 <li><strong>Required</strong>: Spreadsheet URL</li>
-                <li><strong>Required</strong>: Worksheet title (i.e., tab name) for this dataset: <code>dailyroutines</code></li>
+                <li><strong>Optional</strong>: Worksheet title (i.e., tab name) for this dataset: <code>dailyroutines</code></li>
                 <li>Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.</li>
               </ul>
 					</div>
@@ -192,11 +197,13 @@
 					<div class="text">
 						<h3>Usage overview</h3>
             <ol>
-              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 5).</li>
+              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 5).<br><br>
 
               <img src="img/load.png" width="520" alt="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story" title="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story">
 
-              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a>. Mouseover these options to view a tooltip that describes how they might be useful.</li>
+              <ul><li><strong>A note about privacy</strong>: Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication.</li></ul></li>
+
+              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <strong><a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a></strong>. Mouseover these options to view a tooltip that describes how they might be useful.</li>
 
               <img src="img/menu.png" width="520" alt="Select a combination of representation, scale, and layout from the menu at the top of the screen" title="Select a combination of representation, scale, and layout from the menu at the top of the screen">
 
