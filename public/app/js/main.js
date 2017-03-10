@@ -1129,7 +1129,7 @@ function isNumber (n) {
 
   footer.append("div")
   .attr("id","footer_left")
-  .html("<span class='footer_text_left'><a title=About & getting started' href='/about/' target='_blank'>About & getting started</a></span> <span class='footer_text_left'><a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>Contact the project team</a>");
+  .html("<span class='footer_text_left'><a title=About & getting started' href='../../' target='_blank'>About & getting started</a></span> <span class='footer_text_left'><a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>Contact the project team</a>");
 
   footer.append("div")
   .attr("id","footer_right")
@@ -6234,7 +6234,7 @@ function isNumber (n) {
 
   intro_div.append("div")
   .attr("class","intro_btn")
-  .html("<a title='About & getting started' href='/about/' target='_blank'><img src='img/q.png' width=30 height=30 class='img_btn_enabled'></img></a>");
+  .html("<a title='About & getting started' href='../../' target='_blank'><img src='img/q.png' width=30 height=30 class='img_btn_enabled'></img></a>");
 
   intro_div.append("div")
   .attr("class","intro_btn")
