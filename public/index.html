@@ -59,7 +59,7 @@
 
 			<div id="left-column">
 
-        <!-- <p><a href="#examples">Examples</a></p> -->
+        <p><a href="#examples">Examples</a></p>
 				<p><a href="#preparing">Preparing data</a></p>
         <p><a href="#usage">Usage overview</a></p>
 				<p><a href="#code">Source code</a></p>
@@ -117,12 +117,37 @@
 					</div>
 				</div>
 
-        <!-- <div class="section">
+        <div class="section">
           <span id="examples" class="anchor"></span>
+          <h3>Example gallery</h3>
+          <div class="carousel_element">
+            <a title='The daily routines of olympians' href='img/olympians.gif' target='_top'><img class="carousel_element_img" src="img/olympians.gif"></a>
+          </div>
+          <div class="carousel_element">
+            <a title='US armed conflicts' href='img/war.png' target='_top'><img class="carousel_element_img" src="img/war.png"></a>
+          </div>
+          <div class="carousel_element">
+            <a title='A history of Canada' href='img/canada.gif' target='_top'><img class="carousel_element_img" src="img/canada.gif"></a>
+          </div>
+          <div class="carousel_element">
+            <a title='The daily routines of creative people' href='img/dailyroutines.png' target='_top'><img class="carousel_element_img" src="img/dailyroutines.png"></a>
+          </div>
+          <div class="carousel_element">
+            <a title='Empires of China, Korea, Japan' href='img/empires.png' target='_top'><img class="carousel_element_img" src="img/empires.png"></a>
+          </div>
+          <!-- <span id="examples" class="anchor"></span>
             <h3>Examples</h3>
-						<video width="560" height="350" controls><source src="img/dailyroutines.mp4" type="video/mp4">Your browser does not support the video tag</video>
-
-				</div> -->
+						<video width="560" height="350" controls><source src="img/dailyroutines.mp4" type="video/mp4">Your browser does not support the video tag</video> -->
+          <div class="carousel_control_div">
+            <div class="carousel_control carousel_left" onclick="plusDivs(-1)">&#10094;</div>
+            <div class="carousel_control carousel_right" onclick="plusDivs(+1)">&#10095;</div>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(1)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(2)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(3)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(4)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(5)"></span>
+          </div>
+				</div>
 
         <div class="section">
 					<span id="preparing" class="anchor"></span>
@@ -359,5 +384,36 @@
   </div>
 
 </body>
+
+<script type="text/javascript">
+  var slideIndex = 1;
+  showDivs(slideIndex);
+
+  function plusDivs(n) {
+      showDivs(slideIndex += n);
+  }
+
+  function currentDiv(n) {
+      slideIndex = +n;
+      showDivs(slideIndex);
+  }
+
+  function showDivs(n) {
+      var i;
+      var x = document.getElementsByClassName("carousel_element");
+      if (n > x.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = x.length} ;
+      for (i = 0; i < x.length; i++) {
+          x[i].style.display = "none";
+      }
+      x[slideIndex-1].style.display = "flex";
+
+      var y = document.getElementsByClassName("carousel_indicator");
+      for (i = 0; i < y.length; i++) {
+          y[i].id = "";
+      }
+      y[slideIndex-1].id = "carousel_selected";
+  }
+</script>
 
 </html>
