@@ -4,13 +4,7 @@
   "description": "an expressive timeline storytelling environment",
   "main": "app.js",
   "dependencies": {
-    "adal-node": "^0.1.22",
-    "azure": "^1.2.0-preview",
-    "azure-keyvault": "^1.0.0",
-    "azure-storage": "^1.4.0",
-    "cli": "^1.0.1",
     "express": "^4.14.0",
-    "ms-rest-azure": "^1.15.2",
     "socket.io": "^1.7.2"
   },
   "devDependencies": {},
@@ -22,7 +16,7 @@
     "url": "git+https://github.com/Microsoft/timelinestoryteller.git"
   },
   "author": "mabrehme@microsoft.com",
-  "license": "",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Microsoft/timelinestoryteller"
   },

@@ -166,6 +166,16 @@ function isNumber (n) {
     console.log(data);
   });
 
+  Date.prototype.stdTimezoneOffset = function() {
+    var jan = new Date(this.getFullYear(), 0, 1);
+    var jul = new Date(this.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+  }
+
+  Date.prototype.dst = function() {
+    return this.getTimezoneOffset() < this.stdTimezoneOffset();
+  }
+
   window.onload = function () {
     console.log("Initializing Timeline Storyteller");
 
@@ -2330,6 +2340,13 @@ function isNumber (n) {
             story_tz_offset = new Date().getTimezoneOffset() - 480;
           }
 
+          if (new Date().dst() && !(new Date(story.timestamp).dst())) {
+            story_tz_offset += 60;
+          }
+          else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
+            story_tz_offset -= 60;
+          }
+
           var min_story_width = window_width,
               max_story_width = window_width,
               min_story_height = window_height;
@@ -2422,6 +2439,13 @@ function isNumber (n) {
         }
         else {
           story_tz_offset = new Date().getTimezoneOffset() - 480;
+        }
+
+        if (new Date().dst() && !(new Date(story.timestamp).dst())) {
+          story_tz_offset += 60;
+        }
+        else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
+          story_tz_offset -= 60;
         }
 
         var min_story_width = window_width,
