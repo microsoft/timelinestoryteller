@@ -4,9 +4,6 @@ var colorSchemes;
 
   "use strict";
 
-  // create more color pallets on
-  // http://www.palettefx.com/
-
   colorSchemes.schema1 = function () {
     return [
       '#775566',

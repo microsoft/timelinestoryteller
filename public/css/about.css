@@ -36,27 +36,22 @@ video {
   position: relative;
   background-color: #FFF;
   border: 1.5px solid #2EAAE1;
-  /*transform: translateY(25%);*/
-  /*margin-bottom: 10px;*/
 }
 
 .dimension_icon_scale {
   position: relative;
   background-color: #FFF;
   border: 1.5px solid #E84E1B;
-  /*transform: translateY(25%);*/
-  /*margin-bottom: 10px;*/
+
 }
 
 .dimension_icon_layout {
   position: relative;
   background-color: #FFF;
   border: 1.5px solid #94C11E;
-  /*transform: translateY(25%);*/
-  /*margin-bottom: 10px;*/
 }
 
-/* Typeface, Text Size, Colour */
+
 body {
 	font-family: "Segoe UI Web Regular","wf_segoe-ui_normal","Segoe UI","Segoe UI Symbol","Myriad","Calibri","UnDotum","Optima","Tahoma","Century Gothic","Helvetica Neue","BBAlpha Sans","S60 Sans","Arial",sans-serif;
   margin: 0px 0px 0px 0px;
@@ -119,8 +114,6 @@ height: 20px;
 }
 
 
-/* Layout - Sizes and Positioning */
-
 p {
 margin: 0px 0px 6px 0px;
 }
@@ -175,8 +168,6 @@ code {
 .tab {
   text-indent: 1em;
 }
-
-/* Header file */
 
 #header-wrapper{
 width: 100%;
@@ -233,8 +224,6 @@ padding: 0 0 0 0px;
     margin-top: -85px;
 }
 
-/* Main page (index) */
-
 #left-column {
 width: 100px;
 float: left;
@@ -257,10 +246,6 @@ width: 100px;
 }
 
 .gif_container {
-  /*-webkit-border-radius:10px;
-  -moz-border-radius:10px;
-  border-radius:10px;
-  box-shadow: 1px 1px 3px 0px grey;*/
   -webkit-border-radius:10px;
   -moz-border-radius:10px;
   border-radius:10px;
@@ -273,13 +258,12 @@ width: 100px;
 .gif_container:hover {
   box-shadow: 1px 1px 3px 0px black;
   border: 1px solid #2A5DB0;
-  /*cursor: pointer;*/
 }
 
 .gallery_index {
   background-color: #F5D328;
   border: 1.5px solid black;
-  border-radius: 10px; /* one half of ( (border * 2) + height + padding ) */
+  border-radius: 10px;
   color: black;
   font: bold 10px "Century Gothic", Helvetica, Verdana, Tahoma;
   height: 30px;
@@ -296,7 +280,6 @@ width: 100px;
 
 .transition_gif {
 	-webkit-clip-path: inset(1% 1% 1% 1%);
-	/*clip-path: inset(10% 2.5% 10% 2.5%);*/
 }
 
 #right-column {
@@ -350,8 +333,6 @@ float: right;
 width: 140px;
 }
 
-
-/* Used for sectionlications page */
 .section-one-column .text{
 float: left;
 width: 470px;
@@ -427,7 +408,6 @@ margin-left:0px;
   text-align: left;
   margin-left: 24px;
   font-size: .8em;
-  /*font-variant: small-caps;*/
   color: #626262;
   bottom: 0px;
   text-decoration: none;
@@ -437,7 +417,6 @@ margin-left:0px;
   text-align: right;
   margin-right: 24px;
   font-size: .8em;
-  /*font-variant: small-caps;*/
   color: #626262;
   bottom: 0px;
   text-decoration: none;
@@ -449,7 +428,6 @@ padding: 0;
 margin: 5px 25px 15px 25px;
 }
 
-/* For individual project pages */
 #project-one-column{
   background: #fff;
   max-width: 700px;
@@ -521,10 +499,10 @@ border-bottom: none;
 }
 .citation .section .title {
 font-weight: bold;
-}/* display: inline; }*/
+}
 .citation .section .authors {
 font-size: 12px !important;
-}/* display: inline; }*/
+}
 .citation .section .venue {
 display: inline;
 }
@@ -573,7 +551,6 @@ margin-bottom: 30px;
 
 .boilerplate_title {
   text-align: center;
-  /*font-variant: small-caps;*/
   font-weight: 600;
   font-stretch: ultra-expanded;
   font-size: 16px;

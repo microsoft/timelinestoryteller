@@ -323,7 +323,7 @@ THE SOFTWARE.
 
     /*
 
-    BEGIN MB Modification - Dec 2016
+    BEGIN Timeline Storyteller Modification - Dec 2016
 
     */
     var research_copy = {};
@@ -353,7 +353,7 @@ THE SOFTWARE.
 
     /*
 
-    END MB Modification
+    END Timeline Storyteller Modification
 
     */
   }
@@ -389,7 +389,7 @@ THE SOFTWARE.
 
   /*
 
-  BEGIN MB Modification - Nov 2016
+  BEGIN Timeline Storyteller Modification - Nov 2016
 
   */
 
@@ -409,7 +409,7 @@ THE SOFTWARE.
 
   /*
 
-  END MB Modification
+  END Timeline Storyteller Modification
 
   */
 

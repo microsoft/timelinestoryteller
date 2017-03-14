@@ -152,7 +152,6 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .attr("x", x_pos)
   .attr("y", y_pos)
   .attr("width",caption_width + 7.5);
-  // .attr("filter", "url(#drop-shadow)");
 
   timeline_caption.append("svg:image")
   .attr("class","annotation_control frame_resizer")
@@ -242,7 +241,6 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
   .text(caption)
   .call(wrap, caption_width - 7.5);
 
-  //word wrapping function from http://bl.ocks.org/mbostock/7555321
   function wrap(text, width) {
     var words = text.text().split(/\s+/).reverse(),
     word,
@@ -266,9 +264,9 @@ addCaption = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) 
         .attr("dy", ++line_number + dy + "em").text(word);
       }
     }
-    caption_frame.attr("height",((line_number + 2.5) * 18) + "px"); //24, not 18 in Priestley style
+    caption_frame.attr("height",((line_number + 2.5) * 18) + "px");
     if (caption_drag_area != undefined) {
-      caption_drag_area.attr("height",((line_number + 2.5) * 18) + "px"); //24, not 18 in Priestley style
+      caption_drag_area.attr("height",((line_number + 2.5) * 18) + "px");
     }
   };
 

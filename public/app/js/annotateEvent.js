@@ -95,12 +95,10 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
 
   var min_label_width = label_width;
 
-  // Benj
   var leader_line_path = [];
   var drawLeaderLine = d3.svg.line()
   .x(function(d) { return d.x; })
   .y(function(d) { return d.y; })
-  // .interpolate("basis")
 
   if (leader_line_style == LINE_CURVE) {
     drawLeaderLine.interpolate("basis");
@@ -305,7 +303,6 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .attr("x", x_pos + x_anno_offset)
   .attr("y", y_pos + y_anno_offset)
   .attr("width",label_width + 7.5)
-  // .attr("filter", "url(#drop-shadow)");
 
   event_annotation.append("svg:image")
   .attr("class","annotation_control frame_resizer")
@@ -375,8 +372,6 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
 
     corresponding_event[0][0].__data__.selected = false;
 
-    //highlighting not used in Priestley style
-
     corresponding_event.selectAll(".event_span")
     .attr("filter", "none")
     .style("stroke","#333")
@@ -419,7 +414,6 @@ annotateEvent = function (content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offs
   .text(content_text)
   .call(wrap, label_width - 7.5);
 
-  //word wrapping function from http://bl.ocks.org/mbostock/7555321
   function wrap(text, width) {
     var words = text.text().split(/\s+/).reverse(),
     word,

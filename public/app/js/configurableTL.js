@@ -21,7 +21,7 @@ configurableTL: //a configurable timeline
     width = 120,
     timeline_scale = d3.scale.linear(),
     timeline_scale_segments = [],
-    interim_duration_scale = d3.scale.linear().nice().range([0.25 * unit_width,4 * unit_width]), //for LinUniVarTL
+    interim_duration_scale = d3.scale.linear().nice().range([0.25 * unit_width,4 * unit_width]),
     interim_duration_axis  = d3.svg.axis().orient("right").outerTickSize(0),
     tick_format,
     timeline_axis = d3.svg.axis().orient("top"),
@@ -32,12 +32,6 @@ configurableTL: //a configurable timeline
     render_path = undefined,
     active_line = undefined,
     fresh_canvas = true;
-
-    // d3.selection.prototype.moveToFront = function() {
-    //   return this.each(function(){
-    //     this.parentNode.appendChild(this);
-    //   });
-    // };
 
     function configurableTL (selection) {
 
@@ -51,7 +45,7 @@ configurableTL: //a configurable timeline
         //update timeline dimensions
         var g = d3.select(this),
         old_timeline_scale, //old timeline scale
-        old_interim_duration_scale, //old bar chart scale for LinVarUniTL
+        old_interim_duration_scale, //old bar chart scale
         last_end_date = data.max_end_date.valueOf() + 1,
         last_start_date = data.max_start_date.valueOf(),
         timeline_span = last_end_date - data.min_start_date.valueOf(),
@@ -118,7 +112,6 @@ configurableTL: //a configurable timeline
         .attr("class","timeline_frame")
         .attr("width",width)
         .attr("height",height)
-        // .style("opacity", timeline_frame_opacity)
         .on('mouseover', function(){
           d3.select(this)
           .style('opacity',0.8)
@@ -326,14 +319,13 @@ configurableTL: //a configurable timeline
             }
             else if (tl_representation == "Radial") {
               offset_x = facet_number % num_facet_cols * (width / num_facet_cols) + width / num_facet_cols / 2;
-              offset_y = Math.floor(facet_number / num_facet_cols) * (height / num_facet_rows) + buffer + unit_width; // + height / num_facet_rows;
+              offset_y = Math.floor(facet_number / num_facet_cols) * (height / num_facet_rows) + buffer + unit_width;
               rotation = 0;
               facet_number++;
             }
             else if (tl_representation == "Spiral" && tl_scale == "Sequential") {
               offset_x = facet_number % num_facet_cols * (width / num_facet_cols) + width / num_facet_cols / 2;
               offset_y = Math.floor(facet_number / num_facet_cols) * spiral_dim + buffer + unit_width;
-              // offset_y = Math.floor(facet_number / num_facet_cols - 1) * (width / num_facet_cols) + width / num_facet_cols + (Math.floor(facet_number / num_facet_cols) + 1) * buffer + unit_width; // + height / num_facet_rows;
               rotation = 0;
               facet_number++;
 
@@ -475,7 +467,7 @@ configurableTL: //a configurable timeline
             }
             else if (tl_representation == "Radial") {
               offset_x = segment_number % num_segment_cols * (width / num_segment_cols) + width / num_segment_cols / 2;
-              offset_y = Math.floor(segment_number / num_segment_cols) * (height / num_segment_rows) + buffer + unit_width; // + height / num_facet_rows;
+              offset_y = Math.floor(segment_number / num_segment_cols) * (height / num_segment_rows) + buffer + unit_width;
               rotation = 0;
               segment_number++;
             }
@@ -1452,10 +1444,6 @@ configurableTL: //a configurable timeline
           .style("fill", "#666")
           .style("font-weight","normal");
 
-          // //vertical axis ticks in Priestley style
-          // timeline_axis_update.selectAll("text")
-          // .attr("transform", "rotate(30)");
-
           timeline_axis_update.selectAll(".tick line")
           .delay(function (d, i) {
             return i * duration / timeline_axis_update.selectAll(".tick line")[0].length;
@@ -1470,13 +1458,11 @@ configurableTL: //a configurable timeline
           .style("opacity",1)
           .call(timeline_axis);
 
-          //vertical axis ticks in Priestley style
           bottom_timeline_axis_update.selectAll("text")
           .delay(function (d, i) {
             return i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y", height + 18);
-          // .attr("transform", "translate(6," + (height + 18) + ")rotate(330)");
 
           bottom_timeline_axis_update.select(".domain")
           .attr("transform", function () {
@@ -1489,10 +1475,6 @@ configurableTL: //a configurable timeline
           })
           .attr("y1", 0)
           .attr("y2", height + 6);
-
-          // //vertical axis ticks in Priestley style
-          // bottom_timeline_axis_update.selectAll("text")
-          // .attr("transform", "translate(6," + (height + 36) + ")rotate(270)");
 
           console.log("Linear axis updated");
 
@@ -1763,7 +1745,6 @@ configurableTL: //a configurable timeline
               var facet_dim_y = height / num_facet_rows;
 
               offset_x = facet_number % num_facet_cols * facet_dim_x;
-              // offset_y = Math.floor(facet_number / num_facet_cols - 1) * (width / num_facet_cols) + (width / num_facet_cols) + (Math.floor(facet_number / num_facet_cols) + 1) * buffer;
               offset_y = Math.floor(facet_number / num_facet_cols - 1) * facet_dim_y + facet_dim_y + buffer;
 
               facet_number++;
@@ -2034,8 +2015,6 @@ configurableTL: //a configurable timeline
 
           console.log("event " + d.event_id + " clicked");
 
-          // d3.select(this).moveToFront();
-
           var log_event = {
             event_time: new Date().valueOf(),
             event_category: "event_click",
@@ -2047,7 +2026,6 @@ configurableTL: //a configurable timeline
             var x_pos = d3.event.x,
             y_pos = d3.event.y;
             d.selected = true;
-            //highlighting not used in Priestley style
 
             d3.select(this)
             .selectAll(".event_span")
@@ -2071,14 +2049,10 @@ configurableTL: //a configurable timeline
               if (tl_representation != "Radial") {
                 item_x_pos = d.rect_x_pos + d.rect_offset_x + padding.left + unit_width * 0.5;
                 item_y_pos = d.rect_y_pos + d.rect_offset_y + padding.top + unit_width * 0.5;
-                // item_x_pos = Math.round(d3.select(this).select("rect.event_span")[0][0].getBoundingClientRect().left);
-                // item_y_pos = Math.round(d3.select(this).select("rect.event_span")[0][0].getBoundingClientRect().top);
               }
               else {
                  item_x_pos = d.path_x_pos + d.path_offset_x + padding.left;
                  item_y_pos = d.path_y_pos + d.path_offset_y + padding.top;
-                // item_x_pos = Math.round(d3.select(this).select("path.event_span")[0][0].getBoundingClientRect().left);
-                // item_y_pos = Math.round(d3.select(this).select("path.event_span")[0][0].getBoundingClientRect().top);
               }
 
               var annotation = {
@@ -2156,7 +2130,6 @@ configurableTL: //a configurable timeline
           }
         })
         .on("mouseover", function (d) {
-          // d3.select(this).moveToFront();
           d3.select(this)
           .selectAll(".event_span")
           .attr("filter", "url(#drop-shadow)")
@@ -2233,7 +2206,7 @@ configurableTL: //a configurable timeline
         .style("opacity", 0)
         .style("fill", function (d) {
           if (d.category == undefined) {
-            return "#E45641"; //#8dd3c7 // black used in Priestley style
+            return "#E45641";
           }
           else {
             return categories(d.category);
@@ -4239,7 +4212,6 @@ configurableTL: //a configurable timeline
 
         // create actual visible time curve:
 
-        // console.log('>>', d3.selectAll('.event_span')[0])
         var timeCurveFunction = d3.svg.line()
         .x(function(d) {
           return d.__data__.translated_x
@@ -4352,7 +4324,6 @@ configurableTL: //a configurable timeline
 
       // create actual visible time curve:
 
-      // console.log('>>', d3.selectAll('.event_span')[0])
       var timeCurveFunction = d3.svg.line()
       .x(function(d) {
         return d.__data__.translated_x

@@ -5372,10 +5372,17 @@ var heads_of_state_since_1940 = [
 	{
 		"content_text":"Barack Obama",
 		"start_date":"2009-01-20",
-		"end_date":"2015-12-31",
+		"end_date":"2017-01-19",
 		"facet":"USA",
 		"category":"Left"
 	},
+	{
+		"content_text":"Donald Trump",
+		"start_date":"2017-01-20",
+		"end_date":"2017-03-13",
+		"facet":"USA",
+		"category":"Right"
+	}
 	{
 		"content_text":"W.L. Mackenzie King",
 		"facet":"Canada",
@@ -5466,6 +5473,13 @@ var heads_of_state_since_1940 = [
 		"category": "Right",
 		"start_date":"2006-02-06",
 		"end_date":"2015-10-19"
+	},
+	{
+		"content_text":"Justin Trudeau",
+		"facet":"Canada",
+		"category": "Left",
+		"start_date":"2015-11-04",
+		"end_date":"2017-03-13"
 	},
 	{
 		"content_text":"Neville Chamberlain",
@@ -10023,6 +10037,12 @@ var presidents = [
 		"start_date":"2009-01-20",
 		"end_date":"2017-01-19",
 		"category":"Democratic"
+	},
+	{
+		"content_text":"Donald Trump",
+		"start_date":"2017-01-20",
+		"end_date":"2017-03-13",
+		"category":"Democratic"
 	}
 ];
 
@@ -10533,7 +10553,13 @@ var prime_ministers = [
 		"category": "Conservative",
 		"start_date":"2006-02-06",
 		"end_date":"2015-10-19"
-	}
+	},
+	{
+		"content_text":"Justin Trudeau",
+		"category": "Liberal",
+		"start_date":"2015-11-04",
+		"end_date":"2017-03-13"
+	},
 ];
 
 var singularity = [

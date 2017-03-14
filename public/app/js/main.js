@@ -14,7 +14,7 @@ var margin = {top: 100, right: 70, bottom: 105, left: 75},
     width,
     height;
 
-//initialize global variables accessed by multiple visualziations
+//initialize global variables
 var date_granularity,
     segment_granularity,
     max_num_tracks,
@@ -78,8 +78,6 @@ var date_granularity,
       {"name":"Grid","icon":"img/r-grid.png","hint":"A 10x10 <span class='rb_hint_rep_highlight'>Grid</span> representation is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. <br>This representation is ideal for timelines spanning decades or centuries."}],
     unit_width = 15,
     track_height = unit_width * 1.5,
-    // unit_width = 7.5, // Priestley style
-    // track_height = unit_width * 4, // Priestley style
     spiral_padding = unit_width * 1.25,
     spiral_dim = 0,
     centre_radius = 50,
@@ -127,8 +125,6 @@ var date_granularity,
     use_custom_palette = false,
     story_tz_offset = 0,
     socket = io({transports:['websocket']});
-    // socket = io.connect('https//:timelinestoryteller.azurewebsites.net');
-
 
 function formatAbbreviation(x) {
 
@@ -150,7 +146,6 @@ function formatAbbreviation(x) {
 }
 
 //function for checking if string is a number
-//stackoverflow.com/questions/18082/validate-decimal-numbers-in-javascript-isnumeric
 function isNumber (n) {
 
   "use strict";
@@ -204,9 +199,6 @@ function isNumber (n) {
     .selectAll(".tick text")
     .attr("y", window.scrollY - 6);
 
-    // d3.select(".legend")
-    // .attr("x", +legend_x + window.scrollX)
-    // .attr("y", +legend_y + window.scrollY);
   };
 
   var legendDrag = d3.behavior.drag()
@@ -299,7 +291,6 @@ function isNumber (n) {
     usage_log.push(log_event);
   });
 
-  // http://stackoverflow.com/questions/986937/how-can-i-get-the-browsers-scrollbar-sizes
   function getScrollbarWidth() {
     var outer = document.createElement("div");
     outer.style.visibility = "hidden";
@@ -394,7 +385,6 @@ function isNumber (n) {
   });
 
   function goNextScene(){
-    //next scene
     if (scenes.length < 2) {
       return;
     }
@@ -417,7 +407,6 @@ function isNumber (n) {
   }
 
   function goPreviousScene(){
-    //previous scene
     if (scenes.length < 2) {
       return;
     }
@@ -499,8 +488,6 @@ function isNumber (n) {
     gif.running = false;
 
   });
-
-  // timeline_frame_opacity = .2; // opactity of timeline svg. to be adapted if image is loaded.
 
   import_div = d3.select("body")
   .append("div")
@@ -662,18 +649,6 @@ function isNumber (n) {
 
     main_svg.selectAll(".event_annotation").remove();
 
-    // d3.selectAll('.timeline_event_g').each(function () {
-    //   this.__data__.selected = false;
-    // });
-
-    // d3.selectAll(".event_span")
-    // .attr("filter", "none")
-    // .style("stroke","#fff")
-    // .style("stroke-width","0.25px");
-    //
-    // d3.selectAll(".event_span_component")
-    // .style("stroke","#fff")
-    // .style("stroke-width","0.25px");
   };
 
   /**
@@ -2023,7 +1998,6 @@ function isNumber (n) {
     .style('margin-top',margin.top + 'px')
     .style('margin-bottom',margin.bottom + 'px')
     .style('margin-left',margin.left + 'px');
-    // .style("top", d3.select("#option_div")[0][0].getBoundingClientRect().height);
 
     navigation_div = d3.select("body")
     .append("div")
@@ -2177,7 +2151,6 @@ function isNumber (n) {
       });
     };
 
-    //drop shadow code from: http://bl.ocks.org/cpbotha/5200394
     var defs = main_svg.append("defs");
 
     var filter = defs.append("filter")
@@ -2624,7 +2597,6 @@ function isNumber (n) {
       temp_palette = undefined;
     }
     else {
-      // categories.range(["#000"]); // black used in Priestley style
       var temp_palette = ["#E45641"];
       categories.range(temp_palette);
       temp_palette = undefined;
@@ -3320,12 +3292,6 @@ function isNumber (n) {
         scene_selections.push(event.__data__.event_id)
       }
     });
-
-    //weird gif resizing bug
-    // if (width > gif.options.width)
-    //   gif.setOptions({width: width})
-    // if (height > gif.options.height)
-    //   gif.setOptions({height: height})
 
     for (var i = 0; i < scenes.length; i++){
       if (scenes[i].s_order > current_scene_index) {
@@ -4043,8 +4009,6 @@ function isNumber (n) {
     .attr("width", d3.max([width, (window_width - margin.left - margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([height, (window.innerHeight - margin.top - margin.bottom - getScrollbarWidth())]));
 
-    // timeline_vis.previous_segment_granularity(segment_granularity);
-
     global_min_start_date = data.min_start_date;
     global_max_end_date = data.max_end_date;
 
@@ -4487,7 +4451,6 @@ function isNumber (n) {
   };
 
   //sort events according to start / end dates
-  //see bl.ocks.org/rengel-de/5603464
   function compareAscending (item1, item2) {
 
     // Every item must have two fields: 'start_date' and 'end_date'.
@@ -4529,7 +4492,6 @@ function isNumber (n) {
   };
 
   //assign a track to each event item to prevent event overlap
-  //see bl.ocks.org/rengel-de/5603464
   function assignTracks (data,tracks,layout) {
 
     //reset tracks first
@@ -4547,7 +4509,6 @@ function isNumber (n) {
         return d.start_date;
       });
       data.max_end_date = d3.max(data, function (d) {
-        // console.log(d.end_date)
         return d.end_date;
       });
 
@@ -4573,10 +4534,6 @@ function isNumber (n) {
         min_width = (d/w * unit_width);
       }
 
-      // console.log("total width: " + w + "px")
-      // console.log("total duration: " + d + "ms");
-      // console.log((d/w) + "ms/px" );
-      // console.log("unit_width: " +  (d/w * unit_width) + "ms" );
     }
 
     // older items end deeper
@@ -4587,42 +4544,42 @@ function isNumber (n) {
       else {
         for (i = 0, track = 0; i < tracks.length; i++, track++) {
           if (segment_granularity == "days") {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "weeks") {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "months") {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "years") {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "decades" && date_granularity == "days" && data.max_duration < 31) {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "centuries" && date_granularity == "days" && data.max_duration < 31) {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else if (segment_granularity == "millenia") {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
           else {
-            if (item.start_date.getTime() > tracks[i].getTime()) { // + min_width
+            if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
           }
@@ -4684,27 +4641,6 @@ function isNumber (n) {
       item.seq_track = 0;
       index++;
 
-      //uncomment to move simultaneous events to other tracks, comment to keep sequence as single track
-
-      // if (date_granularity == "epochs") {
-      //     item.seq_index = index;
-      //     item.seq_track = 0;
-      //     index++;
-      // }
-      // else {
-      //     if (item.start_date.getTime() > latest_start_date) {
-      //         latest_start_date = item.start_date.getTime();
-      //         index++;
-      //     }
-      //     for (i = 0, seq_track = 0; i < seq_tracks.length; i++, seq_track++) {
-      //         if (item.start_date.getTime() > seq_tracks[i].getTime()) {
-      //             break;
-      //         }
-      //     }
-      //     item.seq_index = index;
-      //     item.seq_track = seq_track;
-      //     seq_tracks[seq_track] = item.start_date;
-      // }
     });
 
     num_seq_tracks = d3.max(data, function (d) {
@@ -5894,29 +5830,6 @@ function isNumber (n) {
       }
     });
 
-    // d3.selectAll('.timeline_event_g').each(function(d){
-    //   if (active_event_list.indexOf(d.event_id) == -1) {
-    //     d3.select(this).selectAll('.event_span')
-    //     .transition()
-    //     .duration(1200)
-    //     .attr("filter", "url(#greyscale)");
-    //     d3.select(this).selectAll('.event_span_component')
-    //     .transition()
-    //     .duration(1200)
-    //     .attr("filter", "url(#greyscale)");
-    //   }
-    //   else {
-    //     d3.select(this).selectAll('.event_span')
-    //     .transition()
-    //     .duration(1200)
-    //     .attr("filter", "none");
-    //     d3.select(this).selectAll('.event_span_component')
-    //     .transition()
-    //     .duration(1200)
-    //     .attr("filter", "none");
-    //   }
-    // })
-
     main_svg.call(timeline_vis.duration(1200));
 
     prev_active_event_list = active_event_list;
@@ -5930,8 +5843,6 @@ function isNumber (n) {
 
     prev_active_event_list = active_event_list;
     active_event_list = [];
-
-    // timeline_vis.previous_segment_granularity(segment_granularity);
 
     var matches, mismatches,
     selected_category_values = [],
