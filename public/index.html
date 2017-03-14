@@ -14,8 +14,6 @@
   <link rel="stylesheet" href="css/about.css" charset="UTF-8">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
   <link rel="icon" type="image/x-icon" href="app/img/favicon.ico">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
 
 </head>
 
@@ -49,7 +47,7 @@
 
         <p><a href="#examples">Examples</a></p>
 				<p><a href="#preparing">Preparing data</a></p>
-        <p><a href="#usage">Usage overview</a></p>
+        <p><a href="#usage">How do I use it?</a></p>
 				<p><a href="#code">Source code</a></p>
         <p><a href="#ack">Acknowledgements</a></p>
 
@@ -109,23 +107,27 @@
           <span id="examples" class="anchor"></span>
           <h3>Example gallery</h3>
           <div class="carousel_element">
-            <a title='The daily routines of olympians' href='img/olympians.gif' target='_top'><img class="carousel_element_img" src="img/olympians.gif"></a>
+            <img id="img_olympians" title='The daily routines of olympians' alt='The daily routines of olympians'class="carousel_element_img" src="img/olympians.gif" onclick="modalClick('img_olympians')">
           </div>
           <div class="carousel_element">
-            <a title='US armed conflicts' href='img/war.png' target='_top'><img class="carousel_element_img" src="img/war.png"></a>
+            <img id="img_presidents" title='US presidents' alt='US presidents' class="carousel_element_img" src="img/presidents.png" onclick="modalClick('img_presidents')">
           </div>
           <div class="carousel_element">
-            <a title='A history of Canada' href='img/canada.gif' target='_top'><img class="carousel_element_img" src="img/canada.gif"></a>
+            <img id="img_war" title='US armed conflicts' alt='US armed conflicts' class="carousel_element_img" src="img/war.png" onclick="modalClick('img_war')">
           </div>
           <div class="carousel_element">
-            <a title='The daily routines of creative people' href='img/dailyroutines.png' target='_top'><img class="carousel_element_img" src="img/dailyroutines.png"></a>
+            <img id="img_canada" title='A history of Canada' alt='A history of Canada' class="carousel_element_img" src="img/canada.gif" onclick="modalClick('img_canada')">
           </div>
           <div class="carousel_element">
-            <a title='Empires of China, Korea, Japan' href='img/empires.png' target='_top'><img class="carousel_element_img" src="img/empires.png"></a>
+            <img id="img_mb" title="Matthew Brehmer's biogaphical timeline" alt="Matthew Brehmer's biogaphical timeline" class="carousel_element_img" src="img/mb.gif" onclick="modalClick('img_mb')">
           </div>
-          <!-- <span id="examples" class="anchor"></span>
-            <h3>Examples</h3>
-						<video width="560" height="350" controls><source src="img/dailyroutines.mp4" type="video/mp4">Your browser does not support the video tag</video> -->
+          <div class="carousel_element">
+            <img id="img_dailyroutines" title='The daily routines of creative people' alt='The daily routines of creative people' class="carousel_element_img" src="img/dailyroutines.png" onclick="modalClick('img_dailyroutines')">
+          </div>
+          <div class="carousel_element">
+            <img id="img_empires" title='Empires of China, Korea, Japan' alt='Empires of China, Korea, Japan' class="carousel_element_img" src="img/empires.png" onclick="modalClick('img_empires')">
+          </div>
+
           <div class="carousel_control_div">
             <div class="carousel_control carousel_left" onclick="plusDivs(-1)">&#10094;</div>
             <div class="carousel_control carousel_right" onclick="plusDivs(+1)">&#10095;</div>
@@ -134,8 +136,28 @@
             <span class="carousel_control carousel_indicator" onclick="currentDiv(3)"></span>
             <span class="carousel_control carousel_indicator" onclick="currentDiv(4)"></span>
             <span class="carousel_control carousel_indicator" onclick="currentDiv(5)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(6)"></span>
+            <span class="carousel_control carousel_indicator" onclick="currentDiv(7)"></span>
           </div>
+
+          <p>
+            <br>For more inspiration, see our <strong><a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">gallery of timelines</a></strong> spanning the timeline design space as well as <strong><a href="http://timelinesrevisited.github.io/supplemental/stories/" target="_blank">videos of seven timeline stories</a></strong>.
+          </p>
+
 				</div>
+
+        <!-- The Modal -->
+        <div id="modal" class="modal">
+
+          <!-- The Close Button -->
+          <span class="close" onclick="document.getElementById('modal').style.display='none'">&times;</span>
+
+          <!-- Modal Content (The Image) -->
+          <img class="modal_content" id="modal_image">
+
+          <!-- Modal Caption (Image Text) -->
+          <div id="modal_caption"></div>
+        </div>
 
         <div class="section">
 					<span id="preparing" class="anchor"></span>
@@ -208,7 +230,7 @@
         <div class="section">
 					<span id="usage" class="anchor"></span>
 					<div class="text">
-						<h3>Usage overview</h3>
+						<h3>How to use Timeline Storyteller</h3>
             <ol>
               <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 5).<br><br>
 
@@ -404,6 +426,30 @@
       }
       y[slideIndex-1].id = "carousel_selected";
   }
+
+  // Get the modal
+  var modal = document.getElementById('modal');
+
+  // Get the image and insert it inside the modal - use its "alt" text as a caption
+  var modal_image = document.getElementById("modal_image");
+  var caption_text = document.getElementById("modal_caption");
+
+  function modalClick(id){
+    var img = document.getElementById(id);
+    modal.style.display = "block";
+    modal_image.src = img.src;
+    caption_text.innerHTML = img.alt;
+  }
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+
 </script>
 
 </html>

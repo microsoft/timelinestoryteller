@@ -5088,7 +5088,7 @@ var france_presidents = [
 		"facet":"France",
 		"category":"Socialist",
 		"start_date":"2012-05-15",
-		"end_date":"2015-07-06"
+		"end_date":"2017-03-13"
 	}
 ];
 
@@ -5280,7 +5280,7 @@ var germany_chancellors = [
 		"facet":"Germany",
 		"category":"Christian Democratic Union",
 		"start_date":"2005-11-22",
-		"end_date":"2015-07-07"
+		"end_date":"2017-03-13"
 	}
 ];
 
@@ -5382,7 +5382,7 @@ var heads_of_state_since_1940 = [
 		"end_date":"2017-03-13",
 		"facet":"USA",
 		"category":"Right"
-	}
+	},
 	{
 		"content_text":"W.L. Mackenzie King",
 		"facet":"Canada",
@@ -5591,7 +5591,14 @@ var heads_of_state_since_1940 = [
 		"facet":"UK",
 		"category":"Right",
 		"start_date":"2010-05-11",
-		"end_date":"2015-12-31"
+		"end_date":"2016-07-12"
+	},
+	{
+		"content_text":"Theresa May",
+		"facet":"UK",
+		"category":"Right",
+		"start_date":"2016-07-13",
+		"end_date":"2017-03-13"
 	},
 	{
 		"content_text":"Vincent Auriol",
@@ -5668,7 +5675,7 @@ var heads_of_state_since_1940 = [
 		"facet":"France",
 		"category":"Left",
 		"start_date":"2012-05-15",
-		"end_date":"2015-12-31"
+		"end_date":"2017-03-13"
 	},
 	{
 		"content_text":"Mitsumasa Yonai",
@@ -5962,7 +5969,7 @@ var heads_of_state_since_1940 = [
 		"facet":"Japan",
 		"category":"Right",
 		"start_date":"2012-12-26",
-		"end_date":"2015-12-31"
+		"end_date":"2017-03-13"
 	},
 	{
 		"content_text":"Enrico De Nicola",
@@ -6053,7 +6060,7 @@ var heads_of_state_since_1940 = [
 		"facet":"Italy",
 		"category":"Left",
 		"start_date":"2015-02-03",
-		"end_date":"2015-12-31"
+		"end_date":"2017-03-13"
 	},
 	{
 		"content_text":"Konrad Adenauer",
@@ -6116,7 +6123,7 @@ var heads_of_state_since_1940 = [
 		"facet":"Germany",
 		"category":"Right",
 		"start_date":"2005-11-22",
-		"end_date":"2015-12-31"
+		"end_date":"2017-03-13"
 	}
 ];
 
@@ -6657,7 +6664,7 @@ var italy_presidents = [
 		"facet":"Italy",
 		"category":"Democratic",
 		"start_date":"2015-02-03",
-		"end_date":"2015-07-06"
+		"end_date":"2017-03-13"
 	}
 ];
 
@@ -7255,7 +7262,7 @@ var japan_prime_ministers = [
 		"facet":"Japan",
 		"category":"Liberal Democratic",
 		"start_date":"2012-12-26",
-		"end_date":"2015-07-06"
+		"end_date":"2017-03-13"
 	}
 ];
 
@@ -10042,7 +10049,7 @@ var presidents = [
 		"content_text":"Donald Trump",
 		"start_date":"2017-01-20",
 		"end_date":"2017-03-13",
-		"category":"Democratic"
+		"category":"Republican"
 	}
 ];
 
@@ -10559,7 +10566,7 @@ var prime_ministers = [
 		"category": "Liberal",
 		"start_date":"2015-11-04",
 		"end_date":"2017-03-13"
-	},
+	}
 ];
 
 var singularity = [
@@ -11316,6 +11323,13 @@ var uk_prime_ministers = [
 		"facet":"UK",
 		"category":"Conservative",
 		"start_date":"2010-05-11",
-		"end_date":"2015-07-06"
-	}
+		"end_date":"2016-07-12"
+	},
+	{
+		"content_text":"Theresa May",
+		"facet":"UK",
+		"category":"Conservative",
+		"start_date":"2016-07-13",
+		"end_date":"2017-03-13"
+	},
 ];

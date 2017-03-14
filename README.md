@@ -108,7 +108,7 @@ All rights reserved.
 
 MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the Software), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
@@ -156,8 +156,8 @@ THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 All Icons [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/), by name and author:
 
 - [check-mark](https://thenounproject.com/term/check-mark/608852) (Arthur Shlain)
-- [calendar](https://thenounproject.com/term/calendar/38869) (Kiril) Tomilov)
-- [timeline](https://thenounproject.com/term/timeline/152347) (Alecander) Bickov)
+- [calendar](https://thenounproject.com/term/calendar/38869) (Kiril Tomilov)
+- [timeline](https://thenounproject.com/term/timeline/152347) (Alecander Bickov)
 - [gif-file](https://thenounproject.com/term/gif-file/446903) (Pranav Grover)
 - [png-file](https://thenounproject.com/term/png-file/446907) (Pranav Grover)
 - [svg-file](https://thenounproject.com/term/svg-file/446904) (Pranav Grover)
@@ -166,8 +166,8 @@ All Icons [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/), by name 
 - [drive](https://thenounproject.com/term/drive/128372) (Denis Klyuchnikov)
 - [grid](https://thenounproject.com/term/grid/539919) (Doejo)
 - [folder](https://thenounproject.com/term/folder/43216) (iconoci)
-- [filter](https://thenounproject.com/term/filter/132317) (Creative) Shell)
-- [image](https://thenounproject.com/term/image/332296) (Creative) Shell)
+- [filter](https://thenounproject.com/term/filter/132317) (Creative Shell)
+- [image](https://thenounproject.com/term/image/332296) (Creative Shell)
 - [quotation-mark](https://thenounproject.com/term/quotation-mark/378366) (Veronika Krpciarova)
 - [pin](https://thenounproject.com/term/pin/172903) (Alexandr Cherkinsky)
 - [eraser](https://thenounproject.com/term/eraser/3715) (Terrence Kevin Oleary)
