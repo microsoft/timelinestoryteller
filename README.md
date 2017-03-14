@@ -1,10 +1,12 @@
 # Timeline Storyteller
 
-![Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "Timeline Storyteller")
+!["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
 
 [Timeline Storyteller](https://timelinestoryteller.com/) is an expressive browser-based visual storytelling environment for presenting timelines.
 
 You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
+
+![Timeline Design dimensions](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dims.png "Timeline Design dimensions")
 
 To learn more about the research that informed this project, see [timelinesrevisited.github.io](https://timelinesrevisited.github.io/), which includes a survey of timeline tools and more than 200 bespoke timelines.
 
@@ -64,30 +66,70 @@ example event row:
 
 ### Example CSV / Google Spreadsheet
 
-Here is the [The Daily Routines of Famous Creative People](https://podio.com/site/creative-routines) demo dataset used in Timeline Storyteller's demo in a Google Sheet: [https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml](https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml)
+Here is the [The Daily Routines of Famous Creative People](https://podio.com/site/creative-routines) demo dataset used in Timeline Storyteller's demo in a [Google Sheet](https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml).
+
+- Ensure that the spreadsheet is published (open the Google Spreadsheet 'File' menu, select 'Publish to the Web').
+- Ensure that `start_date` and `end_date` columns are formatted as text and not as dates (e.g., `'1926-06-29`).
+- __Required__: Spreadsheet URL
+- __Optional__: Worksheet title (i.e., tab name) for this dataset: `dailyroutines`
+- Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.
 
 ## Usage
 
+Note that more detailed usage instructions are available at [timelinestoryteller.com](https://timelinestoryteller.com/)
+
 1. Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 6)
 
-2. Select representation, scale, and layout
+2. Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see [our guidance on selecting appropriate combinations for your story](http://timelinesrevisited.github.io/supplemental/gallery/). Mouseover these options to view a tooltip that describes how they might be useful.
 
 3. Edit the canvas
 
-	* Click on events to annotate with their `content_text` label; resize and reposition labels; SHIFT + click to highlight events without showing label
+	* Click on events to annotate with their `content_text` label; resize and reposition labels; SHIFT + click to highlight events without showing label.
 
-	* Annotate with captions and images; resize and reposition captions and images
+	* Annotate with captions and images; resize and reposition captions and images.
 
- 	* Filter events by category, facet, or segment. Filter by highlighting emphasizing matching events (de-emphasizing non-matching events), or by hiding non-matching events
+ 	* Filter events by category, facet, or segment. Filter by highlighting emphasizing matching events (de-emphasizing non-matching events).
 
-4. Record current canvas as a scene, which retains labels, captions, and images. Enter playback mode, navigate to previous / next recorded scene
+	* You can also filter by hiding non-matching events.
+
+4. Record current canvas as a scene, which retains labels, captions, and images. Enter playback mode, navigate to previous / next recorded scene.
 
 5. Export current canvas as a PNG, SVG.
 
-6. Export the scenes as an animated GIF or as a JSON Blob (.cdc extension)
+6. Export the scenes as an animated GIF or as a JSON Blob (.cdc extension).
 
+## License
 
-## Demo dataset provenance
+Timeline Storyteller
+
+Copyright (c) Microsoft Corporation
+
+All rights reserved.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Acknowledgements
+
+### OSS Libraries / scripts used in this project
+
+- [d3 v3.5.5](http://d3js.org/) for visual encoding, scales, animation
+- [d3-time v0.0.2](https://github.com/d3/d3-time) for date parsing / temporal arithmetic
+- [moment.js v2.10.6](http://momentjs.com/) for date parsing / temporal arithmetic
+- [saveSvgAsPng.js](https://github.com/exupero/saveSvgAsPng) for image export
+- [intro.js 2.3.0](http://usablica.github.com/intro.js/) for tour
+- [gif.js](https://github.com/jnordberg/gif.js) for GIF exporting
+- [gsheets 2.0.0](https://github.com/interactivethings/gsheets) for Google Spreadsheet import
+- [nodejs](https://nodejs.org/)
+- [express](https://www.npmjs.com/package/express)
+- [socket.io](https://www.npmjs.com/package/socket.io)
+
+### Demo dataset provenance
 
 - [Priestley's Chart of Biography](https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif)
 - [Great Philosophers since the 8th Century BC](http://bl.ocks.org/rengel-de/5603464)
@@ -109,20 +151,7 @@ Here is the [The Daily Routines of Famous Creative People](https://podio.com/sit
 - ['A Perspective on Time' by mayra.artes for Wait But Why](http://visual.ly/perspective-time)
 - ['Life of a Typical American' by Tim Urban for Wait But Why](http://waitbutwhy.com/2014/05/life-weeks.html)
 
-## OSS Libraries / scripts used in this project
-
-- [d3 v3.5.5](http://d3js.org/) for visual encoding, scales, animation
-- [d3-time v0.0.2](https://github.com/d3/d3-time) for date parsing / temporal arithmetic
-- [moment.js v2.10.6](http://momentjs.com/) for date parsing / temporal arithmetic
-- [saveSvgAsPng.js](https://github.com/exupero/saveSvgAsPng) for image export
-- [intro.js 2.3.0](http://usablica.github.com/intro.js/) for tour
-- [gif.js](https://github.com/jnordberg/gif.js) for GIF exporting
-- [gsheets 2.0.0](https://github.com/interactivethings/gsheets) for Google Spreadsheet import
-- [nodejs](https://nodejs.org/)
-- [express](https://www.npmjs.com/package/express)
-- [socket.io](https://www.npmjs.com/package/socket.io)
-
-## Noun Project icons used in the user interface
+### Noun Project icons used in the user interface
 
 All Icons [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/), by name and author:
 
