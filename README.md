@@ -1,22 +1,34 @@
 # Timeline Storyteller
 
+![Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "Timeline Storyteller")
+
 [Timeline Storyteller](https://timelinestoryteller.com/) is an expressive browser-based visual storytelling environment for presenting timelines.
 
 You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
 
 To learn more about the research that informed this project, see [timelinesrevisited.github.io](https://timelinesrevisited.github.io/), which includes a survey of timeline tools and more than 200 bespoke timelines.
 
-## Setup
+See [these examples](https://timelinestoryteller.com/#examples) of timelines and timeline stories made with Timeline Storyteller.
+
+## Project Team
+
+- [Matthew Brehmer](http://mattbrehmer.github.io/)
+- [Bonghsin Lee](http://research.microsoft.com/en-us/um/people/bongshin/)
+- [Nathalie Henry Riche](http://research.microsoft.com/en-us/um/people/nath/)
+
+## Setup / Testing
 
 1. Clone the main branch of this repository: `git clone https://github.com/Microsoft/timelinestoryteller.git`
 
-2. Install [nodejs](https://nodejs.org/) and [npm](https://www.npmjs.com/).
+2. Ensure that [nodejs](https://nodejs.org/) and [npm](https://www.npmjs.com/) are installed.
 
-3. Open a terminal at the root of the repository and install the required node modules listed in package.json ([express](https://www.npmjs.com/package/express) and [socket.io](https://www.npmjs.com/package/socket.io)): `npm install express`, `npm install socket.io`
+3. Open a terminal at the root of the repository and install node modules ([express](https://www.npmjs.com/package/express) and [socket.io](https://www.npmjs.com/package/socket.io)): `npm install express`, `npm install socket.io`
 
 4. Start the node server: `node app.js`
 
 5. Open [localhost:8000](http://localhost:8000/)
+
+The application source code can be found in the [public/app](https://github.com/Microsoft/timelinestoryteller/tree/master/public/app) directory.
 
 ## Preparing your data
 
@@ -49,6 +61,10 @@ header row:
 example event row:
 
 `1775,1783,American Revolutionary War: an armed struggle for secession from the British Empire by the Thirteen Colonies that would subsequently become the United States.,North America,North America`
+
+### Example CSV / Google Spreadsheet
+
+Here is the [The Daily Routines of Famous Creative People](https://podio.com/site/creative-routines) demo dataset used in Timeline Storyteller's demo in a Google Sheet: [https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml](https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml)
 
 ## Usage
 
