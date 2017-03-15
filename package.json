@@ -1,6 +1,6 @@
 {
   "name": "timeline_storyteller",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "an expressive timeline storytelling environment",
   "main": "app.js",
   "dependencies": {
@@ -20,5 +20,5 @@
   "bugs": {
     "url": "https://github.com/Microsoft/timelinestoryteller"
   },
-  "homepage": "https://timelinestoryteller.azurewebsites.net/about/"
+  "homepage": "https://timelinestoryteller.com"
 }
