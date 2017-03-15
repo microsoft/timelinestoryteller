@@ -890,7 +890,7 @@ var authors = [
 	},
 	{
 		"facet":"Kipling, Rudyard",
-		"content_text":"Bombay",
+		"content_text":"Mumbai (Bombay)",
 		"start_date":"1865-12-30",
 		"end_date":"1936-01-18",
 		"category":"male"
@@ -1282,7 +1282,7 @@ var authors = [
 	},
 	{
 		"facet":"Rushdie, Salman",
-		"content_text":"Bombay",
+		"content_text":"Mumbai (Bombay)",
 		"start_date":"1947-06-19",
 		"end_date":"",
 		"category":"male"
@@ -3435,7 +3435,7 @@ var empires = [
 		"end_date":"0750"
 	},
 	{
-		"content_text":"Tufan Tibet Empire",
+		"content_text":"Tufan Empire",
 		"category":"China",
 		"start_date":"0700",
 		"end_date":"1100"
@@ -3465,7 +3465,7 @@ var empires = [
 		"end_date":"1171"
 	},
 	{
-		"content_text":"Mongol Empire",
+		"content_text":"Mongolian Empire",
 		"category":"Central Asia",
 		"start_date":"1206",
 		"end_date":"1368"
@@ -4238,7 +4238,7 @@ var epidemics = [
 		"end_date":"",
 		"category":"Smallpox",
 		"facet":"Europe",
-		"content_text":"Yugoslavia"
+		"content_text":"former Yugoslavia"
 	},
 	{
 		"start_date":"1972",
