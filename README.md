@@ -116,6 +116,29 @@ THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Acknowledgements
 
+### Citing us
+
+If you use Timeline Storyteller to make a timeline for a research paper, you can cite us in two ways. You can cite the tool itself:
+
+`@misc{TimelineStoryteller,
+author = {Matthew Brehmer and Bongshin Lee and Nathalie Henry Riche},
+title = {Microsoft Timeline Storyteller},
+year = {2017},
+note = {\url{https://timelinestoryteller.com}}
+}`
+
+Or you can cite our recent journal paper about the timeline design space:
+
+`@article{Brehmer2016,
+author = {Matthew Brehmer and Bongshin Lee and Benjamin Bach and Nathalie Henry Riche and Tamara Munzner},
+title = {Timelines Revisited: A Design Space and Considerations for Expressive Storytelling},
+journal = {IEEE Transactions on Visualization and Computer Graphics (TVCG)},
+year = {2016},
+volume = {in press},
+doi = {10.1109/TVCG.2016.2614803},
+ISSN = {1077-2626}
+}`
+
 ### OSS Libraries / scripts used in this project
 
 - [d3 v3.5.5](http://d3js.org/) for visual encoding, scales, animation
