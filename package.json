@@ -2,14 +2,26 @@
   "name": "timeline_storyteller",
   "version": "0.1.0",
   "description": "an expressive timeline storytelling environment",
-  "main": "app.js",
+  "main": "lib/index.js",
   "dependencies": {
-    "express": "^4.14.0",
-    "socket.io": "^1.7.2"
+    "binary-loader": "0.0.1",
+    "css-loader": "^0.27.3",
+    "exports-loader": "^0.6.4",
+    "raw-loader": "^0.5.1",
+    "style-loader": "^0.16.0",
+    "worker-loader": "^0.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "copyfiles": "^1.2.0",
+    "express": "^4.14.0",
+    "socket.io": "^1.7.2",
+    "webpack": "^2.3.1",
+    "webpack-dev-middleware": "^1.10.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "package": "webpack && copyfiles -u 1 dist/*.js public/app/js && copyfiles -u 1 'src/**/*' lib",
+    "test": "npm run package"
   },
   "repository": {
     "type": "git",

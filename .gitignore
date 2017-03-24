@@ -1,2 +1,7 @@
 node_modules
 foo.html
+dist
+*-debug.log
+*-error.log
+public/app/js/timelinestoryteller.js
+lib
