@@ -759,7 +759,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
 
     if (globals.opt_out || globals.email_address != "") {
-      selectWithParent('foreignObject').remove();
+      selectAllWithParent('foreignObject').remove();
 
       console.log("exporting main_svg as PNG");
 
@@ -788,7 +788,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
 
     if (globals.opt_out || globals.email_address != "") {
-      selectWithParent('foreignObject').remove();
+      selectAllWithParent('foreignObject').remove();
 
       console.log("exporting main_svg as SVG");
 
@@ -817,7 +817,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
 
     if (globals.opt_out || globals.email_address != "") {
-      selectWithParent('foreignObject').remove();
+      selectAllWithParent('foreignObject').remove();
 
       gif.frames = [];
       var gif_scenes = globals.scenes;
@@ -866,7 +866,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       setTimeout(function () {
         gif.render();
-        selectWithParent('.gif_frame').remove();
+        selectAllWithParent('.gif_frame').remove();
       },150 + 150 * gif.frames.length)
       gif_scenes = [];
     }
@@ -887,7 +887,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     if (globals.opt_out || globals.email_address != "") {
 
-      selectWithParent('foreignObject').remove();
+      selectAllWithParent('foreignObject').remove();
 
       console.log('exporting story as .cdc');
 
@@ -1889,7 +1889,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         selectWithParent('#playback_bar').selectAll('img').attr('class','img_btn_disabled');
         selectAllWithParent(".option_rb").select("input").property("disabled","true");
         selectAllWithParent(".option_rb").select("img").attr("class","img_btn_disabled");
-        selectWithParent('.option_rb img').style('border','2px solid transparent');
+        selectAllWithParent('.option_rb img').style('border','2px solid transparent');
         selectWithParent("#menu_div").style("left",-50 + "px");
         selectWithParent("#navigation_div").style("bottom", -100 + "px");
         globals.use_custom_palette = false;
@@ -1911,7 +1911,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             timeline_vis.tl_scale("Chronological")
             .tl_layout("Unified")
             .tl_representation("Linear")
-            selectWithParent('.gif_frame').remove()
+            selectAllWithParent('.gif_frame').remove()
             timeline_vis.resetCurve();
           }
         }
@@ -3225,7 +3225,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function recordScene () {
 
-    selectWithParent('foreignObject').remove();
+    selectAllWithParent('foreignObject').remove();
 
     selectWithParent('#stepper_svg_placeholder').remove();
 
@@ -3696,7 +3696,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     main_svg.selectAll(".event_annotation").remove();
 
-    selectWithParent('.timeline_event_g').each(function () {
+    selectAllWithParent('.timeline_event_g').each(function () {
       this.__data__.selected = false;
     });
 
@@ -4014,7 +4014,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr('id','legend_panel')
       .attr('class','legend')
       .on("mouseover", function () {
-        if (selectWithParent('foreignObject')[0].length == 0) {
+        if (selectAllWithParent('foreignObject')[0].length == 0) {
           addLegendColorPicker();
         }
         d3.select(this).select('.legend_rect').attr("filter", "url(#drop-shadow)")
@@ -4106,7 +4106,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select('rect').style('stroke','#f00');
         d3.select(this).select('text').style('font-weight','bolder')
         .style('fill','#f00');
-        selectWithParent('.timeline_event_g').each(function(d){
+        selectAllWithParent('.timeline_event_g').each(function(d){
           if (d.category == hovered_legend_element || d.selected) {
             d3.select(this).selectAll('.event_span')
             .style('stroke', '#f00')
@@ -4129,7 +4129,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select('rect').style('stroke','#fff');
         d3.select(this).select('text').style('font-weight','normal')
         .style('fill','#666');
-        selectWithParent('.timeline_event_g').each(function(d){
+        selectAllWithParent('.timeline_event_g').each(function(d){
           d3.select(this).selectAll('.event_span')
           .style('stroke', '#fff')
           .style("stroke-width","0.25px")
@@ -5464,7 +5464,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d == representation;
     });
 
-    selectWithParent('#scale_picker img')
+    selectAllWithParent('#scale_picker img')
     .style("border-bottom", function(d,i) {
       if (d.name == scale)
       return '2px solid #f00';
@@ -5473,7 +5473,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       if (d.name == scale)
       return '2px solid #f00';
     });
-    selectWithParent('#layout_picker img')
+    selectAllWithParent('#layout_picker img')
     .style("border-bottom",function(d,i) {
       if (d.name == layout)
       return '2px solid #f00';
@@ -5482,7 +5482,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       if (d.name == layout)
       return '2px solid #f00';
     });
-    selectWithParent('#representation_picker img')
+    selectAllWithParent('#representation_picker img')
     .style("border-bottom", function(d,i) {
       if (d.name == representation)
       return '2px solid #f00';
