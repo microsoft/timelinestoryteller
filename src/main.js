@@ -9,18 +9,7 @@ require("../assets/css/style.css");
 var d3 = require("d3");
 var moment = require("moment");
 var introJs = require("intro.js").introJs;
-var time = require("./lib/time.min");
-var GIF = require("./lib/gif").GIF;
-var gsheets = require("./lib/gsheets.min");
-var svgImageUtils = require("./lib/saveSvgAsPng");
-var imageUrls = require("./imageUrls");
-var utils = require("./utils");
-var selectWithParent = utils.selectWithParent;
-var selectAllWithParent = utils.selectAllWithParent;
 
-/**
- * d3 helpers
- */
 var configurableTL = require("./configurableTL");
 var addCaption = require("./addCaption");
 var addImage = require("./addimage");
@@ -33,14 +22,15 @@ var DEFAULT_OPTIONS = {
   showIntro: true,
   showImportOptions: true
 };
-
-/**
---------------------------------------------------------------------------------------
-GLOBAL VARIABLES
---------------------------------------------------------------------------------------
-**/
+var time = require("./lib/time.min");
+var GIF = require("./lib/gif").GIF;
+var gsheets = require("./lib/gsheets.min");
+var svgImageUtils = require("./lib/saveSvgAsPng");
+var imageUrls = require("./imageUrls");
+var utils = require("./utils");
+var selectWithParent = utils.selectWithParent;
+var selectAllWithParent = utils.selectAllWithParent;
 var globals = require("./globals");
-
 var gif = new GIF({
   workers: 2,
   quality: 10,
