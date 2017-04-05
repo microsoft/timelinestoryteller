@@ -13,15 +13,27 @@
   },
   "devDependencies": {
     "copyfiles": "^1.2.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3",
     "express": "^4.14.0",
     "socket.io": "^1.7.2",
     "webpack": "^2.3.1",
     "webpack-dev-middleware": "^1.10.1"
   },
+  "optionalDependencies": {
+    "d3": "^3.5.5",
+    "intro.js": "^2.3.0",
+    "moment": "^2.10.6",
+    "socket.io": "^1.7.2"
+  },
   "scripts": {
     "start": "node app.js",
-    "package": "webpack && copyfiles -u 1 dist/*.js public/app/js && copyfiles -u 1 'src/**/*' lib",
-    "test": "npm run package"
+    "lint": "eslint 'src/**/*.js'",
+    "package": "webpack && copyfiles -u 1 'dist/*.js' public/app/js && copyfiles -u 1 'src/**/*' lib",
+    "test": "(npm run lint || exit 0) && npm run package"
   },
   "repository": {
     "type": "git",
