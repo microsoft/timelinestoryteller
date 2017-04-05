@@ -3,5 +3,6 @@ foo.html
 dist
 *-debug.log
 *-error.log
-public/app/js/timelinestoryteller.js
+# This is necessary for deployment right now
+#public/app/js/timelinestoryteller.js
 lib

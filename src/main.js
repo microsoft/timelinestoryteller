@@ -8,7 +8,8 @@ require("../assets/css/style.css");
  */
 var d3 = require("d3");
 var moment = require("moment");
-var introJs = require("intro.js").introJs;
+var introJsLib = require("intro.js");
+var introJs = typeof introJsLib === "function" ? introJsLib : introJsLib.introJs;
 
 var configurableTL = require("./configurableTL");
 var addCaption = require("./addCaption");
@@ -6236,8 +6237,4 @@ TimelineStoryteller.prototype.load = function(data) {
   return this.loadInternal(data);
 };
 
-// Define it globally
-if (typeof window !== "undefined") {
-  window.TimelineStoryteller = TimelineStoryteller;
-}
 module.exports = TimelineStoryteller;

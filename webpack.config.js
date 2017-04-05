@@ -1,8 +1,9 @@
 module.exports = {
-    entry: "./src/main.js",
-    devtool: "eval",
+    entry: "./src/index.js",
     output: {
-        filename: "dist/timelinestoryteller.js"
+        filename: "dist/timelinestoryteller.js",
+        libraryTarget: "umd",
+        library: "TimelineStoryteller"
     },
     module: {
         rules: [{
@@ -16,7 +17,7 @@ module.exports = {
     externals: {
         d3: 'd3',
         moment: "moment",
-        "intro.js": "{ introJs: introJs }",
+        "intro.js": "introJs",
         "socket.io": "io"
     }
 };
