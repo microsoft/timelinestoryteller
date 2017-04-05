@@ -1,12 +1,12 @@
 # Timeline Storyteller
 
-!["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
+!["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
 
 [Timeline Storyteller](https://timelinestoryteller.com/) is an expressive browser-based visual storytelling environment for presenting timelines.
 
 You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
 
-![Timeline Design dimensions](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dims.png "Timeline Design dimensions")
+![Timeline Design dimensions](public/img/dims.png "Timeline Design dimensions")
 
 To learn more about the research that informed this project, see [timelinesrevisited.github.io](https://timelinesrevisited.github.io/), which includes a survey of timeline tools and more than 200 bespoke timelines.
 
@@ -24,13 +24,18 @@ See [these examples](https://timelinestoryteller.com/#examples) of timelines and
 
 2. Ensure that [nodejs](https://nodejs.org/) and [npm](https://www.npmjs.com/) are installed.
 
-3. Open a terminal at the root of the repository and install node modules ([express](https://www.npmjs.com/package/express) and [socket.io](https://www.npmjs.com/package/socket.io)): `npm install express`, `npm install socket.io`
+3. Open a terminal at the root of the repository and run `npm install`.
 
-4. Start the node server: `node app.js`
+4. Test and package the Timeline Storyteller component: `npm test`
 
-5. Open [localhost:8000](http://localhost:8000/)
+5. Start the node server: `npm start`
+ > Optionally, run with `NODE_ENV=production npm start` which will run the server in production mode.
 
-The application source code can be found in the [public/app](https://github.com/Microsoft/timelinestoryteller/tree/master/public/app) directory.
+6. Open [localhost:8000](http://localhost:8000/)
+
+* The Timeline Storyteller component source code can be found in the [src](/src) directory.
+* The images & css for the component can be found in the [assets](/assets) directory.
+* The website can be found in the [public](/public) directory.
 
 ## Preparing your data
 
@@ -74,7 +79,71 @@ Here is the [The Daily Routines of Famous Creative People](https://podio.com/sit
 - __Optional__: Worksheet title (i.e., tab name) for this dataset: `dailyroutines`
 - Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.
 
-## Usage
+## Component Usage
+
+Add the following to your `index.html` page:
+
+```
+<! -- Runtime css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" charset="UTF-8">
+
+<!-- Runtime Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
+```
+
+Then you can use Timeline Storyteller in a couple of ways:
+
+### Traditional
+
+```
+<!-- Timeline Storyteller -->
+<script type="text/javascript" src="dist/timelinestoryteller.js" charset="UTF-8"></script>
+<script>
+  new TimelineStoryteller(false); // Create a new Timeline Storyteller instance
+</script>
+```
+
+### Webpack
+
+- Configure your `webpack.config.js` to add a few configuration settings:
+```
+module.exports = {
+
+    // These rules are necessary to bundle correctly
+    rules: [{
+        test: /\.css$/,
+        loaders: ["style-loader", "css-loader"]
+    }, {
+        test: /\.(png|svg)$/,
+        loader: "binary-loader"
+    }]
+
+    // Optional if you have the cdn versions of these libraries from above in your index.html, otherwise these dependencies
+    // can be removed from your externals section.
+    externals: {
+        d3: "d3",
+        moment: "moment",
+        "intro.js": "{ introJs: introJs }",
+    },
+    plugins: [
+        new webpack.IgnorePlugin(/socket.io/) // Ignores the socket.io dependency as this is only necessary for the timelinestoryteller.com website.
+    ]
+};
+```
+- If you are bundling the dependencies with your application bundle, then include the following in your entry file:
+```
+require("intro.js/introjs.css"); // Loads the intro.js css
+```
+
+- Instantiate the Timeline Storyteller
+```
+var TimelineStoryteller = require("timeline_storyteller");
+var instance = new TimelineStoryteller(true);
+```
+
+## Application Usage
 
 Note that more detailed usage instructions are available at [timelinestoryteller.com](https://timelinestoryteller.com/)
 
@@ -151,6 +220,11 @@ ISSN = {1077-2626}
 - [nodejs](https://nodejs.org/)
 - [express](https://www.npmjs.com/package/express)
 - [socket.io](https://www.npmjs.com/package/socket.io)
+- [webpack](https://webpack.github.io/)
+- [karma](https://karma-runner.github.io)
+- [mocha](https://mochajs.org/)
+- [chai](http://chaijs.com/)
+- [eslint](http://eslint.org/)
 
 ### Demo dataset provenance
 
@@ -168,7 +242,7 @@ ISSN = {1077-2626}
 - [Presidents of the USA](https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json)
 - [C4-5 Hurricanes: 1960-2010](http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html)
 - [The Daily Routines of Famous Creative People](https://podio.com/site/creative-routines)
--['Visualizing painters' lives" by Accurat](http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/)
+- ['Visualizing painters' lives" by Accurat](http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/)
 - ['From first published to masterpieces' by Accurat](http://www.brainpickings.org/2013/11/29/accurat-modern-library/)
 - [Kurzweil's 'Countdown to Singularity'](http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg)
 - ['A Perspective on Time' by mayra.artes for Wait But Why](http://visual.ly/perspective-time)

@@ -1,2 +1,8 @@
 node_modules
 foo.html
+dist
+*-debug.log
+*-error.log
+# This is necessary for deployment right now
+#public/app/js/timelinestoryteller.js
+lib

@@ -12,13 +12,12 @@
   <meta name="author" content="Microsoft">
   <title>Timeline Storyteller</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" charset="UTF-8">
-  <link rel="stylesheet" href="../css/style.css" charset="UTF-8">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
 </head>
 
-<body>
-
+<body style="box-sizing: border-box;background-color:grey">
+  <div id="app" style="width:100%;height:100%;background-color:white"></div>
 </body>
 
 <!-- external dependencies -->
@@ -27,23 +26,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js" charset="UTF-8"></script>
 
-<!-- dependencies (local version only) -->
-<script type="text/javascript" src="js/lib/time.min.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/lib/saveSvgAsPng.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/lib/gif.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/lib/gif.worker.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/lib/gsheets.min.js" charset="UTF-8"></script>
-
+<!-- Demo Data -->
 <script type="text/javascript" src="js/demoStory.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/demoData.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/configurableTL.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/radialAxis.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/calendarAxis.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/gridAxis.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/colors.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/annotateEvent.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/addCaption.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/addImage.js" charset="UTF-8"></script>
-<script type="text/javascript" src="js/main.js" charset="UTF-8"></script>
+
+<!-- Timeline Storyteller component -->
+<script type="text/javascript" src="js/timelinestoryteller.js" charset="UTF-8"></script>
+<script>
+  var teller = new TimelineStoryteller(false, true, document.getElementById("app"));
+  // teller.setOptions({
+  //   showAbout: false,
+  //   showLogo: false,
+  //   showImportOptions: false,
+  //   showIntro: false,
+  // });
+  // teller.load(timeline_story_demo_data.authors);
+</script>
 
 </html>

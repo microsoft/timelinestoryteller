@@ -1,0 +1,7 @@
+public
+web.config
+app.js
+src
+webpack.config.js
+**/*.spec.js
+.vscode
