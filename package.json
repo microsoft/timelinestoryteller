@@ -12,6 +12,7 @@
     "worker-loader": "^0.8.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "copyfiles": "^1.2.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
@@ -19,6 +20,12 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.3",
     "express": "^4.14.0",
+    "karma": "^1.6.0",
+    "karma-mocha": "^1.3.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-webpack": "^2.0.3",
+    "mocha": "^3.2.0",
+    "phantomjs-prebuilt": "^2.1.14",
     "socket.io": "^1.7.2",
     "webpack": "^2.3.1",
     "webpack-dev-middleware": "^1.10.1"
@@ -32,8 +39,9 @@
   "scripts": {
     "start": "node app.js",
     "lint": "eslint 'src/**/*.js'",
+    "karma": "karma start",
     "package": "webpack && copyfiles -u 1 'dist/*.js' public/app/js && copyfiles -u 1 'src/**/*' lib",
-    "test": "(npm run lint || exit 0) && npm run package"
+    "test": "(npm run lint || exit 0) && npm run karma && npm run package"
   },
   "repository": {
     "type": "git",

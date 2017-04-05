@@ -221,6 +221,10 @@ ISSN = {1077-2626}
 - [express](https://www.npmjs.com/package/express)
 - [socket.io](https://www.npmjs.com/package/socket.io)
 - [webpack](https://webpack.github.io/)
+- [karma](https://karma-runner.github.io)
+- [mocha](https://mochajs.org/)
+- [chai](http://chaijs.com/)
+- [eslint](http://eslint.org/)
 
 ### Demo dataset provenance
 
