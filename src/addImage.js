@@ -9,6 +9,7 @@ var d3 = require("d3");
 var globals = require("./globals");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
+var nextId = utils.nextId;
 
 module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_width,image_height,image_index) {
 
@@ -194,8 +195,10 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
 
   var image_defs = timeline_image.append("defs");
 
+  var clipPathId = nextId();
   var circle_clip_path = image_defs.append('clipPath')
-  .attr('id','circlepath')
+  .attr('id','circlepath' + clipPathId)
+  .attr('class', 'image-clip-path')
   .append('circle')
   .attr('cx',x_pos + image_width / 2)
   .attr('cy',y_pos + image_height / 2)
@@ -206,7 +209,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
   .attr("class","image_frame")
   .attr("clip-path", function(){
     if (timeline_vis.tl_representation() == "Radial") {
-      return "url(#circlepath)";
+      return "url(#circlepath" + clipPathId + ")";
     }
     else {
       return "none";
