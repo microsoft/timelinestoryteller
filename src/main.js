@@ -31,6 +31,7 @@ var imageUrls = require("./imageUrls");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var logEvent = utils.logEvent;
 var globals = require("./globals");
 var gif = new GIF({
   workers: 2,
@@ -95,7 +96,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   window.onload = function () {
-    console.log("Initializing Timeline Storyteller");
+    logEvent("Initializing Timeline Storyteller");
 
     if (globals.socket) {
       globals.socket.emit('hello_from_client', { hello: 'server' })
@@ -103,13 +104,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth(),
     globals.height = component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth()
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "initialize",
-      event_detail: "Initializing Timeline Storyteller"
-    }
-    globals.usage_log.push(log_event);
   }
 
   window.onscroll = function (e) {
@@ -159,14 +153,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.legend_x = d3.select(this).attr("x");
     globals.legend_y = d3.select(this).attr("y");
 
-    console.log("legend moved to: " + globals.legend_x + ", " + globals.legend_y);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "legend",
-      event_detail: "legend moved to: " + globals.legend_x + ", " + globals.legend_y
-    }
-    globals.usage_log.push(log_event);
+    logEvent("legend moved to: " + globals.legend_x + ", " + globals.legend_y, "legend");
   });
 
   var filterDrag = d3.behavior.drag()
@@ -206,14 +193,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     var filter_x = selectWithParent("#filter_div").style("left");
     var filter_y = selectWithParent("#filter_div").style("top");
 
-    console.log("filter options moved to: " + filter_x + ", " + filter_y);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "filter",
-      event_detail: "filter options moved to: " + filter_x + ", " + filter_y
-    }
-    globals.usage_log.push(log_event);
+    logEvent("filter options moved to: " + filter_x + ", " + filter_y, "filter");
   });
 
   function getScrollbarWidth() {
@@ -319,14 +299,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.current_scene_index = 0;
     }
-    console.log("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "playback",
-      event_detail: "scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length, "playback");
 
     changeScene(globals.current_scene_index);
   }
@@ -341,14 +314,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.current_scene_index = globals.scenes.length - 1;
     }
-    console.log("scene: " + globals.current_scene_index + " of " + globals.scenes.length);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "playback",
-      event_detail: "scene: " + globals.current_scene_index + " of " + globals.scenes.length
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene: " + globals.current_scene_index + " of " + globals.scenes.length, "playback");
 
     changeScene(globals.current_scene_index);
   }
@@ -457,14 +423,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent("#image_div").style("display","none");
     selectWithParent("#export_div").style("top",-185 + "px");
 
-    console.log("open import panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "open import panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open import panel", "load");
 
     if (selectWithParent("#import_div").style("top") != -210 + "px") {
       selectWithParent("#import_div").style("top",-210 + "px");
@@ -499,14 +458,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   })
   .on('click', function() {
 
-    console.log("open caption dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "open caption dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open caption dialog", "annotation");
 
     selectWithParent("#filter_div").style("display","none");
     selectWithParent("#image_div").style("display","none");
@@ -531,14 +483,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .style("margin-bottom","0px")
   .on('click', function() {
 
-    console.log("open image dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "open image dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open image dialog", "annotation");
 
     selectWithParent("#filter_div").style("display","none");
     selectWithParent("#caption_div").style("display","none");
@@ -563,14 +508,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', clearCanvas);
 
   function clearCanvas() {
-    console.log("clear annotations");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "clear annotations"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("clear annotations", "annotation");
 
     main_svg.selectAll(".timeline_caption").remove();
 
@@ -604,14 +542,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     title: "Filter"
   })
   .on('click', function () {
-    console.log("open filter dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "filter",
-      event_detail: "open filter dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open filter dialog", "filter");
 
     if (d3.select(this).attr("class") == "img_btn_enabled"){
       selectWithParent("#caption_div").style("display","none");
@@ -648,14 +579,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#export_div").style("top",-185 + "px");
 
-    console.log("hide export panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "hide export panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("hide export panel", "export");
   });
 
   control_panel.append("hr")
@@ -683,14 +607,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent("#image_div").style("display","none");
     selectWithParent("#import_div").style("top",-210 + "px");
 
-    console.log("show export panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "show export panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("show export panel", "export");
 
     if (selectWithParent("#export_div").style("top") != -185 + "px") {
       selectWithParent("#export_div").style("top",-185 + "px");
@@ -723,14 +640,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       export_formats.selectAll(".img_btn_disabled")
       .attr("class","img_btn_enabled")
 
-      console.log("valid email address: " + globals.email_address);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "valid email address: " + globals.email_address
-      }
-      globals.usage_log.push(log_event);
+      logEvent("valid email address: " + globals.email_address, "export");
     }
     else {
       export_formats.selectAll(".img_btn_enabled")
@@ -753,14 +663,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (globals.opt_out || globals.email_address != "") {
       selectAllWithParent('foreignObject').remove();
 
-      console.log("exporting main_svg as PNG");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting main_svg as PNG"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("exporting main_svg as PNG", "export");
 
       svgImageUtils.saveSvgAsPng(document.querySelector(".timeline_storyteller #main_svg"), "timeline_image.png", {backgroundColor: "white"});
     }
@@ -782,14 +685,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (globals.opt_out || globals.email_address != "") {
       selectAllWithParent('foreignObject').remove();
 
-      console.log("exporting main_svg as SVG");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting main_svg as SVG"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("exporting main_svg as SVG", "export");
 
       svgImageUtils.saveSvg(document.querySelector(".timeline_storyteller #main_svg"), "timeline_image.svg", {backgroundColor: "white"});
     }
@@ -815,14 +711,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var gif_scenes = globals.scenes;
       if (gif_scenes.length > 0) {
 
-        console.log("exporting story as animated GIF");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "export",
-          event_detail: "exporting story as animated GIF"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("exporting story as animated GIF", "export");
 
         gif_scenes.sort(function(a, b) {
           return parseFloat(a.s_order) - parseFloat(b.s_order);
@@ -841,14 +730,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
 
-        console.log("exporting main_svg as GIF");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "export",
-          event_detail: "exporting main_svg as GIF"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("exporting main_svg as GIF", "export");
 
         svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), -1, {backgroundColor: "white"});
 
@@ -881,14 +763,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       selectAllWithParent('foreignObject').remove();
 
-      console.log('exporting story as .cdc');
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: 'exporting story as .cdc'
-      }
-      globals.usage_log.push(log_event);
+      logEvent('exporting story as .cdc', "export");
 
       globals.timeline_story = {
         'timeline_json_data':globals.timeline_json_data,
@@ -950,14 +825,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('change', function() {
     if (!globals.opt_out) {
 
-      console.log("opting out of sharing content");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "opting out of sharing"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("opting out of sharing content", "export");
 
       globals.opt_out = true;
       export_formats.selectAll(".img_btn_disabled")
@@ -966,14 +834,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.opt_out = false;
 
-      console.log("opting into sharing content");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "opting into of sharing"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("opting into sharing content", "export");
 
       export_formats.selectAll(".img_btn_enabled")
       .attr("class","img_btn_disabled")
@@ -1061,14 +922,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .style('margin-top','5px')
   .on('click', function() {
 
-    console.log("hiding import panel")
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "hiding import panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("hiding import panel", "load");
 
     selectWithParent("#import_div").style("top",-210 + "px");
     selectWithParent("#gdocs_info").style("height",0 + "px");
@@ -1105,14 +959,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.source_format = 'demo_json';
         setTimeout(function () {
 
-          console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "load",
-            event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
 
           loadTimeline();
         },500);
@@ -1182,16 +1029,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source = URL.createObjectURL(blob);
       globals.source_format = 'json';
       setTimeout(function () {
-
-        console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
-
+        logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
         loadTimeline();
       },500);
     };
@@ -1229,16 +1067,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source = URL.createObjectURL(blob);
       globals.source_format = 'csv';
       setTimeout(function () {
-
-        console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
-
+        logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
         loadTimeline();
       },500);
     };
@@ -1308,14 +1137,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on("click", function () {
 
       globals.source = 'demoStory';
-      console.log('demo story source');
 
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "load",
-        event_detail: 'demo story source'
-      }
-      globals.usage_log.push(log_event);
+      logEvent('demo story source', "load");
 
       globals.source_format = 'demo_story';
       selectWithParent("#timeline_metadata").style('display','none');
@@ -1361,14 +1184,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var contents = e.target.result;
       var blob = new Blob([contents], {type: "application/json"});
       globals.source = URL.createObjectURL(blob);
-      console.log('story source: ' + globals.source);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "load",
-        event_detail: 'story source: ' + globals.source
-      }
-      globals.usage_log.push(log_event);
+      logEvent('story source: ' + globals.source, "load");
 
       globals.source_format = 'story';
       selectWithParent("#timeline_metadata").style('display','none');
@@ -1444,14 +1260,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.gdoc_key = globals.gdoc_key.replace(/.*\/d\//g,'');
     globals.gdoc_key = globals.gdoc_key.replace(/\/.*$/g,'');
     globals.gdoc_worksheet = selectWithParent("#gdoc_worksheet_title_input").property("value");
-    console.log("gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\"");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\""
-    }
-    globals.usage_log.push(log_event);
+    logEvent("gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\"", "load");
 
     globals.source_format = 'gdoc';
 
@@ -1736,14 +1545,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#caption_div").style("display","none");
     var caption = selectWithParent("#add_caption_text_input").property("value");
-    console.log("caption added: \"" + caption + "\"");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption added: <<" + caption + ">>"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption added: \"" + caption + "\"", "annotation");
 
     var caption_list_item = {
       id: "caption" + globals.caption_index,
@@ -1784,14 +1586,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#image_div").style("display","none");
     var image_url = selectWithParent("#add_image_link").property("value");
-    console.log("image " + globals.image_index + " added: <<" + image_url + ">>");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "image " + globals.image_index + " added: <<" + image_url + ">>"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
 
     var new_image = new Image();
     new_image.name = image_url;
@@ -1800,27 +1595,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     new_image.src = image_url;
 
     function loadFailure() {
-      console.log("'" + this.name + "' failed to load.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "annotation",
-        event_detail: "'" + this.name + "' failed to load."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("'" + this.name + "' failed to load.", "annotation");
 
       return true;
     }
 
     function getWidthAndHeight() {
-      console.log("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "annotation",
-        event_detail: "image" + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
 
       var image_width = this.width,
       image_height = this.height,
@@ -2017,14 +1798,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           if (!globals.playback_mode) {
             globals.playback_mode = true;
 
-            console.log("playback mode on");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "playback",
-              event_detail: "playback mode on"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("playback mode on", "playback");
 
             selectWithParent("#record_scene_btn").attr("class","img_btn_disabled");
             selectWithParent("#caption_div").style("display","none");
@@ -2045,14 +1819,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           else {
             globals.playback_mode = false;
 
-            console.log("playback mode off");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "playback",
-              event_detail: "playback mode off"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("playback mode off", "playback");
 
             selectWithParent("#record_scene_btn").attr("class","img_btn_enabled");
             selectWithParent("#option_div").style("top", 10 + "px");
@@ -2152,14 +1919,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -2176,14 +1936,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             unique_values.forEach(function (d) {
               unique_data.push(unique_values.get(d));
             });
-            console.log(unique_data.length + " unique events");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "preprocessing",
-              event_detail: unique_data.length + " unique events"
-            }
-            globals.usage_log.push(log_event);
+            logEvent(unique_data.length + " unique events", "preprocessing");
 
             processTimeline(unique_data);
           });
@@ -2199,14 +1952,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -2240,14 +1986,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -2345,14 +2084,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
               unique_values.forEach(function (d) {
                 unique_data.push(unique_values.get(d));
               });
-              console.log(unique_data.length + " unique events");
-
-              var log_event = {
-                event_time: new Date().valueOf(),
-                event_category: "preprocessing",
-                event_detail: unique_data.length + " unique events"
-              }
-              globals.usage_log.push(log_event);
+              logEvent(unique_data.length + " unique events", "preprocessing");
 
               updateNavigationStepper();
               processTimeline(unique_data);
@@ -2446,14 +2178,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             unique_values.forEach(function (d) {
               unique_data.push(unique_values.get(d));
             });
-            console.log(unique_data.length + " unique events");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "preprocessing",
-              event_detail: unique_data.length + " unique events"
-            }
-            globals.usage_log.push(log_event);
+            logEvent(unique_data.length + " unique events", "preprocessing");
 
             updateNavigationStepper();
             processTimeline(unique_data);
@@ -2545,14 +2270,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     })
 
-    console.log("# categories: " + globals.num_categories);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "# categories: " + globals.num_categories
-    }
-    globals.usage_log.push(log_event);
+    logEvent("# categories: " + globals.num_categories, "preprocessing");
 
     //assign colour labels to categories if # categories < 12
     if (globals.num_categories <= 20 && globals.num_categories >= 11) {
@@ -2577,14 +2295,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
     if (globals.use_custom_palette) {
       globals.categories.range(globals.color_palette);
-      console.log("custom palette: " + globals.categories.range())
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "color palette",
-        event_detail: "custom palette: " + globals.categories.range()
-      }
-      globals.usage_log.push(log_event);
+      logEvent("custom palette: " + globals.categories.range(), "color palette");
     }
 
     filter_div.append('input')
@@ -2605,14 +2316,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on('click', function() {
       selectWithParent("#filter_div").style("display","none");
 
-      console.log("hide filter panel");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "hide filter panel"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("hide filter panel", "export");
     });
 
     filter_div.append("text")
@@ -2683,14 +2387,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       selectWithParent("#filter_div").style("display", "inline");
 
-      console.log("filter type changed: " + this.value);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "filter",
-        event_detail: "filter type changed: " + this.value
-      }
-      globals.usage_log.push(log_event);
+      logEvent("filter type changed: " + this.value, "filter");
 
       globals.filter_type = this.value;
       if (globals.filter_type == "Hide") {
@@ -2809,14 +2506,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
     globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
 
-    console.log("# facets: " + globals.num_facets);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "# facets: " + globals.num_facets
-    }
-    globals.usage_log.push(log_event);
+    logEvent("# facets: " + globals.num_facets, "preprocessing");
 
     var facet_filter = filter_div.append("div")
     .attr('class','filter_div_section');
@@ -3056,13 +2746,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         temp_palette = undefined;
         globals.use_custom_palette = true;
 
-        console.log("category " + i + ": " + d + " now uses " + this.value);
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "color_palette_change",
-          event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
-        }
-        globals.usage_log.push(log_event);
+        logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
       })
 
       category_metadata_element.append('span')
@@ -3100,14 +2784,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("scale change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "scale_change",
-      event_detail: "scale change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scale change: " + this.value, "scale_change");
 
     determineSize(globals.active_data,this.value,timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
@@ -3134,14 +2811,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("layout change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "layout_change",
-      event_detail: "layout change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("layout change: " + this.value, "layout_change");
 
     determineSize(globals.active_data,timeline_vis.tl_scale(),this.value,timeline_vis.tl_representation());
 
@@ -3168,14 +2838,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("representation change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "representation_change",
-      event_detail: "representation change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("representation change: " + this.value, "representation_change");
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (this.value == "Grid"){
@@ -3226,14 +2889,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.record_width = globals.width;
     globals.record_height = globals.height;
 
-    console.log("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "record",
-      event_detail: "scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
 
     var scene_captions = [];
     var scene_images = [];
@@ -3424,14 +3080,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent('#frame' + d.s_order).remove();
       selectAllWithParent(".frame_hover").remove();
       //delete current scene unless image or caption div is open
-      console.log("scene " + (d.s_order + 1) + " deleted.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "deletion",
-        event_detail: "scene " + (d.s_order + 1) + " deleted."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("scene " + (d.s_order + 1) + " deleted.", "deletion");
 
       for (var j = 0; j < globals.scenes.length; j++) {
         if (globals.scenes[j].s_order == d.s_order) {
@@ -3858,27 +3507,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.range_text = format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
       ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf();
 
-      console.log("range: " + globals.range_text);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "preprocessing",
-        event_detail: "range: " + globals.range_text
-      }
-      globals.usage_log.push(log_event);
+      logEvent("range: " + globals.range_text, "preprocessing");
 
     }
     else {
       globals.range_text = moment(data.min_start_date).from(moment(data.max_end_date),true) +
       ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD');
-      console.log("range: " + globals.range_text);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "preprocessing",
-        event_detail: "range: " + globals.range_text
-      }
-      globals.usage_log.push(log_event);
+      logEvent("range: " + globals.range_text, "preprocessing");
     }
 
     //create a nested data structure to contain faceted data
@@ -3910,35 +3545,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d.duration;
     });
 
-    console.log("max event duration: " + data.max_duration + " " + globals.date_granularity);
+    logEvent("max event duration: " + data.max_duration + " " + globals.date_granularity, "preprocessing");
 
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "max event duration: " + data.max_duration + " " + globals.date_granularity
-    }
-    globals.usage_log.push(log_event);
-
-    console.log("min event duration: " + data.min_duration + " " + globals.date_granularity);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "min event duration: " + data.min_duration + " " + globals.date_granularity
-    }
-    globals.usage_log.push(log_event);
+    logEvent("min event duration: " + data.min_duration + " " + globals.date_granularity, "preprocessing");
 
     //determine the granularity of segments
     globals.segment_granularity = getSegmentGranularity(data.min_start_date,data.max_end_date);
 
-    console.log("segment granularity: " + globals.segment_granularity);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segment granularity: " + globals.segment_granularity
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segment granularity: " + globals.segment_granularity, "preprocessing");
 
     var segment_list = getSegmentList(data.min_start_date,data.max_end_date);
 
@@ -3946,14 +3560,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d;
     }));
 
-    console.log("segments (" + globals.segments.domain().length + "): " + globals.segments.domain());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segments (" + globals.segments.domain().length + "): " + globals.segments.domain()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
 
     globals.num_segments = globals.segments.domain().length;
     globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
@@ -4051,28 +3658,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         if (globals.legend_expanded) {
 
-          console.log("legend minimized");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "legend",
-            event_detail: "legend minimized"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("legend minimized", "legend");
 
           globals.legend_expanded = false;
           collapseLegend();
         }
         else {
 
-          console.log("legend expanded");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "legend",
-            event_detail: "legend expanded"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("legend expanded", "legend");
 
           globals.legend_expanded = true;
           expandLegend();
@@ -4099,14 +3692,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.legend.on('mouseover', function(d,i){
         var hovered_legend_element = d;
 
-        console.log("legend hover: " + hovered_legend_element);
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "legend",
-          event_detail: "legend hover: " + hovered_legend_element
-        }
-        globals.usage_log.push(log_event);
+        logEvent("legend hover: " + hovered_legend_element, "legend");
 
         d3.select(this).select('rect').style('stroke','#f00');
         d3.select(this).select('text').style('font-weight','bolder')
@@ -4223,13 +3809,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       main_svg.call(timeline_vis.duration(1200));
 
-      console.log("category " + i + ": " + d + " now uses " + this.value);
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "color_palette_change",
-        event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
-      }
-      globals.usage_log.push(log_event);
+      logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
     });
   };
 
@@ -4870,14 +4450,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   //resizes the timeline container based on combination of scale, layout, representation
   function determineSize(data, scale, layout, representation) {
 
-    console.log("timeline: " + scale + " - " + layout + " - " + representation);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "sizing",
-      event_detail: "timeline: " + scale + " - " + layout + " - " + representation
-    }
-    globals.usage_log.push(log_event);
+    logEvent("timeline: " + scale + " - " + layout + " - " + representation, "sizing");
 
     switch (representation) {
 
@@ -4890,14 +4463,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Unified":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = globals.num_tracks * globals.track_height + 1.5 * globals.track_height + globals.margin.top + globals.margin.bottom;
@@ -4906,14 +4472,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Faceted":
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
@@ -4922,14 +4481,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Segmented":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_segments + globals.margin.top + globals.margin.bottom;
@@ -4941,28 +4493,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         if (layout == "Faceted") {
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -4973,14 +4511,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         if (layout == "Unified") {
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = globals.num_tracks * globals.track_height + 1.5 * globals.track_height + globals.margin.top + globals.margin.bottom;
@@ -4988,28 +4519,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         else if (layout == "Faceted") {
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5027,14 +4544,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5064,14 +4574,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5095,14 +4598,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Unified":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.centre_radius = d3.max([50,(effective_size - ((globals.num_tracks + 2) * 2 * globals.track_height)) / 2]);
           globals.width = (2 * globals.centre_radius + (globals.num_tracks + 2) * 2 * globals.track_height) + globals.margin.left + globals.margin.right;
@@ -5131,14 +4627,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Segmented":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.centre_radius = 50;
           var estimated_segment_width =  (2 * globals.centre_radius + (globals.num_tracks + 2) * 2 * globals.track_height);
@@ -5160,14 +4649,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.centre_radius = 50;
           var estimated_facet_width = (2 * globals.centre_radius + (globals.max_num_tracks + 2) * 2 * globals.track_height);
@@ -5183,14 +4665,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5229,14 +4704,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5271,14 +4739,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -5308,14 +4769,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -5407,14 +4861,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -5431,28 +4878,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
       }
       break;
     }
-    console.log("dimensions: " + globals.width + " (W) x " + globals.height  + " (H)");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "sizing",
-      event_detail: "dimensions: " + globals.width + " (W) x " + globals.height  + " (H)"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("dimensions: " + globals.width + " (W) x " + globals.height  + " (H)", "sizing");
 
   };
 
@@ -5790,25 +5223,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
 
     if (mismatches [0].length != 0) {
-      console.log(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "Emphasize",
-        event_detail: matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events"
-      }
-      globals.usage_log.push(log_event);
-
+      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "Emphasize");
     }
     else {
-      console.log(matches[0].length + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "Emphasize",
-        event_detail: matches[0].length + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " events", "Emphasize");
     }
 
     globals.all_data.forEach( function (item) {
@@ -5872,24 +5290,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
 
     if (mismatches [0].length != 0) {
-      console.log(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "remove",
-        event_detail: matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
     }
     else {
-      console.log(matches[0].length + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "remove",
-        event_detail: matches[0].length + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " events", "remove");
     }
 
     measureTimeline(globals.active_data);
@@ -5920,14 +5324,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
     globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
 
-    console.log("num facets: " + globals.num_facet_cols);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "remove",
-      event_detail: "num facets: " + globals.num_facet_cols
-    }
-    globals.usage_log.push(log_event);
+    logEvent("num facets: " + globals.num_facet_cols, "remove");
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (timeline_vis.tl_representation() == "Grid"){
@@ -5947,14 +5344,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d;
     }));
 
-    console.log("segments (" + globals.segments.domain().length + "): " + globals.segments.domain());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segments (" + globals.segments.domain().length + "): " + globals.segments.domain()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
 
     globals.num_segments = globals.segments.domain().length;
     globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
@@ -5962,14 +5352,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     determineSize(globals.active_data,timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
-    console.log("num facets after sizing: " + globals.num_facet_cols)
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "remove",
-      event_detail: "num facets after sizing: " + globals.num_facet_cols
-    }
-    globals.usage_log.push(log_event);
+    logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
 
     main_svg.transition()
     .duration(1200)
@@ -6188,14 +5571,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source_format = 'json_parsed';
       setTimeout(function () {
 
-        console.log("loading (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("loading (" + globals.source_format + ")", "load");
 
         loadTimeline();
       },500);
