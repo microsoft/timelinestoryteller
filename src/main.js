@@ -3707,12 +3707,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     setTimeout(function () {
 
       //is the legend expanded in this scene?
+      globals.legend_expanded = scene.s_legend_expanded;
       if (scene.s_legend_expanded) {
-        globals.legend_expanded = true;
         expandLegend();
       }
       else {
-        globals.legend_expanded = false;
         collapseLegend();
       }
 
@@ -3733,9 +3732,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       // annotations that had a "type" property
 
       // These are are technically annotations, just different types, so concat them all together
-      captionAnnos
-        .concat(imageAnnos)
-        .concat(textAnnos)
+      captionAnnos.concat(imageAnnos).concat(textAnnos)
         .filter(function(anno) { // Filter out annotations not on this scene
 
           // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
