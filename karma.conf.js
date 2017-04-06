@@ -25,6 +25,10 @@ module.exports = function(config) {
 
     browsers: ['PhantomJS'],
     singleRun: true,
+    browserConsoleLogOptions: {
+      terminal: true,
+      level: ""
+    },
 
     webpack: webpackConfig,
     webpackMiddleware: {

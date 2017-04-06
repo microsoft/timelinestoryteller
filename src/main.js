@@ -13,7 +13,7 @@ var introJs = typeof introJsLib === "function" ? introJsLib : introJsLib.introJs
 
 var configurableTL = require("./configurableTL");
 var addCaption = require("./addCaption");
-var addImage = require("./addimage");
+var addImage = require("./addImage");
 var annotateEvent = require("./annotateEvent");
 var colorSchemes = require("./colors");
 var DEFAULT_OPTIONS = {
