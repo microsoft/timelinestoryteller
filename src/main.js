@@ -3364,6 +3364,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         collapseLegend();
       }
 
+      /**
+       * Creates a mapper, that adds a type property
+       * @param {string} type The type of the item
+       */
       function mapWithType(type) {
         return function (item) {
           return {
@@ -3506,15 +3510,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       globals.range_text = format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
       ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf();
-
-      logEvent("range: " + globals.range_text, "preprocessing");
-
     }
     else {
       globals.range_text = moment(data.min_start_date).from(moment(data.max_end_date),true) +
       ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD');
-      logEvent("range: " + globals.range_text, "preprocessing");
     }
+
+    logEvent("range: " + globals.range_text, "preprocessing");
 
     //create a nested data structure to contain faceted data
     globals.timeline_facets = d3.nest()
