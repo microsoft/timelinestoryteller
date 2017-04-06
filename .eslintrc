@@ -4,6 +4,9 @@
         "no-var": 0,
         "quotes": [2, "double"],
         "camelcase": 0,
-        "no-param-reassign": 0
+        "no-param-reassign": 0,
+        "one-var": 0,
+        "indent": [2, 4],
+        "func-names": 0
     }
 }

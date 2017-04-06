@@ -19,6 +19,8 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 
+var getNextZIndex = require("./annotations").getNextZIndex;
+
 d3.configurableTL = function (unit_width, padding) {
 
   var tl_scale = "Chronological", //timeline scale (chronological | relative | log | interim_duration | sequential)
@@ -2077,8 +2079,9 @@ d3.configurableTL = function (unit_width, padding) {
               y_offset: (y_pos - item_y_pos),
               x_anno_offset: 50,
               y_anno_offset: 50,
-              label_width: d3.min([d.content_text.length * 10,100])
-            }
+              label_width: d3.min([d.content_text.length * 10,100]),
+              z_index: getNextZIndex()
+            };
 
             globals.annotation_list.push(annotation);
 

@@ -38,6 +38,7 @@ var gif = new GIF({
   background: '#fff',
   workerScript: URL.createObjectURL(new Blob([require("raw-loader!./lib/gif.worker.js")], { type: "text/javascript" })) // Creates a script url with the contents of "gif.worker.js"
 });
+var getNextZIndex = require("./annotations").getNextZIndex;
 
 /**
  * Creates a new TimelineStoryteller component
@@ -1750,7 +1751,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       caption_text: caption,
       x_rel_pos: 0.5,
       y_rel_pos: 0.25,
-      caption_width: d3.min([caption.length * 10,100])
+      caption_width: d3.min([caption.length * 10,100]),
+      z_index: getNextZIndex()
     };
 
     globals.caption_list.push(caption_list_item);
@@ -1844,6 +1846,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         i_height: image_height,
         x_rel_pos: 0.5,
         y_rel_pos: 0.25,
+        z_index: getNextZIndex()
       };
 
       globals.image_list.push(image_list_item);
@@ -3713,57 +3716,71 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         collapseLegend();
       }
 
-      //restore captions that are in the scene
-      globals.caption_list.forEach( function (caption) {
-        var i = 0;
-        while (i < scene.s_captions.length && scene.s_captions[i].caption_id != caption.id) {
-          i++;
-        }
-        if (i < scene.s_captions.length) {
-          // caption is in the scene
-          addCaption(caption.caption_text,caption.caption_width * 1.1,caption.x_rel_pos,caption.y_rel_pos,caption.c_index);
-        }
-      });
+      function mapWithType(type) {
+        return function (item) {
+          return {
+            type: type,
+            item: item
+          };
+        };
+      }
 
-      //restore images that are in the scene
-      globals.image_list.forEach( function (image) {
-        var i = 0;
-        while (i < scene.s_images.length && scene.s_images[i].image_id != image.id) {
-          i++;
-        }
-        if (i < scene.s_images.length) {
-          // image is in the scene
-          addImage(timeline_vis,image.i_url,image.x_rel_pos,image.y_rel_pos,image.i_width,image.i_height,image.i_index);
-        }
-      });
+      var captionAnnos = globals.caption_list.map(mapWithType("caption"));
+      var imageAnnos = globals.image_list.map(mapWithType("image"));
+      var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
 
-      //restore annotations that are in the scene
-      globals.annotation_list.forEach( function (annotation) {
-        var i = 0;
-        while (i < scene.s_annotations.length && scene.s_annotations[i].annotation_id != annotation.id) {
-          i++;
-        }
-        if (i < scene.s_annotations.length) {
-          // annotation is in the scene
+      // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
+      // annotations that had a "type" property
 
-          var item = selectWithParent("#event_g" + annotation.item_index).select("rect.event_span")[0][0].__data__,
-              item_x_pos = 0,
-              item_y_pos = 0;
+      // These are are technically annotations, just different types, so concat them all together
+      captionAnnos
+        .concat(imageAnnos)
+        .concat(textAnnos)
+        .filter(function(anno) { // Filter out annotations not on this scene
 
-          if (scene.s_representation != "Radial") {
-            item_x_pos = item.rect_x_pos + item.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
-            item_y_pos = item.rect_y_pos + item.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+          // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
+          var sceneList = scene["s_" + anno.type + "s"];
+
+          for (var i = 0; i < sceneList.length; i++) {
+
+            // Basically the id property in the scene, so image_id or caption_id or annotation_id
+            if (sceneList[i][anno.type + "_id"] == anno.item.id) {
+              return true;
+            }
           }
-          else {
-            item_x_pos = item.path_x_pos + item.path_offset_x + globals.padding.left;
-            item_y_pos = item.path_y_pos + item.path_offset_y + globals.padding.top;
+        })
+
+        // We sort the annotations by z-order, and add the annotations in that order
+        // this is important cause with svgs, the order in which elements are added dictates their z-index
+        .sort(function(a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
+
+        // Iterate through all of our annotations
+        .forEach(function(anno) {
+          var item = anno.item;
+          if (anno.type === "caption") {
+              addCaption(item.caption_text,item.caption_width * 1.1,item.x_rel_pos,item.y_rel_pos,item.c_index);
+          } else if (anno.type === "image") {
+              addImage(timeline_vis,item.i_url,item.x_rel_pos,item.y_rel_pos,item.i_width,item.i_height,item.i_index);
+          } else {
+              var itemEle = selectWithParent("#event_g" + item.item_index).select("rect.event_span")[0][0].__data__,
+                  item_x_pos = 0,
+                  item_y_pos = 0;
+
+              if (scene.s_representation != "Radial") {
+                item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
+                item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+              }
+              else {
+                item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
+                item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
+              }
+
+              annotateEvent(timeline_vis,item.content_text,item_x_pos,item_y_pos,item.x_offset,item.y_offset,item.x_anno_offset,item.y_anno_offset,item.label_width,item.item_index,item.count);
+
+              selectWithParent('#event' + item.item_index + "_" + item.count).transition().duration(50).style('opacity',1);
+
           }
-
-          annotateEvent(timeline_vis,annotation.content_text,item_x_pos,item_y_pos,annotation.x_offset,annotation.y_offset,annotation.x_anno_offset,annotation.y_anno_offset,annotation.label_width,annotation.item_index,annotation.count);
-
-          selectWithParent('#event' + annotation.item_index + "_" + annotation.count).transition().duration(50).style('opacity',1);
-        }
-      });
+        });
 
       //toggle selected events in the scene
       main_svg.selectAll(".timeline_event_g")[0].forEach( function (event) {
