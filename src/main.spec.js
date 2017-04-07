@@ -1,6 +1,6 @@
 var TimelineStoryteller = require("./main");
 var expect = require("chai").expect;
-var testData = require("./testData");
+var sceneWithAnnotations = require("./spec/testData/singleSceneWithAnnotations.json");
 var d3 = require("d3");
 
 describe("TimelineStoryteller", function() {
@@ -22,7 +22,7 @@ describe("TimelineStoryteller", function() {
     describe("playback", function() {
         it("should draw annotations with the z-index in which they were created", function(done) {
             var teller = createInstance();
-            teller.loadStory(JSON.stringify(testData), 0);
+            teller.loadStory(JSON.stringify(sceneWithAnnotations), 0);
 
             setTimeout(function() {
                 var labels = [];

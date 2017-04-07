@@ -16,13 +16,6 @@ module.exports = {
                     nextIndex = item.z_index + 1;
                 }
             });
-
-        // globals.scenes = story.scenes;
-        // globals.caption_list = story.caption_list;
-        // globals.image_list = story.image_list;
-        // globals.annotation_list = story.annotation_list;
-        // globals.caption_index = story.caption_list.length - 1;
-        // globals.image_index = story.image_list.length - 1;
         return nextIndex;
     }
 };
