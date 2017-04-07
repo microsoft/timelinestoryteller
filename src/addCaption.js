@@ -9,6 +9,7 @@ var d3 = require("d3");
 var globals = require("./globals");
 
 var utils = require("./utils");
+var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 
 module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) {
@@ -90,14 +91,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     .attr('y', y_pos);
   })
   .on("dragend", function() {
-    console.log("caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]");
   });
 
   var resize = d3.behavior.drag()
@@ -144,14 +138,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     .call(wrap, caption_width - 7.5);
   })
   .on("dragend", function() {
-    console.log("caption " + caption_index + " resized to " + caption_width + "px");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " resized to " + caption_width + "px"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " resized to " + caption_width + "px");
   });
 
   var caption_frame = timeline_caption.append("rect")
@@ -214,15 +201,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     d3.select(this).style('stroke','#ccc')
   })
   .on('click', function(){
-
-    console.log("caption " + caption_index + " removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " removed"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " removed");
 
     d3.select(this.parentNode).remove();
   })

@@ -11,6 +11,7 @@ var globals = require("./globals");
 
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
+var logEvent = utils.logEvent;
 
 module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offset,y_anno_offset,label_width,item_index,annotation_index) {
 
@@ -207,14 +208,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
 
   })
   .on("dragend", function() {
-    console.log("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
   });
 
   var resize = d3.behavior.drag()
@@ -283,14 +277,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
 
   })
   .on("dragend", function() {
-    console.log("event " + item_index + " annotation resized to " + label_width + "px");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation resized to " + label_width + "px"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation resized to " + label_width + "px");
   });
 
   leader_line_path = [
@@ -366,14 +353,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
   .on('click', function(){
     var corresponding_event = selectWithParent("#event_g" + item_index);
 
-    console.log("event " + item_index + " annotation removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation removed"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation removed");
 
     corresponding_event[0][0].__data__.selected = false;
 

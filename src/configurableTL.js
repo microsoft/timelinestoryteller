@@ -18,6 +18,9 @@ var globals = require("./globals");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var logEvent = utils.logEvent;
+
+var getNextZIndex = require("./annotations").getNextZIndex;
 
 d3.configurableTL = function (unit_width, padding) {
 
@@ -92,14 +95,7 @@ d3.configurableTL = function (unit_width, padding) {
       //remove event annotations during a transition
       selectAllWithParent(".event_annotation").remove();
 
-      console.log("timeline initialized");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "drawing",
-        event_detail: "timeline initialized"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("timeline initialized", "drawing");
 
       /**
       ---------------------------------------------------------------------------------------
@@ -135,15 +131,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style('stroke','none')
       })
       .on('dblclick', function(){
-
-        console.log("curve reset")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "curve_reset",
-          event_detail: "curve reset"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("curve reset", "curve_reset");
 
         configurableTL.resetCurve();
       })
@@ -182,14 +170,7 @@ d3.configurableTL = function (unit_width, padding) {
       .attr("width",width)
       .attr("height",height);
 
-      console.log("timeline container updated");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "drawing",
-        event_detail: "timeline container updated"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("timeline container updated", "drawing");
 
       /**
       ---------------------------------------------------------------------------------------
@@ -352,14 +333,7 @@ d3.configurableTL = function (unit_width, padding) {
         timeline_facet_exit.select("text.facet_title")
         .attr("transform", "translate(" + (0 - width) + " ,0)");
 
-        console.log("facet containers updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "drawing",
-          event_detail: "facet containers updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("facet containers updated", "drawing");
 
       }
 
@@ -491,14 +465,7 @@ d3.configurableTL = function (unit_width, padding) {
         timeline_segment_exit.select("text.segment_title")
         .attr("transform", "translate(" + (0 - width) + " ,0)");
 
-        console.log("segment containers updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "drawing",
-          event_detail: "segment containers updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("segment containers updated", "drawing");
       }
 
       /**
@@ -545,15 +512,7 @@ d3.configurableTL = function (unit_width, padding) {
                 }
               }
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Log":
@@ -615,15 +574,7 @@ d3.configurableTL = function (unit_width, padding) {
               break;
             }
             timeline_scale.domain([log_bounds,-1]);
-            console.log(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-            break;
+            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");            break;
 
             case "Collapsed":
             //valid timeline scale
@@ -679,15 +630,7 @@ d3.configurableTL = function (unit_width, padding) {
               .domain([0,max_time_elapsed]);
             }
 
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed"
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed", "scale_update");
             break;
 
             case "Sequential":
@@ -696,15 +639,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,globals.max_seq_index * 1.5 * unit_width - unit_width])
             .domain([0,globals.max_seq_index * unit_width]);
 
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -815,15 +750,7 @@ d3.configurableTL = function (unit_width, padding) {
               timeline_scale.domain([data.min_start_date,data.max_end_date]);
               break;
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Sequential":
@@ -848,15 +775,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,2 * Math.PI])
             .domain([0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset]);
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -897,15 +816,7 @@ d3.configurableTL = function (unit_width, padding) {
                 }
               }
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Relative":
@@ -939,15 +850,7 @@ d3.configurableTL = function (unit_width, padding) {
                 return converted_tick;
               };
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age, "scale_update");
             break;
 
             case "Log":
@@ -1009,15 +912,7 @@ d3.configurableTL = function (unit_width, padding) {
               break;
             }
             timeline_scale.domain([log_bounds,-1]);
-            console.log(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-            break;
+            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");            break;
 
             break;
 
@@ -1026,14 +921,8 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale = d3.scale.linear()
             .range([0,globals.max_seq_index * 1.5 * unit_width - unit_width])
             .domain([0,globals.max_seq_index * unit_width]);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
 
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
             break;
           }
           break;
@@ -1143,14 +1032,7 @@ d3.configurableTL = function (unit_width, padding) {
               case "epochs":
               timeline_scale_segments = [data.min_start_date.valueOf()];
               timeline_scale.domain([data.min_start_date,data.max_end_date]);
-              console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-              var log_event = {
-                event_time: new Date().valueOf(),
-                event_category: "scale_update",
-                event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-              }
-              globals.usage_log.push(log_event);
+              logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
 
               break;
             }
@@ -1169,15 +1051,7 @@ d3.configurableTL = function (unit_width, padding) {
               timeline_scale.domain([0,globals.max_end_age * 1.05]);
               timeline_scale_segments = d3.range(0,Math.round((globals.max_end_age + 86400000) / 86400000));
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age, "scale_update");
             break;
 
             case "Sequential":
@@ -1202,15 +1076,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,2 * Math.PI])
             .domain([0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset]);
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -1251,15 +1117,8 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale.domain([data.min_start_date.valueOf(),data.max_end_date.valueOf()]);
             break;
           }
-          console.log(tl_scale + " scale updated with domain: " + timeline_scale.domain());
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "scale_update",
-            event_detail: tl_scale + " scale updated with domain: " + timeline_scale.domain()
-          }
-          globals.usage_log.push(log_event);
-        }
+          logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
+       }
         else if (tl_representation == "Radial" && tl_scale == "Chronological") {
           //valid scale
           timeline_scale = d3.scale.linear()
@@ -1299,15 +1158,7 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale.domain([data.min_start_date.valueOf(),data.max_end_date.valueOf()]);
             break;
           }
-          console.log(tl_scale + " scale updated with domain: " + timeline_scale.domain());
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "scale_update",
-            event_detail: tl_scale + " scale updated with domain: " + timeline_scale.domain()
-          }
-          globals.usage_log.push(log_event);
-
+          logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
         }
         break;
       }
@@ -1487,14 +1338,7 @@ d3.configurableTL = function (unit_width, padding) {
         .attr("y1", 0)
         .attr("y2", height + 6);
 
-        console.log("Linear axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Linear axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Linear axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Linear" && tl_representation != "Linear")  { //remove axes for non-linear timelines
 
@@ -1575,14 +1419,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(interim_duration_axis);
 
-        console.log("Collapsed axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Collapsed axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Collapsed axis updated", "axis_update");
       }
       else if (prev_tl_scale == "Collapsed" && tl_scale != "Collapsed") { //remove Collapsed axis for non-interim_duration-scale timelines
         timeline_container.selectAll(".interim_duration_axis")
@@ -1645,14 +1482,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
 
-        console.log("Unified Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Unified Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Unified Radial axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Unified" && (tl_representation != "Radial" || tl_layout != "Unified")) {
 
@@ -1768,14 +1598,7 @@ d3.configurableTL = function (unit_width, padding) {
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_facet_cols / 2).y_pos(height / globals.num_facet_rows / 2));
 
-        console.log("Faceted Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Faceted Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Faceted Radial axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Faceted" && (tl_representation != "Radial" || tl_layout != "Faceted")) {
 
@@ -1859,14 +1682,7 @@ d3.configurableTL = function (unit_width, padding) {
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_segment_cols / 2).y_pos(height / globals.num_segment_rows / 2));
 
-        console.log("Segmented Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Segmented Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Segmented Radial axis updated", "axis_update");
 
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Segmented" && (tl_representation != "Radial" || tl_layout != "Segmented")) {
@@ -1910,14 +1726,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(calendar_axis);
 
-        console.log("Calendar axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Calendar axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Calendar axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Calendar" && tl_representation != "Calendar") {
 
@@ -1950,14 +1759,7 @@ d3.configurableTL = function (unit_width, padding) {
         var grid_axis_container = timeline_container.selectAll(".grid_axis")
         .data([d3.range(grid_min,grid_max)]);
 
-        console.log("Grid axis domain: " + grid_min + " - " + grid_max)
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Grid axis domain: " + grid_min + " - " + grid_max
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Grid axis domain: " + grid_min + " - " + grid_max, "axis_update");
 
         var grid_axis_enter = grid_axis_container.enter()
         .append("g")
@@ -1971,14 +1773,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(grid_axis.min_year(grid_min).max_year(grid_max));
 
-        console.log("Grid axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Grid axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Grid axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Grid" && tl_representation != "Grid") {
 
@@ -2024,14 +1819,7 @@ d3.configurableTL = function (unit_width, padding) {
       //define event behaviour
       timeline_event_g_enter.on("click", function (d, i){
 
-        console.log("event " + d.event_id + " clicked");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "event_click",
-          event_detail: "event " + d.event_id + " clicked"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("event " + d.event_id + " clicked", "event_click");
 
         if (!d.selected || d.selected == undefined) {
           var x_pos = d3.event.x,
@@ -2077,19 +1865,13 @@ d3.configurableTL = function (unit_width, padding) {
               y_offset: (y_pos - item_y_pos),
               x_anno_offset: 50,
               y_anno_offset: 50,
-              label_width: d3.min([d.content_text.length * 10,100])
-            }
+              label_width: d3.min([d.content_text.length * 10,100]),
+              z_index: getNextZIndex()
+            };
 
             globals.annotation_list.push(annotation);
 
-            console.log("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation: <<" + d.content_text + ">>"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
 
             selectWithParent('#event' + d.event_id + "_-1").remove();
 
@@ -2100,14 +1882,7 @@ d3.configurableTL = function (unit_width, padding) {
             d.annotation_count++;
           }
           else {
-            console.log("event " + d.event_id + " annotation supressed (shift key)");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation supressed (shift key)"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation supressed (shift key)");
           }
         }
         else {
@@ -2124,14 +1899,7 @@ d3.configurableTL = function (unit_width, padding) {
             .style("stroke","#fff")
             .style("stroke-width","0.25px");
 
-            console.log("event " + d.event_id + " annotation removed");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation removed"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation removed");
 
             //remove annotations for the event
             for(var i = 0; i <= d.annotation_count; i++) {

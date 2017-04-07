@@ -7,7 +7,7 @@
 		exports["TimelineStoryteller"] = factory(require("d3"), require("moment"), require("introJs"), require("io"));
 	else
 		root["TimelineStoryteller"] = factory(root["d3"], root["moment"], root["introJs"], root["io"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_4__, __WEBPACK_EXTERNAL_MODULE_81__, __WEBPACK_EXTERNAL_MODULE_82__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_0__, __WEBPACK_EXTERNAL_MODULE_4__, __WEBPACK_EXTERNAL_MODULE_82__, __WEBPACK_EXTERNAL_MODULE_83__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 76);
+/******/ 	return __webpack_require__(__webpack_require__.s = 77);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -247,7 +247,7 @@ function formUrl(name) {
     if (name.indexOf("demo") >= 0) {
         return "img/" + name;
     } else {
-        var raw = __webpack_require__(8)("./" + name);
+        var raw = __webpack_require__(9)("./" + name);
         var imageContents = toArrayBuffer(raw);
         var blob = new Blob([imageContents], {
             type: name.indexOf(".png") >= 0 ? "image/png" : "image/svg+xml"
@@ -333,6 +333,7 @@ module.exports = function(imageName) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var d3 = __webpack_require__(0);
+var globals = __webpack_require__(1);
 var _nextId = 0;
 
 /**
@@ -361,6 +362,22 @@ module.exports = {
      */
     nextId: function() {
         return _nextId++;
+    },
+
+    /**
+     * Logs an event that occurred
+     * @param {string} detail The detailed information for the event
+     * @param {string} [category=annotation] The category of the event
+     * @returns {void}
+     */
+    logEvent: function (detail, category) {
+        console.log(detail);
+        var log_event = {
+            event_time: new Date().valueOf(),
+            event_category: category || "annotation",
+            event_detail: detail
+        };
+        globals.usage_log.push(log_event);
     }
 };
 
@@ -394,6 +411,7 @@ var globals = __webpack_require__(1);
 
 var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
+var logEvent = utils.logEvent;
 
 module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offset,x_anno_offset,y_anno_offset,label_width,item_index,annotation_index) {
 
@@ -590,14 +608,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
 
   })
   .on("dragend", function() {
-    console.log("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
   });
 
   var resize = d3.behavior.drag()
@@ -666,14 +677,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
 
   })
   .on("dragend", function() {
-    console.log("event " + item_index + " annotation resized to " + label_width + "px");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation resized to " + label_width + "px"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation resized to " + label_width + "px");
   });
 
   leader_line_path = [
@@ -749,14 +753,7 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
   .on('click', function(){
     var corresponding_event = selectWithParent("#event_g" + item_index);
 
-    console.log("event " + item_index + " annotation removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "event " + item_index + " annotation removed"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("event " + item_index + " annotation removed");
 
     corresponding_event[0][0].__data__.selected = false;
 
@@ -840,46 +837,76 @@ module.exports = function (timeline_vis,content_text,x_pos,y_pos,x_offset,y_offs
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var globals = __webpack_require__(1);
+
+module.exports = {
+
+    /**
+     * Returns the next available z-index for an annotation
+     * @returns {number} The next z-index
+     */
+    getNextZIndex: function () {
+        var nextIndex = 0;
+        (globals.annotation_list || [])
+            .concat(globals.caption_list || [])
+            .concat(globals.image_list || [])
+            .forEach(function (item) {
+                if (item.z_index >= nextIndex) {
+                    nextIndex = item.z_index + 1;
+                }
+            });
+        return nextIndex;
+    }
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
 /**
  * Styles
  */
-__webpack_require__(68);
+__webpack_require__(69);
 
 /**
  * Libraries
  */
 var d3 = __webpack_require__(0);
 var moment = __webpack_require__(4);
-var introJsLib = __webpack_require__(81);
+var introJsLib = __webpack_require__(82);
 var introJs = typeof introJsLib === "function" ? introJsLib : introJsLib.introJs;
 
-var configurableTL = __webpack_require__(74);
-var addCaption = __webpack_require__(70);
-var addImage = __webpack_require__(71);
+var configurableTL = __webpack_require__(75);
+var addCaption = __webpack_require__(71);
+var addImage = __webpack_require__(72);
 var annotateEvent = __webpack_require__(6);
-var colorSchemes = __webpack_require__(73);
+var colorSchemes = __webpack_require__(74);
 var DEFAULT_OPTIONS = {
   showAbout: true,
   showLogo: true,
   showViewOptions: true,
   showIntro: true,
-  showImportOptions: true
+  showImportOptions: true,
+  animations: true
 };
 var time = __webpack_require__(5);
-var GIF = __webpack_require__(77).GIF;
-var gsheets = __webpack_require__(78);
-var svgImageUtils = __webpack_require__(79);
+var GIF = __webpack_require__(78).GIF;
+var gsheets = __webpack_require__(79);
+var svgImageUtils = __webpack_require__(80);
 var imageUrls = __webpack_require__(2);
 var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var logEvent = utils.logEvent;
 var globals = __webpack_require__(1);
 var gif = new GIF({
   workers: 2,
   quality: 10,
   background: '#fff',
-  workerScript: URL.createObjectURL(new Blob([__webpack_require__(65)], { type: "text/javascript" })) // Creates a script url with the contents of "gif.worker.js"
+  workerScript: URL.createObjectURL(new Blob([__webpack_require__(66)], { type: "text/javascript" })) // Creates a script url with the contents of "gif.worker.js"
 });
+var getNextZIndex = __webpack_require__(7).getNextZIndex;
 
 /**
  * Creates a new TimelineStoryteller component
@@ -903,11 +930,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var component_width = parentElement.clientWidth;
   var component_height = parentElement.clientHeight;
 
-  this.options = DEFAULT_OPTIONS;
+  this.options = JSON.parse(JSON.stringify(DEFAULT_OPTIONS)); // Simple clone
 
   globals.serverless = isServerless;
   if (typeof isServerless === "undefined" || isServerless === false) {
-    globals.socket = __webpack_require__(82)({transports:['websocket']});
+    globals.socket = __webpack_require__(83)({transports:['websocket']});
   }
 
   if (globals.socket) {
@@ -936,7 +963,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   window.onload = function () {
-    console.log("Initializing Timeline Storyteller");
+    logEvent("Initializing Timeline Storyteller");
 
     if (globals.socket) {
       globals.socket.emit('hello_from_client', { hello: 'server' })
@@ -944,13 +971,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth(),
     globals.height = component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth()
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "initialize",
-      event_detail: "Initializing Timeline Storyteller"
-    }
-    globals.usage_log.push(log_event);
   }
 
   window.onscroll = function (e) {
@@ -1000,14 +1020,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.legend_x = d3.select(this).attr("x");
     globals.legend_y = d3.select(this).attr("y");
 
-    console.log("legend moved to: " + globals.legend_x + ", " + globals.legend_y);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "legend",
-      event_detail: "legend moved to: " + globals.legend_x + ", " + globals.legend_y
-    }
-    globals.usage_log.push(log_event);
+    logEvent("legend moved to: " + globals.legend_x + ", " + globals.legend_y, "legend");
   });
 
   var filterDrag = d3.behavior.drag()
@@ -1047,14 +1060,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     var filter_x = selectWithParent("#filter_div").style("left");
     var filter_y = selectWithParent("#filter_div").style("top");
 
-    console.log("filter options moved to: " + filter_x + ", " + filter_y);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "filter",
-      event_detail: "filter options moved to: " + filter_x + ", " + filter_y
-    }
-    globals.usage_log.push(log_event);
+    logEvent("filter options moved to: " + filter_x + ", " + filter_y, "filter");
   });
 
   function getScrollbarWidth() {
@@ -1091,7 +1097,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       //recover legend
       selectWithParent(".legend")
       .transition()
-      .duration(1200)
+      .duration(that.options.animations ? 1200: 0)
       .attr("x", 0)
       .attr("y", 0);
 
@@ -1160,14 +1166,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.current_scene_index = 0;
     }
-    console.log("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "playback",
-      event_detail: "scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length, "playback");
 
     changeScene(globals.current_scene_index);
   }
@@ -1182,14 +1181,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.current_scene_index = globals.scenes.length - 1;
     }
-    console.log("scene: " + globals.current_scene_index + " of " + globals.scenes.length);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "playback",
-      event_detail: "scene: " + globals.current_scene_index + " of " + globals.scenes.length
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene: " + globals.current_scene_index + " of " + globals.scenes.length, "playback");
 
     changeScene(globals.current_scene_index);
   }
@@ -1298,14 +1290,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent("#image_div").style("display","none");
     selectWithParent("#export_div").style("top",-185 + "px");
 
-    console.log("open import panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "open import panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open import panel", "load");
 
     if (selectWithParent("#import_div").style("top") != -210 + "px") {
       selectWithParent("#import_div").style("top",-210 + "px");
@@ -1340,14 +1325,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   })
   .on('click', function() {
 
-    console.log("open caption dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "open caption dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open caption dialog", "annotation");
 
     selectWithParent("#filter_div").style("display","none");
     selectWithParent("#image_div").style("display","none");
@@ -1372,14 +1350,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .style("margin-bottom","0px")
   .on('click', function() {
 
-    console.log("open image dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "open image dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open image dialog", "annotation");
 
     selectWithParent("#filter_div").style("display","none");
     selectWithParent("#caption_div").style("display","none");
@@ -1404,14 +1375,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', clearCanvas);
 
   function clearCanvas() {
-    console.log("clear annotations");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "clear annotations"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("clear annotations", "annotation");
 
     main_svg.selectAll(".timeline_caption").remove();
 
@@ -1445,14 +1409,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     title: "Filter"
   })
   .on('click', function () {
-    console.log("open filter dialog");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "filter",
-      event_detail: "open filter dialog"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("open filter dialog", "filter");
 
     if (d3.select(this).attr("class") == "img_btn_enabled"){
       selectWithParent("#caption_div").style("display","none");
@@ -1489,14 +1446,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#export_div").style("top",-185 + "px");
 
-    console.log("hide export panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "hide export panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("hide export panel", "export");
   });
 
   control_panel.append("hr")
@@ -1524,14 +1474,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent("#image_div").style("display","none");
     selectWithParent("#import_div").style("top",-210 + "px");
 
-    console.log("show export panel");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "export",
-      event_detail: "show export panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("show export panel", "export");
 
     if (selectWithParent("#export_div").style("top") != -185 + "px") {
       selectWithParent("#export_div").style("top",-185 + "px");
@@ -1564,14 +1507,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       export_formats.selectAll(".img_btn_disabled")
       .attr("class","img_btn_enabled")
 
-      console.log("valid email address: " + globals.email_address);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "valid email address: " + globals.email_address
-      }
-      globals.usage_log.push(log_event);
+      logEvent("valid email address: " + globals.email_address, "export");
     }
     else {
       export_formats.selectAll(".img_btn_enabled")
@@ -1594,14 +1530,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (globals.opt_out || globals.email_address != "") {
       selectAllWithParent('foreignObject').remove();
 
-      console.log("exporting main_svg as PNG");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting main_svg as PNG"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("exporting main_svg as PNG", "export");
 
       svgImageUtils.saveSvgAsPng(document.querySelector(".timeline_storyteller #main_svg"), "timeline_image.png", {backgroundColor: "white"});
     }
@@ -1623,14 +1552,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (globals.opt_out || globals.email_address != "") {
       selectAllWithParent('foreignObject').remove();
 
-      console.log("exporting main_svg as SVG");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "exporting main_svg as SVG"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("exporting main_svg as SVG", "export");
 
       svgImageUtils.saveSvg(document.querySelector(".timeline_storyteller #main_svg"), "timeline_image.svg", {backgroundColor: "white"});
     }
@@ -1656,14 +1578,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var gif_scenes = globals.scenes;
       if (gif_scenes.length > 0) {
 
-        console.log("exporting story as animated GIF");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "export",
-          event_detail: "exporting story as animated GIF"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("exporting story as animated GIF", "export");
 
         gif_scenes.sort(function(a, b) {
           return parseFloat(a.s_order) - parseFloat(b.s_order);
@@ -1682,14 +1597,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
 
-        console.log("exporting main_svg as GIF");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "export",
-          event_detail: "exporting main_svg as GIF"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("exporting main_svg as GIF", "export");
 
         svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), -1, {backgroundColor: "white"});
 
@@ -1722,14 +1630,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       selectAllWithParent('foreignObject').remove();
 
-      console.log('exporting story as .cdc');
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: 'exporting story as .cdc'
-      }
-      globals.usage_log.push(log_event);
+      logEvent('exporting story as .cdc', "export");
 
       globals.timeline_story = {
         'timeline_json_data':globals.timeline_json_data,
@@ -1791,14 +1692,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('change', function() {
     if (!globals.opt_out) {
 
-      console.log("opting out of sharing content");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "opting out of sharing"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("opting out of sharing content", "export");
 
       globals.opt_out = true;
       export_formats.selectAll(".img_btn_disabled")
@@ -1807,14 +1701,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     else {
       globals.opt_out = false;
 
-      console.log("opting into sharing content");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "opting into of sharing"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("opting into sharing content", "export");
 
       export_formats.selectAll(".img_btn_enabled")
       .attr("class","img_btn_disabled")
@@ -1902,14 +1789,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .style('margin-top','5px')
   .on('click', function() {
 
-    console.log("hiding import panel")
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "hiding import panel"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("hiding import panel", "load");
 
     selectWithParent("#import_div").style("top",-210 + "px");
     selectWithParent("#gdocs_info").style("height",0 + "px");
@@ -1946,14 +1826,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.source_format = 'demo_json';
         setTimeout(function () {
 
-          console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "load",
-            event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
 
           loadTimeline();
         },500);
@@ -2023,16 +1896,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source = URL.createObjectURL(blob);
       globals.source_format = 'json';
       setTimeout(function () {
-
-        console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
-
+        logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
         loadTimeline();
       },500);
     };
@@ -2070,16 +1934,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source = URL.createObjectURL(blob);
       globals.source_format = 'csv';
       setTimeout(function () {
-
-        console.log("loading " + globals.source + " (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading " + globals.source + " (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
-
+        logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
         loadTimeline();
       },500);
     };
@@ -2149,14 +2004,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on("click", function () {
 
       globals.source = 'demoStory';
-      console.log('demo story source');
 
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "load",
-        event_detail: 'demo story source'
-      }
-      globals.usage_log.push(log_event);
+      logEvent('demo story source', "load");
 
       globals.source_format = 'demo_story';
       selectWithParent("#timeline_metadata").style('display','none');
@@ -2200,28 +2049,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.reader.onload = function(e) {
       var contents = e.target.result;
-      var blob = new Blob([contents], {type: "application/json"});
-      globals.source = URL.createObjectURL(blob);
-      console.log('story source: ' + globals.source);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "load",
-        event_detail: 'story source: ' + globals.source
-      }
-      globals.usage_log.push(log_event);
-
-      globals.source_format = 'story';
-      selectWithParent("#timeline_metadata").style('display','none');
-      selectAllWithParent(".gdocs_info_element").style("display","none");
-      selectWithParent("#import_div").style("top",-210 + "px");
-      selectWithParent("#gdocs_info").style("height",0 + "px");
-      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
-      selectWithParent("#gdoc_worksheet_title_input").property("value","");
-
-      setTimeout(function () {
-        loadTimeline();
-      },500);
+      that.loadStory(contents);
     };
   });
 
@@ -2285,14 +2113,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.gdoc_key = globals.gdoc_key.replace(/.*\/d\//g,'');
     globals.gdoc_key = globals.gdoc_key.replace(/\/.*$/g,'');
     globals.gdoc_worksheet = selectWithParent("#gdoc_worksheet_title_input").property("value");
-    console.log("gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\"");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "load",
-      event_detail: "gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\""
-    }
-    globals.usage_log.push(log_event);
+    logEvent("gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\"", "load");
 
     globals.source_format = 'gdoc';
 
@@ -2577,14 +2398,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#caption_div").style("display","none");
     var caption = selectWithParent("#add_caption_text_input").property("value");
-    console.log("caption added: \"" + caption + "\"");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption added: <<" + caption + ">>"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption added: \"" + caption + "\"", "annotation");
 
     var caption_list_item = {
       id: "caption" + globals.caption_index,
@@ -2592,7 +2406,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       caption_text: caption,
       x_rel_pos: 0.5,
       y_rel_pos: 0.25,
-      caption_width: d3.min([caption.length * 10,100])
+      caption_width: d3.min([caption.length * 10,100]),
+      z_index: getNextZIndex()
     };
 
     globals.caption_list.push(caption_list_item);
@@ -2624,14 +2439,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   .on('click', function() {
     selectWithParent("#image_div").style("display","none");
     var image_url = selectWithParent("#add_image_link").property("value");
-    console.log("image " + globals.image_index + " added: <<" + image_url + ">>");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "image " + globals.image_index + " added: <<" + image_url + ">>"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
 
     var new_image = new Image();
     new_image.name = image_url;
@@ -2640,27 +2448,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     new_image.src = image_url;
 
     function loadFailure() {
-      console.log("'" + this.name + "' failed to load.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "annotation",
-        event_detail: "'" + this.name + "' failed to load."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("'" + this.name + "' failed to load.", "annotation");
 
       return true;
     }
 
     function getWidthAndHeight() {
-      console.log("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "annotation",
-        event_detail: "image" + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
 
       var image_width = this.width,
       image_height = this.height,
@@ -2686,6 +2480,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         i_height: image_height,
         x_rel_pos: 0.5,
         y_rel_pos: 0.25,
+        z_index: getNextZIndex()
       };
 
       globals.image_list.push(image_list_item);
@@ -2856,14 +2651,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           if (!globals.playback_mode) {
             globals.playback_mode = true;
 
-            console.log("playback mode on");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "playback",
-              event_detail: "playback mode on"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("playback mode on", "playback");
 
             selectWithParent("#record_scene_btn").attr("class","img_btn_disabled");
             selectWithParent("#caption_div").style("display","none");
@@ -2884,14 +2672,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           else {
             globals.playback_mode = false;
 
-            console.log("playback mode off");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "playback",
-              event_detail: "playback mode off"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("playback mode off", "playback");
 
             selectWithParent("#record_scene_btn").attr("class","img_btn_enabled");
             selectWithParent("#option_div").style("top", 10 + "px");
@@ -2991,14 +2772,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -3015,14 +2789,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             unique_values.forEach(function (d) {
               unique_data.push(unique_values.get(d));
             });
-            console.log(unique_data.length + " unique events");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "preprocessing",
-              event_detail: unique_data.length + " unique events"
-            }
-            globals.usage_log.push(log_event);
+            logEvent(unique_data.length + " unique events", "preprocessing");
 
             processTimeline(unique_data);
           });
@@ -3038,14 +2805,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -3079,14 +2839,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           unique_values.forEach(function (d) {
             unique_data.push(unique_values.get(d));
           });
-          console.log(unique_data.length + " unique events");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "preprocessing",
-            event_detail: unique_data.length + " unique events"
-          }
-          globals.usage_log.push(log_event);
+          logEvent(unique_data.length + " unique events", "preprocessing");
 
           processTimeline(unique_data);
         }
@@ -3184,14 +2937,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
               unique_values.forEach(function (d) {
                 unique_data.push(unique_values.get(d));
               });
-              console.log(unique_data.length + " unique events");
-
-              var log_event = {
-                event_time: new Date().valueOf(),
-                event_category: "preprocessing",
-                event_detail: unique_data.length + " unique events"
-              }
-              globals.usage_log.push(log_event);
+              logEvent(unique_data.length + " unique events", "preprocessing");
 
               updateNavigationStepper();
               processTimeline(unique_data);
@@ -3285,14 +3031,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             unique_values.forEach(function (d) {
               unique_data.push(unique_values.get(d));
             });
-            console.log(unique_data.length + " unique events");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "preprocessing",
-              event_detail: unique_data.length + " unique events"
-            }
-            globals.usage_log.push(log_event);
+            logEvent(unique_data.length + " unique events", "preprocessing");
 
             updateNavigationStepper();
             processTimeline(unique_data);
@@ -3384,14 +3123,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     })
 
-    console.log("# categories: " + globals.num_categories);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "# categories: " + globals.num_categories
-    }
-    globals.usage_log.push(log_event);
+    logEvent("# categories: " + globals.num_categories, "preprocessing");
 
     //assign colour labels to categories if # categories < 12
     if (globals.num_categories <= 20 && globals.num_categories >= 11) {
@@ -3416,14 +3148,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
     if (globals.use_custom_palette) {
       globals.categories.range(globals.color_palette);
-      console.log("custom palette: " + globals.categories.range())
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "color palette",
-        event_detail: "custom palette: " + globals.categories.range()
-      }
-      globals.usage_log.push(log_event);
+      logEvent("custom palette: " + globals.categories.range(), "color palette");
     }
 
     filter_div.append('input')
@@ -3444,14 +3169,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on('click', function() {
       selectWithParent("#filter_div").style("display","none");
 
-      console.log("hide filter panel");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "export",
-        event_detail: "hide filter panel"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("hide filter panel", "export");
     });
 
     filter_div.append("text")
@@ -3522,14 +3240,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       selectWithParent("#filter_div").style("display", "inline");
 
-      console.log("filter type changed: " + this.value);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "filter",
-        event_detail: "filter type changed: " + this.value
-      }
-      globals.usage_log.push(log_event);
+      logEvent("filter type changed: " + this.value, "filter");
 
       globals.filter_type = this.value;
       if (globals.filter_type == "Hide") {
@@ -3648,14 +3359,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
     globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
 
-    console.log("# facets: " + globals.num_facets);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "# facets: " + globals.num_facets
-    }
-    globals.usage_log.push(log_event);
+    logEvent("# facets: " + globals.num_facets, "preprocessing");
 
     var facet_filter = filter_div.append("div")
     .attr('class','filter_div_section');
@@ -3895,13 +3599,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         temp_palette = undefined;
         globals.use_custom_palette = true;
 
-        console.log("category " + i + ": " + d + " now uses " + this.value);
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "color_palette_change",
-          event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
-        }
-        globals.usage_log.push(log_event);
+        logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
       })
 
       category_metadata_element.append('span')
@@ -3939,23 +3637,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("scale change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "scale_change",
-      event_detail: "scale change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scale change: " + this.value, "scale_change");
 
     determineSize(globals.active_data,this.value,timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
     main_svg.transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
-    main_svg.call(timeline_vis.duration(1200)
+    main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0)
     .tl_scale(this.value)
     .height(globals.height)
     .width(globals.width));
@@ -3973,23 +3664,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("layout change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "layout_change",
-      event_detail: "layout change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("layout change: " + this.value, "layout_change");
 
     determineSize(globals.active_data,timeline_vis.tl_scale(),this.value,timeline_vis.tl_representation());
 
     main_svg.transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
-    main_svg.call(timeline_vis.duration(1200)
+    main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0)
     .tl_layout(this.value)
     .height(globals.height)
     .width(globals.width));
@@ -4007,14 +3691,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     clearCanvas();
 
-    console.log("representation change: " + this.value);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "representation_change",
-      event_detail: "representation change: " + this.value
-    }
-    globals.usage_log.push(log_event);
+    logEvent("representation change: " + this.value, "representation_change");
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (this.value == "Grid"){
@@ -4031,11 +3708,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     determineSize(globals.active_data,timeline_vis.tl_scale(),timeline_vis.tl_layout(),this.value);
 
     main_svg.transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
-    main_svg.call(timeline_vis.duration(1200)
+    main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0)
     .tl_representation(this.value)
     .height(globals.height)
     .width(globals.width));
@@ -4065,14 +3742,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.record_width = globals.width;
     globals.record_height = globals.height;
 
-    console.log("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "record",
-      event_detail: "scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
 
     var scene_captions = [];
     var scene_images = [];
@@ -4166,7 +3836,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .remove();
 
     var navigation_step_update = navigation_step.transition()
-    .duration(1000);
+    .duration(that.options.animations ? 1000: 0);
 
     var navigation_step_enter = navigation_step.enter()
     .append('g')
@@ -4263,14 +3933,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent('#frame' + d.s_order).remove();
       selectAllWithParent(".frame_hover").remove();
       //delete current scene unless image or caption div is open
-      console.log("scene " + (d.s_order + 1) + " deleted.");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "deletion",
-        event_detail: "scene " + (d.s_order + 1) + " deleted."
-      }
-      globals.usage_log.push(log_event);
+      logEvent("scene " + (d.s_order + 1) + " deleted.", "deletion");
 
       for (var j = 0; j < globals.scenes.length; j++) {
         if (globals.scenes[j].s_order == d.s_order) {
@@ -4409,14 +4072,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     //set a delay for annotations and captions based on whether the scale, layout, or representation changes
     if (timeline_vis.tl_scale() != scene.s_scale || timeline_vis.tl_layout() != scene.s_layout || timeline_vis.tl_representation() != scene.s_representation) {
-      scene_delay = 1200 * 4;
+      scene_delay = that.options.animations ? 1200 * 4 : 0;
 
       //how big is the new scene?
       determineSize(globals.active_data,scene.s_scale,scene.s_layout,scene.s_representation);
 
       //resize the main svg to accommodate the scene
       main_svg.transition()
-      .duration(1200)
+      .duration(that.options.animations ? 1200: 0)
       .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
       .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
@@ -4480,7 +4143,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     if (scene_filter_set_length != globals.filter_set_length) {
       globals.filter_set_length = scene_filter_set_length;
-      scene_delay = 1200 * 4;
+      scene_delay = that.options.animations ? 1200 * 4 : 0;
     }
 
     globals.selected_categories = scene.s_categories;
@@ -4515,7 +4178,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     //where is the legend in the scene?
     selectWithParent(".legend")
     .transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .style("z-index", 1)
     .attr("x", scene.s_legend_x)
     .attr("y", scene.s_legend_y);
@@ -4542,70 +4205,84 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .style("stroke","#fff")
     .style("stroke-width","0.25px");
 
-    //delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
-    setTimeout(function () {
+    function loadAnnotations() {
 
       //is the legend expanded in this scene?
+      globals.legend_expanded = scene.s_legend_expanded;
       if (scene.s_legend_expanded) {
-        globals.legend_expanded = true;
         expandLegend();
       }
       else {
-        globals.legend_expanded = false;
         collapseLegend();
       }
 
-      //restore captions that are in the scene
-      globals.caption_list.forEach( function (caption) {
-        var i = 0;
-        while (i < scene.s_captions.length && scene.s_captions[i].caption_id != caption.id) {
-          i++;
-        }
-        if (i < scene.s_captions.length) {
-          // caption is in the scene
-          addCaption(caption.caption_text,caption.caption_width * 1.1,caption.x_rel_pos,caption.y_rel_pos,caption.c_index);
-        }
-      });
+      /**
+       * Creates a mapper, that adds a type property
+       * @param {string} type The type of the item
+       */
+      function mapWithType(type) {
+        return function (item) {
+          return {
+            type: type,
+            item: item
+          };
+        };
+      }
 
-      //restore images that are in the scene
-      globals.image_list.forEach( function (image) {
-        var i = 0;
-        while (i < scene.s_images.length && scene.s_images[i].image_id != image.id) {
-          i++;
-        }
-        if (i < scene.s_images.length) {
-          // image is in the scene
-          addImage(timeline_vis,image.i_url,image.x_rel_pos,image.y_rel_pos,image.i_width,image.i_height,image.i_index);
-        }
-      });
+      var captionAnnos = globals.caption_list.map(mapWithType("caption"));
+      var imageAnnos = globals.image_list.map(mapWithType("image"));
+      var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
 
-      //restore annotations that are in the scene
-      globals.annotation_list.forEach( function (annotation) {
-        var i = 0;
-        while (i < scene.s_annotations.length && scene.s_annotations[i].annotation_id != annotation.id) {
-          i++;
-        }
-        if (i < scene.s_annotations.length) {
-          // annotation is in the scene
+      // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
+      // annotations that had a "type" property
 
-          var item = selectWithParent("#event_g" + annotation.item_index).select("rect.event_span")[0][0].__data__,
-              item_x_pos = 0,
-              item_y_pos = 0;
+      // These are are technically annotations, just different types, so concat them all together
+      captionAnnos.concat(imageAnnos).concat(textAnnos)
+        .filter(function(anno) { // Filter out annotations not on this scene
 
-          if (scene.s_representation != "Radial") {
-            item_x_pos = item.rect_x_pos + item.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
-            item_y_pos = item.rect_y_pos + item.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+          // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
+          var sceneList = scene["s_" + anno.type + "s"];
+
+          for (var i = 0; i < sceneList.length; i++) {
+
+            // Basically the id property in the scene, so image_id or caption_id or annotation_id
+            if (sceneList[i][anno.type + "_id"] == anno.item.id) {
+              return true;
+            }
           }
-          else {
-            item_x_pos = item.path_x_pos + item.path_offset_x + globals.padding.left;
-            item_y_pos = item.path_y_pos + item.path_offset_y + globals.padding.top;
+        })
+
+        // We sort the annotations by z-order, and add the annotations in that order
+        // this is important cause with svgs, the order in which elements are added dictates their z-index
+        .sort(function(a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
+
+        // Iterate through all of our annotations
+        .forEach(function(anno) {
+          var item = anno.item;
+          if (anno.type === "caption") {
+              addCaption(item.caption_text,item.caption_width * 1.1,item.x_rel_pos,item.y_rel_pos,item.c_index);
+          } else if (anno.type === "image") {
+              addImage(timeline_vis,item.i_url,item.x_rel_pos,item.y_rel_pos,item.i_width,item.i_height,item.i_index);
+          } else {
+              var itemEle = selectWithParent("#event_g" + item.item_index).select("rect.event_span")[0][0].__data__,
+                  item_x_pos = 0,
+                  item_y_pos = 0;
+
+              if (scene.s_representation != "Radial") {
+                item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
+                item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+              }
+              else {
+                item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
+                item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
+              }
+
+              annotateEvent(timeline_vis,item.content_text,item_x_pos,item_y_pos,item.x_offset,item.y_offset,item.x_anno_offset,item.y_anno_offset,item.label_width,item.item_index,item.count);
+
+              selectWithParent('#event' + item.item_index + "_" + item.count).transition().duration(that.options.animations ? 50: 0).style('opacity',1);
+
           }
-
-          annotateEvent(timeline_vis,annotation.content_text,item_x_pos,item_y_pos,annotation.x_offset,annotation.y_offset,annotation.x_anno_offset,annotation.y_anno_offset,annotation.label_width,annotation.item_index,annotation.count);
-
-          selectWithParent('#event' + annotation.item_index + "_" + annotation.count).transition().duration(50).style('opacity',1);
-        }
-      });
+        });
 
       //toggle selected events in the scene
       main_svg.selectAll(".timeline_event_g")[0].forEach( function (event) {
@@ -4646,7 +4323,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       main_svg.style('visibility','visible');
 
-    },scene_delay);
+    }
+
+    //delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
+    if (scene_delay > 0) {
+      setTimeout(loadAnnotations, scene_delay);
+    } else {
+      loadAnnotations();
+    }
 
   };
 
@@ -4685,29 +4369,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       globals.range_text = format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
       ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf();
-
-      console.log("range: " + globals.range_text);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "preprocessing",
-        event_detail: "range: " + globals.range_text
-      }
-      globals.usage_log.push(log_event);
-
     }
     else {
       globals.range_text = moment(data.min_start_date).from(moment(data.max_end_date),true) +
       ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD');
-      console.log("range: " + globals.range_text);
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "preprocessing",
-        event_detail: "range: " + globals.range_text
-      }
-      globals.usage_log.push(log_event);
     }
+
+    logEvent("range: " + globals.range_text, "preprocessing");
 
     //create a nested data structure to contain faceted data
     globals.timeline_facets = d3.nest()
@@ -4738,35 +4406,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d.duration;
     });
 
-    console.log("max event duration: " + data.max_duration + " " + globals.date_granularity);
+    logEvent("max event duration: " + data.max_duration + " " + globals.date_granularity, "preprocessing");
 
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "max event duration: " + data.max_duration + " " + globals.date_granularity
-    }
-    globals.usage_log.push(log_event);
-
-    console.log("min event duration: " + data.min_duration + " " + globals.date_granularity);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "min event duration: " + data.min_duration + " " + globals.date_granularity
-    }
-    globals.usage_log.push(log_event);
+    logEvent("min event duration: " + data.min_duration + " " + globals.date_granularity, "preprocessing");
 
     //determine the granularity of segments
     globals.segment_granularity = getSegmentGranularity(data.min_start_date,data.max_end_date);
 
-    console.log("segment granularity: " + globals.segment_granularity);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segment granularity: " + globals.segment_granularity
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segment granularity: " + globals.segment_granularity, "preprocessing");
 
     var segment_list = getSegmentList(data.min_start_date,data.max_end_date);
 
@@ -4774,14 +4421,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d;
     }));
 
-    console.log("segments (" + globals.segments.domain().length + "): " + globals.segments.domain());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segments (" + globals.segments.domain().length + "): " + globals.segments.domain()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
 
     globals.num_segments = globals.segments.domain().length;
     globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
@@ -4822,7 +4462,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     determineSize(data,timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
     main_svg.transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
@@ -4830,7 +4470,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.global_max_end_date = data.max_end_date;
 
     main_svg.datum(data)
-    .call(timeline_vis.duration(1200).height(globals.height).width(globals.width));
+    .call(timeline_vis.duration(that.options.animations ? 1200: 0).height(globals.height).width(globals.width));
 
     if (isStory(globals.source_format)) {
 
@@ -4879,28 +4519,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         if (globals.legend_expanded) {
 
-          console.log("legend minimized");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "legend",
-            event_detail: "legend minimized"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("legend minimized", "legend");
 
           globals.legend_expanded = false;
           collapseLegend();
         }
         else {
 
-          console.log("legend expanded");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "legend",
-            event_detail: "legend expanded"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("legend expanded", "legend");
 
           globals.legend_expanded = true;
           expandLegend();
@@ -4927,14 +4553,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.legend.on('mouseover', function(d,i){
         var hovered_legend_element = d;
 
-        console.log("legend hover: " + hovered_legend_element);
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "legend",
-          event_detail: "legend hover: " + hovered_legend_element
-        }
-        globals.usage_log.push(log_event);
+        logEvent("legend hover: " + hovered_legend_element, "legend");
 
         d3.select(this).select('rect').style('stroke','#f00');
         d3.select(this).select('text').style('font-weight','bolder')
@@ -5049,15 +4668,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       temp_palette = undefined;
       globals.use_custom_palette = true;
 
-      main_svg.call(timeline_vis.duration(1200));
+      main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0));
 
-      console.log("category " + i + ": " + d + " now uses " + this.value);
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "color_palette_change",
-        event_detail: "color palette change: category " + i + ": " + d + " now uses " + this.value
-      }
-      globals.usage_log.push(log_event);
+      logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
     });
   };
 
@@ -5065,34 +4678,34 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     selectWithParent(".legend")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     selectWithParent(".legend").select(".legend_rect")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('height',globals.track_height * (globals.num_categories + 1))
     .attr('width', globals.max_legend_item_width + 5 + globals.unit_width + 10)
     selectWithParent(".legend").select("#legend_expand_btn")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('x',globals.max_legend_item_width + 5 + globals.unit_width - 10);
     selectWithParent(".legend").select(".legend_title")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('dx','0em')
     .attr('transform', 'translate(5,0)rotate(0)');
     selectWithParent(".legend").selectAll(".legend_element_g text")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .style("fill-opacity", "1")
     .style("display", "inline")
     .attr('transform', 'translate(0,-35)');
     selectWithParent(".legend").selectAll(".legend_element_g rect")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('transform', 'translate(0,-35)');
     selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('transform', 'translate(' + globals.legend_spacing + ',-35)');
   };
 
@@ -5100,35 +4713,35 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     selectWithParent(".legend")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .style("z-index", 1)
     selectWithParent(".legend").select(".legend_rect")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('height', 35 + globals.track_height * (globals.num_categories + 1))
     .attr('width', 25)
     selectWithParent(".legend").select("#legend_expand_btn")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('x',25);
     selectWithParent(".legend").select(".legend_title")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('dx','-4.3em')
     .attr('transform', 'translate(0,0)rotate(270)');
     selectWithParent(".legend").selectAll(".legend_element_g text")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .style("fill-opacity", "0")
     .style("display", "none")
     .attr('transform', 'translate(0,0)');
     selectWithParent(".legend").selectAll(".legend_element_g rect")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('transform', 'translate(0,0)');
     selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
     .transition()
-    .duration(500)
+    .duration(that.options.animations ? 500: 0)
     .attr('transform', 'translate(' + globals.legend_spacing + ',0)');
 
   };
@@ -5698,14 +5311,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   //resizes the timeline container based on combination of scale, layout, representation
   function determineSize(data, scale, layout, representation) {
 
-    console.log("timeline: " + scale + " - " + layout + " - " + representation);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "sizing",
-      event_detail: "timeline: " + scale + " - " + layout + " - " + representation
-    }
-    globals.usage_log.push(log_event);
+    logEvent("timeline: " + scale + " - " + layout + " - " + representation, "sizing");
 
     switch (representation) {
 
@@ -5718,14 +5324,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Unified":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = globals.num_tracks * globals.track_height + 1.5 * globals.track_height + globals.margin.top + globals.margin.bottom;
@@ -5734,14 +5333,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Faceted":
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
@@ -5750,14 +5342,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Segmented":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_segments + globals.margin.top + globals.margin.bottom;
@@ -5769,28 +5354,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         if (layout == "Faceted") {
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5801,14 +5372,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         if (layout == "Unified") {
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = globals.num_tracks * globals.track_height + 1.5 * globals.track_height + globals.margin.top + globals.margin.bottom;
@@ -5816,28 +5380,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         else if (layout == "Faceted") {
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.max_num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_facets + globals.margin.top + globals.margin.bottom;
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5855,14 +5405,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5892,14 +5435,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -5923,14 +5459,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Unified":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.centre_radius = d3.max([50,(effective_size - ((globals.num_tracks + 2) * 2 * globals.track_height)) / 2]);
           globals.width = (2 * globals.centre_radius + (globals.num_tracks + 2) * 2 * globals.track_height) + globals.margin.left + globals.margin.right;
@@ -5959,14 +5488,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           case "Segmented":
           //justifiable
           assignTracks(data,[],layout);
-          console.log("# tracks: " + globals.num_tracks);
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# tracks: " + globals.num_tracks
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# tracks: " + globals.num_tracks, "sizing");
 
           globals.centre_radius = 50;
           var estimated_segment_width =  (2 * globals.centre_radius + (globals.num_tracks + 2) * 2 * globals.track_height);
@@ -5988,14 +5510,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           //justifiable
           processFacets(data);
-          console.log("# within-facet tracks: " + (globals.max_num_tracks + 1));
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "sizing",
-            event_detail: "# within-facet tracks: " + (globals.max_num_tracks + 1)
-          }
-          globals.usage_log.push(log_event);
+          logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.centre_radius = 50;
           var estimated_facet_width = (2 * globals.centre_radius + (globals.max_num_tracks + 2) * 2 * globals.track_height);
@@ -6011,14 +5526,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -6057,14 +5565,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
         else {
           //not justifiable
-          console.log("scale-layout-representation combination not possible/justifiable");
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "error",
-            event_detail: "scale-layout-representation combination not possible/justifiable"
-          }
-          globals.usage_log.push(log_event);
+          logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
           globals.width = 0;
           globals.height = 0;
@@ -6099,14 +5600,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -6136,14 +5630,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -6235,14 +5722,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
@@ -6259,28 +5739,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       else {
         //not justifiable
-        console.log("scale-layout-representation combination not possible/justifiable");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "error",
-          event_detail: "scale-layout-representation combination not possible/justifiable"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("scale-layout-representation combination not possible/justifiable", "error");
 
         globals.width = 0;
         globals.height = 0;
       }
       break;
     }
-    console.log("dimensions: " + globals.width + " (W) x " + globals.height  + " (H)");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "sizing",
-      event_detail: "dimensions: " + globals.width + " (W) x " + globals.height  + " (H)"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("dimensions: " + globals.width + " (W) x " + globals.height  + " (H)", "sizing");
 
   };
 
@@ -6618,25 +6084,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
 
     if (mismatches [0].length != 0) {
-      console.log(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "Emphasize",
-        event_detail: matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events"
-      }
-      globals.usage_log.push(log_event);
-
+      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "Emphasize");
     }
     else {
-      console.log(matches[0].length + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "Emphasize",
-        event_detail: matches[0].length + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " events", "Emphasize");
     }
 
     globals.all_data.forEach( function (item) {
@@ -6647,7 +6098,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     });
 
-    main_svg.call(timeline_vis.duration(1200));
+    main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0));
 
     globals.prev_active_event_list = globals.active_event_list;
 
@@ -6700,24 +6151,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
 
     if (mismatches [0].length != 0) {
-      console.log(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "remove",
-        event_detail: matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
     }
     else {
-      console.log(matches[0].length + " events");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "remove",
-        event_detail: matches[0].length + " events"
-      }
-      globals.usage_log.push(log_event);
+      logEvent(matches[0].length + " events", "remove");
     }
 
     measureTimeline(globals.active_data);
@@ -6748,14 +6185,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
     globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
 
-    console.log("num facets: " + globals.num_facet_cols);
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "remove",
-      event_detail: "num facets: " + globals.num_facet_cols
-    }
-    globals.usage_log.push(log_event);
+    logEvent("num facets: " + globals.num_facet_cols, "remove");
 
     if (timeline_vis.tl_layout() == "Segmented") {
       if (timeline_vis.tl_representation() == "Grid"){
@@ -6775,14 +6205,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return d;
     }));
 
-    console.log("segments (" + globals.segments.domain().length + "): " + globals.segments.domain());
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "preprocessing",
-      event_detail: "segments (" + globals.segments.domain().length + "): " + globals.segments.domain()
-    }
-    globals.usage_log.push(log_event);
+    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
 
     globals.num_segments = globals.segments.domain().length;
     globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
@@ -6790,21 +6213,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     determineSize(globals.active_data,timeline_vis.tl_scale(),timeline_vis.tl_layout(),timeline_vis.tl_representation());
 
-    console.log("num facets after sizing: " + globals.num_facet_cols)
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "remove",
-      event_detail: "num facets after sizing: " + globals.num_facet_cols
-    }
-    globals.usage_log.push(log_event);
+    logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
 
     main_svg.transition()
-    .duration(1200)
+    .duration(that.options.animations ? 1200: 0)
     .attr("width", d3.max([globals.width, (component_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
     .attr("height", d3.max([globals.height, (component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
 
-    main_svg.call(timeline_vis.duration(1200)
+    main_svg.call(timeline_vis.duration(that.options.animations ? 1200: 0)
     .height(globals.height)
     .width(globals.width));
 
@@ -7016,19 +6432,39 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.source_format = 'json_parsed';
       setTimeout(function () {
 
-        console.log("loading (" + globals.source_format + ")")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "load",
-          event_detail: "loading (" + globals.source_format + ")"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("loading (" + globals.source_format + ")", "load");
 
         loadTimeline();
       },500);
   };
 
+  /**
+   * Loads a story json object
+   * @param {string} story The json stroy object
+   * @param {number} [delay=500] The default delay for loading timeline storyteller
+   */
+  this.loadStoryInternal = function(story, delay) {
+      var blob = new Blob([story], {type: "application/json"});
+      globals.source = URL.createObjectURL(blob);
+      logEvent('story source: ' + globals.source, "load");
+
+      globals.source_format = 'story';
+      selectWithParent("#timeline_metadata").style('display','none');
+      selectAllWithParent(".gdocs_info_element").style("display","none");
+      selectWithParent("#import_div").style("top",-210 + "px");
+      selectWithParent("#gdocs_info").style("height",0 + "px");
+      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
+      selectWithParent("#gdoc_worksheet_title_input").property("value","");
+
+      delay = typeof delay === "undefined" ? 500 : delay;
+      if (delay > 0) {
+        setTimeout(function () {
+          loadTimeline();
+        }, delay);
+      } else {
+          loadTimeline();
+      }
+  };
 }
 
 /**
@@ -7079,63 +6515,72 @@ TimelineStoryteller.prototype.load = function(data) {
   return this.loadInternal(data);
 };
 
+/**
+ * Loads the given story
+ * @param {string} story The story to load (json serialized)
+ * @param {number} [delay=500] The default delay for loading timeline storyteller
+ */
+TimelineStoryteller.prototype.loadStory = function(story, delay) {
+  return this.loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+};
+
 module.exports = TimelineStoryteller;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./caption.png": 10,
-	"./categories.png": 11,
-	"./check.png": 12,
-	"./clear.png": 13,
-	"./close.png": 14,
-	"./csv.png": 15,
-	"./delete.png": 16,
-	"./draw.png": 17,
-	"./expand.png": 18,
-	"./export.png": 19,
-	"./facets.png": 20,
-	"./filter.png": 21,
-	"./gdocs.png": 22,
-	"./gif.png": 23,
-	"./hide.png": 24,
-	"./highlight.png": 25,
-	"./image.png": 26,
-	"./info.png": 27,
-	"./json.png": 28,
-	"./l-fac.png": 29,
-	"./l-seg.png": 30,
-	"./l-uni.png": 31,
-	"./mail.png": 32,
-	"./min.png": 33,
-	"./ms-logo.svg": 34,
-	"./next.png": 35,
-	"./open.png": 36,
-	"./pin.png": 37,
-	"./play.png": 38,
-	"./png.png": 39,
-	"./prev.png": 40,
-	"./q.png": 41,
-	"./r-arb.png": 42,
-	"./r-cal.png": 43,
-	"./r-grid.png": 44,
-	"./r-lin.png": 45,
-	"./r-rad.png": 46,
-	"./r-spi.png": 47,
-	"./record.png": 48,
-	"./reset.png": 49,
-	"./s-chron.png": 50,
-	"./s-intdur.png": 51,
-	"./s-log.png": 52,
-	"./s-rel.png": 53,
-	"./s-seq.png": 54,
-	"./segments.png": 55,
-	"./story.png": 56,
-	"./svg.png": 57,
-	"./timeline.png": 58,
-	"./vl.png": 59
+	"./caption.png": 11,
+	"./categories.png": 12,
+	"./check.png": 13,
+	"./clear.png": 14,
+	"./close.png": 15,
+	"./csv.png": 16,
+	"./delete.png": 17,
+	"./draw.png": 18,
+	"./expand.png": 19,
+	"./export.png": 20,
+	"./facets.png": 21,
+	"./filter.png": 22,
+	"./gdocs.png": 23,
+	"./gif.png": 24,
+	"./hide.png": 25,
+	"./highlight.png": 26,
+	"./image.png": 27,
+	"./info.png": 28,
+	"./json.png": 29,
+	"./l-fac.png": 30,
+	"./l-seg.png": 31,
+	"./l-uni.png": 32,
+	"./mail.png": 33,
+	"./min.png": 34,
+	"./ms-logo.svg": 35,
+	"./next.png": 36,
+	"./open.png": 37,
+	"./pin.png": 38,
+	"./play.png": 39,
+	"./png.png": 40,
+	"./prev.png": 41,
+	"./q.png": 42,
+	"./r-arb.png": 43,
+	"./r-cal.png": 44,
+	"./r-grid.png": 45,
+	"./r-lin.png": 46,
+	"./r-rad.png": 47,
+	"./r-spi.png": 48,
+	"./record.png": 49,
+	"./reset.png": 50,
+	"./s-chron.png": 51,
+	"./s-intdur.png": 52,
+	"./s-log.png": 53,
+	"./s-rel.png": 54,
+	"./s-seq.png": 55,
+	"./segments.png": 56,
+	"./story.png": 57,
+	"./svg.png": 58,
+	"./timeline.png": 59,
+	"./vl.png": 60
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -7151,10 +6596,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 8;
+webpackContext.id = 9;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7275,307 +6720,307 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÂ\u0000\u0000\u000eÂ\u0001\u0015(J\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001ÑIDATXGÍÖ!rA\u0018\u0005`\r&  \n\u0006ý\u000f\u001a,\nZ,\u001aL*6I\u0010Ä¤É¤bU\u0004ÿëì;\u0017ÞåÎ3{åÙð9÷ïcÙ1æ_¡aL41Ñ0&\u001aÆDÃh\u0018\u0013\rc¢!Úï÷f:Õje>D¼Ç\u001c\u000ed»\\.Íûý÷\u0014\rÕn·FÂ.:Ntga7Öóùô\u000e!Ü¤a\u0017a_ÑÐÂ\u0003!¸³°\u0013;Ë\u000b\u0014C^¯Ôóm¯×«¿Å@á8d4\u001aI=ß¶×ëù[\f\u0014CÍ¦ÔómËå²¿Å@J%ï\u0000S©T¤înkµ\u001aí¢b±èm\u0007Â\u0003L»Ýj¾mµZ*ì0@õzÝ;féáFµZ-ºQÃáPjîÆy|ãx<:G¿ùí«.³½ßï\u0012»\u001dçñ­ôQü%kë\u0005ßÐóù\\¼\u0013¢Ûñx,Oòi4\u001aÉA\u000b¿eét:[\u001aØÿ/y\u0018K·ýÅ@Ã\u0010=¸ÝnåÉ;!º],\u0016òä\u001d\u001e\\¯×òä\u0010ÝÎf3yò¢aÚãñHY·ÛM\"ÞcÒÿÄçóY\"ÞK£¡êv»¿\u0007ñ[Á`kKC«ßï'Ç6<y'd2$[ûg+~ËBÃh\u0018\u0013\rc¢aL41Ñ0\u001eSø\u0001)`êÛÛã¡\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002\u0002IDATXGíÍKTQ\u0018Æg!äf\\\u001b·n\u0002!ÚBé¢ Aú\u001fZ´qQ8AË¶!:3~yg\u0012ÉE¦B\tÍ¦rFJ*G-6êxÇ\u000ft(æ¶Py<ïò½çx®n<.î\u001fç¹ïû\u0004\u0000\\*¥I¥I¥I¤â äàÓÆ\u001ef7÷Ñ@7ùâ?¡p?K¢ã§ÎÄ©Ð÷ÞÜ\u0018¹ô0\u0005\"¹ºÎåmôüÒÓMïu¡p?0z\u0013ãw=¡»ÙüwÙw\u0017ãk6ú~ï EOD\u0010]Ü\u0010\n÷+Rõ¨hñî2ù\u001fÏ\u0002q²þ \rþ /üA^yPê\u001cÂ9yP0uG9ÀMP\fú¼9/ù,\u0010ïÿØx³Ñ±TÐÒ¾X@|I\u001e\u0014\u0018©Ád-Êu§BßéÎþ»+ûîÂ4ÊÒ$ÊÒ$ÊÒ$RnO£·¦\u000fÑ[ýZÂ7\"H=z#\u0014î\u001f>\u0016¯§AA ÄÝÿýä³@¼{2{\u0016\u0012M¯µÄ\u001b\u0013xÕl\tû\b]\u0005^\\÷&t\rÎÊ\u0017Ég\nMyõ0.\u0014îÓ\u0003Ü<«³|\u0016\bËgð\u0007¹|\u0016\bËgj;Ç \u0007\u00170èmë\u0004\u0006j\u0007\u0011k\u0018Ö2t;Øýa¡p\u001f­eÀó*oÄ³|\u0016b¡ìà\u001c¾Zß´dæ`/ÛBá~)\u001dó¡\u000bÎL·.>FpL¶Ëgá2 ,M¢,M¢,ÍÀ\tfK\u0019\\t\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u0011\u0000\u0000\u000b\u0011\u0001d_\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001IDATXGíÖ=,ÅP\u0018áú\r\u0011\u0004\t\u0012\u0006&\u0016\u0013\u001b\u001b\u001bFFfVffff\u0012A$\u0006\u0003E\u0018ü\f\u001800X\f\u0012\u0012ñïýn4iN¾Û[Ú\u001aÎ<Ã½ÑÓ£êk=ËåJ¶nl¢>÷)ãzñ/\u001c£\tÕGÈf|çhEê\râ\u0019ÁÍø®ÐÔ\u001aÁ\u000b´ÍønÑÄ\u001bÃ;´MvaU1&Qûdß\u0004> ÜtfDV\u0015ÈA[¨MSøybÍ!\u001a\u0010Y9Ö\u0010<X.k\rÂAð0{¨Edá¥-r\u0000m¨\u0015a\u000eÚ1mX]ñjì@[ÄwàPûl\u0001ÚÏj6`uO@.£¶é\u00022Ôä¥ïl¬¢\fÖâ\u0015Úb¦k¬\u001bßYü\u0002\u00057|5®EÈ6v\u0003x¶x¡æ!7ý¯ëÿtk\u0016Z\u000fî¡,\fÆi$R\u0017î X#\fyt$Z\u0007n m è\rãH¥6\\BÛ×\fyÝHµ\u0016ÁÜ!dR#àoFÆL«Ã>d,ÈËû¿H\u001eÄò\u001fèr¹òçyßQØ\u0012z\u0006BPw\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u0010\u0000\u0000\u000b\u0010\u0001­#½u\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0003\u0013IDATXGÍ=hSQ\u0018OþJ1Á\u000e©IZ\t¨\u0018\u0012]8((T¡\"\u000e\u0015jR-]\u001c\u0004SbpJ\nèâ¢8\u0019×\"H\u0017AqÐEt\u0010ü\u0019*\bºÕ¿Á¥x|¿sËwoÎmOiÃõ§9ßû{ÎÛ{ÛTH)ÿ+f\u0018Í 1Ab4Äh\u0006Ù\u0014b\u000f8\u0007îóÚ;\u000eÊyÇÀMÆQÖKëùIp\u0015\\\u0004§Á6ÞWs:\f!Î\u0000\u001a\u0010ûA\u0015ÄÁ%pÍ3·\u000eæÁ¦ÀzgÁW°üK@;Á'0\th=2w9}5ÇU\b±\u0003ü\u0005aîë_ \u001bÜc½\u000fà\u0014xÆ<\u0015Õ÷À¤S+ÏU\bq\u0002Üâ\u001eëù\u0005z\b\u000e\u0010Ì/÷zü\u000blÑãå@Ðvð\u0016\f9×)ßU\bq\u0005Ô¸Çz~\u0016À#MQûwACo\u0003u\u0017!\nô\u0007Pñ\u001a\u001ctÖrp\u0017í³½Ï=Ö³>2~p~kß¡\u0007`_§|W!D\u0004|\u0001G¸¯{V :öy÷\u0006\u001c\u0002Þ÷Ð\u001c¨»æòB\u0019Bì\u0003¯\u0000\u0015\u000e\u0000\u0005úÆ¸\f(\u0010÷èØ>gMúÓ§Ñ\u001b(\u000f0dsyÁè1õºÑ\f\u0012+.ì\u0016V2]Ø-6D]Yt=Ú0ß%ýcrjµ*§§§iõ2µ\u001aF¬V«-Ëeêõ´]s B¡ Óéôªär¹ç4ß7P<\u001e§U9)àè%à½,0\u0006äØØXqpppÀ¾¾¾¡|>¯.ò\r\u0004ñ\re±Xä»¸zô\u001b*Ó'\u0010îè\u001eû)³æ@½½½Ë»B!WO×Ö\"\b=Ýù$«@\u0017Úèïïç\u000bLñPNXÛ@$¼\u0007ÓzH²\n¤T¯×7ãEf³Ù\u0017m§C\u0012ï·Ïj°B V«+JôÉ$û@Lf+^äøøøî¶Ó!922²W\rV\b0?hÜ¶:d\u001f(LÊJ¥òT^½\u001b\u001d\u001d¥ü\u00025ÍôJD£Ñd&\u0012Ãº¦/ûÖfgg=3ÚJ¥RK8N÷Î>Âá°\nã0<<ü×àÉªb±Ø¢\u001a\u0018»¶811Aÿ\b¸ä\u0017È\u0006ë#[Lp4®ýÀ³Ìü¤^LÖª®\u0005ZO(%ïbAc4Äh\u0006\u0014ÿ\u0000\tã°dv4c\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001IDATXGÍ±®@\u0010E!¡§Ä/°£C-!`bí? Ñ\u0012\u0013þ\u001f·ã\u000bdwr\u0017WÌ+NBÎÜuo\u0000þ\u0015Pj\u0002¥&Pj\u0002¥&Pj\u0002¥&Pj\u0002¥&P\"Ú¶¥×ëe\u000eñÜ\u0007¯¹ßïæ\u0010Ï%PJú¾7ÉàÃR\u001d×É\u000f(%Ëeúá¥¥ì2û\u0012q>\ræJ=O'{:ÆY\t>¦q6z<\u001eF»®ë\f¯9 C²gòÌ¬-Ã@ù\r»TYFQp»Ý&·µ\f\u0003å\u0012¢øl¼Ûí(MS§L]×&×}\u0003Ê¥\u001c\u000e\u0007JÄ)s<\u001eÍ\bç\u0000åRò<§ý~Oa\u0018ê\u0017ªªø²eYFq\u001cS\u0014ES©­÷\u000f\u0003å7Æp!>S×ëu*ôRPÎaÿÃa\u0018þÉ§óRPúeÞï·ÑnY[\nJ\u0004?þíÖ¼:øµ#3> ly¹ÊRrî\u0003JÉÖÏ\u000f»ù\u0012Á\u001fYkÊp)þ¸Þ\u0007@©\t@©\t@©\t@©\tzPð\u0003ËKéú\t\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002~IDATXGí=k*A\u0014h\n\u0011R\t& \u0004!F`4ø\u0001ZØh\u0017¢±\u0010L¥\u0012°³\t¢ ¢FP\u000b?\"éò\u0003´PÏ\u0019e\u001cqÃ\u001dðrðÀÎ³;ïyÕeU\u0007\u0000ÿ\u0014¨<%¨<%¨TÏçÁd2Ñhü+\f\u0006\u0003\\\\\\@¿ß'±ø,\n*9H\\¡Î`0 ñøLTrÄ YX­V\u0012`&&9b,Ìf3?0\u0013\u001c1H\u0016\u0016Ä\u001fI\u0018$ÿ·ÐÓÓ\u0013ìv;Øl6P,\u0016³Ûíðþþ\u000eëõ\u001aÍ&s`³Ù}µZ\r²Ù¬²R(\u0014\nÁl6³³3¶Ïç@\u001f\u000bN\u0007É$s¥R\tÊå2T*\u0015xyyQö~||(Ç\u0014)ªÕ*+¥v\\.\u0007Óé\u0014\u001e\u001f\u001fáòò9ú\u0010\\.ìøáá\u0001Z­ÖÞ\u001e)^__Áçó)k5ô¹R(\u0014È\u0016`\u0012uÅ\u0002Ün7\fCp¹\\{×K)J¥ ^¯+ëÑh\u0004ét\u001a¾¾¾Ø\u0000ê\u001c\u000e\u0007L&\u0013v\u001cÇ¡ÑhÀv»Uöp¤\u0014¢ÐûÞÔ\u0014úD],\u0016cCékµZA4\u001aU®§/úò5GZ!^¯g÷è¯®®¾¹óóóo\"µ\f~\u000b\u001dã·Ð1~\u000biAÅA%G\fÑÊÍÍ\rÙg\u001e\u0003\u001cqVz½\u001eÙ\u000eºD\"\u0001Lfûû{\u0018Çì<\u0006*9â ­t»]V\n;\u0017\b\u0004H4>J\u0018¦\u0015Z~\n¢\u000fÃ$\u0016ÅA%G\fÔ\nV(\u0018\fH|\u001aTrÔ?A,twwGâð\u0019\"¨äðÀ¢.ä÷ûI\u0014JÎóóóÞ ­´Ûmx{{\u0003§ÓIbðìC R\r}····àñxÀëõ\u001eåúúýk\u0014s´ÊSÊSÊÓ\u0001º?û¸oê+µ\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0002\u0000\u0000\u0000nb\u000fÏ\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001=IDATXGí=0\u0014F#Ø[\n.`Jk7á.Ük0½`aë\u0006\u0014F\u001b;\u0015t\u0007®dæÃ\u001bc\u0012'Sx÷rý¸\u0007ÿnqÎ¿\u001f\u0001\"GèÙóÊðÏdÓ4-Ë\"\u0016· °X\\¡mÛöu ô!Xçb}B6\f\u0003Z0Æî}dBÌJ\u0006º®»÷Íó,\u0003mÛê\u0015j\u0019èû^¶CkQ=X×U\u001eBLTÿ@K\u0006¤ï|¡Îç¤4\u0001]\u0019 \u001f ü8ø¯o\u0002\u00062[ÖI\u0014Eaj\u0002f2Pe\u0018Ð\u0010u]\u0003\u001a\u0018Ëªª¢Èó¼ËÌ²,ã \b|ßìS\u001e\u0010hÒ4Åù5MczÛted¢Öû¾SQ\u000e\u000eMìlÂ[,ª\u0007_jzÜ©r\\a¶ê\u0015\næ >«A¬¿ÅÏvêëoðYmnyeNxeNx\\öÜg.ç¿ô©³\u0007zj\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÀ\u0000\u0000\u000eÀ\u0001jÖ\t\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0003åIDATXGÍÖKH\\W\u0018\u0007ðÑÐúBã\u000b\u0015ñ\u0011ÍF¯(¢PñµI\nÔYø\"(¢(Q)A­Ò\u0011»DÅúD­¦45\u0010í.%\u0010BZ\n-¥nKW]\u0014²\f$~ùs'ç\u001e¿Ì8«Û\u001fs¾ÿ9çÞÃsï\u001d\u001f\u0011ý¯¡ÄÐKg\u0003o\u000eîÀ ´Z}Cº}böéþ*3ê\u0005¸bÔ-pÛ¨/ÁS«ÌUø|\u001fÂkðC\u001flÀ¯pI÷ïÁ:|¡ÛûÖ|îû\u0005u}\n#Fÿ!üfÔ·á[§V«Ð\u000b²²\u0001x Û¼\b¿n_ÖØ7ÀWö¾®oÁ÷FÿÀº~\u00047~¹\nyAý­Ûæ¾Æ¸Oá;à\"\næªÏ5ø\u001a\u0002ð±Îþ\u000f±*s\u0015Ât/õÍ\u000bâ\u0006{aù\u0019Útû)¨=\u000fÿ50\u000b½ð\u0011|\u0005Wàwó\u0018j¼«¯\u0010oÔtÛ¼B?ÀMÝÎ\u0001n9ð\u0019ü\b\u0019p\u0001þ\u0002þiïò\u0018»°\u0016ÏUx\u0006\rº6\u0017T\u000ehª6ÿ|\u0001n;ðy\u0005Ép\u0019ø*ýaô=ÇPiÎQ}®B/\b¸ø\u0017Àu£?¸ ]óÝö\rpQâäºï\u001e|®ÛÂ¢ÑÇW\fÍwã\u001dg\u0002¯¡ÄÐKbè%1ÄÉÉ\t\r\u000e\u000eRee%ÕÖÖR]]]PMM\r577ÓÀÀ\u0000Êómb\u0018ÝÝ]joo§¤¤$JII¡ÔÔÔ äädÊËË£¦¦&\fçÛÄ0\u0012kkkT__#¹\u001eAT^^¡ò|\u0018Fbuu\u001a\u001a\u001a(::ZÄ\u000b*--ÅPy¾M\f#µ¾¾N£££4>>®¾¨¯¯zzzÔþã¿Hò\\\u0018s||LtttD\u001b\u001b\u001b´°° \u0016Ãæççikk\u000bÃä¹áa(###TUUETTTDÅÅÅjTTT¨¶ßï§ý}þß&Ï\u000fG\fCéììTwNLL\fÅÆÆR\\\\\u001cÅÇÇSBBjó­¾¸È¯-y~8b\u0018JGG\u0007edd`¦|WÑÌÌ\fÊóÃ\u0011ÃPx³òC°  @ýl&ÎZ[[iyy\u0019Cåùáa8¼¡777igg'h{{[mðÓÓS\fç\u0018hrr¦¦¦hbb©¿¿_ÝÒ½½½.ÝÝÝê5166FÓÓÓjÞìì,ñcÁ>îû¡ceeEÝ=éééJVV\u0016åää¨M/ÊÍÍ¥ììlµÏÒÒÒÔOÙÒÒÃÉç°¡#\u0010\b¨\u0013ð\u0013WÚÀçÁï8Þsö±ßG\f\u001düËÌÌ¤¨¨¨3':/~\u001cð¿[ù\u001c61tð¼­­M=[ª««Õw$xNcc#uuuápò9lbhâ×ÄÞÞzú\u001e\u001c\u001cDçñëÅ>f(bè%1ô\u0018zI\f½C¾·p\u001c©\u001e\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0002\u0000\u0000\u0000nb\u000fÏ\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000e¿\u0000\u0000\u000e¿\u00018\u0005S$\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001\u000bIDATXGíá\r \u0010F¦s8S±@\u0007p\u0003Mª\u0003¨.Ô~é]¯W\"X[ IÃûárÇË\tÁh¬µ,@dð¸f\u0001¢\"û\"Â¾l¦q\u001cy\u0012\u0004ió<ód\u001d\u0019L§;ëºrÈ\u0003\u0012(3à\u000bÉÈdÁ8\f\u0003G= A}>¯LÚ¶åh®ëÂ¾mÙ²,RÖ÷=Gß\u0000ÉRE8ú`C¦{:d\"´ÏéÏ\t4MÃÑ Vp|/2mªªª®ëóG \u0010å´ö=e²OÑÁ²´?\u0001ô+¾´¯Ð¾´\u0007\u0010\u001fÆ´Gý;êÓ&Ú'Í¶\fèþÞ¼®&%NOW\u0006´/íEL\u000f$ÿÄ\u0010(ÎôñKE¡È¢ðß²|¿¹ÖÞ\u0000£Ço¨±\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001øIDATXGÍÓMNëP\f\u0005à´i\u0003BMw\ns,%°\b\u0016ú7¯:`wl\u0019àSÅÕ­súH`é{\t§®¯\u001fWô¢øWhøhè%ÎØX4ô²ËíEC/»\fØX4ô²ËíEC/»\fØX4ô²ËíEC/»LéõzÑÐË,¢ÞY¯\u0017\r½Ì\"êõzÑÐË,¢^Y¯\u0017\r½Ì\"êõzÑÐË,¢Y¯\u0017\r½Ì\"êõzÑ0Ïs{Hç&\u001cU=»\u0012(; kö<ECØív!]Ùl6r\u0004?j>Wµ5Íd4?\u000fh\u0018²\u0003Û²ó-\u001a¶Ûmeèo5]¢¡ÕÅÕ]º*ECÆ\u001e\u0010ËÎ«CC\u0006¿nvÇz½\u0011x=¯p¾¢a\u001düÚ1'Æt:¯âµZálEÃ&\u0013#ø^¥ô³\u0010\rÄ\\]ÝUis\u0015\r/ñ\\^\u0015Ô~\u001e¢¡\u0007æ5\tújK{B4ôÀu`&S~ÖXl&ÐÐ\u000b×Ù¡¦¿*Wéð°4c:-\u0003þæj;@®ç[\u001eÇeV«UËm¤Zÿ¤Ëåø,lWl¡ý~?G6\u001aÒñx|%®E.\u0012Ñ/3\u0018eYv¿X,Ä£¼ßI¡ÐÞAÝ\u001by3\u000eC\u001fO-ìqÜåô\u0012T$\u0003<\u0004\u0018\u0000ÃR¿ìÇÀ:ú}¼£ðÄ\fý¹¦éq1îP\u0014Eï\u0007WÇ-Út>\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001¾IDATXGÍKK\u0002Q\u0018Oà\"(©Eõ\u0007Z\u0005-(ºº\u0012\u0004\u0013/yAÔ.P»\u0016\u001b#PÓ\n%Ã!+Em,%[\u0004QAvý²¯3G\u001c=YÇÅÃ¼ßû\rÌ³83C\u0000`¨0,ebXÊÄ°aA2u\b?¿m\u001aù\u001b0¹¯]Ò§kïÉÇ×\u001b4ê\rPU\u0015Nç\u0015Â17\u0013ú/E\u001c®u}!\u0013]È\u001fv\bKY0!×&,dàöov²88½\u001bà\tÚÐ\bDì`YÕe\\>\u001baB½MýéZÑànÂ$ÃuF¾çaÀ°Äà,|1M#ßs\u0003&õ¦ÂÎPM-Ñ±ß÷Ï\u000eÜUn RSÐh¶ª\u0010ö¿ÔRdÛ½¥/dÒx¾eR$\u0014ñ\bKY0!ÏÎpü:\u001e\u001es]¡bé\u0002!\u001fD¢!4ö\u000fb°´lÑeÊµ\faB½M³]\u0016d4¸0Ie+ÐÈ÷ÜÉË÷)½½P`¾:\u0006bÒ\"ßs\u0003&ÕÖ9;C3ÚØïoo\u0001Lã\u0004Æ¦ð0SQsÿ\u001f\"Nßª¾ÉÄô\b\"®À°\u0005\u0013²Úç\f4\u0019&Ô\u000bØ$3G\u001e°É+\tAF\u001b0É*»ô\"öB!\u001bÃR&¥<ü\u0001#f\u0006ÝAa'\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001`IDATXGíÕ±0\u0014\u0005Ð©m\u0004ñ\u001b,mm´\u0012ìE°µôK\u0004kÑbÐÂJð+³I!ÈËyº»àÀâÜ÷q>B?\u0005Oá`¸\tÃPÄq,$¹M\u0014E¢ª*YgÂp#?êëviÊzÃL\u0014n¦ÑÊî@çìÁpýÖ÷ûµx\u0002Ã½eY´Ò«\\×xÎ\u0006ã8Zù\u0015´\u0017!BËÏ*BÖàî=\u0018\"A\u0010hCÎ }&04¡C¸¦i×q'\u0005C,Ë´a6çÉ«¸\u000fá\u0011:ÐÞ·áº®µ¡&eYÊ+¸Ç\u00046t°\t½Ç\u0001C¶mµáÔ<Ïò(¾\u0004\u001ct=ß÷å\u0011|Ï\u0006\u001cëºjlèÙ3`È¥~Òt\u0019õj çÎ!×8ÚBÜ¿\b\u0013\u0018r\rÃ -ç¹|ÏsÀë]Èæ]Èæ]Èæ_,ôè\u001a-DÏ\u0005C.º\u0010}~\u0005\f¹ú¾¿u\u0019\u0005\\]×Ýº\u0002Ã'Áð9âó\u0003;yÚ\u001aþÓ(Ë\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÂ\u0000\u0000\u000eÂ\u0001\u0015(J\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001ãIDATXGí=\u0002A\u0010U\u0010\u0003\u0013\u0011ô\u0000þ$j¤\u0018(\u0018\u0017Ð@\u0004QDO``îEk»Zk§­­Þéa{\r,ø×õ^\u0015\u000e\n¦\u0000à_!I\"I\"&BAu¥¼1ÏU¬<\u000b\u0011Eùâ~¿«xËLI$x/Úí¶·ÌD\u0007ù¢ÙlªxËLI$x/Z­·ÌD\u0007IËeèt:ú5àUêáÄ¶P&b±¨Zº\\.b¯Il\u000b=\u001e\u000fÍt:UíAI½&±,ËåTË³ð\u0017ï7e!^Fãu÷¬jµ*ú\u0010ï\u000bu»]u\u001cT¿ß×:/î#¼/Äôl6ûRµZ­Þ|×\u0006:\n\nµÑh\u0004Ãá\u0010z½\u001eÔëu¨Õjú\u0015¢ÎýHlÐ~¿ÉdòzúYçóYô{_¨T*©cÝ ¯¶â>ÂûBH>ñx\f»Ý\u000eËå\u001bÃAÿ`J>$þÂg¡0>\u000bQ©TT¼e¦$\u0012<È\u0015ü¦ñ,WDà\\!:\u0006ü×bbK\"a\u000e\u0002z7õì7Dàa® ÷t:z\u0018¢Hð@WÐË\u0017¢Ì0D0\u0003£^s!ÊsA\u0014\t\n\nzÇã÷}\u0014D¸^¯o\\Aïl6Ûí¦ï£ õz\rø­Ùn·¡,\u0016\u000bes\\\u0010Å$\u0011Å$\u0011ÅäÔ\u0017¹C\u001a¢¦ÃÃp\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002<IDATXGíO«9Q\u0018Ç­ÄF¤ÄBvXØX!I¤lXú½²\u0017`ag£$\nÙø²!))â5x\u0017vÞÀsÏ9¿Î4÷ü\u001ewæ6¹\u000bSùs>Ï\u0017©1\u0001À\u0002\r\u0004\r\u0004\råÔj5°Z­`±X4a6ÁétÂt:%Z|\u0016\u0005\r9Ùlì0éÎl6#z|&\u001arD^x<\u001e¢1\u0013\u000b9¢H/l6\u001bÑ¿\u001cQ¤\u0017v»è_ÌÄB(*\u0014\n0Ïár¹@¯×`0(­ív;(\u0016ìþ|>ÿG.öêR¨ÝnÃõzT*\u0005^¯\u0017*\nÙ\u0002\u0010\b\u0004Øúý~\nÑ«Ùl²g\u000eý§ræB.\u000bÏ'¸ÝnIJév»Ðh4Ø½XHþíh.T*àv»IB\f±P§Óz½.!ß«¹PµZÃá \t·Û-Yþwí÷{V«Õ7øYæBñx\u001c\u001e$ä´Z-X¯×ìþ­?\u0019åx<Â`0)§Ó\tË%»{!ÃÁË¯ÑhÄätýíäø|>4Wî´ò)¤Ä§\u0012Bj\u0010gqÐ#JÔ\u0012\u000eÉqÜ©\u0004\u001arÄAjL&ä8òù<Ëåo¤ÓiX,\u0016l\u001d\u0003\r9â µÇcV\n[K$\u0012DÏ£ !G©\u0016¢ßg2\u0019¢ÅgqÐ#\nÕ\u0015¢¯¾¢\u001f\u0003\r9ráo\u0010\u000b%I¢Ãg !\u000b¼\u0010}¹\u0013½?\u001cñ]X-Ãá\u0010úý>øý~¢ÁÝ¯@C9ôÓÆb1D\"\u0010F\u0015\tB°ÙlÈQÜ§\u0004\u001a\u001a\t\u001a\u001a\t\u001a\u001a\u0007¾\u0000¼\u0007ääÎE©c\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u0011\u0000\u0000\u000b\u0011\u0001d_\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0002°IDATXGíÝo\fQ\u0018Æ÷óo¹\u0010$\u0012¤n(\u0012\r.¤(Á]}$¨ø¬THKµ¾Ò¢ZRm­ßsòÌÉ=³3\u0013åbäó>ï93ûìÙÙétÿ3\r\u00035i\u0018¨IÃ@R§Ó¹\u0002Ïl\u0013\r<\u0010A.Ã¼m¦\u0006\"ÈÅº0Ò\u001f\u0005â¤Wá3¨®b\u001d¦¼<\b?\u0001µa¤Ö8Ù\u0005Ø7pÇµúkð\u0014\u001eÁ²{¿à\t<v½\u0000a¤Æ@è\u001clÃ%Ø\u0001;a\u0013&¼$\u0013s£ð\u0013NÁmh\u0015Fª\rÄV`ÚVþ\u0000¬Ù6µ\n\u0015ÃP\u001fVÏ¶R}\u0003q ¶dm\u0010~Ãe£X«-®¼2ôWám¢,\u0010\u000b÷ÂwÛ(zï\\&¢\u000b4\u0016¼kP¾2s.£è½IÛ¨ª@?\\&¢¿â2\u0011ý\u0013 ±LreðS°Ï6Þ\"Û\u0006%Ütþy8n¾~â\u001a\u000búmÓËDô×]\u0006Å@LÌÁm\"ú³.ð\u000fAc/åmê½J[.31\u0017ïÍr Ê­ûà2\bÿ\t4)YR¯¬^_\u0016s/ád¨C\u0007ÑXv¹W.ðÏ!|ÉÂ@rEðÛ.3×&±¨üYÓ×Cñ¨­ü~Ð(ªÂ\u001bn\u0007á/U¾u{l³@\u0007á£m\"ú.ðzZ÷\u000bl?^¯\u001bGl£èé\u0011\u0006÷\u0018Å³°d\u001bEïKÕÉCOëA£È¾\u0010½ì¦§mÿ\u0002*ï4\u0016Áªm\u0014½¯<ô$¼þR\u000eÙ&¢?\u000b£¶Aø÷pÓ6Qe B\u001c¤ÿ¢Ó¶òz%aêÄÚ\u0007p×V~\u0004ôtÌ­Lµ$\u000e¾\u0007ßà>·i·ËJ1¯÷¥ë¶òz5iü2$N4S>\u0019õkÐ¨w\u001dÍéåK÷Õ4èfW_\u000fÏIØ\u0005\u001fÚ¨6W({ÓÃë¾Ðªî¶wÌ´VÓ=¤çOë{æo¨o èr\u000f4T\u0019 ãÿ\"Ôê¦\u001e¤4\fT¯n÷7G\"Éü\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÀ\u0000\u0000\u000eÀ\u0001jÖ\t\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0000IDATXGíÔA\nÀ \fDÑÜÿ@\u001e¬\u0014JWVK\u0017C\b¶\u0011æÁ È_)9\u0018\u0006µt\u000b\u0012ÏC\f²\u0018d\rÍ\u000e:ÊÎç[· ^Ö\u000fJ)ýAu\u001e\u0006ÕyÖ\u000f\u001am õ½\u000f\u001fb5Ä khfÐ^¶Õ32f\u001dd}óo¬{=Az\u001aô´ØA\u00110Èó\u0005LÛ\u001a¾`È\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001}IDATXGí½®@\u0010Fm\b\u0005Ð\u0010\u001ach$á\u001d\bPAgiogI!-­-%\u000fº\u000eÑ\u0005\u0006¼ü¹æÆâdÙ3ÌÌWP°a}\u0015¤\u0014\t)EBJR$¤Lí÷{æ8Îâ\u001c\u000e\u0007fÛ6¬éî-¡%èµ\t\u0000V\u0011»IY7©ªÊLÓda,eYÏ@Q\u0014Á*b7)ë¦Ûí\u0006×n}\u000e8;c¸\u0012uRÖM×ë\u0015®Ýú\u001cpö/P\u001f8{õ@Ûí¶ê)i×xðÕ\u0003aOçy ßûh <ÏA\r¿÷oèr¹ÀA×\u0010ý?jMÓ:n\f8{@EQTþx<6ü\u0018pö\"Ðð~\fØ?;P\u0018Cv»Ý³6\u0006ì\u001d\b\u001d\u000fÖ($Ibº®ÃcÓcï¤@iÂõu§À\u001eò·\u0005ë¢zÕÐO\nt¿ßYeÕs\u001fí_\u0014>\f\u000fÖñ>)Ðù|®Îw`__\u0018=)Ð_9N¿Á!dY®ÎU\u0003Má\u0017è\u001d_\u0017È÷}XEì¦¤ëº\u0001KÓÞR$¤\u0014\t)EBJR\u001cló\u0000ã0F½]WÅ\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÀ\u0000\u0000\u000eÀ\u0001jÖ\t\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001þIDATXGÍÔ1hSQ\u0014\u0006à;X\nqTÑº\u000e \b]ì \u0015\\¤PH\u0010Q\\;U\u0010RâP\u0004\u0007\u0004\u0017C ´â\u0010ÛA\u0014]DÅI'Gqq\u0010\u0007\u0007\u0005;9Èó?Ïs/ç¾ü¥8^øÊ¹ÿ9ÃËKCQ\u0014û\n\r=ÑÐ\u0013\r=ÑÐ\u0013\r=ÑÐ\u0013\r=ÑÐ\u0013\r=ÑÐ\u0013\r=ÑÐ\u0013\r=ýû\u0013ÂµÝ¤Á\u0010Â\u0012t¡\u0005bOû\u000bÐ¶æ\u001d8«õ$´á¢:=6¯/áµ Ö¯´\u0005v`\u0004\u0012oÐJ\u001f\u0014Â=\u0018Å»ÉÁºÖg@ç\u0010?ëE6]B¨ëÐ´ÉäCþÀ¹Êl\u0003dÉ)½ËB\u001bvFsY¨«u¹é\u001d;4S\u0016\u000b\u001d`\u000bÉZ³s¦·\tw´¾\u000b\u000fÉÌ6ÜÐ:[H³÷p9Ý+M¶ÐW·s¦w\u0013h}\u001b\u001eÇ@\u0017Â¹\u0000?áXÊb¡\u0003ÙB8\u0007ô~ÂÎE8W!¾g=`\u000b\r![Èw÷d6]ø\u0013ú\u0002çíéÝ¾Ö«0 3}XÑ:=!9§Ó³e]øB`hçLï#\\×Z~ÎoÉÌ;XÖºúÝ\u001fPOY,t-4£YÏd\u00130\u000f&;\u0002¿àÉdÉïPÓ;{©·àiºWc\u000bi~\nÞhOü\u0006ù*\u000eVæð\u0019âÜ'X4}¶Ð¬dÐ(ï¶¹\u0017\u001ad/!s\u001cÊÿOÿhèhèhèhèhè~ð\u0017PPREIöÄ\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002IDATXGí¿j*A\u0014Æ-Bâ\u001f¤PHac!\u0011\tB¢Äh\u0015m\u0005Ab*\u0003*\biRX\t>&*¨XE,l\u0002iíll|\u0001;ABÌÉáNXç\u001eqC\u0016¼\\\\ø±g>g¾ó¹»ì¬\u000e\u0000þ)Hqâ.!E%Ùl\u0016\f\u0006\u0003èõú_qxx\bV«\u0015:\u000e³¥{!¤(ÅblNsºÝ.³§{¢@6Ò\nÍÆì7ô¤Dl¤\u0015\u0016ÙoèI\u0002ÙH+ý(´âÿ\ftww\u0007¥R×OOO°\\.¡×ëÉdâÝnçãÏÏO¨T*ßëf³\u0019¸Ýn^ÂÛÛvÅ\"ÜÞÞÂÃÃ\u0003×\u0012\u0004F#^¯V+ðûý¼F£l97àÁ§Ó)¯1Ðx<Ö.P.\u0003¯×\u000bïïïP(\u0014Àãñðß\\.\u0017á)ç\u000fC0\u001a<ÐËË\u000bÔëum\u0003¥R)\u001e\bë\u0003Èd2ðüü\fÍf\u0013... Z­~ÏE^__ùmÄ@8^,\u0016\u0010Ç\u001fh2ÀÑÑ\u0011¤ÓiN¿ßP(ôÝ\u0018¯\u0016ñÀí\u0001k³Ù\fóù×\"Ðõõ5óë@¬\u0004øøø\u0000Ã\u0001N§À\u0003Ï÷÷÷¼!n3Êãüü|-\u0010R.µ¹eøf\u0015µàäää/\rÁÐÊ1>GòXgHKö¶±\u000f´} 5È½\u0004¤(MÔ/EÙK-¤(\u001b©¥Ýn³å »¹¹d2¹F8\u001cæ­è!C\u0002¹ZZ­\u0016\u000fEý\u0016\f\u00065Ý\u000f!El¦\u0016\fWAÖ#\b³¥{\tHQ \u001bª\nôg·'û(!EÒð'È®®®\u001dÝC\u0014\u0005Âð§(\u0003\u0005\u0002\u0001fEûS¢ Ï¯5RK£ÑZ­Æ¿dÏm¢\u0012ü·øñ~yy\t>o+ggg0\u0018\fØRÚo\u001b¤¸KHqâî\u0000Ý\u0017¶kåPë0²;\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0006JIDATx^íÝ¯®]U\u0014ñz\f\u0012\u0007A y\u0004\u001e\u0001D\"+`P\u0004KBBSÙð\u0004À\u0013T\u0011\u0000Kßà2gÒ¬¹2öÙÎØç®E>ñ\u0013sÜ®]óÙÛ¾xzz\u0002þ7ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\bÌJÀ¬ä\b¸üôÇÇ\u001f¨ý*r\u0004\\\"èoÃ§êgW#à\u00121\u001f^?*j9\u0002.ïþíQQË\u0011pi~HÔr\u0004\\º /ZKÄÛ\u0007}iÔr\u0004\\\"\\\u0015ôeQË\u0011ph×Nö¨å\b¸D°·NÖ¨å\b¸D¬[A'[Ôr\u0004\\\"Ô=A'KÔr\u0004\\\"Ò½A§»£#à\u0012\u001e\t:Ý\u0015µ\u001c\u0001óhÐétÔr\u0004\\\"Ì3A§SQ£û ðÜ\u000eG]îcÀ\b\u000eE]îCÀ(vG]î#ÀHvE]î\u0003Àh6£.G÷\u0018\u0018ÑÍ¨ËÑ=\u0004Fµ\u001au9ºGÀÈ^·í.Ê!\u001e\u0001ÃjÛ]C=\u0002FÕ¶»(z\u0004ªmwQ\u000eõ\b\u0018UÛî¢\u001cê\u00110ª¶ÝE9Ô#`P/Ûv\u0017å\u0010\u0011ÉS9ÄC`4«1§rÇÀHnÆÊ!>\u0000b3æT\u000eñ\u0011`\u0004»bNå\u0010\u001f\u0002ÛîS9âqþB#àôkP¡îq(æ$GÀ%¢Ì¨U¬[\u000eÇä\b¸Dg>\u0015s#à\u0012q\u001e\rútÌIK\u0004z$è»bNr\u0004\\\"Ò½Aß\u001ds#à\u0012¡î\tÚ\u0012s#à\u0012±n\u0005m9É\u0011p`o\u0005m9É\u0011ph×þ1Øÿc{9\u0002.\u0011­\nú\u001c\u0001\b·\u000fú²\u001c\u0001·\rúÒ\u001c\u0001&èËcNr\u0004\\\"â_\u001e\u0015s#à\u0012!ÿ\u001c¾R?»\u001c\u0001ùëð]øRýÜMK\u0013ôC¢#àÒ\u0005}yÔr\u0004\\DÐF-GÀ%âUA_\u0016µ\u001c\u0001\bw-èdZKD{+èdZK\u0004»\u0015t²E-GÀ%bÝ\u0013t²D-GÀ%BÝ\u001btº;j9\u0002.\u0011é Ó]QË\u0011p@\u0006NG-GÀ%â<\u0013t:\u0015u9â#_\u0000f/\nvÃQC|\u0010xn¢.ø\u00180ÝQC|\b\u0018Å®¨Ë!>\u0002d3êr\u000f\u0000£¹\u0019u9Äc`D«QC<\u0004F%£.x\u0004\f«mwQ\u000eõ\b\u0018UÛî¢\u001cê\u00110ª¶ÝE9Ô#`Tm»r¨GÀ¨Úv\u0017åPA½jÛ]C<\u0002Fô*|Ô¶»(G÷\b\u0018ÑjÌ©\u001cÝC`47cNåè\u001e\u0003#Ù9£û\u00000]1§rt\u001f\u0001F°;æTîCÀs;\u0014s*G<þ\u00040û&¨X·\u001c9É\u0011p(Ïü3\u0006§bNr\u0004\\\"Ì£A9É\u0011p8\u0004}WÌIK\u0004º7è»cNr\u0004\\\"Ò=A[bNr\u0004\\\"Ô­ m1'9\u0002.\u0011ë­ ­1'9\u0002.\u0011ìZÐö\u001c\u0001V\u0005}IÌIKÛ\u0007}YÌIKÄÛ\u0006}iÌIK\u0004ü&üð\u001c\u0001øïðOøLýÜMKüWx\noÃêÏ8É\u0011pÿ|\u001fôC¢#à\u0012\u0001ÿÞ\u0004}yÔr\u0004\\\"Þ>èK£#à\u0012áª /ZKD»\u0016t²G-GÀ%½\u0015t²F-GÀ%bÝ\n:Ù¢#à\u0012¡î\t:Y¢#à\u0012î\r:Ý\u001dµ\u001c\u0001\bôHÐé®¨å\b¸DGN§£#à\u0012a\t:º\u001cñüË\u0001§\nvÃQ£û\u00180CQ£û\u00100ÝQ£û\b0]Q£û\u00000Í¨ËÑ=\u0006Ft3êrt\u000fQ­F]î\u00110²·m»rGÀ°Úv\u0017åPQµí.Ê¡\u001e\u0001£jÛ]C=\u0002FÕ¶»(z\u0004ªmwQ\u000eõ\b\u0018Ô»¶ÝE9Ä#`DïÂçm»rt\u0011­ÆÊÑ=\u0004Fs3æTî10ÍS9º\u000f\u0000£Ø\u0015s*G÷\u0011`\u0004»cNåè>\u0004<·C1'9\u0002.\u0011dþ¢¬uËá\u001c\u0001òLÐ§bNr\u0004\\\"Ì£A9É\u0011p8\u0004}WÌIK\u0004º7è»cNr\u0004\\\"Ò=A[bNr\u0004\\\"Ô­ m1'9\u0002.\u0011ë­ ­1'9\u0002.\u0011ìZÐö\u001c\u0001V\u0005}IÌIKÛ\u0007}YÌIKÄÛ\u0006}iÌIK\u0013ôå1'9\u0002.ï~HÌIKüæQ1'9\u0002³#0+9\u0002³#0+9\u0002³#0+9\u0002³#0+9\u0002³#0+9\u0002³#0+9\u0002³#0§§\u0017ÿ\u0001ö«\u0012[h_\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000µ\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000Ò\u000fm\f\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0007µIDATx^íÝ]#G\u0012ÅqC0\u0003\u001b!\u0018!\u0018ÂBX\bû`\u0000`\b^\u0006°\u0010A;îÊS'ãvwIY\u001fÿßË=\u001aUF¨\u0015'õõÝÛÛ\u001bp+6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d6\u0004FfC`d)øí¿?ü\t¢í_IAüÃ7`\u0014mÿJ\nÜB ª¶%\u0005n!PUÛ¿\u0002·\u0010¨ªí_I[\bTÕö¯¤À-\u0004ªjûWRà\u0016\u0002Uµý+)p\u000bªÚþ\u0014¸@UmÿJ\nÜB ª¶%\u0005n!PUÛ¿\u0002·\u0010¨ªí_I[\bTÕö¯¤À-\u0004ªjûWRà\u0016\u0002Uµý+)p\u000bªÚþ\u0014`,QØ_ÂÂ_K¡gÒî¤\u0000µE!\nÿ\u000eúä-ôÍý?ü\u0011~\r?º=J\u0001jQá\u001e\u0005T!UPWè»Ó\u0003ø_á'·G-\u001bâ:Q¸ïFßÃÿ+òÝiÒHõÛ£ÏØ\u0010çâý\u001c4RL9\u0017\u0007=xõ Ö3Ò÷naC\u001c+\n§¹XO§³\u0014Ë\\¼y¤x\r±¯(F\ný\u0015}¤Ð³ÑÏnödCôâM}Ô\u0016BûÐ=R<Ãx^\u0014n\u0019)8j{ç¨í,6ÄçT¸G\u0001õ×hæ£6\u0014»ÏÅ=l,\n·\u001cµi¤à¨ÍìQ\u00156ÄWQ¼å¨mæb9j»t¤x\rg¥ÂÚä°£¶³Øp\u0016Q8^½û6R\u001c~Ôv\u0016\u001bÞ÷(\"Gm'\u001fµÅw\u0012[¿zç|wëWï{Øpd*\\à¨í¤Wï*²áH¢pë£¶G/Gmá#Å3lX]\u00147Ê\u000fxÔv\u0016\u001bV£Â=\n8óQ\u001eÀC\u001fµÅWÂqÔ6È«w\u0015Ùð\nQ<Þ(ÿm¤~.îaÃ3Dá8j»Á«w\u0015Ùð\bQ8Þ(ÿõYhÚ£¶³Øp/Q<Ú¾>9j;\r_\u0015ãò_G\nÚ.dÃ­T¸G\u0001g?jÓHÁ\\\\\rß\u0013ãò\u001cµgÃµ(Þìo_\u001fµ1R\f \u0005*\\XÚf\u001d)8j\u001bX\nVÉ2RpÔv\u0003)X\u0015z\u0016jhV\u0018PÛ¿ø®ð@ImÿJ\nÜB ª¶%\u0005n!PUÛ¿\u0002·\u0010¨ªí_I[\bTÕö¯¤À-\u0004ªjûWRà\u0016\u0002Uµý+)p\u000bªÚþ\u0014¸@UmÿJ\nÜB ª¶%\u0005n!PUÛ¿\u0002·\u0010¨ªí_I[\bTÕö¯¤À-\u0004ªjûWRà\u0016\u0002Uµý+)p\u000bªÚþ\u0014à\u001e¢àëï#¼íÇòÚë\u0014`\\QäõçKm\u0013Ü\u001e¤_>\fíö!\u0005\u0018K\u0014V_ 4Ã·`éSý>GjCÔ\u0015Eb¬xÐ\u0003õéOõÛ\u0010µDQg\u001a+t]_glC\\/:ÛX±Û7^Ù\u0010×Pa\u0003cE'\u001bâ\u001cQÔõ\u0017lºâßÅ.cÅV6Äq¢¨Ë/1V\u001cÄØ\n\u001b4VÜýbõ@½ükm>QÔYÆ\nYÆ2ß\bkC</:ÓX¡g²ßÏmCl£Â>\nÌXQ\ráEQ_\u0018ÓSîÝÝÊ\u0015[Ù\u0010ßDQ\u001fgb¬\u0018\rg§Â\u0006\u001dGÍ0Vè:w\u001d+âö.ýy=\u001bÎFE\b3\u0015zæ9l¬ÛÖå²Æ¶á\fbÓg\u0019+ô ý2VS\u001aíñÿ^ÖØ6¼«Ga\u0019+\u000eÖÜÓ\u001bÛw¡\r\r\u001a+ô±â$«û$§7¶\rG\u0016\u001b¸¼÷X?t³ÞÜ»9}¬ØêqÿÖNml\u001b&6L?`:ÃX¡ë»l¬Øju×Nkl\u001bV§Í\t³\u0015zÆ)1Vlµºï­S\u001aÛ\u0015ÅfÌ6VèA[j¬Øêq\u001dï9¼±mXE\\ülcÅ-~qwu]ï9´±mx\u0015]hXÞ$ÄX1¨Õ5~ä°Æ¶áâÂfú¤ôÐcÅVëÝâÆ¶áÑâBfû¤ôT?ä¿ºþ-vol\u001bîMw:Ì2V¨H·\u001c+¶ZíÅV»6¶\r÷\u0010wr¦±B×xû±b«Ç¾<k·Æ¶á«âNÍ6V\fÿÞã#¬öéY»4¶\r·Ò\u001d\b³\u0015C|¤éJ«={EwcÛð#ñ\u001fÎòIiÆ\u0017=ö¯GWcÛ°\u0015ÿÁLf¬è´ÚÏ\u001e/7¶\r%np\u0019+îþj\u001ecÅÎV{Ûë¥ÆNAÜÈÝÇ\nYÆiÝ´Úç=<ÝØ)hnðNþy!\u0004sûßã©ÆNAsc@\u0015\u001b;\u0005Í\r\u0001ljì\u001447\u0002Tóic§ ¹\u0001 ¢\u000f\u001b;\u0005Íb ªw\u001b;\u0005ÍB ²¿Úþ\u0014@YmÿJ\nÜB ª¶%\u0005n!PUÛ¿\u0002·\u0010¨ªí_I[\bTÕö¯¤À-\u0004úµí_IY\bTd\u001bZR`\u0016\u0003Õ¼ÛÐ\u0002s\u0003@%\u001f6´¤ÀÜ\bPÅ§\r-)ú,\"ÐÃ5d¯M\r-6\u0004zìµ¹¡Å@\u000fÓ=jh±!ÐÃ4æ«nh±!ÐÃ4ç+^jh±!ÐÃ4è³^nh±!ÐÃ4é3º\u001aZl\bô0ºUwC\r\u001e¦Y·Ø¥¡Å@\u000fÓ°Ù­¡Å@\u000fÓ´\u001fÙµ¡Å@\u000fÓ¸ïÙ½¡Å@\u000fÓ¼Î!\r-6\u0004z\u0006n\u001dÖÐbC iâµC\u001bZl\bô0¼8¼¡Å@\u000fÓÌ§5´Ø\u0010èqeC\r\u001eW6´Ø\u0010èqeC\r\u001eW6´Ø\u0010\u0018\rÙ\u0010\u0018\rÙ\u0010\u0018\rÙ\u0010\u0018\rÙ\u0010\u0018\rq½}÷7sRºg/\u0004Å\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0003IDATx^íÛÁk5\u0018Ñ\u0017\u0002\u00194\u0001\u0010\ndð2!\u0004#U±°.=3¶G¦ÔÔYÅÿ¹tW½õÛí\u0006ÿ\u001b1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡U°ÓoþúÇðsø%ý¾S°Ó?¾ý\u0017£\u0011vº\u001bôÛG\u001d#ìt\u0019ô[G\u001d#ì4Æ{\u001dôÛF\u001d#ì4\u0006ýQÇ\b;Ñ~4èië¨cÆ`?\u001bô´mÔ1ÂNc¬_\rzÚ2ê\u0018a§1ÔG\u0006=}{Ô1ÂNc¤\u000ezúÖ¨cÆ@\u0019ôôò¨cÆ8\u001dôôÒ¨cÆ0_\u0019ôôô¨ãò18ÁS£^Ëà\u0014\u000fz9.\u001f<4êå¸|\u0000Nóå¨ãò\u0018Nôé¨ãò\u0010Nõá¨ãò\bN\u0016G½\u001c\u0007pº÷û#<£ÝïwZô\u0000Nv¿ßi9Ò\u00038Ùý~§åH\u000fàd÷û#=ÝïwZô\u0000\u000eöûý~§å\b\u000fàTÿ\u001aó´\u001cá\u0011(yZð\u0010Nóá§å\bá$yZð\u00018Åc#|\u0004NðÐ§å\u0018\u000fç\u0019a·¿4ÔG<<æ)FØir:õ+Oy\u0011v\u001aÃ|eÐOy\u0011v\u001aã|vÐ/y\u0011v\u001a\u0003}fÐ/y\u0011v\u001a#}tÐß\u001aó\u0014#ì4úÈ ¿=æ)FØiõ«Ao\u0019ó\u0014#ì4\u0006ûÙ ·y\u0011v\u001a£ýhÐ[Ç<Å\b;á¦Ao\u001fó\u0014#ì4Æ{\u001dô[Æ<Å\b;]\u0006ý¶1O1ÂNw~ë§\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡UÐ*Fh\u0015#´\u0011ZÅ\b­bV1B«\u0018¡ÓíÇß<ì\u001d\u001bÕý\u0018\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000e¿\u0000\u0000\u000e¿\u00018\u0005S$\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0000¿IDATXGíÎ\nÂ0\fEÑýÿOWSò¤\u000b·«\u0015Æ\u00131p\u001cÞmÍÖÚWÁèÑ\t£\u0013F'N\u00180:atÂèÑ\t£\u0013F'á9ñsºk1À!\u001f\u000fuÚ5Â\u0018òÅÓAj;SßÍkßA0\u0006\u001d Ñ¡²Ù³ù¿ï \u0018C=H£%Rçê^Lö¾`\f³\u00035ZJ®&ï¿öT\u0018Ãê`>bçù¸Ì`\fï.Øÿ\u0007­æ·>è.u×\b£\u0013F'N\u00180:atÂèÑ\t£\u0013F'>íx\u0000 a\u0000Ó\u0010\fá&\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000e»\u0000\u0000\u000e»\u0001ÇøÔ6\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0000×IDATXGí1\nÂ@\u0010Es\n=mÐB\u001bADDÈ)Ryüõÿ\"àN&¬Å|xýdg_³EÒ¤^`\u0007.à\u0001à\b\u000e\ngp\u0003÷\u0019®à\u0004¶`SÈ\n¬\töÏ¿@-k¢ô}º®ssåYdTH¸¹m[w8WEFd\u0010òL\bY\t!+ÅBÚ\u0015çæ¥È°+\u0012ò\u0012È°ûJÈ+!d%¬\u0010²\u0012BVBÈÊ ¤QUs%E_\u001d|Ñ[3ì9²E\b)d\u0010RÈ\u0016'~ñcaêzO¡5QË¨e=Ró\u0006¼ ê®£ÝÏW\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 module.exports = "ï»¿<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   version=\"1.1\"\n   width=\"1033.7455\"\n   height=\"220.69501\"\n   id=\"svg5358\">\n  <defs\n     id=\"defs5360\" />\n  <path\n     d=\"m 1033.7455,99.8385 0,-18.18 -22.5763,0 0,-28.26375 -0.7599,0.23375 -21.20505,6.4875 -0.4175,0.1275 0,21.415 -33.46875,0 0,-11.92875 c 0,-5.555 1.2425,-9.80625 3.69,-12.64125 2.43125,-2.80125 5.90875,-4.225 10.3425,-4.225 3.18875,0 6.49,0.75125 9.81125,2.2325 l 0.8325,0.37125 0,-19.14625 -0.39125,-0.14375 c -3.09875,-1.11375 -7.315,-1.675 -12.53875,-1.675 -6.585,0 -12.56875,1.4325 -17.78625,4.2725 -5.22125,2.84375 -9.32875,6.90375 -12.205,12.06625 -2.8675,5.15625 -4.3225,11.11125 -4.3225,17.70125 l 0,13.11625 -15.72,0 0,18.18 15.72,0 0,76.58875 22.5675,0 0,-76.58875 33.46875,0 0,48.67125 c 0,20.045 9.455,30.20375 28.10125,30.20375 3.065,0 6.2888,-0.36 9.5825,-1.06375 3.3513,-0.72125 5.6338,-1.4425 6.9775,-2.2125 l 0.2975,-0.175 0,-18.34875 -0.9175,0.6075 c -1.225,0.8175 -2.75,1.48375 -4.5387,1.97875 -1.7963,0.505 -3.2963,0.75875 -4.4575,0.75875 -4.3688,0 -7.6,-1.1775 -9.6063,-3.5 -2.0275,-2.34375 -3.0562,-6.44375 -3.0562,-12.1775 l 0,-44.7425 22.5762,0 z m -167.11175,60.42175 c -8.19125,0 -14.64875,-2.71625 -19.2,-8.06625 -4.57875,-5.3775 -6.89875,-13.04375 -6.89875,-22.78375 0,-10.04875 2.32,-17.91375 6.90125,-23.38625 4.55375,-5.43625 10.95,-8.195 19.01375,-8.195 7.825,0 14.05375,2.635 18.515,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14,18.19625 -6.36,23.48375 -4.19,5.24875 -10.49125,7.915 -18.73125,7.915 m 1.005,-80.885 c -15.6275,0 -28.04,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.32875,21.53125 -13.32875,37.15375 0,14.8375 4.3775,26.7725 13.01125,35.4675 8.63375,8.69875 20.38375,13.105 34.92,13.105 15.14875,0 27.31375,-4.6425 36.16,-13.79875 8.845,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.205,-27.09375 -12.5025,-35.73125 -8.30125,-8.64125 -19.9775,-13.02125 -34.6975,-13.02125 m -86.60313,-5e-4 c -10.63,0 -19.4225,2.71875 -26.14,8.08 -6.7575,5.3925 -10.185,12.46625 -10.185,21.025 0,4.44875 0.74,8.40125 2.19625,11.7525 1.465,3.36375 3.7325,6.32375 6.74375,8.80875 2.99,2.465 7.6025,5.0475 13.7175,7.67375 5.13875,2.115 8.9725,3.905 11.4075,5.315 2.38,1.38125 4.07,2.77125 5.02375,4.12375 0.92625,1.32375 1.3975,3.135 1.3975,5.3725 0,6.36625 -4.7675,9.46375 -14.57875,9.46375 -3.63875,0 -7.79,-0.75875 -12.3375,-2.2575 -4.55,-1.49625 -8.80125,-3.6475 -12.63375,-6.40625 l -0.93625,-0.67125 0,21.72625 0.34375,0.16 c 3.19375,1.47375 7.21875,2.71625 11.96375,3.695 4.73625,0.97875 9.03875,1.4775 12.7775,1.4775 11.535,0 20.82375,-2.7325 27.60125,-8.125 6.82125,-5.43 10.27875,-12.67 10.27875,-21.52625 0,-6.3875 -1.86125,-11.86625 -5.53,-16.28375 -3.6425,-4.3825 -9.965,-8.405 -18.785,-11.96125 -7.02625,-2.82 -11.5275,-5.16125 -13.38375,-6.9575 -1.79,-1.73625 -2.69875,-4.19125 -2.69875,-7.3 0,-2.75625 1.12125,-4.96375 3.425,-6.7525 2.32125,-1.7975 5.55125,-2.71125 9.60375,-2.71125 3.76,0 7.6075,0.59375 11.4325,1.7575 3.82375,1.16375 7.18125,2.7225 9.985,4.63 l 0.92125,0.63 0,-20.61 -0.35375,-0.1525 c -2.58625,-1.10875 -5.99625,-2.0575 -10.1375,-2.8275 -4.125,-0.7625 -7.86625,-1.14875 -11.11875,-1.14875 m -95.1575,80.8855 c -8.18875,0 -14.64875,-2.71625 -19.19875,-8.06625 -4.58,-5.3775 -6.89625,-13.04125 -6.89625,-22.78375 0,-10.04875 2.31875,-17.91375 6.90125,-23.38625 4.55,-5.43625 10.945,-8.195 19.0125,-8.195 7.8225,0 14.05125,2.635 18.51375,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14125,18.19625 -6.36125,23.48375 -4.19,5.24875 -10.48875,7.915 -18.73125,7.915 m 1.0075,-80.885 c -15.63125,0 -28.04375,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.33125,21.53125 -13.33125,37.15375 0,14.84375 4.38,26.7725 13.01375,35.4675 8.63375,8.69875 20.3825,13.105 34.92,13.105 15.145,0 27.31375,-4.6425 36.16,-13.79875 8.8425,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.20625,-27.09375 -12.505,-35.73125 -8.30375,-8.64125 -19.9775,-13.02125 -34.695,-13.02125 m -84.47675,18.6945 0,-16.41125 -22.2925,0 0,94.76625 22.2925,0 0,-48.47625 c 0,-8.24375 1.86875,-15.015 5.55625,-20.13 3.64125,-5.05375 8.49375,-7.615 14.4175,-7.615 2.0075,0 4.26125,0.33125 6.7025,0.98625 2.41625,0.65125 4.16625,1.3575 5.19875,2.10125 l 0.93625,0.67875 0,-22.47375 -0.36125,-0.155 c -2.07625,-0.8825 -5.0125,-1.3275 -8.72875,-1.3275 -5.60125,0 -10.615,1.8 -14.90875,5.34375 -3.76875,3.115 -6.49375,7.38625 -8.57625,12.7125 l -0.23625,0 z m -62.21312,-18.695 c -10.22625,0 -19.34875,2.19375 -27.10875,6.51625 -7.775,4.3325 -13.7875,10.51875 -17.87875,18.385 -4.0725,7.8475 -6.14,17.01375 -6.14,27.235 0,8.95375 2.005,17.17125 5.9675,24.4125 3.965,7.25375 9.5775,12.92875 16.68125,16.865 7.09375,3.93125 15.2925,5.925 24.37,5.925 10.59375,0 19.63875,-2.11875 26.89125,-6.295 l 0.2925,-0.16875 0,-20.4225 -0.93625,0.68375 c -3.285,2.3925 -6.95625,4.3025 -10.90625,5.67875 -3.94,1.375 -7.5325,2.07 -10.68125,2.07 -8.7475,0 -15.76875,-2.7375 -20.86625,-8.1325 -5.10875,-5.40375 -7.69875,-12.99 -7.69875,-22.5375 0,-9.6075 2.70125,-17.38875 8.025,-23.13125 5.30625,-5.725 12.34125,-8.62875 20.9075,-8.62875 7.3275,0 14.4675,2.48125 21.2225,7.38125 l 0.93375,0.67875 0,-21.51875 -0.30125,-0.17 c -2.5425,-1.4225 -6.00875,-2.5975 -10.31375,-3.48875 -4.285,-0.88875 -8.47625,-1.3375 -12.46,-1.3375 m -66.48075,2.284 -22.2925,0 0,94.76625 22.2925,0 0,-94.76625 z M 462.79625,41.2875 c -3.66875,0 -6.86875,1.24875 -9.4975,3.72375 -2.64,2.4825 -3.98,5.6075 -3.98,9.295 0,3.63 1.32375,6.6975 3.9375,9.11375 2.5975,2.40875 5.8075,3.63 9.54,3.63 3.73125,0 6.95375,-1.22125 9.5825,-3.62625 2.64625,-2.42 3.9875,-5.4875 3.9875,-9.1175 0,-3.55875 -1.305,-6.6525 -3.87875,-9.195 -2.57,-2.5375 -5.83125,-3.82375 -9.69125,-3.82375 m -55.61988,33.3795 0,101.7575 22.75,0 0,-132.235 -31.48625,0 -40.0225,98.22 -38.83875,-98.22 -32.76875,0 0,132.235 21.37875,0 0,-101.7675 0.735,0 41.0125,101.7675 16.13375,0 40.3725,-101.7575 0.73375,0 z\"\n     id=\"path5056\"\n     style=\"fill:#777777;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"M 104.8675,104.8675 0,104.8675 0,0 l 104.8675,0 0,104.8675 z\"\n     id=\"path5058\"\n     style=\"fill:#F35325;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 220.65375,104.8675 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\n     id=\"path5060\"\n     style=\"fill:#81BC06;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 104.865,220.695 -104.865,0 0,-104.8675 104.865,0 0,104.8675 z\"\n     id=\"path5062\"\n     style=\"fill:#05A6F0;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 220.65375,220.695 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\n     id=\"path5064\"\n     style=\"fill:#FFBA08;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n</svg>"
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÂ\u0000\u0000\u000eÂ\u0001\u0015(J\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001ÕIDATXGÍKNÃ0\u0010[ÒG\nBM\u001fBì»=KÀ\u00118\u0004\u0007@}í«.¸\u001d`Ç&|ä0q'M[_úÄ\u001eg~\r®ìNç­àª\u001cI1qUË¤h*ÆÝÄXÔJKA­´d_Æã1A3ÔIÛï÷ÝÁ`puð\u0010ù¯×k^Õùpi\u001fòÅ,·L§S\u000eæ½5\u001c\u000e¯\u0007÷#!å.²[!JÓôÐ=(\u0012\u0002ª±Ènù\nC·óì¡:V«\u0015ieîQahD¸L$ÉÔÊ\u001aU\u0018ê\u0015\u000f29\u0014³Ü¦na¨K¸|$¶[0\u0010\u0012µ/¨RÐ\u0017Û-)\fõ\t=µ\u0004}À;¼Á+¼À3<@¥P\bn·\u000e65ª,År¹4±3\u001aî\bí\u001b2,\u0016Ïù|þÈó¿1ô¡'Û7Ä\u0006ÿ&Ù=¡=CfS\u0013K±©_C\u0001UøRó³7§}\\Cî\u0015EÊ\u0018*ÆdB(¨,ÖvÂP£C»¸Y¤0d¾è\u000bª\u0014w©»ÚZ¤0\u0011.ch61­¯Haèpþ\u000bÚf³aJÏ×°2p>C¾]q±â? 4öÇ@ívË«Ó9íO»\u000feYFÐç|±Úívi$§uèTTi±P¥%ÆB\u0018\u0013©âÝMh¼ó\u0003Z\u001b-Úû\u000b\t;\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001¹IDATXGÍ»*A\u0010@\u0007\u0005\u0003C3E\u0014|%b¤øDÌ\u0014?ÀÀØX\f\u0014\r\f\u0014Á?ðWk«Ûs§«je·ÞàÀôî>Å&\u0000ð§PeLT\u0019\u0013UÆD1QeLT\u0019\u0013UÆD¯×\u000b&\tÌçsb69ôû}Ü&Ïù@£Ñ\bß$_ÂÏøBµZM\fÀ1_j³ÙÀjµú\u0011Ëå\u0012\u001e\u0007æÜ¶³H%¢×ëaµ¹ É\u000eb·Ûaµ¹ É\u000eâù|bµ¹ É\u000ew\rBd\u0007CÁ»\u0006!Þï·8h(\u0016P­V¡R©ür¹\fB\u0001snÛ Äù|\u0016Ã\u0018ø¾P\b±Ýn?\u001d¦Ûíùj4\u001aD³Ù$Z­VJ»Ý&:Î·0{óù|ÚH\u0007±L§Sgñx\u001a\u0012óÈz\fCj\u0018Ä@õzÝÙl}ÖùÆ6¨]Èl¼Ýn¨äWóÉ~¿§Å\u0019Ä¿¹\\\u000e®\u000bm¤-!ØF»\u000emd\u0002Õb±ÀGH®×«sOJ¥\u001258Rúÿ\u001c\nÛà8ûý\u000e§Ó\t\u001f!\u0019\f\u0006â\u0012_¬×kjh¨ÒÀ/ñ\toeQ¥áx<ÂårñÊápÀ«õE1QeLT\u0019\u0013UÆD1QeLT\u0019\u000fH>\u0000æ\u001d¨\u000eZ{l©\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000\u0010\u0000\u0000\u0000\u0010\b\u0006\u0000\u0000\u0000\u001fóÿa\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u0011\u0000\u0000\u000b\u0011\u0001d_\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001eIDAT8O=KÃP\u0014ó¡ù¨ÅZÅ\u0010\f\u0019ÜtÈPü\u0001Ý\u0005ÿ¿ Ð± Y\u0004\u0007ÁÅ1\u0012\"\u0019+\u0016:I\u0010ÄÁAèV\\DPtq\u0013Mr}Ob°ÕØ¦>ð{sÏ{Ï½$\u001cØ»P¡ÉØ\u001fÐ2½yx\u0000CèÁ¼M \u000eó\u0011á\u0011a\u0007Ò¦\u0019&¼Él\u0002\u0002<t\u0013(A³Z­\u000eá\u001bÆkp*´É>¼[Jå¾ßï³z½þù:,\u0004]§®\u000fA\u00100Âu]&Ëò\rÞ¯&\u0015S0©s\u0016&â8fã0A\u0010n±¾åcËåa·ÛMB?i·Û¬T*]¡N¿¾Ê\u0002<GÁeY¯­V+¢è+úçyLÓ´;çÏP¿$G `\u0005ê¢(ºF\u0003\u0007\u0019?\tÍ{½\u001eSUõ\u0011u\u0014ú\u000b\t]NÍæØu\u0006\u0001Óuý\u0019ë\u0013Ã\u0019s cÛv\u0014a\u00126\f:×Òåb¨¢\\û¾u)q,IÒ\u0013\u0007uÝH£pÜ'\u001ez³-ÜC×\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÂ\u0000\u0000\u000eÂ\u0001\u0015(J\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002|IDATXGíÍ«qQ\u0014Æï@>&(Å\f\u00180!ÅÄ\u0011\u0003\u0006R2¡$R\"å£D¾\r\t\u0013EÊ¸îY«wïws÷«¼ù\u001aÜÁ/ëÙ³×c³ý\u0005\u0000\u001ftðH\u0007ßZ(ò\u001d¨2¨Æø*T\u0019TBbx&²~¼ ¡1ôû}¸\u0005óiév»P¯×¡ÙlB§Ó!ïh4õz­|ý×§íGc*¡10ý/OK(\u0014\u0002³Ù\f&\tt:\u001dyñ\u0013µÓéñx¬Øpøç<¼ !\u0018ðWa\u001dÇ¬\f]§e¿ßÃr¹Éd\u0002Ãá¼¸R±XáÊ¡OìÇà\u0005\tÁ`}«ñ½ôz=\náPý\u0018¼ !\u0018\u0011H;§ØÁ\u000b\u0012á\u0019pep>&\u0010>;ø`L |\u0015àîN§T÷cð`xF J¥\u00026¿Ä~\f^\u0018¬\u001f/Hü\u0006ú\rt\u001bY?^øä@ét\u001a\u0002\u0000\\.\u0017Ò P(ÛíÓé¤È;\u0003e³Yðù|p<\u001eI?r¹\fv»\u001dv»\"ï\fÏçÁãñÀáp ý\bðMm±X`>+òÎ@Åb\u0011\\.\u0017ÿ5 ÝnÁ`ø¿ÿ²R©\u0004\u000e\u0003¶Û-éG ý;\u0012û1xAB0T«U°Z­0\u0018\fH?\u0002< á\nµZ-EÞ\u0019¨ÑhÐÙ%\u0012@.L&\u0003©T\nÉ$$\u0012\tÀ]§å|>ÓÊ®V+:?ãàíÂ#¬^¯Ùl¦Øî\f´X,\u0000\u000fë¸M½^/øý~\b\u0006\u0010\u000e!\u001aÒäì:-\u0018\u001co7>ÀF£æÄA»ùÄ~|L%$\u0006|g0®×+!~/c³Ù\u0000>µZn\u000f®\u0010»KÜ$²~¼ !1<\u0013Y?^øcx5ª\f*¡1¾\nU\u0006Q|\u0002ÒÁw\"\u001d|\u001fðõ\r\u0016½4®ZõY\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002²IDATXGí±K2q\u0018ÇÅ!u(\u0002ApilJ¡!TBÄ\bjpQÿÄE\u0004ÁA\u0010LPt\f\u001a*¢\u0004­¥Át\u0017ÁÉ­ÀÁE\u001c\u0005çç½çÇû\u001cw?ðz÷\u001aúÁ»ûÞÝ÷ûõîÔßY\u0000àGÁfÂfÂZÉ$8\u001c\u000e°Ûí\u000b±²²\u0002N§\u0013nnn\u0014[>\u000baEâàà@9Â²tnoo\u0015{>\u0015\tÙhY¸ÝnÅþLN$d£e±¶¶¦ØÉl´,Ö××\u0015û/29Å?\u0017ÚÙÙ··7x||ûû{¸¸¸X,&L].\u0017<??×ëUl6\u001bt:\u001du\u001b999f³\t­V\u000b*¸]\u000b\u0015Íf\u0010Fáøø\u0018\"\b\f\u0006\u0003H§Ó¢\u0010^¯§c!\u001c´]¯×áéé\t\u0002\u0000lnnB6Ñh´x!\n@\u001a\u0006<<<¨p}ÚBáp\u0018ºÝ®î\\äõõ\u0015\u000e\u000f\u000fÅa\u001c¬HP!«Õ*ØØØ÷÷w8==U\u000bíîîe0\u0018Ô\u0015*Ëp~~®+C,t´£ßïC±X\u0014¦T\b×ïîî`:ê\nÕj5¨V«b\u001d\u0019Çb\u001fR©\u000b6\u0015\tî\u0011ÚBÈÇÇ\u0007¼¼¼¨Z\"v»­î'ð¹Êçóâ0\u000eV$¾Sn\u001d\u000eÜ^]]áp\bLFwÎçççÿ)är9æñxÄ×Æd2B¡`þ\u000f#>[øÿEÛ¦\u0017ù-4ßBóøq\u00109`EB61Êöö¶r:ï9\u000fV$ä £\\__+§åèè\bâñ¸½½=1¿¢\f\u0019V$ä £\\]]RÜ>\u0015È9ZXÍð*Èúþþ¾bËg\u0011¬HÈFá\náMöç`EBkø\u001däB¡PH±ã3dX Ãï¢-ôwZÂús°\"J¥tAF¹¼¼\u00143FØËó`E-øiñ­ÁçóßïËÖÖx=}ÂfÂfÂæ\u0001?eC\u0019\u0013\u0004Ï^Â\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÂ\u0000\u0000\u000eÂ\u0001\u0015(J\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0001îIDATXGÅMNÃ0\u0010Û&Í\u000f\b5ý\u0011bß-ìYr\u0004À!8\u0000êß¾êÛq\tvlÂ<'.öxRì¨rô%£Ì³óäºrFu]+¸ôóØü\u0015L¦)&ÍE\u00107Æ¢S9\u0006Ì1\u0018eY69Nã6ÇYªÙ!>Él6£Üó¡¤v»\u001dfSð^\bJyOÊO|Åbq\u000eÓ´í~\bÐ¸([UyJ\u000f6WÅD÷û\u0000M(Ðª<¤\u0007òU1Ñ>@X¡RU\u0017¤\u0007l·['\u0000G{û DÒ¦reçó¹ór\tsL(\u0010VÈùÛCÚä³*&z\\\u001f \u0002%ªbÁwULÌ\u0017\u0002¥\u0014hªªVh®ùP kSãaUa<\u0012/Ä+ñF¼\u0013\u001fÄ'\u000fÀÆeYÞ£Øl6|âhXV«ÕÓz½þÒÍ!à)Ð·n\u000e\u0015~²\u0007\u0014´èæc`\u0005¢M«ªÕ\u00156u0<uÚ£1Øß\u001e\u0017)æÒ!Ú9>\u0014È9:¸©ë3£\u000b>>\u0004hJ¬£C2\u0002ßÕâãB\u0010¨RU+É¨ñY->&\u0004\b\u001fh7ªj%\u00199ËåÒ\t¢áÞ\u0010 \u0004:ojÉÔÅ~¿wÂ4SÈ~\u001f >ò3U$ÓðÕâý\u0010 lhë´ïÃáp¸N $IÒãñX¨4$É\u0014BUUt{>±\u0010%\u0019c!J2Æ¢¹\u0018âØ\u000f£\u001eý\u0002\u0019-Ú>üÙã\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000e¿\u0000\u0000\u000e¿\u00018\u0005S$\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001\u0012IDATXGÍÓ½@\u0010@aj £\u000fú@\n $* Hnv¥µ}Ü\u00130ËIãàµoÇhädß÷¯Ñ\u0012FK\u0018-a´Ñ\u0012FK\u0018-a´ñ®iä\tÉ/UUÉ\u0015ÏßñJY\u0016ù´,ñ{¯`¼\u0012\u0016*BïÞuÝk©Ï®ñmÛüBÃ0ÈgÎ`|b\u001cG¿Ð<Ïrä3\u0018\b_Y]×rä3\u0018c5Mãqwwaõt\u0019\u0007c°û\u0007\u001eï40jý×2\u000eFu]ý2}ßËg40jOçØcaÔøÚÚ¶#Ïh`´Ñ\u0012F­<Ïåï´0jßs¼Q#Ë2¿L¦rä\u0019\r0ZÂh\t£%0ZÂh\t£=ù\u0001-\nÆÎh+d\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\fíIDATx^íÝå4\u0010\t\u0010Hs\b\u0010\b\u0010\b\u0010\bg6\u0004B \u0004È\fªÝ1\u0018mÝUË¶~Ú®ï¥f®-Ke¹Õå¯ÞÞÞ¹\rR4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4&+R4kñío}ÿÎÏ\u0005\u001fuõ§\"E3\u0017ô\u001bð\u0013ø\u001d¼\u0005ù\u0003ü\u0002~PÇ|\nR4s\u0019Ùã~\u0000Ê°-ü\rhîoÔyî\u0014ÍXh<p\u0015¿Ç\u0018[f\u001c0\u001bC\u000bö¨ÊWÂ\u001eûkU;!EÓ\u001f\u000b°÷TæëÅàÖH)¾ÀT43\u0007qÊt#øYë\u000eHÑô\u0003fmæ\rfPn\u0017HÑô\u0006\u0002gÌÌXF$\f\u001fÔÿ´À²ÜÊÔR4}yZòÊ\u001b³\u0000ÒxÐ·\t£\u0006¿©¥h®\u0007¦aA\u0019ê\u0015Íé6ü?Í}d ùA\u001d/#R4×\u0002Ã°UFRÎDà÷ßÖ§ÁêXÙ¢¹\u000e\u0018qs4Ï|éã\u001fÇjÉqÿ©\r)ëQ¢3]bY\u001c½u-¾æßiþô±´\u0014Í5À iJº\u000eÌxì÷sìÏI\u00133®ÿNý&+R4×ðn½\u0014\f\tº\nç ©oiâ=R4çi~\u0004ÊÀ%?©ßcHÑ\u0007FôÎ¿«ßãHÑ\u0003FöÎ[¯Ü\u001b)sÀ¨Þù¶\u000bf\"Es\u001c\u001852Âàm¦WBæ80j$ïìÞ¹\u0013R4ÇQù*2ð\u001e÷Î\u001d¢9\u0006ÊÙ6eâ=¿¨ßk¢9\u0006Ì\u001a\u0019\f:³Ñ\u0011)v`T®P\u0006Þã¼sg¤hÚY#ëo±Dse¤hÚYËÅ?%«ßk¢i\u0003fd7~U¿5×\"EÓ\u0006Ì\u001aÉn<zÏ¹QHÑ´\u0001³Ö&S\u001cn\fB¦\r\u001a¶0pÃAHÑÄY#ñ³³\u001b¢C³\u0016æUx2e\u0010R4q`Vnò¢L¼áøy R4q`ØÚÐ³\u0003¢CÃ\u0016\u0006.ñRÑHq%`\u001fÆ)Qÿ;\u0003¥á°¡\u0007\"ÅY ñùª=\u0007YÜ-²rÓÍa§\rºvey¿R5\u0010)\u000eÎîfß¼¹á\u0015\u0014ePØÐ\u0003â(ÐØ=>3ô\u0011/Î_â)ïHq\u0004hè\u001fËéºµÖâ¼\nÇÐ\u0003bOÐÀ¯î\u0015CLsÔ²\u001cö\u001e\u0014{ÆU\u0006ö¤»©qüÚÍymj³ Å\u001e aGyã\u000fU«Àñk3Äqô ¤Ø\u00034ê0ã\u0015ÝÞ´Æ±#ï\u00122\u0005é­\u000b\u0006 Å«AcFz±\u0012Þ\u0000\u001c8~öÆÝZÓ|ÝzI\u001c;3·©;#Å+A#2Ç¬\u001aø\u0015á|2þ½c4éÖKâ¸7V\b³:\u000e?:\"Å«@ãml«Æ-ac7OBà7-±y\u0014\u001aË2´¤ \u0019ñK\u0007¤x\u0015h´è§ÌhÈÃ³|øm©»Ì&â¸Ñ-t÷ðfg\u001dÙÜ\u0017!Å+@#EÞä \u00028\u0006ÃH/Ù-/c\u001dø²ç¦ÁysØä\u0007â\u0015 A\"6\u001að²ï}àXÑX¶W/Ý#5É:¢Ñy³ppM¶U\u001ed\u0016Hñ,¨èhï|ù÷EpÌÚÌ\u001déÙK÷0uÍôd3=3A4ýð\u0005[3âYPÞ¹Ë\u001c8n$«B\u0003tëÝxl\u0010¹±FÂl3<C[~\tKg@E±1Utë9pìº}\nç y\"qýL6¿ü@~&¤x\u0006TJ$íº`\u0007ÇôÒCÖXà<\f¿Z'fB³\rS*R<\u0003*\"wî^Y8G¤\u001eöØÅ¹øäbO\u0018ÍË¯\u0000Ã\u0014'izn)\u001e\u0005\u0017\u001eY×ðAýöjpH^xÊÒNõDs\u001e<\u001ea\u0013ÓË÷ÚR<ÊûE«\nÙ3lê\u0017çªÅ¯Ó÷Ì@\u0019Øs3D¢Á[½\u0007gø´l-Å£àBk=ÎP\u0003á|KÝ`- \\ìÅ7£\u0013Pd\u0005Ã³£XòÎR<\u0002.0{\u001eúÁ\u001c/\u0012\u0002¥}£\u0004e§á\tÃ+70M?*áyJÿIñ\b¸°HÌ:¼7Ä9zj\u0004×¶3áiö«Ó<Þ2QJñ\b¸¨ZjjqpÞH\u001añ\f¯ÀõÒèÌ;³G¿ª7_âI'Å#àj±ÝìF\tÎ»\\(´\u001a¸~\u001a½øÙ|ùtSK±\u0015\\\b+D]ài\b»v³u}ï0\u0013¨ÍÜG{î©SJ±\u0015\\\u0004ã4uq{¦-Ä¹#ÙG-â:a»F&¨J¦õÔRl\u0005\u0017À\u0001º°)3\u0012?rÃyý\u0017 nX­éÂ)\u001bìH±\u0015\u0014¾¶°}ú\u001eÉ(Cmt6}7\nÔQµã*\u0018þTb+(xí±4Ý,(Cí¦óNû\u0001POì­£©¿áìH±\u0015q!%Ó÷wC\u0019\"yòG¥ïÂz\u0002QS\u000fm{)¶\u0002G2\u001cÓßC\u0019\"é»%§sW\u0004u\u001555ÿgØÚ\u000f)¶ÂF\u0006\\Kô|(Ç¹ò¬ ¾\"K\u000bÈ°B- °UC¿\u0005Ê²älffPgâ°XZ- °µ\u000bZÆ$(ãè\u000e Î\")½!õ*Å\u0016PÐ¡ù¬\u0019Êâ8º\u0003¨³HG1dy\u0014[`A,õ>Çqt\u0007PoK,/b\u000b(h-\u0007½Ô'\u0019P\u001eÇÑ\u001d@½U\u0017¿é\u0014[@A³\u0019Úqt\u0007PglW÷ô­\u0014[@!³\u0019:\u0012G{]Ç\u0001D=t¯W)¶BÖ\u0019.g\u000e©\u0016ïy]Ç\u0001Po5/tïÜ¤Ø(tÉr»h¢Lµu\u001dþÐÏ\u0001PoÓÖRlA\u0014ºdECG^ËòúèFPgÓ\u0017©I±\u0005Qè\u0015\r\u001d²u\u001cÝ\bêlú\u0014[\u0010.YÎÐ\u0004åª-¬yô{G@ÕR¢î¡{rÕâh¿gØ\bêÌ1ô,P®È¢ôÛË\u0004õeCÏå*Ê©ð'Ø\u001a@}ÕÂ8\u001bº'¢¬%£ ®xÑC-B¬lèÚ#Òqt\u0010ÔÕ\u0012/zH±\u0005Qè\rí8ú\"POÕº,Ó\u0003)¶ \n^°²¡\u001dG_\u0004ê©ö´\u001b²X-,kh\"Ê[â8º\u0002ê(\u0012?§Yà¯\n¿guC;>\tê(²$wÈN-  µkÝS5g`ùò*\u001cG\u0001ÔOm\f©C)¶NO¦\u0001ås\u001c}\u0002ÔM$Ü\u0018ö\u001a\u0014[`aÂ,mh\"Ê\\â8ú\u0005¨ÈÊÅTûr0~âclß^:n.Ayk7¥×G¿uSÔbØR\\)>\rTx$öúè\u0002Ô\t;0UW{¾E/Å§J¬ö~\u001d\u0005¨Ú\f]W.Å'¯-¬ñ~\u001d;P\u001fÁôð-!¤øDPùÕ\u000fæ¿y2¨Hï<<! Å'Ê_fr`uP\u000fÞ\fÏßKñ°òÆPx{\u0003zd6¦Ô\u0014\n\u001aá±_:dÈ¬\u0014\n\u001aÁ_ý\u0002¸vî:\u0015ÙµÚD\u0014\n\u001a\"¾{ì¬!®=²fcè'(J¤ødÐ\u0018µøða\u0007®;2B¦.uâAD¾:û¨l\u0007®7\u001ajL_\" Å'F\u001dÊvàz#9g2}\r\u0014\u000e\u001a&zÄ\u001ai\\g4«±ÄLª\u0014\u000e\u001a'í¸ýÞw¸ÆhÜ<u ¸GO\u0007\u0013Ù\u0014ýÖKJq}\f½\"q3YfL!Eó±A#)ªTë¾£àº8kZdÚXj<!Eó±Q#k;úÂ×Uàº¢fæXc©±\u0014Í'ÐXGî­\u0016þãzª«\u000eßaÝ,7k*Eó\t4Xd\u0014\u001e¯¥¸¶/±ä Xæ\u0013h´Èà¤ï¥q\r-f^ö&¢ù\u000f6^ÑÔ±4Êßbæ¥¯Uæ?ÐÑ^:eÆ\u0003ån13\u0007KO(IÑü\u001f4b¤ÑSå¥Q^¦æ\"©É%\u0007%R4ÿ\u0007\r\u0019í¥ßT -yfÂÌDæsÐ ÑGóÒ\rÏòè\f Icf\"Eó9hÔè\u0012ÊeãL+2Y´'\u0014\u0006jåÙ\u0006ÊÓ\u001a/tf&R4¯A#§ZãrpËÈrØ=)ÍL¤h^ÃÞ5|i³i87{åÜFZ3\u0013)/\u0006\u001edøKµ8'×sGâýåóÌ5¤hê¼7¾2ñkw£à\u001c\u001côµ\u0017\u001bCÊØ\u001b):l|ÐÒ\u000bÒh]f\u0013qÜ3F&)òç\u0011¤hbÀ\b­9]Â\u0017NOÇ¨8\u0006Ó|CýHh±ÁßÞê\rv)80Dknw!\u000bcÝðJ=ü/3\u00164qK¸ó\nÞXéC\u0012)6`£¦Þ`¸@q°YÂØö\n\u0003o°W¾íæíR4íÀ$4õÇÿ\bxÓÜúÓ\u001aR4ÇYÄÔ#à\u0013à\u0011»=IÑ\u001c\u0007Æaö#ºÓPoxs1l¹]¬ü\n)óÀDG'7®àqFÞ¢¹\u0006\u0018©µ#ÓÏGahÁ\u001béqFÞ¢¹\u0016\u0018l3v\u001eÇä±o¹éM+R4}é\u0018_3\u001bÂTÜ\u0019s3Ç|´M\\ E3\u0006\u0018Y\u0011\u001a|Ë7s0YÂÞçÿÙÀ\u0015¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLV¤hLNÞ¾ú\u0007(`L_zgE\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000µ\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000Ò\u000fm\f\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u000f\u0000\u0000\u000b\u000f\u0001ù\u0003¥\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0007FIDATx^íÝO]g\u0019Çñ¡R\u001bÐ*Öj« hÈ¹çÌTîÂ(H\u0010\u0015ñßÎnt)þC¨R*ÔM²éFAPp\u0013(\u0014\fÓÌ{Æ\u0012P\u0010ÄP\u0015¡.¬EeÌÌ=ç6C\u0017\u0005\u0017º\u0012ÄëÂKü9yÎ¼÷9Ìsø.>\u001fyçÍÜûM\u000e7³2ÍA#\u0010\u001cÈä\bD&G 29\u0002É\u0011L@dr\u0004\"#\u0010\u001cÈä\bD&ÇEãk\u0007§Ëª¹R¤z\u000781¶&V½\u001eã¢r³y[\u001bõ?Z3à¤(Òä\tÕë!9.\"jDDÁ!j\f\u000eQcp\u001aCÔ\u0018\u001c¢Æà\u00105\u0006¨18DÁ!j\f\u000eQcp\u001aCÔ\u0018\u001c¢Æà\u00105\u0006'+êqµ÷@ê¿©y\r81ªæ+ª×Cr¼ÝøÆìÞµêSÀI±rivjõ\u001cÈä\bD&G 29\u0002É\u0011L@dr\u0004\"#ºûÀóÍ#£W7réfÙ~Áÿûo°.\\º~Ïhk_ïêÜNý°ºcÑZ5y:ÛU±½·þX5»[Ý±LrDwE<sû£ÜcIÍ?ÏýôÖÛÕ\u001dsåÎ«ï)Rýoy¾£¢j~¤îXT¦úûêlg©þ×F¾[Ý±LrDwDm@Ô±\u0010µ\u0001QÇBÔ\u0006D\u001d\u000bQ\u001b\u0010u,Dm@Ô±\u0010µ\u0001QÇBÔ\u0006D\u001d\u000bQ\u001b\u0010u,Dm@Ô±\u0010µ\u0001QÇBÔ\u0006D\u001d\u000bQ\u001b\u0010u,Dm@Ô±\u0010µ\u0001QÇBÔ\u0006D\u001d\u000bQ\u001b\u0010u,Dm@Ô±W\u0014©ùZ®Qª¿tæ»÷©;æÆ\u000fN·1~Uïj´]XÝ±h}{ÿêlWmÔ_>¦÷«;I@dr\u0004\"#\u0010\u001cÈä\bD&G 29\u0002É\u0011L^T_lý&WYÕ?»Ó?â\u0017Ïí½³¨ê_«ó]GüÒ¹QªTg»j¿·_¬>ÿúÕ\u001dsg7ÿú`ûg_¸ýìqRóMuÇ¢Q|]í¬ªu§§¥Ë G/í\u001bþçÑé1´/ÎßWùËo|¹Ù¼¯½ï?ê|WEj¾§îXÄcr!>&'j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£\u0017¢6 êlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69z!j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£\u0017¢6 êlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69ziß\u001f´¡ÝÌÕ¾\u0011/¯\u001dVwÌ\u001d¾xêì±¤úÛêEE>-ÏvÔ¾F/o<;y«ºcîOõ¤zWïªý:\u0017Õ\u001dÚ×û)u¶»æÏë;¯=¤îX&9\u0002É\u0011L@dr\u0004\"#\u0010\u001cÈä\bD&G 29zÙØnFEj>oza¥ªîVwÌùùî}úlw£«ÍûÕ\u001dÊtkUíjôÉG/\\Ý£î[«^9Un5\u001fWç»Z¿ºwVÝ±h-MÏ¨³]ÛõÇ\u000eÿîêe£ÇäwÆcòlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69z!j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£\u0017¢6 êlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69z!j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£\u0017¢6 êlrôBÔ\u0006DM^ÖªÉ££­æsùö?ùX5;òã\\ï}vò&}¶»2í¯ª;\u0016­oM\u000bu¶«r{ò©;kvj´]Vïj-ÕkêEÅæä:ÛUûøÁ}\u000bè\u001cÈä\bD&G 29\u0002É\u0011L@dr\u0004\"£\"5ß-ªúOùß/ß8ò\u0017\u0019­>×<ÒÞ÷²>ßM¹5ùºcQêêlg©~q\\í= î[ÿñÍÊTÿQï¬yJÝ±¨}\u001dÐg»j^z4í¾CÝ±LrôÂcr\u0003\u001eg£\u0017¢6 êlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69z!j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£\u0017¢6 êlrôBÔ\u0006DM^Ú¨³ÉÑ\u000bQ\u001b\u0010u69z!j\u0003¢Î&G/Dm@ÔÙäè¨\r:\u001c½\u0010µ\u0001Qg£öxºýÆþ«}#~y>MïWwÌ»R?Ü¾¿Wç;Û~CÝ±¨ý;}Gí¨ý}áÌÝ·¨;æ\u000e?=Ò¾/ªó]Rý¤ºcQ{×ãêì1üîìæÁêe#\u0010\u001cÈä\bD&G 29\u0002É\u0011L@dr\u0004\"£\"ÝúPQÕ_ÌU¦úó\u0017.]?ò÷¢¯\u001d.Óô\u000bê|W£­ý\ru\u0007N&9z\u0019òcr\u001crôBÔè\u001c½\u00105ú G/D>ÈÑ\u000bQ£\u000frôBÔè\u001c½\u00105ú G/D>ÈÑ\u000bQ£\u000frôBÔè\u001c½\u00105ú G/D>ÈÑ\u000bQ£\u000frôBÔè\u001c½\u00105ú G/D>ÈÑ\u000bQ£\u000frôBÔè\u001c½¼\u0011ÚÖä|¶ª\u0019¯\\Ý¥î\u001b_¾q¯<{\f}ü§X\u001e9\u0002É\u0011L@dr\u0004\"#\u0010\u001cÈä\bD&G 29\u0002É\u0011L@\\³ÿ\u0002±\u0011\u0001r¼A¡Z\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0006IDATx^íÝÁd\u0015DÑ1A&È\u0001ù0È2¢µ@>\t2AB\u0006ÈRôî\u0011\\è¢¡:úîâl\u0017\t±ÈÊü¿}||H¯¡ôT\u0018JO¡ôT\u0018JO¡ôT\u0018JO¡ôT\u0018JO¡ôT\u0018JO¡ôT\u0018JO¡ôT\u0018JO!ùË?þó7é'ú3íð{0$9ð!ýD¿Ó\u000e¿\u0007C\u0002\u0007¥¯ä õ*\u000eZ¯â õ*\u000eZ¯â õ*óAÿ+þx'woÿû^þ\u0017ôº_ÍíLæþ¡\u0002\u000bOîÞÒýÛ?!î{ù^÷«©ÎÄAÖ»·twÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\nlÃ\u0002;0$pPúJ\u000eZ¯â õ*óAÿ=¾ýò\u0004OîÞúóè·ÏÔôº_ÍíLæþ¡\u0002\u000bOîÞÒ½Çá·\u001c\u0001\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø|hÐ\u000f\r:0$pPúJ\u000eZÏô×þr\u0007­W\u000fÚ\u0006môçQ\u001f\u001aô\u0019p°ýP'woéÞãð[ÏÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!Í§`mø\u0014¬\u0003C\u0002\u0007¥¯ä õ*\u000eZ¯2\u001f´OÁÚèÏ£>\u0005ë3à`û¡\u0002\u000bOîÞÒ½Çá·\u001c\u0001\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001cl\u000ez Ý\u001dô!ÍA\u000f¤»>0$p°9ètwÐ\u0007\u0004\u000e6\u0007=î\u000eúÀÀÁæ \u0007ÒÝA\u001f\u0018\u00128Ø\u001cô@º;è\u0003C\u0002\u0007\u001eHw\u0007}`Hà`sÐ\u0003éî \u000f\f\t\u001c¾Ö«8h½Ö«8h½Ö«8h½Ö«|ù ~¢?Ñ\u000e¿\u0007Cé©0\nCé©0\nCé©0\nCé©0\nCé©0\nCé©0\nCé©0éã·ÿ\u0003¼ÖºÆýwq\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002XIDATx^íÒ±qÝP\u0000\u0003A5ä\u001eT¯»r%~Ê¹ð1¹Á&a\u0006_×uÁ##¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª§üùûï\u001b>ê\u001fOÈxÊï\u000b>îßxJÆSj\u0018ïtÿÆS2RÃx§û7ñ\u001aÆ;Ý¿ñ§Ô0Þéþ§d<¥ñN÷o<%ã)5wºã)\u0019O©a¼Óý\u001bOÉ\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°*#¬Ê\b«2Âª°éúú\u0001kI¦:o\u000fj\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.!\u0000\u0000.!\u0001\u0007[üÿ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\fJIDATx^íÍ­%·\u0011\u0015Bp\u0002\u0006\u001cBP\b\na2°Ö^)\u0001\u0003Zk¥\f,ÀKo\u0014¼5\fC\u0019Ï\u0019O\u001bw8g^W³ùWì³ø6ç½Û·YUM\u0016dß¯Þ¿oÌ6HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ¬HÑ\fá\u001b¡HÑ\fÁ\u0001Ý\u0001)!8 ; E3\u0004\u0007t\u0007¤hàî\u0014Í\u0010\u001cÐ\u001d¢\u0019\u0003º\u0003R4Cp@w@f\b\u000eè\u000eHÑ\fÁ\u0001Ý\u0001)!8 ; E3\u0004\u0007t\u0007¤hàî\u0014ÍùãOÿüÒ¯ò×üçG\\ë\u001dø\u0006üAý¹\u0014Íÿ`ð~\f:\u0006ß¯à=)ÿ¯?ÿí_\u001f®Uð\u000bø\u0001|\u0007\u001cä\u0015Hñ©0\u0000\u0003øg \u0002î\u0003åçjøB@ü\u000eø01À¿V×1\"Å'@a/Ì^ñ7 ê3ÊkÔ\u0010\fè\u0012\u0012|àÜ{\u0001)î\u000e\u0002âë\u0011\u000eâWÊëÕP\u0019Ð¯0=ùN]ûÉHqW\u0010\u0000q\bW\u0001\u0012¦¼n\r\r\u0002úi\tG\u0018÷Ú@»\u0001g3Ù£©¸Lyý\u001a\u001a\u0006ô+|X\u001f\u001dØRÜ\u00058·i \u001fßSC§>xl`K1;pf@>(¿¯¿üýßÿ/\u0003väq-Å¬ÀyìÝÎ\u0005<òº\u001f\u0016BÔwWðá:¸\u001eK|\u0000¿\u0007,\u00172'V÷P\u000b¯÷}ñÝÛ\"ÅÀi\f¶VÁðZÿíÕÃ}ñÁÀw\u001e\u000b:oÖÃ/Ârûåv)f\u0002Nb\u000f×\"½8ø[õ=\u001d\b\u0005\u0017î£\u000e\u001f¬VÁÍÈ¶4RÌ\u0002\u001cCGßígÕs/÷¸Ï[õó\u0017øù&{RVC«\u0003g´Èùù\u0013¦[Ã?î½ÅÄ÷ºvf¤¸2p\u0002óËÚ\nÁ\t\u0012XaÈmÏ¢-L¹î<ÜLe¶IA¤¸*0ü· 6Å ÓWr\\Ó\t\u001aÚv§Çf\u0007±E\n\"Å\u0015Á/+gA'¯Xm\u001aÐ\u0007h+\u0003»&ÇfG>¨¥¸\u001a0tÍJ\u0007ªXÔÐ% \u000fÐv¦VÊ.g¤Þð$Åk9C^Ø5 \tlP;ßH\u001bÔR\\\u0005\u0018öj0¯Þ+¿Ò= \u000f`\u0013Ö½Þ\"ePKq\u0005`Ð«ÁÌ(Ó¾a\u0001M`\u001bæÖW'ÔéZ³!¯\u00063ÿ?[éih@\u0013Ø%¾«)Hª âL`À«ÃcÖÅá\u0001M`¯E©,iÜZ\u0001\rÃ]-ÍeO\tè\u0003ØîJP§)éIq\u00060\u0018s<eL\u0005\r<3 Z<HÓ\u0003\u00046ä¾\u0010e_\u0005m¾|Z'ÅÑÀPÌí¢\u00134½E\u0006`Ë+£â¯ê\u001a+!ÅÀHÌé¢\u0013\u0015\u0007s\u0007`Ó+Aý£ºÆ*Hq$4Pa°·wî\fl{e2¾ìÜE£a¸ÙH\u0019Ly\u0002\u0002Ø8Ú¹p¤\\²æ/Å\u0011À L5¢yócÎÄÍ\u0006¶îØûE}~6R\u001c\u0001\f\u0012=R´tÎ¶\u001b°÷9Írk\u0000Rì\r\f\u0011M5hØm6g\u00016ç¦¦Èè¹\\ê!ÅÀ\u0000ÑTÿãÆ$`ûhåc©ÔC=\u0001¢³éíÎ»e\u0003>¦Ë,K±\u0017h8\u0017PAJ~V7c\u001f8FN¿ü¦>?\u0003)ö\u0002\r<ñL57/\u0002|\u0011ï,1¢J±\u0007hpt¯SÅOÒtDRì\u0001\u001a\u001b©o.YÛ|:ðKt¯Íôõ\u0002)¶\u0006\röÎ^Ú^\u0014ø&rèvz/-ÅÖ !Ë\u000b(\u0003\u001fE&SSF)¶\u0004\rV62\u0007|$ðQ¤6=µâ!Å º³{ç$ÀW^zZ]Z-Aã\"\t÷ÎI¯\"½ô´u\u0004)¶\u0002\r4Þ½s2à³H/=¥b+Ð¨ÈdÐdÀgÇÉ¡\u0014[\u0006E&ËQ3\u0003¿E|;er(Å\u0016 A\u0013Å^\u0015L\n|\u0017\u0019}ïb\u000bÐÈÊ ÷l$\u0005¾ìñ\u0018¾r(Å» !Ü¥¥\u001aøwÔ%\u0007><«`\rO)¥x\u00174$òôúÐkràÃÈ¡Ú¡£°\u0014ïF,×PÓ\u001eøp¹KwA#ÎêÞU·\tÂ·%C×\u0019¤x\u00074 RÒñk\t6\u0001¾<ü\u000fÍ£¥x\u00074 2\fy1e\u0013àËÈ\"Ë°ôRwÀÍ6°üÉ\u000bü\u0019Ùë>¬\u0003â\u001dpógCóçÍ\u0010>.\u0019bJñ\u000e¸ù³\tá\u000fês&/ðéÙM\f¥x\u0007Ñ\u0012×7\u0003>=+Ó\u000e\u001b¥X\u000bn|©|Ê\u0001>]fÞ$ÅZpã§\u0001]~Æä\u0007~]ÆïR¬\u00057~ö¤þ®>gr\u0003¿.32K±\u0016ÜôY@»Â±)Â×%)\u0003úì@¬\u0003zS¯K\u001cb-¸é³\u001a´Ï\u000fn\n|{V®\u001dRb-¸é³ö\u001eMoð½\u0014kÁM; \u001f\n|ë6û\u0000ß: Í>À·\u000eh³\u000fð­\u0003Úì\u0003|ë6û\u0000ß: Í>À·[\u0006ôÙÛt¼R¸)Â×%C¶\rK±\u0016Ü´÷r<\u0014áë-7'-ó{v¦\u001dðkä¤Ê>}\u001ftù\u0019\u001fø5²}tÈû¢¥X\u000bnzqÀ§ËtdR¬\u00057¾ÌÐcÆ\u0001¥Ã^6#Å;Æ¸t·\u0019ðéYÉ.ç!YÂ/\u001aSâ×èn\u0006|zöZÝa\u0014ï?;ÒîJÇFÀ4sØ«+¤x\u0007Ü|ä§(<1Ü\u0004ø2òKgÃ~BwàÍ\u0017Qøe3\u0000_ÈCOúKñ.¢Q%>[¸\tðåRï\u0002â]Ø¢Q%Î£7\u0000~ÆC«ZR¼\u000b\u001a\u0011É£ÿäi\u000b|¸¥x\u00176¢hÂo!M\u000e|xöÖÑáoÊb\u000bÐ³ÜÊiGbà¿H¹nø\\I-@cÎÞ¢D¼\f\u0014øîl¹\fy[Ò+Rl\u0001\u001a\u0013I;\\íH\n|w6\u0002Oy1§\u0014[F5ø÷\n\u0001E~\u0018jJg%ÅV Q´Ã\u0001eÉðtH±\u0015hTdâàÉa\"à¯¥}*Å q§ÙKáI¯\"?{=mÔbKÐ¸Èæ\u0015÷Ò\t\"½3¶ùL­A\u0003#C÷Ò\u0003\u001fEzç©+)¶\u0006,r¸+\u001e\u0002ßDÎ©[¥Ø\u001a4òkpvª¸â±(ðMd.4ý½+Rì\u0001\u001a\u001bYY\"Þü¿\u0018ðId\u001eD¦¯üJ±\u0007h,{éH.í·+-\u0004ü\u0011\u001d]8+*Å^ ÑÑ'ýú¼\u0019\u000f|qö¾Â%FV)ö\u0004\r?ÛrHØ#8õ\f|\u0010Yâ&Ël\u0005bOÐøèlyØËIÌçÀþ¬9GR¥ªSRì\r\f\u0010©g\u0012\u001f\u0002\u0004l\u001f\u0019IÉRë\u0007Rì\r\u0010h)\\\fl\u001eÙTFÀKq\u00040F4?càûüá `ëèÄ}Éy\u0014G\u0001DgÐ,÷y\u0015±3°qäPÆÁ()\u0002FÖ¦\ts:\u0007u'`[\u0006s4\r\\öýR\u001c\ts¥WpPw\u00006½\u0012ÌKR\u001c\r\f\u0014Ù¼tàs\r=9JF+\u001adéù\u0014g\u0000CEKy¹·{êÀì£)\u001fY~¯\u0014g\u0001]é)~Ü\u0000¶»f\u0014k\u0002R\u0005vuøsPW\u0000qµöJ0§Ió¤8\u0013\u0018/ºäzÀÿu:\bl\u0015­3\u001f¤Ú ÅÙÀWCâ#\\'ÀFWæ)$Ý\b(Å\u0015!k\u000es\nR\u0000pÔ»Êé\u0014W\u0001\u0006­\tjÎÚ|\u0004¶`qÕiç&R\\\t\u0018¶&¨\t|=¶·FÛÙ+G·\u0016¼z¢-ÅÕ ?\u001aZ9à-Ø[?î\r§h3\u0017ªj:ôVR\\\u0011\u0018A\u001d9y¬àç¶?\u00016²\u001cwe¡ä-NÜKqe`øè^]\u0005'Û\u00056ÚÄ@®}ØÙoS!âêÐ\u0001\u001f\u001d¡\u001c\u0014aÀF\u001bî\u00042a\u001a·Õ\u0004Z\u0019#jJQ%4¥:\u0011ûeêÅ\u0007únÛ·,qJ1\u0013pJô\u00056oÁ¼×Y¶×Æ½±ÚÃ ¼32\u0011~~ÛcmRÌ\u0006\u001cDgßí±\u000ex\u001d\u0006÷ô¡\u0018÷Àcj3ÔNôJ¶ß¥(Å¬ÀY\fÄ»=Ø+¼\u0016{EÁº\u00078¾91ÛPS?~\u000b>\u00108l,ÅÌÀqÌ­\u0019Ê±-à$×gà±\u0007e\u0010S\u0015ü/G\u0013~yð\u0011¼­F\u0012>üÇ,0Iq\u0007àÄ»\u0015;°Gäw#Æ\u0015øÐm_{/âNÀ©3\u0003{\u0006\fä\u0003)î\bÌÀîÌ£\u0000'\rä\u0003)î\f\u000eW¶ª\u001cÌ¹7sñÇnÂ*âS@ pRÇ^{V[\u0003\u001fDöÆÞ\"+â\u0013A\u001cÁ½bÏÍØA\u001c@O\u0003X{fImF3ùp1x|^|\u0005)OAPqÿ\u0004'Ì½\u0019h­ÊqGy½/\u001f ÇíÝn\u0014M\u001c\u0004á\u0011ì¯08\u0019ü½ì'W×1m¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢1Y¢19yÿÕ\u0001\t\"\u001f\u0007=­U5\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u000fIDATx^íÝ±ì´\u0012\t\u0010HàV\u0011Â\r\u0010\b\u0010\b\u0010xæ\u0010\b\u0010¸\u0019Áa­SÛû\u001aÕQë_-÷ÃWµkÍXÛív«%ÏþæË/Ap\fR\f\u0002¯H1\b¼\"Å ð\u0014À+R\f\u0002¯H1\b¼\"Å ð\u0014À+R\f\u0002¯H1\b¼\"Å ð\u0014À+R\f\u0002¯H1\b¼\"Å ð\u0014À+R\f\u0002¯H1\b¼\"Å ð\u0014qüç·ÿ}\u0007þ{ã'ðó\u001b~\u0000ßWm\u0006ÿGA\u001b\u001fÎ÷# Cþ\u000eþ\u0000/\u001dù\u0013°Ý_\u0000ûaß©ñ<\t)\u0006vàDß\u0003FÙ_\u0001L9ßLxãÐÑ/'ÿVûT¤\u0018¼\u0006\u000eÂ\u000eÌÈÛ;ê7\u001a#ùñ)\u0014\u0003G`\u0014¦Cì\u0010[áMÈ)ÑqÑ[Ág$¦\u0013ÿ\u0005c\u0002û\u0007e\u0003Hñ©àÂ~\u000b\u0018¹NÄ¥0ró\u0006v=±âÓàEü¸^râÑpRé2jKñ)à¢±\nÀêº¨³¸ª\u0012ÕO\n¦[?*Ûí\u0014O\u0007\u0017LQ\u0017±'t\bös-°ßêR\u001aãäÇ_5nÞ³ÎÃcKñTpQZr\u0000^t:\u0018KzÓËcèçÆUE¦N#ÏqkÇâià\"p²×;µ`ªÀ6\u0019-·Ha\\æ#Êtì-kÚR<\t\u0018\u0011³×d\u0017\u000eân\u0002c¾/\b©s«mmu3Kñ\u0004`hF§\u001eéÄÇ¬²á\\.çîeU?+¢g`\\¦\u0017¢Êø%ðb\u001f¹v\u0007çÇ&oØÖ§\u0018íõ½êc&Rô\n\r\n\u0016([9*\u001a[Á93\u0010°rÒj¿¥ÑZ\u001e¡!\u0013ÃBG~üöK\u0002;ðÉÔâØÖKl)EOÀp,-eªpä\u0017À.-Í\u0014fúj£\u0014½\u0000qâWûñ&\bGÎ\u0000\u001b]©H­QíB\u001e¡8KW\u0006ÌÁó¸\u001c¹\u0015Ø¬¥Ïà1er-ÅÝqj\r»MyÉ+°!5i\b\u0019^\u0005â®À µùò\u0016%¥=k&áL[>\u001d¥¸#0\u0004¹f! ¢ò `ÛÚ2é°ý RÜ\r\u0018+uæ)¸§\u0003\u001b×æÖCZ;\u0013§3Î°¹ÇàQo;¯\u0006öf¯ô:uwj)î\u0002N¸ÆRm\u0005ãík¤]sj)î\u0000N´ÔO8<¸\u0006%\u0013÷_U\u001b-Hq58Q\u001a¥d²\u0011ùòfàzäòêîÎL¤¸\u0012hi5ß|yCp]^ö83âJp²%uæpæÍÁõádñ~Í93â*x²ÉÉ¿#Ù\t¸NS\u000fuf\"Å\u0015ÜNÚÂ´½\u0001A\u001fp½¦Ìq¤8\u001bì£ZÈ\u001c¼D3¡s\u0002kE#9x\u0014g\u0002\u0007µæÍtúpæà-R\u0005\u001c?¢7&Qg\u000e²Hq\u0006pP¦\u001aÖÀc~î5\u0018\u0014g\u0000'µ¦\u001a±ý30#ÅÑÀIùÖrÞ?ÔñAð\n)\u0006Êjrà;LGâ%Ö \b)\u0004Nj]@¼9(F£Z'j\u0004UHq\u0014pTËj\u0004ÕHq\u0004pRktªFP\u0014G@GM\u001cWñ:6\b¬Hq\u0004pVKtvñ<}boè¨ã*\":\u0007ÍH±7pVKÝù¸èsâ/ås\u0011{Vr¥|ý\u0007CD\u001d\u001f#Å|\\0åÀwÜGg\u0003'½­ÿi\u0019SÎ\u001eN^\u0014{\u000bcÙ³á2:cÜ=ÿW\u000eNûÅ\"\u0011)ö\u0002\u0017ÂRªû[\u001d»3\u00183:=ÿ\u0005î\u0007gä=áob/`|Ëdpê\u000fb·±ÒkÓ0jÇâ@½Ñ-Qlû\u000b1òÇ\u001d\u001cù\u000e|\u0011±\u0013¤Øñ_ñ§:n\u00170>¦L=þEÜHÄ\u0004ò\u0003)ö\u0000F¶¼^µíd\u0010c«ùáÁ¸IÝF\"Å\u001eÀÀêÆK¹¿ee³\u0004FR¦-wz÷Á\u001bðÑ¹µ\u0014{\u0000Ãæ~`Ët\u0003ãêb|ÖAö¦Åwø4àMÄ¾[\n¼I\u001eûB±\u0014[AYUÆ¾³Ýï8cLÖ÷\u001c\u0015tâ.õb´sÕ·sAá\u0015têGÖ®¥Ø\ni)×m\u0015E0\u001ag¾*\rÃ\u001eóh»¥Tø¸Í^Rl\u0005Ì=¶·ZLÁxjç8m\u000e¾èØ5éÈ£* Rl\u0005FÌEßÕq+ÀXJsf:Õ²§\u000búf*R2|TN-ÅV\u0012*¶x+\u0005ã°þrÓÅ\u0016¥1£´¤H§~Ä\u0002\u0014[á,¿$ºü11pâetüÞV,>%©ÒÖX½b\u000b0%ê-\u0016\u0018u¢µõ#\u001bc+qêã\u0017_¤Ø\u0002ÆY¿2æÅò\t!Æ`M5\\ä\u0018cS\u001f]Îb\u000b0Xnµü770\u0006K}×3_`¬V§æy\u001dOK±\u0005\u0018+÷(\u001fþ6Þþ-5rÒ\\ÃE\u001b×+X¨ïõ\u0002í[zé5\u0018\u0014[±r\u000e½´Âþ-Ñ¹ª¬ã®\u0015¾\r8\u0006:_×Ç?ÚãDÑZý8²>-Å\u0016áR-y£oKî\\üHÆ÷[VóØ_·}ÍhU&¶©úºsdÕC-\bÃ¥,\fèÛòÂ9ÕÀw\u0019{½E'ì²TÍvní¾ã¸¥q)¶ ²Ä¡Ñ/\u001fÇj<wÌoã»öHX\noæh6,Oã~\u000bE-\b£¥¬rhKÔ2¥Cø5\u0002ÖÂ<¸É©q¼uáè¨(-Å\u0016ÁRV9´¥\u0002u\"|g´3_ôpêÜ\u00009ê§¥X\u000bÃÉ2Ú.RÐo®º­là;eý49\u001b·ü\u00049fó\u0014ka²\u000e\u001e3\u0003ôkÉ³é\u0006¾S»á¾¦2'OÚS\u001cSb-0\fó6e°;Ó£\u0001ú´<9Þ\u000b[\u001cãÎ×:3ø|\"áoFø7Qªmc-QÚÝý¼B-\bc¥LÏ¡Ñg¶þ\u001eïX+\u001a¦*\u0005¾SR%iM=,{¾Øã!Å\u0016¡RV8t.º¾]dÀç\u0005\u0019RT1À÷§¬ìáXKîDÚ!Å\u0016¡Rvtè·\u0011\u0010[*$U¹.£S[RÖ(»q¨IK±\u0005a¨é6ôÙêÐ9kr\u0006\u001co­T¿c»«6ï¸ÿM\u000f)¶\u0000£ä\"ÁôÍIì3\u0019CJÎ¡Õ1w÷§ \rË¤³Úv8ÖrÓ¸_db\u000b0Êv»íØg2\u000eÏ,ÐF¡\rK5¢iC\u0011Ïµïþ\u0016)¶\u0000£ä6ë4å5 ÏC¿t\u0014|6­¶¶²¹zzL\t8~»kÓ\u001b)¶\u0000£T;Ï(Ðgv¹:=æ\u0002Y\"tÚ:Ú±TSZª\u001dÙ´&=Æ\u001bRl\u0001F©vQ OËÂÊË\tønJ·ÜS´ÒâÐÛnMè\u0014[A,FZºC\u0015ÌNÏV9î°­¤í¡Å\u000eÓËª=b+ÂH)ÓgÓè37!z¹°Ï,ø»¼vNªE{)áÐ)0J.ÊL_B9§|¹\u0001Y¶vÙ\u000fvF;tîÆ^ö\\\u000f¤Ø\nsé«RèÓ²° \u001cÐs%5~Ökb8ÔápüveÕH±\u0015\u0018e»U)öô¯xW~U!èéÌ¼qT\u001fwR\u0002\u001c\u001f\u000e]\n²åª\u0014ú´l\u0004\u000e\u0003]í¹èæÌ\u0004mYR¦þp|8t\r0LîÑ9ý'uÑ§Åa^¦Cøì^ÁéêÌ\u0004íe'é1¥ pè\u001a`êIØ(Ð§ey¼¼¨ø7Å\bg¶¤DÍA\u0000mC×\u0000ÃXòè\u001dwÞ]¼tX|Ö}ñ\u0001mN)\r¢auî\u001db\u000f`\u0018KÄYQ¾³Fi~gÊª\u0019ú±¤B¤y<¢Í\u0014×o®H±\u00170Nn\u00126Íiî Okæø\u000fís\u0002m¹Áo~´1¼²\u001a)ö\u0002Æ©®ý\u0006ýæ\u001e½\u0017Ã\u001aíriqfÒ\\æD\u001bm\t]ç\u0006³b/`\u001cKÚ±äG\u0003Ñ¯åâ^ÐézO\u0002-7ûEÔ\fídûLñ\u0014{\u0002#åfÕdÉc\u000eýZSæåãy[lrÑ--C;¹ýÖKKO¤Ø\u0013\u0018É2áYöoÞØw2\u001ct0Þ\bE)\u0000¾Ï\\Ùò²mJ·I\u001aÚÊÍi]^H±70%O\\ò&úåDÉ²¨àqtn¦/ÿJI>4ÞÌêÖ|=¥Û+QhËþ¹ÞD¤Ø\u001b\u0018ÊòC'ÓKx\u0017è»Å©GÑÕ\u001ehÏò¤t]á Rì\r\fe\u000edI&è{'§î~s£ÍíVnG Å\u0011À`üqéKèN]S÷¦ûc\u001fmZêÏîóg\"Å\u0011À`Ö(½ü±1V?zÀ<{È¹£Ým×\u0003z#ÅQÀh(½ÅORa\u001c¬J×Zh.\u0007¾\u0003m[&¥CWDg!ÅQÀhÖ(½Í\u0006\u0019©Ú*E\u000eÞàCç\rhßòÓ\bG¤\u001bD#ñ¬µØ­`1\u001eájêÈ)¼9\u0018§LÑå)sÄOé\u0012)\u0004Æã\u0004ÅRÞvÕ\nccÔ£SZ\u000eÌï1/z¢?K©n\u0014¯\u0017R\u001c\rht¹Ù±2ßYV¼À\u0018,©ëýÏ)R\u0001\fi­ùº/ö¯\u0000v³\u0004nûDvA3!\u0019ÅS3úh`/ËKÊä¨èL¤8\u000b\u0018Ô²$N\u0018ÍÃ©\rÐN\u001föRv¼sd â,hP`M=íõð\u0004íØí\u0015î7\")¤8\u0013\u0018Öúx$î{$°¥ªAÜï{~\u0014g\u0003\u0003¼½qÄ\u0012mo`\u0017ëê\"®_³z\u0014W\u0000#l\n\n§¾\u0001{X_´%ÇM\u0004ïHq\u00050tI>MÂ©\u0001ìPâÌÇ¦\u001a\u0017R\\\u0005\fÎ½\u001eÖCØXÁù3g¶Úß[¾Ø3\u001a)®\u0004F/8äÕ\u000f·u\u0002xqÌ~wHq50~éÅâ^ÇÔ©q®¥¤\u001eIq\u0007x\u0011û\u0016½\u0013\u001fS²y\u0006yÔ\u0013L»QêÔäÈY<Îe¹T<.\u001dâNà¢Ô85£Ø\u0011Ñ\u001açÁêOÍ{[Hq7pqj\f}µi4\u0018;\u0017J£2yì6\u0001)î\b.RÍ#ð\u0018Wå=7pík_®ÏKqWp±XÒ«½Ð<\u0011oÛ±µ82oÜGæÞ!ÅÁEcNÙò66/ü´wúrp\u001cñk\u001d\u001c3ghE\u001eÀ\u0005ìñÛ\u0019t\u0004Fí©ÎþxS2\u001a÷øQ\u001bÖ¤c¯ø\u0007Rô\u0002.$ßzilwèÜÜÌÕ»;\bÚäXy\u0013Ö_\u0011)@ÀEe´³¾ùR\u0002o\u0014FP:!£é×_Õ\u0018.ð9s|~7\u0005ãñ½\u001cø\u000eÛ¨,¢GpéL-¹µ\u0007xÅKÃo¢gpÁ[*\u0005»Âôâè}Ì½â\tÀ\u0001Npì¯\f\"½0\"Å3Ð±½¥\"¼\u00119îpäB¤x\"p\u000eæØ,q1ê)'Ú\u0001/rä\u0006¤x:p\u001aV!vqnV,\"\u001awBO\u0002tÕg¥%õn5 \r)>\u00198\u001aS\u0013FÌËÉkëÈÌy<«JL@\u0006Ny-¼\"öS,FAà\u0015)\u0006W¤\u0018\u0004^b\u0010xEAà\u0015)\u0006W¤\u0018\u0004^b\u0010xEAà\u0015)\u0006W¤\u0018\u0004^b\u0010xEAà\u0015)\u0006W¤\u0018\u0004^b\u0010xEAà\u0015)\u0006W¤\u0018\u0004^b\u0010øäË7ÿ\u0000u ±Üþ4\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0000þIDATXGÍÍ1\u000e\u0003!\u0010CÑ\u001c$eî³È\u0005Ò`>bÙeDW`1ö«òW0<\tÃ0<\tÃ+¾ïO\u0019ñ¿+0\u001c¡ñ\u0019ïÁÐØ\nï\u001bÁ0¢ò»¼`XQéS¾á0\u0014*ÛÅ·\"\fvò½\nC*ØÍ7«. ã,¾-]@Y|[º\u000e³ø¶4\u000f:Ê\u0016÷¥yÐA¶¸/Í\u000e²Å}i\u001et-îKó lq_\u0007\u001ddûÒ<è [Üæ!tÅ·¥\u000bè0oK\u0017Ða\u0016ß.\u0010:ÞÍ7+\f©`7ß¬0\u0014*ÙÅ·\"\f+*{Ê7\u001c\u0011ÞåÝ\u0004CGå«¼s\u0004Ã\u0011\u001añ\u0019\f¯ ñÊÿ®Àð$\fOÂðòú\u0001á²\u0004M×LÄ\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0003SIDATXGÍÏKTQ\u0014ÇÅE?¬\u0006\u0017\u0011\u0003µ0ªiQ\u0011ARÓ&*ÜÙÊB°r£3»\\M$\u0016AÐvv26\u0019Ñh\u0014\u0004AQ\u0010\u0006ER?2K³Ò¿áv¾#g<÷ÞóÞ\u001buñZ|{¿ç;çÝwï}÷Ô\u0019cþ+T1NT1NT1NTq#\\~»hRgMóè¹ñi$Ý/\bU¢½½ÝÔ××StG:6ÃÃÃ¶Þ4;\u001eLQÈjl[[ÕwQÅ É¤@\u0018ÅbÑì\u001bùF­$\u0005­«««Ò\u000eB\u0015]òù¼õG ¥¥Å\u0014\n\u00052¯øËeÓÝÝíùaÆ\u0016\u0016\u0016ª}øp*JúúúªÎÎNm-ôjr\u001fÿVõR©dÅHzzzª~\u001aª(¹6p{b¹²V\\\u001d455Uc\r%$\u0007rmÌ©gsæÐYjú6\u0019Ïd2\u00192ù¾*ÞÞÞê \u0003\u0003\u0003$é~ÛïOÌûßÔ´uuÉf³¯D\u0015\u0001\u000fH$L\u0003í Yh\u001c2Þü¢æªÆ±\u001a\u001d\u001d\u001d¯*\u0002\u001e`hhº+3qîÅÏJ[råÝ¢wÖl\u0004O¸öáÉård\u0000ë·&\u0002\u0017ï\u0011½\u0006J¸ì'Ææ\fNëõÒÀ\u00130\u0013­­­^B`\u001bÙ.¾¶_$Kké$%´óá´ÁQ\u0007ÀëÆo²8c®£!\bOÀ¦R)5¡«ôz0\u000bR«ÓÏT\u0012KD¼^O@B®&Á,¹ÚZÀ§\u0004³çêÕÁöúÃÍIÓÿy}ëi\u001c6ç_ÎSÓ·Y\u000b¯æÍ\u0011}{3i\u0001§i¸úZÁ¹\u001a°:gh[7}§¦í$Á.\fò0x]bò\rÀÅê¥'\u0004Ö»8!ìâMµÌ\u0010^ÅÒ\f5m'\u0017ÌÐ/ËÔÔíApB8ç>Õ\u001fÜ\u0013ja?í\u0014W\u0002'>'4>>nî~Õ\u001fÈ\u0013\u0018|sx\u0000\r×?\n|\u00139\u0016¥kgT\u0011à«,\u0013À\u001eu^Ip[àXÜ\"n\u001c\u001bª\bpoI0lßMkíX9z\u0003\u0000\u0019*\u0012×.QE\u001c\bà\u0006(}¶®DÆ»6\rU\u0004ZB\fîÌðÙE\u001fÑ½ô\u0005»·ÁÝÜõÑPE +\bôQ=È?\u0000ðAµÁ1¨BP¸~¨ZØ'\nU\u0004¨0ÔPg¹\u0016\u0006ê8\u0019_\u000bª\bÂ*LT¦Ú\u0001T´¨lÝZQÅ8QÅ8QÅ8QÅø0uÿ\u0000îÕ§ÊbÑL¤\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000¶\u0000\u0000\u0000´\b\u0006\u0000\u0000\u000098Ö\u000f\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0010?IDATx^í±®,5\u0012÷\u0011\u0004ñ\u0004Hû\u0002\u0004Ä\u0004iÃ7#%$$%#F\u001bð\u0000\u0004¼\u0000\u0012)\tÚ`ó»ÿ?jêÔüí¶Ýî®¹\u0015|ºçü¶«ìê²Ûíé9÷oïÞ½KCI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&It¤¸??ÿðSÇßU½÷\u0015ÆÃÅçSUo\u0006°ýóõªw\u0006ð}Ú¸¥8\u0002:ù\tø\u0001¼[á7ð/Õö}ã_â âC\u0018¿)\u0017\u001bvj¾þ\u000bèë#Õv6ðÃ¾ü\u0002T_ÈO`jK±\u0017tê;ÓÉ-\u0018ìS\u0002z\u00158^P»°ï\u0016Ð\u000bÌ\u001fÆÖ\u0016ß(;3m®Ð]ã\u0006SîîRì\u0001\u001dééx+ÆÓngÂq.ãUq¨Á\u0005 ë\"£þ¨¯\u001f½=ÀæiãVH±\u0015t ¶õØ«ÊKï½9¾ejü-4'\u001cêò®0Hi+7lqÜµ-×\u0016?)»=H±\u00058çæ_uªé+ÅÀøz¶hk4í=QoäÎé²E\u0019ãþBÙnE-Àñ@Üos\\n£ü¦ì[PgÆ\"Cv/4°ÁÕZÙîå\u000fe¿\u0015)n\u0001§³.\u001aù·ò\u0011\u001dËs\u000fÕÉò=[Â7xÛ½ÀÆÌq\u000f?Iq\u000b8äñêÈ\b¿(\u001fÑÁ¸x¥Æ;Buò£|Ï~Ö³ëØ\ríO\u001bw\r)n\u0001ß¸\u000e$É\u0011\f?ÐJq\u000b:t\u001dH#ÈÄN^Ó\u0013û\u000b×$9áW0¤¸\u0005\u001cÎ:Ò!ß7/Æ¼\b\u001c\u001aï\bÿ\u0004ÊGá?@µëå@Ùïaæ¸¥Ø\u0002Î8bâ'e/ùé#ÇµO»ÍOáPgÖñëO\u001fagÆ¸wI±\u00058\u0011Ìi\u001fã^\u0011oÆnÓY.êíý´oÚ\"\u0003;§{\r)¶\u0002ç{Î³_òüÚÃqºq÷Ð|º{ßÏØõ\u0011¶\u0007öögï^ð¤Ø\u0003;á:ÕÂ7¸\"Àq.ãUq¨Ñýê*Úúþ<l²/#zÊûCRì\u0005á)Ië¾jø]ãÈ`Ü­\u000b\u0000ã8¼z¢-\u0013ªõùo\u001e\u001eö-\u0016\u0002û§Û#Å\u0011Ð)\u0006tí\u0012\\E¸\u0007|¯¾`àáø8¨Uqcüfís/ÿÚ,\u0013ÛÓ¾Í\u0004_ì\u000b\u0013|mÜÜO½K1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RL£øóó\u000f?\u00009þ¡êîA# s_¯ÁÏàWà\u000fâÿ\u0002,û\u0011°ÞôÁ\\\u0005\u0017ïñ\u001fX\u001f¨:3á¸\u0000_eåX}\f<%&ÇÇÊ^+Rl\u0005Î\u0019¤ï\u0001;¤:ºÅïàke;\"\u0018ËÇ`w<@5áPÎO¾Uå\nÔý\nÐ¾÷ÉI÷j³\u0007ØäÄVþzà\u0018&¼\u0014[Cv|ô\u0002z\u0018Ð+8úÏÄ9%\u001e¦ÞÏªÜ:\\|Ô\u001dÃÃ:SVpØáäV>FéxRÜ\u0002Ôª\u0003å6Bì\u001eª@}í¶Ä¤\bÜè7Z§l3jñ \u0014üý³\u0015¥NKb·$uawr£½ú\u0006M\u0003Ç,¯1õ¥õT»[5à+½\b\\]xa»\u0002Âú°·«ßUÝ+>sûQúO¤_ªº[ ß.0Î\u000fq5åÕÄF¹poúÙw^\u0003{=·7\u001e´ebZLò¡½2Û\u0001Nb}l¶%Å\u001a0Î@\u0014g3f¸¿UNßï\u001d\túkW¨ïU^hÇØ|x\u00061e[mãºÚ7qµ´É=¶ßS®#ìØ|ktR¬\u0001ãe\u001b!W\u0011hg±G»?ª:W\u0005ý-É3õnC{Ýä]tYV@½ÐVõZ¡Ü®îC\u000fôhWúü«*\u001fö\u0016»[¯\u0014k,\u000eÈÕ©@{Ý¿TùUYúLoá\nÚ+¶EYñYKlû\u001cÔÔ7Ô[L-,mÉÔ.Ú+¶}Ù\u001aR¬Q\u001cÐ*\u001föm_veJÙU>\ní\u0015Û¢¬ø¬%¶½ËP\u000fêíZ\\¶$dbY}Ô_u+þ­ÙQ·ß-Î¢¦Äöek´± ]ÅìmY÷vO5`¼<©v=¥Ö\u001d»Ç\u001eº\r>\u000bô×®³\u001e\u001e«6M\u0019\u0017\u0019Öå¶ãÍª¼è·zV¯1ÒÆbÛY±\u0018z8b\r\u0018·{7Î¤]ÉöþTdêmìhþÛ\u0013\u0005®Z³¸È-Wîa_Ø{L}û5P·Ü5V\\´S±hÚ\u0006yÐ®)\u0016kHq\u000b8(·\u001cÂp¦v]LÔg\u0010ØÎ\u0006bóéý Ïê\u0003+&\u0016ÇÇ²Ñ\u000f%ä$®ê®âÛ¯º»\u001e\u001e\tÚnÅbíC§¡X¬!Å-àÄ¯²\u0005j¼u°sì¤úZÇàa?VGßyÑì$ÝËæD\u001d®j+ê\u0018W®¸\\tJ\u00166ãÊ:¦þ®»&ÚÏÅ9\u001f©\u00138crÛ{\u000f¼\u0010aº10Ñî\u000fÁ0¦SbA;¿y\u0017D\u001dÛïÝþaã©±b\u000fpÌÕB­À-Ü\u001e~ÝÈ`LeÅ=âÖÊÅr^@Ößõ¼²\u0007ø.}}ÚõXHq\u0004vdé\u0010\u0007ÀÎùAN³õÂ¯Ð=p¼ÀnËÞ«ñ[Î\u0014$:R<\u0012ÌN®Ödè\u0018(i\u0003ñå\u0016À®¬WEGà­ÉËí­\u000b\u0018\u001b'\u0003ÀÜ~­\u0002MÛ¡=\u0013'R´é}y¦íeg¾Ü'£*ïAGNà¾âCc9\tðÏ\u0017­Ü\u001e¦AóY>êr\u0002ùã½^äÓWsØ,ÇUÛK\u001d5!9é\\Gb:ýRñðth4¡=MÇ¨³÷8Í3ë\u001dj¨\rï(o&-~÷_P\u001c-NÇû¼:è³º8¼eAn·XG)c\u0012øIÁßWW+©¤.þh[N\fêK9ë±¾·1ãÃ\u0019oÓÂmÙ-¹ñ/û¡ê(º¾$Å\u001aÂát¼Ï+þòvkûÏ$=ú«a>!¤ÍÛ\u0017\u000bÚ©\u000fRöÝhÇ=² Ûø×ì>\u0019ñ3'}6ézE5£Ãð>¯\fú;ôöY\rÚ16\u001fVPW>kû`ï:C_@;N°b\tNeuæÂnOlÜVý¡Ì&wóX¥X\u0003Æmç8ãº\u0002kÚ¾Ä\u001e\u001bã(ý\u000erYÍ\u001e^H2eG½\u0003>d\u0017íln¬½ìdëjÜPnïÇ½¶Jà3ÓÞr\u0018¦§WÓæU\u0012»ç\u0019_\r\u001aCÚ+¶}Y\u000bhWrbub ÌoÝ6Ç:e24¿u(Å\u0016à\u001dô³û¤ê^ÏÔ}µÄ>-É \u0004:m2µPÚj,Pn·\u0017-§?Ý\u0013N=,NíêÍW\u001fL½WIì2¹ÏüjXñÉ-ÉÐC£v\u0016{ÃcYÚ­ÄîJÔÞúD½ÀaóêmÊ_%±ïA\u0007³\u001e\u001e«6¡Ù\u0007=N]ÉÍö úÀÚ\u0002ÚÉX\u0003í/õð«®cé­O¤8\n\u001c3àÕÕÛ½Jbû#.NðÑã2.\u0010þlYÚnoçô?hõve¥.¶&\nÚÉ±õ@ØØeÑ<~½\u00063XþâpÀ·`\u0019í%\u0012`,êC\t&\u001e/ ËZ>,±ZX\u0011ÊØÖN¨\u0002{eÚ¤m\u000fuâï°¡3x¶öNRûp\u0013øÖ\u001fUîYìcOEZ@'xAmà¹*p0å÷Ilñøñîe3>¨Ã\u0004Q\u0013bÛõQ~ZA{{÷ò×\u0006`Ç.\u001aÇc÷¨Õ»ðRM0&&Ý«Àtó¤Àú\\)G\u0013\tÍ\u0015|×>½°Øâ5ïÞ\u001a)`ÃÞYíIq6èZÍ^.±\u000b\u0018\u001b't¹À[«8ËyñX×+¤hÏíIñKÞwñÅrÖë@Ï\u0000}äbÁ¾vå\u0014\u0000\u001dó«÷Ë&¶\u0002ã-ûéÂå*2R<\u0012s/ó{òzH1I¢#Å=p%\u0006Ü\u00135\u001f\u001b6SÞT»\u0012fl§Ä\u0003m¸å+\u000f°| lùÈÚ¶áÃäômóqx¿¤8\n\u001cÛ£\u0019²ù.ÃH(m¤\u0005õý©Ìæ[¨c_!mjÓ\u000blÚ/)\u0002Çöhæ¯ãA\u001dû@ÙÔ&\n\u0018Ëéñ\u0018i?Ò¦\u0011\u001f#m\nR\u001c\u0005»gØH(m¤\u0005õ/y×\u001cñ1Ò¦ ÅQàøû»gáÆvZ<ÐæÏ9ÆÇáýbDGI\u0012\u001d)&It¤<\u001fî)½eÓ«\u0007¨Ç½yù¸~ô}p>¸ò$gÊy³@ºbA¤ÀóAÉaß´ã\u0003 \u001f\u0006»\u001e~Pÿ~TèË,´\u000b¬?ï·9ÉQ·Ég\u000bô\u000bNEI?¼X%ø\u0015xa[WàÍ²rz²\u0005Ï7\u0013\u001cu¦$6Ú\u001e\u000b\u0014>\u0010ð\u000biá*VM4W/&tÞ½\u0005_Y­\u001e³¡|wb£íé±PH1i\u0017\u0005Ø÷ù3WR~¸Àý.ÿe\u0012r*uJ½ÕDCÙêÅF»Ö\u0016\tU¾~Çý6ýª\u0015}õC\u000eíJl´;=\u0016kH1i\u0007ÁæC½@««\u000fÊ|öÂ\u0013¹ß^Kl»ZWÿT\u0002Êlw[\u000bò»¶/k\u0001íNÅ\u001aR¬Q\u001c\u001c÷yeÐ_4ß\u0019D\u001d®¦>Ñ\u001eö¶(³\u000fd{gz6é\bí¿ùªÕ¢ÝÊ­Þm\u000fNÅ\u001aR¬Q\u001c\u001c÷yeL¿»þc}Ô÷{ä7«(~_½E\u0007#ïØU\u0013äÜøyob\u0017»§Åb\r)Ö(\u000eÄû¼2¦ßÝg¿hã\u001f´î\u0017\u0014?·$öOÿg\u001bîÉg%öi±XC5è°8\u0001ìLùP`\u001aÊïUAK,>Ô@;yAño-±Kbú|HîEZb\u0013´ëÅ\u001aR¬\u0001ã|\u0018)TuÞ'\u0010\u0012ôá×mÑÖ_Pþ^KìRÖuË· ­On.X{\u0013ûôX¬!Å-àÀ®Ú¡VØÙ`üv8üÊ-Úú\u000bzO:Q×>\b6¿\u0002êA[Üw|Ý\u0016ÐîôX¬!Å-àÀWNý+£ÑXbQ.À^ÐÞ_Ð\u001b¢\u001eO\u0013JùÐm¿ö2¹}½\u0016ÐîôX¬!Å\u0016à¤¬\u001a¼M¼Ì\u0003FXbP¿÷Ï=\\P_@·«cóËA\n´Hn_§\u0015´==\u0016\n)¶\u0000'ÍnêÕA,Ê\u001d¨\ro\r\n°ñæúr\u0002«6O4¸-l:Ë®\u0001\u001boÛ·Â¾,vNBI?\búîä²Ø\u000bêË\u0002¾Ü\\q÷no\u001e\u000b)&It¤$ÑbDGI\u0012\u001d)&It¤$ÑbDGI\u0012\u001d)&íü¹¼j{$Âçý¸£ð>[@;Ùÿ(¿\n)Öq\u0019xWFõ6WðÙ²3\u001bïs\r)ÖPÎfã}^\u0019ÕÿÙ\\Ág\u000bÊÎl¼Ï5¤XC9÷yeÐßW>g#|^ò[Lhwz,Öb\r\u0018Ï¯\u0019Ð_ûÒÿ)}\u001fûÞóe¾Å¾\u001e5¤X\u0003\u001d¾dP\u0005bÀ×GËJuÚ.àërßbB?\u0012\u000b\u0014·@§ó«a\u0006ÄÀ®T]pq\u0014ø)ï=?=,èËé±PH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLèH1I¢#Å$\u0014$:RLØ¼ûÛÿ\u0001bf?Ù\u0011Z%\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0007®IDATx^íÚ½]U\u0014ÆáTÖ\u0001;ctüÈ\u0018l\f\u0004¨\u0018DüÀD\u0002þ\u0003\u0001Á:`e\u0017°µ°²Ne\u001d°±°He'¤M\u0017°IFÛq­Á÷{>÷:kû+æMîÙ{özï¹÷ÎÜs'''@3d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d¸´'_^80·ÍÝ\u001dwÌ\u0015õÿ£Ù¾®ïìóÌ-s^ýÿH¶'Îv\fbôÍ?0'=\u001e[êñ5Ù\u001eÎ\u001b?Ü§FíóÌ=\u0013^lÛÃ\u0015³ïl\u001fð³u¶¡g{ \u001e?\f`\u001bó\u001f@mºKXQl]/?±Ô¾\u0014\u001fÌuu­\u001alí±g{ßD­¿=ÛÉOB\u0019Îe\u001bòrªÍîóP]oM¶¦yß£Kõ»­9ùlMÕRÛz^æ©g{[]s\u001f\u0019Îá\u001b)66Öêºk°µümÆ»GÉ5ë%r\f[Ëßkª}\fUíl­7÷lG\u000eáT¶\u0001/ÈÔgä®*%±uÆ¾t+\u000fÔµfë,u¶UÞ*Ù:!g+Ã©l\u0003þéZml¬{êúK³u([ý\thk,u¶÷Õõfëø\u0007RµþX£îÒ2Ê\u0016ó\u0012³ë©ºþl\rÿ\rZ{»j%Ù\u001aû~£1Xyí¥Ù\u001aag+Ã©ÄfæXõ÷¨vý%^\u0012Ï¬þ¶C¬9Çªo;ìúag+Ã©ÄfæhöÐ§\u0010kÎA¡\u0010ìèÃ78zçíoÖrüéÁ/jÝI¾xåZcIrÝR-\u001eBëuÐR¡úd{¢\u000ejIÇ\u001f½ñZwãÏ\u000e~Sk,éÉªµ§8z÷ò\u001dµÆR<[3êwç2Ê\u0017/63ÍÍU\u0007µ(\u001bª\\{£÷/}/×XÐbw½\n¯&Îfø·\\¼QáT¶¸ÿ©Smj\u0014»ã}¥\u000eiiÇ¿ú»Z\u0014»sªk/îÚáwrý?~ý¼þÂüUK­?ÒcÕ³>2Ã61÷.ýÀ\u000eä¥òVáwéwµßî}¾qñ\u000fuÝU,p¶fôocd8mdê\u001fXü=øy;:6sÞïÙ]èguÍ5YI¦¾ª<=ºöÖuuÍÕØ]ìc¨Iß;á\\¶\u0019ÿÞÁØ¿lùàôOÈv\u0018Õ\níüeøÉÍ\u000b\u0015ûÙç®=öfy­Õ}pé²­í_\u0007U{êâg{Å\u001eõ¹ë­ìø×¾µµÇ~Å`ò¨d¸\u0014ÛðÚ÷Ãø¿û/âÿûj£\u001dDÕBzïðkÛÃ'¡ãô¥Ð\u001eW¿Ðv6#ÎÖù[ÀÓ³µÇV/´¹jëûg«!OBõG\u001f\u0019.É6èwkÿJ©×\u000bsÆ@Ïû®\u001dBýB[9ÿÝ¯\u001f¾?Áv÷ê¼\u0018Ï\u001c¶?¦¸F\r§>c{ê:[/ü3gk\r)ôÎ^\u0007íT2f\u0010Vè1ü1Å5jx¦ÐcØcC\u000b]\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèn\u0014º\f£Ù!Pèns\n}h|Ï5\u001dª½¬EÑì\u0010(t·Éþ?a4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001fZ1Ä\u001a(t\u0003d\u0018ÍV\f±\u0006\nÝ\u0000\u0019Fó¡\u0015C¬B7@Ñ|hÅ\u0010k Ð\ra4\u001bÚ\u000b>¸Ê^T{éc¡Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C\fcå¢Ð\u001b#C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bd%C +\u0019\u0002YÉ\u0010ÈJ@V2\u0004²!\f¬d\bätrî\u001f­\tmk[5u\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\f²IDATx^íÝ½®$E\u0012\u0005`\u001e\u0001l\u001c´O´/±6ÂÁÇÂ^\u000f\u0017\u0013\u0013\u0017\u000f\u001b\u000b\u001f\u0007ÀØ\u0007X$Ü\u0011\u0012Z»ç\\UÎÆMêÎªÊÌªè>Æ'èîì¨¨®\u000f^^^Ì\u001e\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉà^ï>ÿøCø'ü\n/ÁàgøJ}î,Ïgð#ü\u0001q¾ÿïá\u0013õ¹3`.®m\u0003\u0019Ü\u0003\u0013ü\u0016XÜ8y_ð35Æ,Èÿ)Ô±\u000båC5Î,ÈÏFn­í\u0017jYÿ\u00138­¶2¸\u0005'\u0004ÜB¨\tßrÊ\u0016\u0005y¹åhi[S\u001ay¹ÐÕnùV5\u001aòrC±µ¶\\\t?Uãí![`2{¹ÚÔÈ·§àÅô¦F¾=Í\\dª-ºKme°\u0015&Á]¡`+\u0016`Úq*rÕÇs[ý¨Æ\u001d\u0001¹¾ªrïÑmËw\u000frqWshõ³\u001aw+\u0019l\tðPcï\u001a\u0019Mi\u0012ä9ºò\u0015SV@ä9ºòQ&¹\u0007yz¬|tø·\f¶@ò^_ïÊ£GÐ÷jüã*ç\u0011ÃW@ä8ºu.\u000eoÜd°\u0005W9bè/sÏ_Þ*ï\u001e¨\u001c=!GÏÚ\u000e=ÆøÜS«¼{\u001c®­\f¶@òÖS3-8\u0016OûÒ³AHåè©×ÞRÕ¶î³­d°\u0005÷lh³Wum%-Ü\rmÝÕ}¶\f¶@r7´uW÷ÙV2Ø\u0002É{\u0006£ß+ÈHÿ\u0005{«?AßÓ¿AåÞ#Sm\u000ffÁ\u0016HÞëÌÁð³\u0006<½~¼\f¿\u0002\u001cÙjËTþ­\u000e×V\u0006[a\u0002=dÊÍ4ÈÓ£I¦4\b!W&rù\u001byXÛ£\u0017ÙºÔV\u0006[a\u0012G¯\u0016N¹U ßÑÃ¤YÛ#§ï~Uã|GkÛå\u000eL\u0019Ü\u0002\u0013Ù{SÊ)w°!çÞ½ÊÔ}\b9]Ûdp+Lßrù_|zÁ\u000bäæ\u0005\u00015/\ruÚ=ÆÈÍÝùÚòîÇ3k»eKÝ½¶2¸\u0017&Çû;ní&YìSoî/0\u000f6\nW¬µ- ¿\u0007\u001bÿ´æ0\u000fÖöVcólCÚ2>¤¶2x\u0014&Ê/Ä\u001bé¹¶rAðÏh\fe\u001fo\bbùçiÇÊ[ankËÿ\u000e­­\fe%fYÉ YV2h\fe%fYÉ YV2h\fe%fYÉ YV2¸Õ»Ï?þ\u0007|³ø\u0001~©×¾¿©1¬\u001dj¸¥ÞWc<*\u0019lB}\r?ºêß\u000bâ\u0012ÅÆ<Jðû°!8¿zÎ¥Y¾\u0003~÷©+æó!ê=\fÞ¢pá«\u0005¾\u0017dúV9\u000bù/PójÁ:pEøHåè\u0001c?D½gÁ5(\u0004·\u0012ªHG±©¾T9G@.6¡Ç^Cæ1{Ï³à|¿V9³A\u0005\b\u0005¸\u001bdá¹%YÝ¥-¯];·\u0012j¬á»DäàVYå.¸°ËáEM½?úNåÜ\u0003c=D½gÁ\u001a¾øG\u0010wÍü3\u000bµ{WÏrÏ1bWïí\u0005ãóø7æ#þ½\u0015¯\r¢>£ð½ËgÔ¡Àá-\u001fÆ`mz×ËcÄqÖû\f2X[\n\u0011ÛmÍæXËeü!»BË&)9ÜÜÄk8\u0006ÄÆæw9tLÏ§¯÷Yd°/\u001dwY Æ¢ñRï9\nãÆ­3¹Û\u000f9µYÆÿF½¯\u0015>?ºÞ\\\tËøê÷se\u001bJåm%5$)kô°]Ôè\u001c\u001876I÷_ù\u001836É/ê=­Â8#ë]ö*r,\u0019ªÎ¹\fÖB²C\u000bê\u0016]òÔ¯õPÆßÔë=`ìÒ$©×[-cÐåê]>3Rs\u000b\u0019¬!É®µy\u0003ÿ«ßsD\u0019\u001b.¿Râó]V[B\u000eü¯~Â9ÏRçÜB\u0006kH\u0012¯P>¦\u001bÒp\u0018·\u001cãl²°n¡ã©ÅCÇ\nÆä%ñ2þ¦zs>á³?¨÷I\u0006kxüÑÆÖóWwýªÛ¹Ü\bãnX£C+%>\u001f\u001bõî¶\u0011ÁXõYMµÀûëS¸Ý7pGÈ ¿ßE\u0001¿Ðá¦À\u0018lX\u001cþyÈeY\u001b÷\u0002ÔítÕ2öî&Q0Fü\u0011K\\!w×¸u%ÎyóÙ\u001e|¦ÛÊÛ\f*xÝ\u0010Äðt\u0018·(MÁû8\u000e?\u0013W¢û3ÂøuðPj÷Þ\u0006-÷Ä1ù½\u000e\u0012Ä\u0018õÅ{36&k¾ºuÄkÜ\u0012³Ö|oý½ÝëñÙ¸ü.s.[\u0006×pâáK¬añ\u0014µp¢!\u001a\u0011rÜj²b¶6I<Lz\u001f\u001e¨\u0015ÿ(ÖàP\u0013òóa¼ag¶Á[0y\u0016ymaîÁâÎ¼1id¸AÇ¬êý^Ü¸t9¬Ã8lêKÝ\u000f\"-/Ãâ¨¢µ`SqK×í]+æK6É\u001a\u000fkj÷ð3<4ºTó [ H,4Å.\u0017uAKïá{.üV\u0007p¥JÕ$ÈÉyóðs/ÇÈQó=¨õ,2ø¸à\u0006p$&fYÉàVØb_þÄÝ°·nv\n\u0019lÆä±ðC<´y\u0015ß+ :¦.+ç¥~\u0007d²Ôïµõk½Èà-\f\u0017þ\u001fQkø%§7\u0007s\u0002Wª{çÇoa\u001d¸\"L?S\u0011êt­ÆD¸eª\u0017j\u000f³ÏE³\tÕ<ö:ÿ¬P£ë44&±ÖÌ©\u001eÚD\u000enUîÍÉù)êýÑð«¡>ïkX¿Ö\fÖ0ú\u000e+þùÐ®\u0016-çË4ì~kÂøêbJ¹7¢ù5ß»|F\u001dz=Ô3z=¡6ièØxlæn[Rµ9´!0.W ØÈï»à\u0018\u0010\u001bßÅÇÔ\u0002êr»Ûn7ß\u0014\u00183\u001eÎø!Ùÿ3E\u0014äºLC-èÈG°æÀ¸q¥ì~V\u0005crK]Æ?z\u0019g:ÿ(Èu._~ØÍÜ\u001c»ä©_ë¡\r\u001e¢Î?\nr]¦¡ËòC²7pì§~m8Îògþ\u0019FÍa\u0004äºLCû!Ù\u0006\u001c»G\u000e|>Ö+úCüÈÄ÷(\u000fHtï¡B\u0006k@üÑÆÖó,Gýêé\u001f%\u00117\"Ó¶¢ÙÉ ¢Ö§¦\u000e\u0017\u0019c°\tÊV­;ä28Æ[=ºúC²ñ4ã°º<\u001a\u0019TPÐº!J¡y:wÑ5í\u0016ñ>ÃÏÄ\u0015¤\u0018º%ÂøñØ¸\u0015Ü½·ÁgËý qÌn\b\u0018'}¹¿\u0003ãdp\rºvù;bÓ(q\u000b¦ø!Ù\nÆâ|¹¼Þ^ ÞcoÉà-(¬\u001fÕ¦~\u000fÓd°\u0005\u0016\u001e·ÖÜòªÛMÅ-Ýô_ðÌ\tê¾½X\u0007\u001fã^\fnÁ\u0005\tln6H9¼P\u000bø\u001e¾÷\u0012\u000bó\u0000®T{¶Øü\fqß!hídð\u0019¡1ÙÜ~H69\u00194ËJ\u0006-/ì=_»2\u0019Üj)`Ù%ó¸Ò»ë,õ~=Î¯_{\u00062Ø\u0002\u0005ã»xyv\u000bÿ \u001a\u00045uCoBqkÜó<.\u0017·Ú,õ|­mýÚ3Á5(RËÂ=|Q¢\u0013ÔÑ\rÝ\u0002\u0005Zkæ×Ë²À-÷ê!Äòz9Ö~_ô\u000fA\u000eB\rÝÐ÷ 8\u000fñÔ÷3@\rÝÐ÷ 8±ñØÌÝ¶¤\u001ck\u0019³ï¿\u0006à\u0000ÔÏ\r}O,\u0012xb%\u001eÎzê+å4j\u000e3 ·\u001bú\u001e\u0014§lA3?õ]V)êü³ ·\u001búR \u0016K½Þ\u0003Ç.yê×z(cÏRç\u0005¹ÝÐ÷ 8å¼sæ§¾ãqúpu~C\u0006kX@ñàchÎ+ãzêÇ¶%\u001fgzP2XC\u0003Ä\u001fm½ÏrÌzê»>õø7ï<:\u0019TÐ\u0000ñr7\u001b#ÕSß±ã9ì÷G\u0006\u00154@<,(ØåáÒË?õMÈ\u0011óú÷Á5lÐ\fkø+[[beÊ_\u0016<ñ;\\æôµ>dð\u00164Aê§¾\tùØÔ¾oä\u0001É`¥)¸åUMÚ»~yþÔ·=.\u0019Ü\u0002\rö©o{<2h\fe%fYÉ ½cþ§þ«\u00012A{\u000büþný]\fÚ[nè<dÐÞrCç!ö\u001b:\u000f\u0019´·ÜÐyÈ`­,ÌYêügÃÜÐIÈ`­,ÌYêügÃÜÐIÈ`­,ÌYêügÃÜÐIÈ`-.ÐåÏoþ\u000eÞÔ\u001cÎ9¹¡Á\u001a\u0016d|Z·}>Õ-ø¾nè$dPÁÂO~ûßÌ³KA\u0005MÌûKC\u000f}Õl/\u0019\\&ö?Õk&k¸U\u0006\u001eCûêµKA³¬dÐ,+\u00194ËJ\u0006Í²A³¬dÐ,+\u0019ìé/\u001bÛD2Ø\u001bÚfÁÜÐ6\föä¶d°'7´Í$=¹¡m&\u0019ìÉ\rm3É`OnhI\u0006{rCÛL2Ø\u001bÚfÁÐÈþ«hm\u001a\u00194ËJ\u0006Í²A³¬dÐ,+\u00194ËJ\u0006Í²A³¬dÐ,+\u00194ËJ\u0006Í²A³¬dÐ,+\u00194ËJ\u0006Í²A³¬dÐ,+\u00194ËJ\u0006Í²A³¬dÐ,+\u00194Ëéåÿ\u0001t´#qAÊ\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\tfIDATx^íÝ=$Å\u0016Åqð°q\u0010+@b\u0003c`#\u001cü1°ñp001ÇÀÁÃÆzæpf\u0001\u0018l\u0000\t÷9£ÙA¿s[\u0015£èäTu~ÄÊÛú\u001b?1}*;ãFÖÍÏª\u0016\u001f=<<\u0000/\rªl\bTeC *\u001b\u0002UÙ\u0010¨Ê@U6\u0004ª²!P\rªl\bTeC *\u001b\u0002UÙ\u0010¨Ê\u0019þ÷Õ'oämçµ[\u000e8Â\u0019.MüÐùÑ-\u0007\u001caÃ\fjà×ÑÄWn9à\b\u001b\u0002UÙ\u0010¨Ê@U6\u0004ª²a\u0006Ý\u0004öO8\u0014ùå#lÆ\f6Ì@Cc\u0006\u001bf ¡1\rªl\bTeC *\u001b\u0002UÙ0\u00037Á\u0019hhÌ`Ã\f44f°aeCË+ù[ö¥ùIû\u001eøä×Ë¿¿\u0017=÷{±áHñÆI¼©ñ.ú¿òâ¾è¯9}*Ñ¼ËùöÞK4÷ÐÆÖúbg±ÿ6Vü;¶ÿ]ÿìMãÇvi\u0017óoÛ!~þN>u¿·\rGQÑÈ­ð[bîÖQæ\u0011\rµfÎÍßrxîZGñb]n^,óµ[G\u0016\u0017\u0007µçvð&\u001a~÷NnÃ\u0011TÔÚ\tôJÿálÔ¿ÏZ±\u0003ìnjýîquë\u001aMã|.[vð\u0010\u0007¸]MmÃ£TÌfnJ6µêÓéÖ7®\u0017GÎÍo¢~gïN\u0014Þ¸u¢õ\u001fÙ&»ÚG¨8åº\u0002×\rpøZj6Õ¼ü«ö=6ý%¼qëÙ\"í\u001eFë>ºM6ElxXs\u001d÷)§ÃQTïÆ\nïÝú¯ÑòîF{«¿ÝºÒz9z.Ål¸\u0006?ztî\r½ûÏ¤ZãiÃ\u001e«nØ´Ü¨(\f¿!×:G±Â¦\r×Ð@#ßDàMg\u0010\u001b®¡hhL±ì½[l¸\u0006¢¡1ËêK\"\u001b®¡AhhÌ²ú~Êkh¸)O§zýÇ­Gý,ËõÕçîK?\u001bciä_A\u0018èßâÆÙeÙ{·Øp/\r\u001eÇÛ¢v\u0018~ç%j]Ô~Äª£\u001bùDé;7Æ\u0011Zç\u000fzoÝú¯±á^\u001a|Ô£¤g£TóÇT\u001eQiùQM3ü,­sÔ\u0019dÓÎfÃ#TÀûø[5\u001f=JGsnzö®åGÜÇ¤|¥õ8¸mÞ&6<\"\n¸\u0014â\n\\cÓ)æLTûOÇv}\u0004­ß;rß²¹a¶Ðºîp¿\u0015hÃ£TÈoXÝß²:\u000bÕ¿µ©c;íþ:§~7\u000e {¾n\u0010ã¦ß§h½gì]gi\u001b ¢©·lè¸\u0006-ÝÌæ\u0011s_sM\u001doöáëW­#zË5|\u001c8¦Ýtk¬-GêØÑv_rÚp\u0014\u0015\u0016\u001b:&s«±cãþ\u001eô5W4vÌ?­/\u0014\rùë%­3Î\u000e·¶u¼vÿ·ÆmñÜ©\u000eïà6Ì BcBñFÆ\u001b\u001cbãûh\u0005Ú®±­cûöÛú\u0014AUG\u001cäâYu«-\fû\n«\rªlA{áÓËòu`\u0004\u001bf ¡1\r3ÐÐÁ\u0019hhÌ`Ã\f44f°!P\rªl\bTeC *\u001bfà¦\u00103Ø0ÃÖë\u001fË÷òî²üïn¹³R½_ÈOòÇ¥þ\u0010sùM¾u¿3ÖÿÄ¶û]Úö\u000bQKÔôû½{S]Qs«U_î96ÌÐ\u0017{­`åËFnJ4´êú£úÚh®Ý:Ð:£aÝxK©;ÕVª'\u000e\u0000Oj\\.³\r3<W°²TßÈý¿«4ô/]ÍI4Xì !Îíµ9i­¡c1¿¼øV;Ún\u001d÷ Zú3Ù£å2kÙð\u001e48UÆd¢ãÍ£]`æúí\u0011Pùr§\u001dz¤¼¬ÿj£êµ~ûÍ-3êh;a\u001c\u0000>ìtËåÖ²á½h\"O®ñÚä¤Ì5´j½y)¡×cgmóÚT\u001a¯\u001d4\u001e-_M5Ä\u0001 Õó¼¬^jº×+Ò\\ú3Ï;·L¦nlýèAãÇv£ò÷7þ{ùY?úß{\rÏ¢M.&ê^¯ª~ôËdÐxýÍ×]/9büK\u001dq\töÅ%«ÓÐ­Ð-\u0005wË¿ÔþÃ½AcÅ\u0011±¿ùºÛM¡ÆËVÇ÷]NCW£¹ôoæ/n4F\\7ÇSvz\u000f\u001fh6\u001dõ´\u001bã'g\týLCW£¹ôO\u001aRZoãÙ¦þÆýÎ,\u001a¿5m4õ\u001bèî5ýøô÷Ö²aVè»å_DCk\u001eý]}ÚåÖ}«¡\u001f\u001fºßËv\u0019»ÕòY\u0019\r]æÐßÕ´kX­;NëíC¸ÄÇ¡ýØ\u001fnÄfñºñº²LÞ£M.&ê^¯Dsè?)¼Ë5lÛÕðS~&ÕnH¯ô\u001a\r]êï¯ï:\u0017ß>\u000böH9ÚbÌØ©ÚÙcéÉSÆ­ó\u001a\u001bE7¹²\r­Úû£b¼aw¹~m4~ÿiá_nÑºñvY®ï\u0016\u001bE7©\r­ºãqYÃÝ¹éjÒ~úñöX®ï\u0016\u001bfØSd·|¹VÍýiöLÍÜô>å\b½êá)Ç\u0019©Þþù4Í\u001cTK\tþÁÎ\u0016ª>\u001bÕz·fÖXñîêxzmùõÕ»}üí¨\u001e\u001aúLTgßÌ!.;âxË¦ÒzÚ¥D4lÔ\u0011×ïíIAü{YÛ©ÎA5ñØî,Tc4N«w!Ï¤µþ;\"Ï¹Ûw9nQ]4ôY¨Æ»6tÐºâ\\\u001cõãCå'Ñ,ñÚ)ÿH6\\j|¬yùÚZ6\u0004ª²!P\r3´SÉÑS\np\r3ÐÐÁ\u0019hhÌ`Ã\f44f°!P\rªl\bTeC *\u001b\u0002UÙ0\u0003O90\r3ÐÐÁ\u0019hhÌ`Ã\f44f°!P\rªl\bTeC *\u001bfà¦\u00103Ø0\u0003\r\u0019lÆ\f6Ì@Cc\u0006\u001b\u0002UÙ\u0010¨Ê@U6\u0004ª²!P\r3ð\u00033Ø0\u0003\r\u0019lÆ\f6Ì@Cc\u0006\u001b\u0002UÙ\u0010¨Ê@U6\u0004ª²a\u0006n\n1\r3ÐÐÁ\u0019hhÌ`Ã\f44f°!P\rªl\bTeC *\u001bfà¦\u00103Ø0\u0003\r\u0019lÆ\f6Ì@Cc\u0006\u001bf ¡1\rªl\bTeC *\u001b\u0002UÙ0\u00037Á\u0019hhÌ`Ã\f44f°a\u0006\u001a\u001a3Ø\u0010¨Ê@U6\u0004ª²!P\r3pS\u0019lÆ\f6Ì@Cc\u0006\u001bf ¡1\r3ÐÐÁ@U6\u0004ª²!P\rªlBÌ`Ã\f44f°a\u0006\u001a\u001a3Ø0\u0003\r\u0019l\bTeC *\u001b\u0002UÙ\u0010¨Ê\u0019t#øFÞv^»å#láÒÄý\u001fÝrÀ\u00116Ì \u0006~\u001dMÜyå\u0003°!P\rªl\bTeC *\u001b\u0002UÙ\u0010¨Ê@U6\u0004ª²!P\rªl\bTeC *\u001b\u00025=|ôûiV\u001a\u0010r\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000´\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000=Í\u00062\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.\"\u0000\u0000.\"\u0001ªâÝ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0004ûIDATx^íÛÁ±ÓH\u0014FaB`?\u001bB\u0010`\u0010\b\u0010\b\u0010\b\u0010\b\u0010Ø²\f<÷V«T3XR·¤÷¿:oÁ¡º_Ó%Û¼¹ÝnÒ«QJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJQJq_ýñ±|-ß\u0017úÏÝßÒÏ\\¥æó®|*Ë¹¶/åOú+Õ>ÇµýV^òÚöüóíµ}O?³\u0017ÆQ5Éüßåö\u001bý÷Ë¥_ã÷b÷âÒ\u001c~©¿GÍ¡7ìÏçô;½Y^ÂÚöIGó[êßgÊÚbÜ«&õ¶ôYHþ?½Q.Yø\u001a·¯rÏN¼GèXG«q{m×l¥^ÛK^]zÜ²um?Ó±¶À¸WM¨\u0017&úÌéºÆ{¿\u0018«áßªÆÜz¡¸ëMuöÚîÙÌw_èkaÜ£&Ò·\u000f4Áµ¾ÓqPcõÕnïßvûQc¹¶+aÜª&Ð÷J4±­NÙ$5ÎÖnò=[Ók;ºAÚG:þl5ÎèÉ×~Ò±×À¸UM \u001f@hb[}£ãÏTcÌ¸Ü\u001d~\u0002Ö\u001836H;ë\u0004µ¶\u001fèøÏ`Üª\u0006ß{ïü\u001fÇ­Æè\u0007A\u001c{¡û½5jik[\u000e½®ã<<Úµ¶\u0018·É8ôªWÇuÅkßÂ#^ýÚbÜ\n&3Â\r½\u0000cpC¯\u0001\u0019á^1G¸¡×ÉpC/À#ÜÐkÔàI\u000f3\u001f\\\u000eÿ¥ÆXó±ü*Ç­Æx5\u000fýÝ\rÔV_éø³Õ8³ÞZ:ücå\u001a£¿»Acouø[¢­ÆYó=5v­-Æ­jðYïí\u001eúxWãÌxi<üv£Õ8®í\u0006\u0018÷¨I^I\u000eO÷®ÆêM2rÔ\u001bì\u001d\u001dû\b5Öè{ç§¼òÝÕx£k»û\u000fã^5½\u001f)ò)ÖR9ò\u0005S>F^ª1w¯m9ûËI#\u001f×\u000f­-Æ\u00115¡­/9ý\u000fuÕ×G{So¹ô?Ò®dg¨±·®mCïªµíM}úÚb\u001cU\u0013ë§ÝgOçýðpÙæ¸«9ôíGogWËN¼¥CkÖöôW\u0011RóX»¶Sná0ÎÒ,ý\u000eHÿRwýç\u0017÷_ZÍ«OÄå\\[ß¿^¾\u001fÕzmû¹e9×´µþßÅ0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0J©0Jnoþ\u0001­êbõÎ.#\u000b\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000#\b\u0006\u0000\u0000\u0000ü\u0005¨ \u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÃ\u0000\u0000\u000eÃ\u0001Ço¨d\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002 IDATXGÍïKSq\u0014Æ¿äÏ\u001a FsAB\u0011ú\"\bÔ`Sæ,üi?bÍEX¨ÛÐÌ¦L¯s)º\u0017Ñ«þ³§ãlzï¾Ç²nøõÅçrÏsöçìÞË½\u0002À\u0015UÂ*aE°¢JXQ%¢£§\u0011\\\\ZÒÎ\bìühnn¢µÄ òÍ\rá¬«a*ðiµ{÷m{{\u0007ñxüÐßÿ$3Ã(ºQÀrd\u0016hiuJý 3\u0004'På,ÂXÒ\u0004\u001c®rÖfÈjc(þ¥°\u001f54Tb\u0002\u0019n\u0016Â?÷¬ü¼$¬È\u0011ÿ¾Bµ\u000e\u0019ty¹ÀT®\u0015çcØÛGV~Þa°bÞ6\\¼lÂ8¬\u0005Yè\u001dl%\u001b?ë¨\u0018\nïX?ý3\u0014Ægµ ëù\u0005R\u0011=/ª¥°ß-ð|´\u0016Á·ðÏ`Ü7\bïøSubh¤ö¡²ê|)T\u0015Á­vÒª\u000blS\u0005\u001fVK!Ü£QYY\u0005Ãñ\u001f¨«®\u001e-\u000f\u001e¢³£\u000bµ®\nddñá\u001cs\rüeÙù\tß-bCõ¤Ó+¤»¯,\u0007^Ã 3<ê¹'\u0005r\\-´âýÔ+²ðsXñ(|¦OÅm{¡\u0014ÈQßhGl{lü,=¬x\u0018\u0003îNäÙ2¥ÀTÎÛ²1äé&\u000b?'\u0010ðcqõ\rÊ=IÐ\u0013ÝZ³á\u0014ÈQVQÐ\u0014ÙøYz4m=áYOSiì\u0019]Æ'_âÊõ?¿\n,çè|ÖB\u0016£ÿ(Äb_÷çcïH:è%\u000e­í÷No`} ÇÙ\fô{Ì.\u0016¿|2Ì\rF¼$ïõÄM{¡©¹'±°;/IMU$\u0016*±çI\r\u0015,|{\u000bí\u001eT _f92KÒ/=yrD£\u001bûË¬m,tÐ3üð¸Ð4-±ÌæNJcÏP\u001c\u0017@\u0000¡ÈG:{ \u001aVT\u0007ÄO\u0011î\rf\u0002Î{\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0001sRGB\u0000®Î\u001cé\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000b\u0012\u0000\u0000\u000b\u0012\u0001ÒÝ~ü\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0003IDATXGíØ_HSq\u0014\u0007pû§E%\"\u0016\u0006Ö¨P\u0012\u0019ø'2\u0014lµ|iD\u0014a\u001e61E}hÈB3§àò\u001f² èEèÏ[OQø¦S\u0011©Ã\u000ff/\u0005Õé{~xå¶~ÎÝy\b\u000f|\u0018÷rÏùýî»°­\b!\u0015\"ÅÑÆÄ.¸\f¯`\u001f\b\u0014c@°\u0004\u000fà$è\u0015Gá\u000ex×`û!`¼\u0007åbÅG°A(Sãi\\×ð\u0013Ôu¿À^ø+ÎÀiØ\u0003Ûà\bðH\u001bÇê\u0003.ÀS{\bÁLí\u0018¨§Á¿»p\u001dNÀ\u000eØ\tF¸\u0004+ñ\u00188é;ð4îC\u0011ðàßäËeþSS¦ñ\u0014ÞzñíÀuC\u000e¸à\u001d|\u0005^Û\r+¡4$Ã\tÈ\u0005®\u0001\u0017T\u001fó`\u0003p\u000eoÎq\b.B=ð¤?l\r\u0016tC2\u000bÀ{â6ð¼p\u0014¡\u001aÃ'ø\u0005²|u5ä\u0017öß°ZéÚ\u001e¶\u001aZ~\rEFFRzz:Y­V²ÙlâSQ\\\\L¹¹¹(ÍUÑ¯!Á@UUU4>>N\u001e&''WðñÐÐ\u0010åååIsUôk(>>ZZZhiid1;;KeeeÒ\\\u0015ý\u001aJHH ÖÖÖU\u001b§\ni®~\rEGGSvv6555Ëå\u0012ÍuuuQoo/õ÷÷sf³Y«\u0012zCáááETRRB¥¥¥T]]MmmmÔÙÙIuuuO\u0019\u0019\u0019Iiii\u0014\u001b\u001b+­¥\u0012zC|W566Òðð0ÍÌÌÐÔÔ\u0014MLLÐèè¨ø\u001c\u001c\u001c¤\u0002in\u0000¡7\u0014\u0015\u0015E===äõzwÉ122\"&&Ë\r`}\r\r\f\fÍ*±±1ª­­æ\u0006\u0010zC\u0011\u0011\u0011d±XÈn·SCC\u0003Õ××¯àcÞS¼d¹\u0001hkÈd2'oee¥¸\u001d\u000exöðFæ»JÑÞÞNÍÍÍTSSCåååâú¢¢\"2\u001aÒº*Ú\u001aâ[ÚívÓÂÂø©øa7==-ÄþøüÜÜ\u001cù|>q=o~¾#euU´5ÔÝÝ-\u0012\u001bò¤îëë£ÅÅÅå%´\u0005O:Y]\u0015m\råääÓé\u0014{D½gÖÒÑÑ!6;?HeuU´5\u0014\u0017\u0017'6fJJ\n%''\u0007-55(&&FZWE[Càßnß2\u000bá\u001e|o KÒÓ\u000f\u0018\u0001(TX5vÃ)¸\u0001`\u0004¸¬p0ø5É\u0003ÏÀ\u000egaÝÿ®p\u0001\u0013Ü\u0004~Uæ\u0005V{\u0011äÿ\u0002^À-°ÀAØà.\u0003p\u0015øµ_³ÿ\b\u000bû\rÀ!ú4w)ý\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÁ\u0000\u0000\u000eÁ\u0001¸kí\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0002÷IDATXGíÏ+\u0004a\u0018Ç·ü(\u0012VÉ\u0005E!\u0007¤M¤²¥(\u0017IB.þ\u0000ÉaS\u000e\u001c\u001f99(å@\bÑöæàê´).JJ}½Ïg}{¶\u001dfj\u001dL}ÚçýÎÌ÷ûÌ»ïìÌ\u0000ü)T1¨b6QE7³³³ÈÏÏG^^/rssQZZýý}c«g\u0011ª(ôõõ#Bspp`ìõLU\u0014l£ ¨¨¨0öi25Q°¢¨¨ÈØ§ÉÔDÁ6\nââbc&S\u0013\u0005Û((|5T__­­-\\__ó'IO$\u0012\u0018\u001d\u001duBÛÛ[pÝÝÝíím\\^^bww\u0017ýýý¬ûjèýý\u001dÑh\u0014ÂÛÛ\u001b\n\n\n°ººããc\u000e\u0010ÆÆÆðððÀõÈÈ±\u0000VVVP]]ÞÞ^\u001eÏÌÌü¾¡¶¶6<>>¦Ò\u0015·¶¶¢°°Ð\u001c\u0002þ}}ggg\u0018\u001f\u001fçfPfD\u0018\u0018\u0018ÀÉÉ¿\u0019:::Âýý=_éððpJÀÅÅ\u0005&''¹þ\u000eáºªª\n)ÇºñÕ\u0010ÑÓÓõõu#¨¬¬d}hh\b§§§\\/..bccë\u0006¼¾¾rMÌÏÏó¹´}||ü¾¡\tLOO;Æ\u0004.--9ãççgþ¡»¹¹q\u0016|NN\u000e¯µºº:ç8¢¹¹\u0019///¿o\u0016r<\u001eGMMcº³³Ã[ÆôUÒ\u001dtwwçhD,\u0016ÃÕÕ\u0015ß\u0000¢ÍÍÍáééÉßW¶¼¼ÌÓ/Ûææ¦\u0013@±înRX[[C2äý´£©©Éÿ\u001a\"ÊËËú§Ãáq \r\u0005ÉCøo(\u0013®!ÂÎ\u0012TQ°M¼ÒÒÒbN×=3¡\u001dä½½=s:Bô¬£§¿\u001bz.\u001e\u001e\u001eò~\rU\u0014ì ¯Ð£ÒöE\"\u0011c­ç\u0011ª(Øf^¡h\u0016lýû%MÍ\u0012TQ°\r½¢5D¯³¶¿*\nnÃ`7ÔÕÕeìô\f\u001bU\u0014Äð§¸\u001bêìì4Vº¿*\n\u000b\u000b\u000b)A^¡÷núR[[kltït¨¢\u001bºÚ\u000eÐ\u000b{{{F\u001a\u001b\u001bùßíã\u0015UÌ&ªMT1{ ô\u0005ñZ\u0001\nÂRÊ\u0015\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u0000\u0000\u0000$\b\u0006\u0000\u0000\u0000á\u0000\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000\u000eÀ\u0000\u0000\u000eÀ\u0001jÖ\t\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.134\u0003[z\u0000\u0000\u0001\u0003IDATXGÍá\n\u00021\f}ÿÇ\u0015Aü5ï¦$a;fOøä\u0012Ú¯°[kíRØ²\u0012[VbË\fÇïüKA\u001e\f+è\bäÁ°\u001e@\u001e\f+è\bäÁ°\u001e@\u001e\f+è\u001fy\u001e¼Èá\nØ²\u0012[ÎçN£NÄ3TA-g¨<:\u0011[ÎPy\u0006u\"¶¡ò\fêDl9Cå\u0019ÔØ²\u0012[VâËïÓþ\u000bºa²°\u001bºa²°\u001bºa²°\u001bºa²°\u001bºa²°ÇÁýü¦Û\u0018®-+áðyÊ%¢>ï;\u0014d8CÔó}\fgúp¾ïPá\fQ\u001fÎ÷\u001d\n2!êÃù¾CA3D}8ßw´¨ÆØ²v{\u0003DT\u001dXrV \u0000\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports) {
 
 module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000Z\u0000\u0000\u0000´\b\u0006\u0000\u0000\u0000\u0014æ;ð\u0000\u0000\u0000\u0004gAMA\u0000\u0000±\u000büa\u0005\u0000\u0000\u0000\tpHYs\u0000\u0000.!\u0000\u0000.!\u0001\u0007[üÿ\u0000\u0000\u0000\u0019tEXtSoftware\u0000paint.net 4.0.12C\u0004kì\u0000\u0000\u0003qIDATx^íÒ±i\u0003A\u0000\u0005QUs]\u001c¨3\u0015¨¢ì\u001bs\u0019;Ó\u000fgà³°lôØGUUUUUUUUUUUUUUÕãù|\u001e×^ÿì¸Ô§yçû:¿¼û>ìE\u0017$?÷\u000fò¯½î§õI@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^\u0004¤`½ \u0017\u0001)X/èE@\nÖ\u000bz\u0011õ^tA\u001eçy¾û³ûþ¸Ö§yí\\UUUUUUUUUUUUUUUU\u001föx|\u0003ú\u0013³3zõü\u0000\u0000\u0000\u0000IEND®B`"
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7589,9 +7034,9 @@ module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000Z\u
 
 
 
-var base64 = __webpack_require__(9)
-var ieee754 = __webpack_require__(64)
-var isArray = __webpack_require__(61)
+var base64 = __webpack_require__(10)
+var ieee754 = __webpack_require__(65)
+var isArray = __webpack_require__(62)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -9369,10 +8814,10 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(70)))
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -9383,10 +8828,10 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(63)(undefined);
+exports = module.exports = __webpack_require__(64)(undefined);
 // imports
 
 
@@ -9397,7 +8842,7 @@ exports.push([module.i, "@charset \"UTF-8\";\n\nbody, input, textarea, select, t
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -9476,10 +8921,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(60).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(61).Buffer))
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -9569,13 +9014,13 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports) {
 
 module.exports = "(function(b){function a(b,d){if({}.hasOwnProperty.call(a.cache,b))return a.cache[b];var e=a.resolve(b);if(!e)throw new Error('Failed to resolve module '+b);var c={id:b,require:a,filename:b,exports:{},loaded:!1,parent:d,children:[]};d&&d.children.push(c);var f=b.slice(0,b.lastIndexOf('/')+1);return a.cache[b]=c.exports,e.call(c.exports,c,c.exports,f,b),c.loaded=!0,a.cache[b]=c.exports}a.modules={},a.cache={},a.resolve=function(b){return{}.hasOwnProperty.call(a.modules,b)?a.modules[b]:void 0},a.define=function(b,c){a.modules[b]=c},a.define('/gif.worker.coffee',function(d,e,f,g){var b,c;b=a('/GIFEncoder.js',d),c=function(a){var c,e,d,f;return c=new b(a.width,a.height),a.index===0?c.writeHeader():c.firstFrame=!1,c.setTransparent(a.transparent),c.setRepeat(a.repeat),c.setDelay(a.delay),c.setQuality(a.quality),c.addFrame(a.data),a.last&&c.finish(),d=c.stream(),a.data=d.pages,a.cursor=d.cursor,a.pageSize=d.constructor.pageSize,a.canTransfer?(f=function(c){for(var b=0,d=a.data.length;b<d;++b)e=a.data[b],c.push(e.buffer);return c}.call(this,[]),self.postMessage(a,f)):self.postMessage(a)},self.onmessage=function(a){return c(a.data)}}),a.define('/GIFEncoder.js',function(e,h,i,j){function c(){this.page=-1,this.pages=[],this.newPage()}function b(a,b){this.width=~~a,this.height=~~b,this.transparent=null,this.transIndex=0,this.repeat=-1,this.delay=0,this.image=null,this.pixels=null,this.indexedPixels=null,this.colorDepth=null,this.colorTab=null,this.usedEntry=new Array,this.palSize=7,this.dispose=-1,this.firstFrame=!0,this.sample=10,this.out=new c}var f=a('/TypedNeuQuant.js',e),g=a('/LZWEncoder.js',e);c.pageSize=4096,c.charMap={};for(var d=0;d<256;d++)c.charMap[d]=String.fromCharCode(d);c.prototype.newPage=function(){this.pages[++this.page]=new Uint8Array(c.pageSize),this.cursor=0},c.prototype.getData=function(){var d='';for(var a=0;a<this.pages.length;a++)for(var b=0;b<c.pageSize;b++)d+=c.charMap[this.pages[a][b]];return d},c.prototype.writeByte=function(a){this.cursor>=c.pageSize&&this.newPage(),this.pages[this.page][this.cursor++]=a},c.prototype.writeUTFBytes=function(b){for(var c=b.length,a=0;a<c;a++)this.writeByte(b.charCodeAt(a))},c.prototype.writeBytes=function(b,d,e){for(var c=e||b.length,a=d||0;a<c;a++)this.writeByte(b[a])},b.prototype.setDelay=function(a){this.delay=Math.round(a/10)},b.prototype.setFrameRate=function(a){this.delay=Math.round(100/a)},b.prototype.setDispose=function(a){a>=0&&(this.dispose=a)},b.prototype.setRepeat=function(a){this.repeat=a},b.prototype.setTransparent=function(a){this.transparent=a},b.prototype.addFrame=function(a){this.image=a,this.getImagePixels(),this.analyzePixels(),this.firstFrame&&(this.writeLSD(),this.writePalette(),this.repeat>=0&&this.writeNetscapeExt()),this.writeGraphicCtrlExt(),this.writeImageDesc(),this.firstFrame||this.writePalette(),this.writePixels(),this.firstFrame=!1},b.prototype.finish=function(){this.out.writeByte(59)},b.prototype.setQuality=function(a){a<1&&(a=1),this.sample=a},b.prototype.writeHeader=function(){this.out.writeUTFBytes('GIF89a')},b.prototype.analyzePixels=function(){var g=this.pixels.length,d=g/3;this.indexedPixels=new Uint8Array(d);var a=new f(this.pixels,this.sample);a.buildColormap(),this.colorTab=a.getColormap();var b=0;for(var c=0;c<d;c++){var e=a.lookupRGB(this.pixels[b++]&255,this.pixels[b++]&255,this.pixels[b++]&255);this.usedEntry[e]=!0,this.indexedPixels[c]=e}this.pixels=null,this.colorDepth=8,this.palSize=7,this.transparent!==null&&(this.transIndex=this.findClosest(this.transparent))},b.prototype.findClosest=function(e){if(this.colorTab===null)return-1;var k=(e&16711680)>>16,l=(e&65280)>>8,m=e&255,c=0,d=16777216,j=this.colorTab.length;for(var a=0;a<j;){var f=k-(this.colorTab[a++]&255),g=l-(this.colorTab[a++]&255),h=m-(this.colorTab[a]&255),i=f*f+g*g+h*h,b=parseInt(a/3);this.usedEntry[b]&&i<d&&(d=i,c=b),a++}return c},b.prototype.getImagePixels=function(){var a=this.width,g=this.height;this.pixels=new Uint8Array(a*g*3);var b=this.image,c=0;for(var d=0;d<g;d++)for(var e=0;e<a;e++){var f=d*a*4+e*4;this.pixels[c++]=b[f],this.pixels[c++]=b[f+1],this.pixels[c++]=b[f+2]}},b.prototype.writeGraphicCtrlExt=function(){this.out.writeByte(33),this.out.writeByte(249),this.out.writeByte(4);var b,a;this.transparent===null?(b=0,a=0):(b=1,a=2),this.dispose>=0&&(a=dispose&7),a<<=2,this.out.writeByte(0|a|0|b),this.writeShort(this.delay),this.out.writeByte(this.transIndex),this.out.writeByte(0)},b.prototype.writeImageDesc=function(){this.out.writeByte(44),this.writeShort(0),this.writeShort(0),this.writeShort(this.width),this.writeShort(this.height),this.firstFrame?this.out.writeByte(0):this.out.writeByte(128|this.palSize)},b.prototype.writeLSD=function(){this.writeShort(this.width),this.writeShort(this.height),this.out.writeByte(240|this.palSize),this.out.writeByte(0),this.out.writeByte(0)},b.prototype.writeNetscapeExt=function(){this.out.writeByte(33),this.out.writeByte(255),this.out.writeByte(11),this.out.writeUTFBytes('NETSCAPE2.0'),this.out.writeByte(3),this.out.writeByte(1),this.writeShort(this.repeat),this.out.writeByte(0)},b.prototype.writePalette=function(){this.out.writeBytes(this.colorTab);var b=768-this.colorTab.length;for(var a=0;a<b;a++)this.out.writeByte(0)},b.prototype.writeShort=function(a){this.out.writeByte(a&255),this.out.writeByte(a>>8&255)},b.prototype.writePixels=function(){var a=new g(this.width,this.height,this.indexedPixels,this.colorDepth);a.encode(this.out)},b.prototype.stream=function(){return this.out},e.exports=b}),a.define('/LZWEncoder.js',function(e,g,h,i){function f(y,D,C,B){function w(a,b){r[f++]=a,f>=254&&t(b)}function x(b){u(a),k=i+2,j=!0,l(i,b)}function u(b){for(var a=0;a<b;++a)h[a]=-1}function A(z,r){var g,t,d,e,y,w,s;for(q=z,j=!1,n_bits=q,m=p(n_bits),i=1<<z-1,o=i+1,k=i+2,f=0,e=v(),s=0,g=a;g<65536;g*=2)++s;s=8-s,w=a,u(w),l(i,r);a:while((t=v())!=c){if(g=(t<<b)+e,d=t<<s^e,h[d]===g){e=n[d];continue}if(h[d]>=0){y=w-d,d===0&&(y=1);do if((d-=y)<0&&(d+=w),h[d]===g){e=n[d];continue a}while(h[d]>=0)}l(e,r),e=t,k<1<<b?(n[d]=k++,h[d]=g):x(r)}l(e,r),l(o,r)}function z(a){a.writeByte(s),remaining=y*D,curPixel=0,A(s+1,a),a.writeByte(0)}function t(a){f>0&&(a.writeByte(f),a.writeBytes(r,0,f),f=0)}function p(a){return(1<<a)-1}function v(){if(remaining===0)return c;--remaining;var a=C[curPixel++];return a&255}function l(a,c){g&=d[e],e>0?g|=a<<e:g=a,e+=n_bits;while(e>=8)w(g&255,c),g>>=8,e-=8;if((k>m||j)&&(j?(m=p(n_bits=q),j=!1):(++n_bits,n_bits==b?m=1<<b:m=p(n_bits))),a==o){while(e>0)w(g&255,c),g>>=8,e-=8;t(c)}}var s=Math.max(2,B),r=new Uint8Array(256),h=new Int32Array(a),n=new Int32Array(a),g,e=0,f,k=0,m,j=!1,q,i,o;this.encode=z}var c=-1,b=12,a=5003,d=[0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383,32767,65535];e.exports=f}),a.define('/TypedNeuQuant.js',function(A,F,E,D){function C(A,B){function I(){o=[],q=new Int32Array(256),t=new Int32Array(a),y=new Int32Array(a),z=new Int32Array(a>>3);var c,d;for(c=0;c<a;c++)d=(c<<b+8)/a,o[c]=new Float64Array([d,d,d,0]),y[c]=e/a,t[c]=0}function J(){for(var c=0;c<a;c++)o[c][0]>>=b,o[c][1]>>=b,o[c][2]>>=b,o[c][3]=c}function K(b,a,c,e,f){o[a][0]-=b*(o[a][0]-c)/d,o[a][1]-=b*(o[a][1]-e)/d,o[a][2]-=b*(o[a][2]-f)/d}function L(j,e,n,l,k){var h=Math.abs(e-j),i=Math.min(e+j,a),g=e+1,f=e-1,m=1,b,d;while(g<i||f>h)d=z[m++],g<i&&(b=o[g++],b[0]-=d*(b[0]-n)/c,b[1]-=d*(b[1]-l)/c,b[2]-=d*(b[2]-k)/c),f>h&&(b=o[f--],b[0]-=d*(b[0]-n)/c,b[1]-=d*(b[1]-l)/c,b[2]-=d*(b[2]-k)/c)}function C(p,s,q){var h=2147483647,k=h,d=-1,m=d,c,j,e,n,l;for(c=0;c<a;c++)j=o[c],e=Math.abs(j[0]-p)+Math.abs(j[1]-s)+Math.abs(j[2]-q),e<h&&(h=e,d=c),n=e-(t[c]>>i-b),n<k&&(k=n,m=c),l=y[c]>>g,y[c]-=l,t[c]+=l<<f;return y[d]+=x,t[d]-=r,m}function D(){var d,b,e,c,h,g,f=0,i=0;for(d=0;d<a;d++){for(e=o[d],h=d,g=e[1],b=d+1;b<a;b++)c=o[b],c[1]<g&&(h=b,g=c[1]);if(c=o[h],d!=h&&(b=c[0],c[0]=e[0],e[0]=b,b=c[1],c[1]=e[1],e[1]=b,b=c[2],c[2]=e[2],e[2]=b,b=c[3],c[3]=e[3],e[3]=b),g!=f){for(q[f]=i+d>>1,b=f+1;b<g;b++)q[b]=d;f=g,i=d}}for(q[f]=i+n>>1,b=f+1;b<256;b++)q[b]=n}function E(j,i,k){var b,d,c,e=1e3,h=-1,f=q[i],g=f-1;while(f<a||g>=0)f<a&&(d=o[f],c=d[1]-i,c>=e?f=a:(f++,c<0&&(c=-c),b=d[0]-j,b<0&&(b=-b),c+=b,c<e&&(b=d[2]-k,b<0&&(b=-b),c+=b,c<e&&(e=c,h=d[3])))),g>=0&&(d=o[g],c=i-d[1],c>=e?g=-1:(g--,c<0&&(c=-c),b=d[0]-j,b<0&&(b=-b),c+=b,c<e&&(b=d[2]-k,b<0&&(b=-b),c+=b,c<e&&(e=c,h=d[3]))));return h}function F(){var c,f=A.length,D=30+(B-1)/3,y=f/(3*B),q=~~(y/w),n=d,o=u,a=o>>h;for(a<=1&&(a=0),c=0;c<a;c++)z[c]=n*((a*a-c*c)*m/(a*a));var i;f<s?(B=1,i=3):f%l!==0?i=3*l:f%k!==0?i=3*k:f%p!==0?i=3*p:i=3*j;var r,t,x,e,g=0;c=0;while(c<y)if(r=(A[g]&255)<<b,t=(A[g+1]&255)<<b,x=(A[g+2]&255)<<b,e=C(r,t,x),K(n,e,r,t,x),a!==0&&L(a,e,r,t,x),g+=i,g>=f&&(g-=f),c++,q===0&&(q=1),c%q===0)for(n-=n/D,o-=o/v,a=o>>h,a<=1&&(a=0),e=0;e<a;e++)z[e]=n*((a*a-e*e)*m/(a*a))}function G(){I(),F(),J(),D()}function H(){var b=[],g=[];for(var c=0;c<a;c++)g[o[c][3]]=c;var d=0;for(var e=0;e<a;e++){var f=g[e];b[d++]=o[f][0],b[d++]=o[f][1],b[d++]=o[f][2]}return b}var o,q,t,y,z;this.buildColormap=G,this.getColormap=H,this.lookupRGB=E}var w=100,a=256,n=a-1,b=4,i=16,e=1<<i,f=10,B=1<<f,g=10,x=e>>g,r=e<<f-g,z=a>>3,h=6,t=1<<h,u=z*t,v=30,o=10,d=1<<o,q=8,m=1<<q,y=o+q,c=1<<y,l=499,k=491,p=487,j=503,s=3*j;A.exports=C}),a('/gif.worker.coffee')}.call(this,this))\n//# sourceMappingURL=gif.worker.js.map\n// gif.worker.js 0.1.6 - https://github.com/jnordberg/gif.js\n"
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -9612,7 +9057,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(67);
+	fixUrls = __webpack_require__(68);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -9871,7 +9316,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports) {
 
 
@@ -9966,16 +9411,16 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(62);
+var content = __webpack_require__(63);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(66)(content, {});
+var update = __webpack_require__(67)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -9992,7 +9437,7 @@ if(false) {
 }
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10019,7 +9464,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -10033,6 +9478,7 @@ var d3 = __webpack_require__(0);
 var globals = __webpack_require__(1);
 
 var utils = __webpack_require__(3);
+var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 
 module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_index) {
@@ -10114,14 +9560,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     .attr('y', y_pos);
   })
   .on("dragend", function() {
-    console.log("caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]");
   });
 
   var resize = d3.behavior.drag()
@@ -10168,14 +9607,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     .call(wrap, caption_width - 7.5);
   })
   .on("dragend", function() {
-    console.log("caption " + caption_index + " resized to " + caption_width + "px");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " resized to " + caption_width + "px"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " resized to " + caption_width + "px");
   });
 
   var caption_frame = timeline_caption.append("rect")
@@ -10238,15 +9670,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
     d3.select(this).style('stroke','#ccc')
   })
   .on('click', function(){
-
-    console.log("caption " + caption_index + " removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "caption " + caption_index + " removed"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("caption " + caption_index + " removed");
 
     d3.select(this.parentNode).remove();
   })
@@ -10307,7 +9731,7 @@ module.exports = function (caption,caption_width,x_rel_pos,y_rel_pos,caption_ind
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -10432,14 +9856,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
     .attr('y', y_pos);
   })
   .on("dragend", function() {
-    console.log("image " + image_index + " moved to [" + x_pos + "," + y_pos + "]");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "image " + image_index + " moved to [" + x_pos + "," + y_pos + "]"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("image " + image_index + " moved to [" + x_pos + "," + y_pos + "]");
   });
 
   var resize = d3.behavior.drag()
@@ -10495,14 +9912,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
 
   })
   .on("dragend", function() {
-    console.log("image " + image_index + " resized to " + image_width + "px");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "image " + image_index + " resized to " + image_width + "px"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("image " + image_index + " resized to " + image_width + "px");
   });
 
   var image_defs = timeline_image.append("defs");
@@ -10510,6 +9920,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
   var clipPathId = nextId();
   var circle_clip_path = image_defs.append('clipPath')
   .attr('id','circlepath' + clipPathId)
+  .attr('class', 'image-clip-path')
   .append('circle')
   .attr('cx',x_pos + image_width / 2)
   .attr('cy',y_pos + image_height / 2)
@@ -10601,14 +10012,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
     d3.select(this).style('stroke','#ccc')
   })
   .on('click', function(){
-    console.log("image " + image_index + " removed");
-
-    var log_event = {
-      event_time: new Date().valueOf(),
-      event_category: "annotation",
-      event_detail: "image " + image_index + " removed"
-    }
-    globals.usage_log.push(log_event);
+    logEvent("image " + image_index + " removed");
 
     d3.select(this.parentNode).remove();
   })
@@ -10629,7 +10033,7 @@ module.exports = function (timeline_vis,image_url,x_rel_pos,y_rel_pos,image_widt
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10865,7 +10269,7 @@ d3.calendarAxis = function () {
 module.exports = d3.calendarAxis;
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports) {
 
 var colorSchemes;
@@ -10980,7 +10384,7 @@ var colorSchemes;
 module.exports = colorSchemes;
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10991,9 +10395,9 @@ module.exports = colorSchemes;
 configurableTL: //a configurable timeline
 
 **/
-var gridAxis = __webpack_require__(75);
-var calendarAxis = __webpack_require__(72);
-var radialAxis = __webpack_require__(80);
+var gridAxis = __webpack_require__(76);
+var calendarAxis = __webpack_require__(73);
+var radialAxis = __webpack_require__(81);
 var imageUrls = __webpack_require__(2);
 var annotateEvent = __webpack_require__(6);
 var time = __webpack_require__(5);
@@ -11004,6 +10408,9 @@ var globals = __webpack_require__(1);
 var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var logEvent = utils.logEvent;
+
+var getNextZIndex = __webpack_require__(7).getNextZIndex;
 
 d3.configurableTL = function (unit_width, padding) {
 
@@ -11078,14 +10485,7 @@ d3.configurableTL = function (unit_width, padding) {
       //remove event annotations during a transition
       selectAllWithParent(".event_annotation").remove();
 
-      console.log("timeline initialized");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "drawing",
-        event_detail: "timeline initialized"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("timeline initialized", "drawing");
 
       /**
       ---------------------------------------------------------------------------------------
@@ -11121,15 +10521,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style('stroke','none')
       })
       .on('dblclick', function(){
-
-        console.log("curve reset")
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "curve_reset",
-          event_detail: "curve reset"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("curve reset", "curve_reset");
 
         configurableTL.resetCurve();
       })
@@ -11168,14 +10560,7 @@ d3.configurableTL = function (unit_width, padding) {
       .attr("width",width)
       .attr("height",height);
 
-      console.log("timeline container updated");
-
-      var log_event = {
-        event_time: new Date().valueOf(),
-        event_category: "drawing",
-        event_detail: "timeline container updated"
-      }
-      globals.usage_log.push(log_event);
+      logEvent("timeline container updated", "drawing");
 
       /**
       ---------------------------------------------------------------------------------------
@@ -11338,14 +10723,7 @@ d3.configurableTL = function (unit_width, padding) {
         timeline_facet_exit.select("text.facet_title")
         .attr("transform", "translate(" + (0 - width) + " ,0)");
 
-        console.log("facet containers updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "drawing",
-          event_detail: "facet containers updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("facet containers updated", "drawing");
 
       }
 
@@ -11477,14 +10855,7 @@ d3.configurableTL = function (unit_width, padding) {
         timeline_segment_exit.select("text.segment_title")
         .attr("transform", "translate(" + (0 - width) + " ,0)");
 
-        console.log("segment containers updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "drawing",
-          event_detail: "segment containers updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("segment containers updated", "drawing");
       }
 
       /**
@@ -11531,15 +10902,7 @@ d3.configurableTL = function (unit_width, padding) {
                 }
               }
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Log":
@@ -11601,15 +10964,7 @@ d3.configurableTL = function (unit_width, padding) {
               break;
             }
             timeline_scale.domain([log_bounds,-1]);
-            console.log(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-            break;
+            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");            break;
 
             case "Collapsed":
             //valid timeline scale
@@ -11665,15 +11020,7 @@ d3.configurableTL = function (unit_width, padding) {
               .domain([0,max_time_elapsed]);
             }
 
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed"
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " granularity and range: 0 - " + max_time_elapsed + " time elapsed", "scale_update");
             break;
 
             case "Sequential":
@@ -11682,15 +11029,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,globals.max_seq_index * 1.5 * unit_width - unit_width])
             .domain([0,globals.max_seq_index * unit_width]);
 
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -11801,15 +11140,7 @@ d3.configurableTL = function (unit_width, padding) {
               timeline_scale.domain([data.min_start_date,data.max_end_date]);
               break;
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Sequential":
@@ -11834,15 +11165,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,2 * Math.PI])
             .domain([0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset]);
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -11883,15 +11206,7 @@ d3.configurableTL = function (unit_width, padding) {
                 }
               }
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
             case "Relative":
@@ -11925,15 +11240,7 @@ d3.configurableTL = function (unit_width, padding) {
                 return converted_tick;
               };
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + globals.max_end_age, "scale_update");
             break;
 
             case "Log":
@@ -11995,15 +11302,7 @@ d3.configurableTL = function (unit_width, padding) {
               break;
             }
             timeline_scale.domain([log_bounds,-1]);
-            console.log(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date
-            }
-            globals.usage_log.push(log_event);
-            break;
+            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");            break;
 
             break;
 
@@ -12012,14 +11311,8 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale = d3.scale.linear()
             .range([0,globals.max_seq_index * 1.5 * unit_width - unit_width])
             .domain([0,globals.max_seq_index * unit_width]);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
 
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
             break;
           }
           break;
@@ -12129,14 +11422,7 @@ d3.configurableTL = function (unit_width, padding) {
               case "epochs":
               timeline_scale_segments = [data.min_start_date.valueOf()];
               timeline_scale.domain([data.min_start_date,data.max_end_date]);
-              console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date);
-
-              var log_event = {
-                event_time: new Date().valueOf(),
-                event_category: "scale_update",
-                event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date
-              }
-              globals.usage_log.push(log_event);
+              logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
 
               break;
             }
@@ -12155,15 +11441,7 @@ d3.configurableTL = function (unit_width, padding) {
               timeline_scale.domain([0,globals.max_end_age * 1.05]);
               timeline_scale_segments = d3.range(0,Math.round((globals.max_end_age + 86400000) / 86400000));
             }
-            console.log(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: 0 - " + data.max_end_age, "scale_update");
             break;
 
             case "Sequential":
@@ -12188,15 +11466,7 @@ d3.configurableTL = function (unit_width, padding) {
             .range([0,2 * Math.PI])
             .domain([0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset]);
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
-            console.log(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index);
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "scale_update",
-              event_detail: tl_scale + " scale updated with range: 0 - " + globals.max_seq_index
-            }
-            globals.usage_log.push(log_event);
-
+            logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
           }
           break;
@@ -12237,15 +11507,8 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale.domain([data.min_start_date.valueOf(),data.max_end_date.valueOf()]);
             break;
           }
-          console.log(tl_scale + " scale updated with domain: " + timeline_scale.domain());
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "scale_update",
-            event_detail: tl_scale + " scale updated with domain: " + timeline_scale.domain()
-          }
-          globals.usage_log.push(log_event);
-        }
+          logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
+       }
         else if (tl_representation == "Radial" && tl_scale == "Chronological") {
           //valid scale
           timeline_scale = d3.scale.linear()
@@ -12285,15 +11548,7 @@ d3.configurableTL = function (unit_width, padding) {
             timeline_scale.domain([data.min_start_date.valueOf(),data.max_end_date.valueOf()]);
             break;
           }
-          console.log(tl_scale + " scale updated with domain: " + timeline_scale.domain());
-
-          var log_event = {
-            event_time: new Date().valueOf(),
-            event_category: "scale_update",
-            event_detail: tl_scale + " scale updated with domain: " + timeline_scale.domain()
-          }
-          globals.usage_log.push(log_event);
-
+          logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
         }
         break;
       }
@@ -12473,14 +11728,7 @@ d3.configurableTL = function (unit_width, padding) {
         .attr("y1", 0)
         .attr("y2", height + 6);
 
-        console.log("Linear axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Linear axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Linear axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Linear" && tl_representation != "Linear")  { //remove axes for non-linear timelines
 
@@ -12561,14 +11809,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(interim_duration_axis);
 
-        console.log("Collapsed axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Collapsed axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Collapsed axis updated", "axis_update");
       }
       else if (prev_tl_scale == "Collapsed" && tl_scale != "Collapsed") { //remove Collapsed axis for non-interim_duration-scale timelines
         timeline_container.selectAll(".interim_duration_axis")
@@ -12631,14 +11872,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
 
-        console.log("Unified Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Unified Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Unified Radial axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Unified" && (tl_representation != "Radial" || tl_layout != "Unified")) {
 
@@ -12754,14 +11988,7 @@ d3.configurableTL = function (unit_width, padding) {
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_facet_cols / 2).y_pos(height / globals.num_facet_rows / 2));
 
-        console.log("Faceted Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Faceted Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Faceted Radial axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Faceted" && (tl_representation != "Radial" || tl_layout != "Faceted")) {
 
@@ -12845,14 +12072,7 @@ d3.configurableTL = function (unit_width, padding) {
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_segment_cols / 2).y_pos(height / globals.num_segment_rows / 2));
 
-        console.log("Segmented Radial axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Segmented Radial axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Segmented Radial axis updated", "axis_update");
 
       }
       else if (prev_tl_representation == "Radial" && prev_tl_layout == "Segmented" && (tl_representation != "Radial" || tl_layout != "Segmented")) {
@@ -12896,14 +12116,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(calendar_axis);
 
-        console.log("Calendar axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Calendar axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Calendar axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Calendar" && tl_representation != "Calendar") {
 
@@ -12936,14 +12149,7 @@ d3.configurableTL = function (unit_width, padding) {
         var grid_axis_container = timeline_container.selectAll(".grid_axis")
         .data([d3.range(grid_min,grid_max)]);
 
-        console.log("Grid axis domain: " + grid_min + " - " + grid_max)
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Grid axis domain: " + grid_min + " - " + grid_max
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Grid axis domain: " + grid_min + " - " + grid_max, "axis_update");
 
         var grid_axis_enter = grid_axis_container.enter()
         .append("g")
@@ -12957,14 +12163,7 @@ d3.configurableTL = function (unit_width, padding) {
         .style("opacity",1)
         .call(grid_axis.min_year(grid_min).max_year(grid_max));
 
-        console.log("Grid axis updated");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "axis_update",
-          event_detail: "Grid axis updated"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("Grid axis updated", "axis_update");
       }
       else if (prev_tl_representation == "Grid" && tl_representation != "Grid") {
 
@@ -13010,14 +12209,7 @@ d3.configurableTL = function (unit_width, padding) {
       //define event behaviour
       timeline_event_g_enter.on("click", function (d, i){
 
-        console.log("event " + d.event_id + " clicked");
-
-        var log_event = {
-          event_time: new Date().valueOf(),
-          event_category: "event_click",
-          event_detail: "event " + d.event_id + " clicked"
-        }
-        globals.usage_log.push(log_event);
+        logEvent("event " + d.event_id + " clicked", "event_click");
 
         if (!d.selected || d.selected == undefined) {
           var x_pos = d3.event.x,
@@ -13063,19 +12255,13 @@ d3.configurableTL = function (unit_width, padding) {
               y_offset: (y_pos - item_y_pos),
               x_anno_offset: 50,
               y_anno_offset: 50,
-              label_width: d3.min([d.content_text.length * 10,100])
-            }
+              label_width: d3.min([d.content_text.length * 10,100]),
+              z_index: getNextZIndex()
+            };
 
             globals.annotation_list.push(annotation);
 
-            console.log("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation: <<" + d.content_text + ">>"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
 
             selectWithParent('#event' + d.event_id + "_-1").remove();
 
@@ -13086,14 +12272,7 @@ d3.configurableTL = function (unit_width, padding) {
             d.annotation_count++;
           }
           else {
-            console.log("event " + d.event_id + " annotation supressed (shift key)");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation supressed (shift key)"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation supressed (shift key)");
           }
         }
         else {
@@ -13110,14 +12289,7 @@ d3.configurableTL = function (unit_width, padding) {
             .style("stroke","#fff")
             .style("stroke-width","0.25px");
 
-            console.log("event " + d.event_id + " annotation removed");
-
-            var log_event = {
-              event_time: new Date().valueOf(),
-              event_category: "annotation",
-              event_detail: "event " + d.event_id + " annotation removed"
-            }
-            globals.usage_log.push(log_event);
+            logEvent("event " + d.event_id + " annotation removed");
 
             //remove annotations for the event
             for(var i = 0; i <= d.annotation_count; i++) {
@@ -15509,7 +14681,7 @@ d3.configurableTL = function (unit_width, padding) {
 module.exports = d3.configurableTL;
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15675,14 +14847,14 @@ d3.gridAxis = function (unit_width) {
 module.exports = d3.gridAxis;
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var TimelineStoryteller = __webpack_require__(7);
+var TimelineStoryteller = __webpack_require__(8);
 module.exports = TimelineStoryteller;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports) {
 
 (function(c){function a(b,d){if({}.hasOwnProperty.call(a.cache,b))return a.cache[b];var e=a.resolve(b);if(!e)throw new Error('Failed to resolve module '+b);var c={id:b,require:a,filename:b,exports:{},loaded:!1,parent:d,children:[]};d&&d.children.push(c);var f=b.slice(0,b.lastIndexOf('/')+1);return a.cache[b]=c.exports,e.call(c.exports,c,c.exports,f,b),c.loaded=!0,a.cache[b]=c.exports}a.modules={},a.cache={},a.resolve=function(b){return{}.hasOwnProperty.call(a.modules,b)?a.modules[b]:void 0},a.define=function(b,c){a.modules[b]=c};var b=function(a){return a='/',{title:'browser',version:'v0.10.26',browser:!0,env:{},argv:[],nextTick:c.setImmediate||function(a){setTimeout(a,0)},cwd:function(){return a},chdir:function(b){a=b}}}();a.define('/gif.coffee',function(d,m,l,k){function g(a,b){return{}.hasOwnProperty.call(a,b)}function j(d,b){for(var a=0,c=b.length;a<c;++a)if(a in b&&b[a]===d)return!0;return!1}function i(a,b){function d(){this.constructor=a}for(var c in b)g(b,c)&&(a[c]=b[c]);return d.prototype=b.prototype,a.prototype=new d,a.__super__=b.prototype,a}var h,c,f,b,e;f=a('events',d).EventEmitter,h=a('/browser.coffee',d),e=function(d){function a(d){var a,b;this.running=!1,this.options={},this.frames=[],this.freeWorkers=[],this.activeWorkers=[],this.setOptions(d);for(a in c)b=c[a],null!=this.options[a]?this.options[a]:this.options[a]=b}return i(a,d),c={workerScript:'gif.worker.js',workers:2,repeat:0,background:'#fff',quality:10,width:null,height:null,transparent:null},b={delay:500,copy:!1},a.prototype.setOption=function(a,b){return this.options[a]=b,null!=this._canvas&&(a==='width'||a==='height')?this._canvas[a]=b:void 0},a.prototype.setOptions=function(b){var a,c;return function(d){for(a in b){if(!g(b,a))continue;c=b[a],d.push(this.setOption(a,c))}return d}.call(this,[])},a.prototype.addFrame=function(a,d){var c,e;null==d&&(d={}),c={},c.transparent=this.options.transparent;for(e in b)c[e]=d[e]||b[e];if(null!=this.options.width||this.setOption('width',a.width),null!=this.options.height||this.setOption('height',a.height),'undefined'!==typeof ImageData&&null!=ImageData&&a instanceof ImageData)c.data=a.data;else if('undefined'!==typeof CanvasRenderingContext2D&&null!=CanvasRenderingContext2D&&a instanceof CanvasRenderingContext2D||'undefined'!==typeof WebGLRenderingContext&&null!=WebGLRenderingContext&&a instanceof WebGLRenderingContext)d.copy?c.data=this.getContextData(a):c.context=a;else if(null!=a.childNodes)d.copy?c.data=this.getImageData(a):c.image=a;else throw new Error('Invalid image');return this.frames.push(c)},a.prototype.render=function(){var d,a;if(this.running)throw new Error('Already running');if(!(null!=this.options.width&&null!=this.options.height))throw new Error('Width and height must be set prior to rendering');this.running=!0,this.nextFrame=0,this.finishedFrames=0,this.imageParts=function(c){for(var b=function(){var b;b=[];for(var a=0;0<=this.frames.length?a<this.frames.length:a>this.frames.length;0<=this.frames.length?++a:--a)b.push(a);return b}.apply(this,arguments),a=0,e=b.length;a<e;++a)d=b[a],c.push(null);return c}.call(this,[]),a=this.spawnWorkers();for(var c=function(){var c;c=[];for(var b=0;0<=a?b<a:b>a;0<=a?++b:--b)c.push(b);return c}.apply(this,arguments),b=0,e=c.length;b<e;++b)d=c[b],this.renderNextFrame();return this.emit('start'),this.emit('progress',0)},a.prototype.abort=function(){var a;while(!0){if(a=this.activeWorkers.shift(),!(null!=a))break;console.log('killing active worker'),a.terminate()}return this.running=!1,this.emit('abort')},a.prototype.spawnWorkers=function(){var a;return a=Math.min(this.options.workers,this.frames.length),function(){var c;c=[];for(var b=this.freeWorkers.length;this.freeWorkers.length<=a?b<a:b>a;this.freeWorkers.length<=a?++b:--b)c.push(b);return c}.apply(this,arguments).forEach(function(a){return function(c){var b;return console.log('spawning worker '+c),b=new Worker(a.options.workerScript),b.onmessage=function(a){return function(c){return a.activeWorkers.splice(a.activeWorkers.indexOf(b),1),a.freeWorkers.push(b),a.frameFinished(c.data)}}(a),a.freeWorkers.push(b)}}(this)),a},a.prototype.frameFinished=function(a){return console.log('frame '+a.index+' finished - '+this.activeWorkers.length+' active'),this.finishedFrames++,this.emit('progress',this.finishedFrames/this.frames.length),this.imageParts[a.index]=a,j(null,this.imageParts)?this.renderNextFrame():this.finishRendering()},a.prototype.finishRendering=function(){var e,a,k,m,b,d,h;b=0;for(var f=0,j=this.imageParts.length;f<j;++f)a=this.imageParts[f],b+=(a.data.length-1)*a.pageSize+a.cursor;b+=a.pageSize-a.cursor,console.log('rendering finished - filesize '+Math.round(b/1e3)+'kb'),e=new Uint8Array(b),d=0;for(var g=0,l=this.imageParts.length;g<l;++g){a=this.imageParts[g];for(var c=0,i=a.data.length;c<i;++c)h=a.data[c],k=c,e.set(h,d),k===a.data.length-1?d+=a.cursor:d+=a.pageSize}return m=new Blob([e],{type:'image/gif'}),this.emit('finished',m,e)},a.prototype.renderNextFrame=function(){var c,a,b;if(this.freeWorkers.length===0)throw new Error('No free workers');return this.nextFrame>=this.frames.length?void 0:(c=this.frames[this.nextFrame++],b=this.freeWorkers.shift(),a=this.getTask(c),console.log('starting frame '+(a.index+1)+' of '+this.frames.length),this.activeWorkers.push(b),b.postMessage(a))},a.prototype.getContextData=function(a){return a.getImageData(0,0,this.options.width,this.options.height).data},a.prototype.getImageData=function(b){var a;return null!=this._canvas||(this._canvas=document.createElement('canvas'),this._canvas.width=this.options.width,this._canvas.height=this.options.height),a=this._canvas.getContext('2d'),a.setFill=this.options.background,a.fillRect(0,0,this.options.width,this.options.height),a.drawImage(b,0,0),this.getContextData(a)},a.prototype.getTask=function(a){var c,b;if(c=this.frames.indexOf(a),b={index:c,last:c===this.frames.length-1,delay:a.delay,transparent:a.transparent,width:this.options.width,height:this.options.height,quality:this.options.quality,repeat:this.options.repeat,canTransfer:h.name==='chrome'},null!=a.data)b.data=a.data;else if(null!=a.context)b.data=this.getContextData(a.context);else if(null!=a.image)b.data=this.getImageData(a.image);else throw new Error('Invalid frame');return b},a}(f),d.exports=e}),a.define('/browser.coffee',function(f,g,h,i){var a,d,e,c,b;c=navigator.userAgent.toLowerCase(),e=navigator.platform.toLowerCase(),b=c.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/)||[null,'unknown',0],d=b[1]==='ie'&&document.documentMode,a={name:b[1]==='version'?b[3]:b[1],version:d||parseFloat(b[1]==='opera'&&b[4]?b[4]:b[2]),platform:{name:c.match(/ip(?:ad|od|hone)/)?'ios':(c.match(/(?:webos|android)/)||e.match(/mac|win|linux/)||['other'])[0]}},a[a.name]=!0,a[a.name+parseInt(a.version,10)]=!0,a.platform[a.platform.name]=!0,f.exports=a}),a.define('events',function(f,e,g,h){b.EventEmitter||(b.EventEmitter=function(){});var a=e.EventEmitter=b.EventEmitter,c=typeof Array.isArray==='function'?Array.isArray:function(a){return Object.prototype.toString.call(a)==='[object Array]'},d=10;a.prototype.setMaxListeners=function(a){this._events||(this._events={}),this._events.maxListeners=a},a.prototype.emit=function(f){if(f==='error'&&(!(this._events&&this._events.error)||c(this._events.error)&&!this._events.error.length))throw arguments[1]instanceof Error?arguments[1]:new Error("Uncaught, unspecified 'error' event.");if(!this._events)return!1;var a=this._events[f];if(!a)return!1;if(!(typeof a=='function'))if(c(a)){var b=Array.prototype.slice.call(arguments,1),e=a.slice();for(var d=0,g=e.length;d<g;d++)e[d].apply(this,b);return!0}else return!1;switch(arguments.length){case 1:a.call(this);break;case 2:a.call(this,arguments[1]);break;case 3:a.call(this,arguments[1],arguments[2]);break;default:var b=Array.prototype.slice.call(arguments,1);a.apply(this,b)}return!0},a.prototype.addListener=function(a,b){if('function'!==typeof b)throw new Error('addListener only takes instances of Function');if(this._events||(this._events={}),this.emit('newListener',a,b),!this._events[a])this._events[a]=b;else if(c(this._events[a])){if(!this._events[a].warned){var e;this._events.maxListeners!==undefined?e=this._events.maxListeners:e=d,e&&e>0&&this._events[a].length>e&&(this._events[a].warned=!0,console.error('(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.',this._events[a].length),console.trace())}this._events[a].push(b)}else this._events[a]=[this._events[a],b];return this},a.prototype.on=a.prototype.addListener,a.prototype.once=function(b,c){var a=this;return a.on(b,function d(){a.removeListener(b,d),c.apply(this,arguments)}),this},a.prototype.removeListener=function(a,d){if('function'!==typeof d)throw new Error('removeListener only takes instances of Function');if(!(this._events&&this._events[a]))return this;var b=this._events[a];if(c(b)){var e=b.indexOf(d);if(e<0)return this;b.splice(e,1),b.length==0&&delete this._events[a]}else this._events[a]===d&&delete this._events[a];return this},a.prototype.removeAllListeners=function(a){return a&&this._events&&this._events[a]&&(this._events[a]=null),this},a.prototype.listeners=function(a){return this._events||(this._events={}),this._events[a]||(this._events[a]=[]),c(this._events[a])||(this._events[a]=[this._events[a]]),this._events[a]}}),c.GIF=a('/gif.coffee')}.call(this,this))
@@ -15691,7 +14863,7 @@ module.exports = TimelineStoryteller;
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 !function(t,e){ true?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports.gsheets=e():t.gsheets=e()}(this,function(){return function(t){function e(r){if(n[r])return n[r].exports;var o=n[r]={exports:{},id:r,loaded:!1};return t[r].call(o.exports,o,o.exports,e),o.loaded=!0,o.exports}var n={};return e.m=t,e.c=n,e.p="",e(0)}([function(t,e,n){function r(t,e){var n=e[0],o=e.slice(1);return t.hasOwnProperty(n)?o.length?r(t[n],o):t[n]:null}function o(t,e){var n=v+t.join("/")+"/public/values?alt=json";m.get(n).then(function(t){return t.data.feed?void e(null,t.data.feed):e(new Error("No feed was returned"))})["catch"](function(t){return e(t instanceof Error?t:new Error("Google Spreadsheets responded with HTTP error "+t.status+". Are you sure the spreadsheet exists and is published?"))})}function i(t,e){o(["worksheets",t],function(t,n){return t?e(t):void e(null,f(n))})}function u(t,e,n){o(["cells",t,e],function(t,e){return t?n(t):void n(null,l(e))})}function s(t,e,n){i(t,function(r,o){if(r)return n(r);var i=o.worksheets.filter(function(t){return t.title===e})[0];return i?void u(t,i.id,n):n(new Error("No worksheet with title '"+e+"' found."))})}function c(t){var e=/.*\/(.+)$/,n=e.exec(t);return n?n[1]:null}function a(t){return{id:c(r(t,["id","$t"])),title:r(t,["title","$t"])}}function f(t){return{updated:r(t,["updated","$t"]),title:r(t,["title","$t"]),worksheets:t.entry?t.entry.map(a):null}}function l(t){return{updated:r(t,["updated","$t"]),title:r(t,["title","$t"]),data:t.entry?h(t.entry):null}}function p(t){var e=t.gs$cell;return{col:+e.col,row:+e.row,value:e.numericValue?+e.numericValue:e.$t}}function d(t){return t.reduce(function(t,e){return t[e]=null,t},{})}function h(t){var e=t.map(p),n=e.filter(function(t){return 1===t.row}),r=n.map(function(t){return t.value}),o=n.reduce(function(t,e){return t[e.col]=e.value,t},{}),i=e.filter(function(t){return 1!==t.row}),u=i.reduce(function(t,e){var n=t[e.row]||d(r),i=o[e.col];return n[i]=e.value,t[e.row]=n,t},{});return Object.keys(u).sort(function(t,e){return+t-+e}).map(function(t){return u[t]})}var m=n(6),v="https://spreadsheets.google.com/feeds/";t.exports={getWorksheet:s,getWorksheetById:u,getSpreadsheet:i}},function(t,e){"use strict";function n(t){return"[object Array]"===v.call(t)}function r(t){return"[object ArrayBuffer]"===v.call(t)}function o(t){return"[object FormData]"===v.call(t)}function i(t){return"undefined"!=typeof ArrayBuffer&&ArrayBuffer.isView?ArrayBuffer.isView(t):t&&t.buffer&&t.buffer instanceof ArrayBuffer}function u(t){return"string"==typeof t}function s(t){return"number"==typeof t}function c(t){return"undefined"==typeof t}function a(t){return null!==t&&"object"==typeof t}function f(t){return"[object Date]"===v.call(t)}function l(t){return"[object File]"===v.call(t)}function p(t){return"[object Blob]"===v.call(t)}function d(t){return t.replace(/^\s*/,"").replace(/\s*$/,"")}function h(t,e){if(null!==t&&"undefined"!=typeof t){var r=n(t)||"object"==typeof t&&!isNaN(t.length);if("object"==typeof t||r||(t=[t]),r)for(var o=0,i=t.length;i>o;o++)e.call(null,t[o],o,t);else for(var u in t)t.hasOwnProperty(u)&&e.call(null,t[u],u,t)}}function m(){var t={};return h(arguments,function(e){h(e,function(e,n){t[n]=e})}),t}var v=Object.prototype.toString;t.exports={isArray:n,isArrayBuffer:r,isFormData:o,isArrayBufferView:i,isString:u,isNumber:s,isObject:a,isUndefined:c,isDate:f,isFile:l,isBlob:p,forEach:h,merge:m,trim:d}},function(t,e){function n(){a=!1,u.length?c=u.concat(c):f=-1,c.length&&r()}function r(){if(!a){var t=setTimeout(n);a=!0;for(var e=c.length;e;){for(u=c,c=[];++f<e;)u&&u[f].run();f=-1,e=c.length}u=null,a=!1,clearTimeout(t)}}function o(t,e){this.fun=t,this.array=e}function i(){}var u,s=t.exports={},c=[],a=!1,f=-1;s.nextTick=function(t){var e=new Array(arguments.length-1);if(arguments.length>1)for(var n=1;n<arguments.length;n++)e[n-1]=arguments[n];c.push(new o(t,e)),1!==c.length||a||setTimeout(r,0)},o.prototype.run=function(){this.fun.apply(null,this.array)},s.title="browser",s.browser=!0,s.env={},s.argv=[],s.version="",s.versions={},s.on=i,s.addListener=i,s.once=i,s.off=i,s.removeListener=i,s.removeAllListeners=i,s.emit=i,s.binding=function(t){throw new Error("process.binding is not supported")},s.cwd=function(){return"/"},s.chdir=function(t){throw new Error("process.chdir is not supported")},s.umask=function(){return 0}},function(t,e,n){(function(t,r){function o(t,e){this._id=t,this._clearFn=e}var i=n(2).nextTick,u=Function.prototype.apply,s=Array.prototype.slice,c={},a=0;e.setTimeout=function(){return new o(u.call(setTimeout,window,arguments),clearTimeout)},e.setInterval=function(){return new o(u.call(setInterval,window,arguments),clearInterval)},e.clearTimeout=e.clearInterval=function(t){t.close()},o.prototype.unref=o.prototype.ref=function(){},o.prototype.close=function(){this._clearFn.call(window,this._id)},e.enroll=function(t,e){clearTimeout(t._idleTimeoutId),t._idleTimeout=e},e.unenroll=function(t){clearTimeout(t._idleTimeoutId),t._idleTimeout=-1},e._unrefActive=e.active=function(t){clearTimeout(t._idleTimeoutId);var e=t._idleTimeout;e>=0&&(t._idleTimeoutId=setTimeout(function(){t._onTimeout&&t._onTimeout()},e))},e.setImmediate="function"==typeof t?t:function(t){var n=a++,r=arguments.length<2?!1:s.call(arguments,1);return c[n]=!0,i(function(){c[n]&&(r?t.apply(null,r):t.call(null),e.clearImmediate(n))}),n},e.clearImmediate="function"==typeof r?r:function(t){delete c[t]}}).call(e,n(3).setImmediate,n(3).clearImmediate)},function(t,e,n){"use strict";var r=n(5),o=n(1),i=n(10),u=n(11),s=n(13),c=n(15),a=n(16);t.exports=function(t,e,n){var f=c(n.data,n.headers,n.transformRequest),l=o.merge(r.headers.common,r.headers[n.method]||{},n.headers||{});o.isFormData(f)&&delete l["Content-Type"];var p=new(XMLHttpRequest||ActiveXObject)("Microsoft.XMLHTTP");p.open(n.method.toUpperCase(),i(n.url,n.params),!0),p.onreadystatechange=function(){if(p&&4===p.readyState){var r=s(p.getAllResponseHeaders()),o=-1!==["text",""].indexOf(n.responseType||"")?p.responseText:p.response,i={data:c(o,r,n.transformResponse),status:p.status,statusText:p.statusText,headers:r,config:n};(p.status>=200&&p.status<300?t:e)(i),p=null}};var d=a(n.url)?u.read(n.xsrfCookieName||r.xsrfCookieName):void 0;if(d&&(l[n.xsrfHeaderName||r.xsrfHeaderName]=d),o.forEach(l,function(t,e){f||"content-type"!==e.toLowerCase()?p.setRequestHeader(e,t):delete l[e]}),n.withCredentials&&(p.withCredentials=!0),n.responseType)try{p.responseType=n.responseType}catch(h){if("json"!==p.responseType)throw h}o.isArrayBuffer(f)&&(f=new DataView(f)),p.send(f)}},function(t,e,n){"use strict";var r=n(1),o=/^\)\]\}',?\n/,i={"Content-Type":"application/x-www-form-urlencoded"};t.exports={transformRequest:[function(t,e){return r.isFormData(t)?t:r.isArrayBuffer(t)?t:r.isArrayBufferView(t)?t.buffer:!r.isObject(t)||r.isFile(t)||r.isBlob(t)?t:(!r.isUndefined(e)&&r.isUndefined(e["Content-Type"])&&(e["Content-Type"]="application/json;charset=utf-8"),JSON.stringify(t))}],transformResponse:[function(t){if("string"==typeof t){t=t.replace(o,"");try{t=JSON.parse(t)}catch(e){}}return t}],headers:{common:{Accept:"application/json, text/plain, */*"},patch:r.merge(i),post:r.merge(i),put:r.merge(i)},xsrfCookieName:"XSRF-TOKEN",xsrfHeaderName:"X-XSRF-TOKEN"}},function(t,e,n){t.exports=n(7)},function(t,e,n){"use strict";var r=n(5),o=n(1),i=n(12),u=n(9),s=n(8);!function(){var t=n(17);t&&"function"==typeof t.polyfill&&t.polyfill()}();var c=t.exports=function a(t){t=o.merge({method:"get",headers:{},transformRequest:r.transformRequest,transformResponse:r.transformResponse},t),t.withCredentials=t.withCredentials||r.withCredentials;var e=[u,void 0],n=Promise.resolve(t);for(a.interceptors.request.forEach(function(t){e.unshift(t.fulfilled,t.rejected)}),a.interceptors.response.forEach(function(t){e.push(t.fulfilled,t.rejected)});e.length;)n=n.then(e.shift(),e.shift());return n.success=function(t){return i("success","then","https://github.com/mzabriskie/axios/blob/master/README.md#response-api"),n.then(function(e){t(e.data,e.status,e.headers,e.config)}),n},n.error=function(t){return i("error","catch","https://github.com/mzabriskie/axios/blob/master/README.md#response-api"),n.then(null,function(e){t(e.data,e.status,e.headers,e.config)}),n},n};c.defaults=r,c.all=function(t){return Promise.all(t)},c.spread=n(14),c.interceptors={request:new s,response:new s},function(){function t(){o.forEach(arguments,function(t){c[t]=function(e,n){return c(o.merge(n||{},{method:t,url:e}))}})}function e(){o.forEach(arguments,function(t){c[t]=function(e,n,r){return c(o.merge(r||{},{method:t,url:e,data:n}))}})}t("delete","get","head"),e("post","put","patch")}()},function(t,e,n){"use strict";function r(){this.handlers=[]}var o=n(1);r.prototype.use=function(t,e){return this.handlers.push({fulfilled:t,rejected:e}),this.handlers.length-1},r.prototype.eject=function(t){this.handlers[t]&&(this.handlers[t]=null)},r.prototype.forEach=function(t){o.forEach(this.handlers,function(e){null!==e&&t(e)})},t.exports=r},function(t,e,n){(function(e){"use strict";t.exports=function(t){return new Promise(function(r,o){try{"undefined"!=typeof window?n(4)(r,o,t):"undefined"!=typeof e&&n(4)(r,o,t)}catch(i){o(i)}})}}).call(e,n(2))},function(t,e,n){"use strict";function r(t){return encodeURIComponent(t).replace(/%40/gi,"@").replace(/%3A/gi,":").replace(/%24/g,"$").replace(/%2C/gi,",").replace(/%20/g,"+")}var o=n(1);t.exports=function(t,e){if(!e)return t;var n=[];return o.forEach(e,function(t,e){null!==t&&"undefined"!=typeof t&&(o.isArray(t)||(t=[t]),o.forEach(t,function(t){o.isDate(t)?t=t.toISOString():o.isObject(t)&&(t=JSON.stringify(t)),n.push(r(e)+"="+r(t))}))}),n.length>0&&(t+=(-1===t.indexOf("?")?"?":"&")+n.join("&")),t}},function(t,e,n){"use strict";var r=n(1);t.exports={write:function(t,e,n,o,i,u){var s=[];s.push(t+"="+encodeURIComponent(e)),r.isNumber(n)&&s.push("expires="+new Date(n).toGMTString()),r.isString(o)&&s.push("path="+o),r.isString(i)&&s.push("domain="+i),u===!0&&s.push("secure"),document.cookie=s.join("; ")},read:function(t){var e=document.cookie.match(new RegExp("(^|;\\s*)("+t+")=([^;]*)"));return e?decodeURIComponent(e[3]):null},remove:function(t){this.write(t,"",Date.now()-864e5)}}},function(t,e){"use strict";t.exports=function(t,e,n){try{console.warn("DEPRECATED method `"+t+"`."+(e?" Use `"+e+"` instead.":"")+" This method will be removed in a future release."),n&&console.warn("For more information about usage see "+n)}catch(r){}}},function(t,e,n){"use strict";var r=n(1);t.exports=function(t){var e,n,o,i={};return t?(r.forEach(t.split("\n"),function(t){o=t.indexOf(":"),e=r.trim(t.substr(0,o)).toLowerCase(),n=r.trim(t.substr(o+1)),e&&(i[e]=i[e]?i[e]+", "+n:n)}),i):i}},function(t,e){"use strict";t.exports=function(t){return function(e){t.apply(null,e)}}},function(t,e,n){"use strict";var r=n(1);t.exports=function(t,e,n){return r.forEach(n,function(n){t=n(t,e)}),t}},function(t,e,n){"use strict";function r(t){var e=t;return u&&(s.setAttribute("href",e),e=s.href),s.setAttribute("href",e),{href:s.href,protocol:s.protocol?s.protocol.replace(/:$/,""):"",host:s.host,search:s.search?s.search.replace(/^\?/,""):"",hash:s.hash?s.hash.replace(/^#/,""):"",hostname:s.hostname,port:s.port,pathname:"/"===s.pathname.charAt(0)?s.pathname:"/"+s.pathname}}var o,i=n(1),u=/(msie|trident)/i.test(navigator.userAgent),s=document.createElement("a");o=r(window.location.href),t.exports=function(t){var e=i.isString(t)?r(t):t;return e.protocol===o.protocol&&e.host===o.host}},function(t,e,n){var r;(function(t,o,i,u){/*!
@@ -15704,7 +14876,7 @@ module.exports = TimelineStoryteller;
 (function(){"use strict";function s(t){return"function"==typeof t||"object"==typeof t&&null!==t}function c(t){return"function"==typeof t}function a(t){return"object"==typeof t&&null!==t}function f(t){W=t}function l(t){Q=t}function p(){var e=t.nextTick,n=t.versions.node.match(/^(?:(\d+)\.)?(?:(\d+)\.)?(\*|\d+)$/);return Array.isArray(n)&&"0"===n[1]&&"10"===n[2]&&(e=o),function(){e(y)}}function d(){return function(){K(y)}}function h(){var t=0,e=new et(y),n=document.createTextNode("");return e.observe(n,{characterData:!0}),function(){n.data=t=++t%2}}function m(){var t=new MessageChannel;return t.port1.onmessage=y,function(){t.port2.postMessage(0)}}function v(){return function(){setTimeout(y,1)}}function y(){for(var t=0;G>t;t+=2){var e=ot[t],n=ot[t+1];e(n),ot[t]=void 0,ot[t+1]=void 0}G=0}function g(){try{var t=n(20);return K=t.runOnLoop||t.runOnContext,d()}catch(e){return v()}}function w(){}function _(){return new TypeError("You cannot resolve a promise with itself")}function b(){return new TypeError("A promises callback cannot return that same promise.")}function x(t){try{return t.then}catch(e){return ct.error=e,ct}}function T(t,e,n,r){try{t.call(e,n,r)}catch(o){return o}}function A(t,e,n){Q(function(t){var r=!1,o=T(n,e,function(n){r||(r=!0,e!==n?C(t,n):O(t,n))},function(e){r||(r=!0,k(t,e))},"Settle: "+(t._label||" unknown promise"));!r&&o&&(r=!0,k(t,o))},t)}function E(t,e){e._state===ut?O(t,e._result):e._state===st?k(t,e._result):I(e,void 0,function(e){C(t,e)},function(e){k(t,e)})}function j(t,e){if(e.constructor===t.constructor)E(t,e);else{var n=x(e);n===ct?k(t,ct.error):void 0===n?O(t,e):c(n)?A(t,e,n):O(t,e)}}function C(t,e){t===e?k(t,_()):s(e)?j(t,e):O(t,e)}function S(t){t._onerror&&t._onerror(t._result),R(t)}function O(t,e){t._state===it&&(t._result=e,t._state=ut,0!==t._subscribers.length&&Q(R,t))}function k(t,e){t._state===it&&(t._state=st,t._result=e,Q(S,t))}function I(t,e,n,r){var o=t._subscribers,i=o.length;t._onerror=null,o[i]=e,o[i+ut]=n,o[i+st]=r,0===i&&t._state&&Q(R,t)}function R(t){var e=t._subscribers,n=t._state;if(0!==e.length){for(var r,o,i=t._result,u=0;u<e.length;u+=3)r=e[u],o=e[u+n],r?D(n,r,o,i):o(i);t._subscribers.length=0}}function N(){this.error=null}function P(t,e){try{return t(e)}catch(n){return at.error=n,at}}function D(t,e,n,r){var o,i,u,s,a=c(n);if(a){if(o=P(n,r),o===at?(s=!0,i=o.error,o=null):u=!0,e===o)return void k(e,b())}else o=r,u=!0;e._state!==it||(a&&u?C(e,o):s?k(e,i):t===ut?O(e,o):t===st&&k(e,o))}function F(t,e){try{e(function(e){C(t,e)},function(e){k(t,e)})}catch(n){k(t,n)}}function B(t,e){var n=this;n._instanceConstructor=t,n.promise=new t(w),n._validateInput(e)?(n._input=e,n.length=e.length,n._remaining=e.length,n._init(),0===n.length?O(n.promise,n._result):(n.length=n.length||0,n._enumerate(),0===n._remaining&&O(n.promise,n._result))):k(n.promise,n._validationError())}function $(t){return new ft(this,t).promise}function M(t){function e(t){C(o,t)}function n(t){k(o,t)}var r=this,o=new r(w);if(!z(t))return k(o,new TypeError("You must pass an array to race.")),o;for(var i=t.length,u=0;o._state===it&&i>u;u++)I(r.resolve(t[u]),void 0,e,n);return o}function U(t){var e=this;if(t&&"object"==typeof t&&t.constructor===e)return t;var n=new e(w);return C(n,t),n}function q(t){var e=this,n=new e(w);return k(n,t),n}function H(){throw new TypeError("You must pass a resolver function as the first argument to the promise constructor")}function L(){throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.")}function V(t){this._id=mt++,this._state=void 0,this._result=void 0,this._subscribers=[],w!==t&&(c(t)||H(),this instanceof V||L(),F(this,t))}function X(){var t;if("undefined"!=typeof i)t=i;else if("undefined"!=typeof self)t=self;else try{t=Function("return this")()}catch(e){throw new Error("polyfill failed because global object is unavailable in this environment")}var n=t.Promise;(!n||"[object Promise]"!==Object.prototype.toString.call(n.resolve())||n.cast)&&(t.Promise=vt)}var J;J=Array.isArray?Array.isArray:function(t){return"[object Array]"===Object.prototype.toString.call(t)};var K,W,Y,z=J,G=0,Q=({}.toString,function(t,e){ot[G]=t,ot[G+1]=e,G+=2,2===G&&(W?W(y):Y())}),Z="undefined"!=typeof window?window:void 0,tt=Z||{},et=tt.MutationObserver||tt.WebKitMutationObserver,nt="undefined"!=typeof t&&"[object process]"==={}.toString.call(t),rt="undefined"!=typeof Uint8ClampedArray&&"undefined"!=typeof importScripts&&"undefined"!=typeof MessageChannel,ot=new Array(1e3);Y=nt?p():et?h():rt?m():void 0===Z?g():v();var it=void 0,ut=1,st=2,ct=new N,at=new N;B.prototype._validateInput=function(t){return z(t)},B.prototype._validationError=function(){return new Error("Array Methods must be provided an Array")},B.prototype._init=function(){this._result=new Array(this.length)};var ft=B;B.prototype._enumerate=function(){for(var t=this,e=t.length,n=t.promise,r=t._input,o=0;n._state===it&&e>o;o++)t._eachEntry(r[o],o)},B.prototype._eachEntry=function(t,e){var n=this,r=n._instanceConstructor;a(t)?t.constructor===r&&t._state!==it?(t._onerror=null,n._settledAt(t._state,e,t._result)):n._willSettleAt(r.resolve(t),e):(n._remaining--,n._result[e]=t)},B.prototype._settledAt=function(t,e,n){var r=this,o=r.promise;o._state===it&&(r._remaining--,t===st?k(o,n):r._result[e]=n),0===r._remaining&&O(o,r._result)},B.prototype._willSettleAt=function(t,e){var n=this;I(t,void 0,function(t){n._settledAt(ut,e,t)},function(t){n._settledAt(st,e,t)})};var lt=$,pt=M,dt=U,ht=q,mt=0,vt=V;V.all=lt,V.race=pt,V.resolve=dt,V.reject=ht,V._setScheduler=f,V._setAsap=l,V._asap=Q,V.prototype={constructor:V,then:function(t,e){var n=this,r=n._state;if(r===ut&&!t||r===st&&!e)return this;var o=new this.constructor(w),i=n._result;if(r){var u=arguments[r-1];Q(function(){D(r,o,u,i)})}else I(n,o,t,e);return o},"catch":function(t){return this.then(null,t)}};var yt=X,gt={Promise:vt,polyfill:yt};n(18).amd?(r=function(){return gt}.call(e,n,e,u),!(void 0!==r&&(u.exports=r))):"undefined"!=typeof u&&u.exports?u.exports=gt:"undefined"!=typeof this&&(this.ES6Promise=gt),yt()}).call(this)}).call(e,n(2),n(3).setImmediate,function(){return this}(),n(19)(t))},function(t,e){t.exports=function(){throw new Error("define cannot be used indirect")}},function(t,e){t.exports=function(t){return t.webpackPolyfill||(t.deprecate=function(){},t.paths=[],t.children=[],t.webpackPolyfill=1),t}},function(t,e){}])});
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -16150,7 +15322,7 @@ END Timeline Storyteller Modification
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16594,16 +15766,16 @@ d3.radialAxis = function (unit_width) {
 module.exports = d3.radialAxis;
 
 /***/ }),
-/* 81 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_81__;
-
-/***/ }),
 /* 82 */
 /***/ (function(module, exports) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE_82__;
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_83__;
 
 /***/ })
 /******/ ]);
