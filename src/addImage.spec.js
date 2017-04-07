@@ -1,14 +1,15 @@
 var addImage = require("./addImage");
 var expect = require("chai").expect;
+var d3 = require("d3");
 
-describe("addImage", function() {
+describe("addImage", function () {
     beforeEach(function () {
-        document.body.innerHTML = '<div class="timeline_storyteller"><svg id="main_svg"></svg></div>';
+        document.body.innerHTML = "<div class=\"timeline_storyteller\"><svg id=\"main_svg\"></svg></div>";
     });
 
-    it("should generate a unique clip path for each image it draws", function() {
+    it("should generate a unique clip path for each image it draws", function () {
         var fakeVis = {
-            tl_representation: function() {
+            tl_representation: function () {
                 return "Radial";
             }
         };

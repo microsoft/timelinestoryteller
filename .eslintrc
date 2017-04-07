@@ -8,5 +8,9 @@
         "one-var": 0,
         "indent": [2, 4],
         "func-names": 0
+    },
+    "env": {
+        "browser": true,
+        "mocha": true
     }
 }
