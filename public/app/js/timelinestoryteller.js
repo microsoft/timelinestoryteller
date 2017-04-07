@@ -2055,21 +2055,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.reader.onload = function(e) {
       var contents = e.target.result;
-      var blob = new Blob([contents], {type: "application/json"});
-      globals.source = URL.createObjectURL(blob);
-      logEvent('story source: ' + globals.source, "load");
-
-      globals.source_format = 'story';
-      selectWithParent("#timeline_metadata").style('display','none');
-      selectAllWithParent(".gdocs_info_element").style("display","none");
-      selectWithParent("#import_div").style("top",-210 + "px");
-      selectWithParent("#gdocs_info").style("height",0 + "px");
-      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
-      selectWithParent("#gdoc_worksheet_title_input").property("value","");
-
-      setTimeout(function () {
-        loadTimeline();
-      },500);
+      that.loadStory(contents);
     };
   });
 
@@ -4237,6 +4223,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         collapseLegend();
       }
 
+      /**
+       * Creates a mapper, that adds a type property
+       * @param {string} type The type of the item
+       */
       function mapWithType(type) {
         return function (item) {
           return {
@@ -4379,15 +4369,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
       globals.range_text = format(data.max_end_date.valueOf() - data.min_start_date.valueOf()) + " years" +
       ": " + data.min_start_date.valueOf() + " - " + data.max_end_date.valueOf();
-
-      logEvent("range: " + globals.range_text, "preprocessing");
-
     }
     else {
       globals.range_text = moment(data.min_start_date).from(moment(data.max_end_date),true) +
       ": " + moment(data.min_start_date).format('YYYY-MM-DD') + " - " + moment(data.max_end_date).format('YYYY-MM-DD');
-      logEvent("range: " + globals.range_text, "preprocessing");
     }
+
+    logEvent("range: " + globals.range_text, "preprocessing");
 
     //create a nested data structure to contain faceted data
     globals.timeline_facets = d3.nest()
@@ -6450,6 +6438,33 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       },500);
   };
 
+  /**
+   * Loads a story json object
+   * @param {string} story The json stroy object
+   * @param {number} [delay=500] The default delay for loading timeline storyteller
+   */
+  this.loadStoryInternal = function(story, delay) {
+      var blob = new Blob([story], {type: "application/json"});
+      globals.source = URL.createObjectURL(blob);
+      logEvent('story source: ' + globals.source, "load");
+
+      globals.source_format = 'story';
+      selectWithParent("#timeline_metadata").style('display','none');
+      selectAllWithParent(".gdocs_info_element").style("display","none");
+      selectWithParent("#import_div").style("top",-210 + "px");
+      selectWithParent("#gdocs_info").style("height",0 + "px");
+      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
+      selectWithParent("#gdoc_worksheet_title_input").property("value","");
+
+      delay = typeof delay === "undefined" ? 500 : delay;
+      if (delay > 0) {
+        setTimeout(function () {
+          loadTimeline();
+        }, delay);
+      } else {
+          loadTimeline();
+      }
+  };
 }
 
 /**
@@ -6498,6 +6513,15 @@ TimelineStoryteller.prototype.setOptions = function(options) {
  */
 TimelineStoryteller.prototype.load = function(data) {
   return this.loadInternal(data);
+};
+
+/**
+ * Loads the given story
+ * @param {string} story The story to load (json serialized)
+ * @param {number} [delay=500] The default delay for loading timeline storyteller
+ */
+TimelineStoryteller.prototype.loadStory = function(story, delay) {
+  return this.loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
 };
 
 module.exports = TimelineStoryteller;
@@ -10537,8 +10561,6 @@ d3.configurableTL = function (unit_width, padding) {
       .attr("height",height);
 
       logEvent("timeline container updated", "drawing");
-
-      globals.usage_log.push(log_event);
 
       /**
       ---------------------------------------------------------------------------------------

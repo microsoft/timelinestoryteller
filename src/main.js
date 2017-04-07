@@ -1182,21 +1182,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.reader.onload = function(e) {
       var contents = e.target.result;
-      var blob = new Blob([contents], {type: "application/json"});
-      globals.source = URL.createObjectURL(blob);
-      logEvent('story source: ' + globals.source, "load");
-
-      globals.source_format = 'story';
-      selectWithParent("#timeline_metadata").style('display','none');
-      selectAllWithParent(".gdocs_info_element").style("display","none");
-      selectWithParent("#import_div").style("top",-210 + "px");
-      selectWithParent("#gdocs_info").style("height",0 + "px");
-      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
-      selectWithParent("#gdoc_worksheet_title_input").property("value","");
-
-      setTimeout(function () {
-        loadTimeline();
-      },500);
+      that.loadStory(contents);
     };
   });
 
@@ -5579,6 +5565,33 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       },500);
   };
 
+  /**
+   * Loads a story json object
+   * @param {string} story The json stroy object
+   * @param {number} [delay=500] The default delay for loading timeline storyteller
+   */
+  this.loadStoryInternal = function(story, delay) {
+      var blob = new Blob([story], {type: "application/json"});
+      globals.source = URL.createObjectURL(blob);
+      logEvent('story source: ' + globals.source, "load");
+
+      globals.source_format = 'story';
+      selectWithParent("#timeline_metadata").style('display','none');
+      selectAllWithParent(".gdocs_info_element").style("display","none");
+      selectWithParent("#import_div").style("top",-210 + "px");
+      selectWithParent("#gdocs_info").style("height",0 + "px");
+      selectWithParent("#gdoc_spreadsheet_key_input").property("value","");
+      selectWithParent("#gdoc_worksheet_title_input").property("value","");
+
+      delay = typeof delay === "undefined" ? 500 : delay;
+      if (delay > 0) {
+        setTimeout(function () {
+          loadTimeline();
+        }, delay);
+      } else {
+          loadTimeline();
+      }
+  };
 }
 
 /**
@@ -5627,6 +5640,15 @@ TimelineStoryteller.prototype.setOptions = function(options) {
  */
 TimelineStoryteller.prototype.load = function(data) {
   return this.loadInternal(data);
+};
+
+/**
+ * Loads the given story
+ * @param {string} story The story to load (json serialized)
+ * @param {number} [delay=500] The default delay for loading timeline storyteller
+ */
+TimelineStoryteller.prototype.loadStory = function(story, delay) {
+  return this.loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
 };
 
 module.exports = TimelineStoryteller;
