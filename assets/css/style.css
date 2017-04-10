@@ -712,6 +712,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .gdocs_info_element .text_input {
+  padding: 0;
   padding-left: 5px;
   margin-bottom: 5px;
   border-top: 1px solid #999;
