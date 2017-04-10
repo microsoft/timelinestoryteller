@@ -282,8 +282,8 @@ select > option:focus:active {
 }
 
 select > option {
-  background-color: #000;
-  color: white;
+  background-color: #fff;
+  color: black;
 }
 
 select > option:hover {
