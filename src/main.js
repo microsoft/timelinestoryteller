@@ -5588,7 +5588,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
   // This adjusts elements offscreen by calculating their widths and moving them appropriately
   function toggleElement(element, prop, padding) {
     var offscreen = element.node()[(prop === "bottom" || prop === "top") ? "clientHeight" : "clientWidth"];
-    element.style(prop, (isPlayback ? ("-" + offscreen) : padding) + "px");
+    element.style(prop, (isPlayback ? ("-" + (offscreen + 10)) : padding) + "px");
   }
 
   if (isPlayback) {
