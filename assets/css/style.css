@@ -887,7 +887,8 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #playback_bar {
-  display: table;
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 
@@ -907,6 +908,11 @@ input[type="color"]::-moz-color-swatch {
   border: 1px solid #f00;
 }
 
+
+#playback_bar .nav_bttn {
+  flex: 0;
+}
+
 .nav_bttn {
   display: table-cell;
   vertical-align: middle;
@@ -924,6 +930,7 @@ input[type="color"]::-moz-color-swatch {
   vertical-align: middle;
   overflow-y: hidden;
   overflow-x: overlay;
+  flex: 1;
 }
 
 #stepper_svg {
@@ -1311,6 +1318,12 @@ input[type="color"]::-moz-color-swatch {
   padding-top: 100px;
   padding-left: 75px;
   padding-right: 70px;
+  text-align: center;
+}
+
+.playback_mode .timeline_storyteller-container {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 html, body {
