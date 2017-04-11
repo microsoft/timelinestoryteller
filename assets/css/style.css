@@ -1315,7 +1315,7 @@ input[type="color"]::-moz-color-swatch {
   height: calc(100% - 30px); /* 30px for the "aboutBar" */
   overflow: auto;
   box-sizing: border-box;
-  padding-bottom: 105px;
+  padding-bottom: 100px;
   padding-top: 100px;
   padding-left: 75px;
   padding-right: 70px;

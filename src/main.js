@@ -3499,7 +3499,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     **/
 
     control_panel.selectAll("input").attr("class","img_btn_enabled");
-    selectWithParent("#navigation_div").style("bottom", 50 + "px");
+    selectWithParent("#navigation_div").style("bottom", (that.options.showAbout === false || globals.playback_mode) ? "20px": "50px");
     selectWithParent("#filter_type_picker").selectAll("input").property("disabled",false);
     selectWithParent("#filter_type_picker").selectAll("img").attr("class","img_btn_enabled");
     selectWithParent('#playback_bar').selectAll('img').attr('class','img_btn_enabled');
@@ -5539,7 +5539,7 @@ TimelineStoryteller.prototype.applyOptions = function() {
 
   // showAbout
   selectWithParent(".timeline_storyteller-container").style("height", (options.showAbout === false || globals.playback_mode) ? "100%": "calc(100% - 30px)");
-  selectWithParent("#navigation_div").style("bottom", options.showAbout === false ? "20px": "50px");
+  selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || globals.playback_mode) ? "20px": "50px");
 };
 
 /**
