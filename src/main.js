@@ -5437,17 +5437,23 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     playback_intro.start();
   }
 
+
   selectWithParent()
   .append("div")
-  .attr("id","hint_div")
-  .html('<div data-hint="Click on the [TOUR] button for a tour of the interface." data-hintPosition="bottom-left" data-position="bottom-left-aligned"></div>');
+    .attr("id","hint_div")
+    .attr("data-hint", "Click on the [TOUR] button for a tour of the interface.")
+    .attr("data-hintPosition", "bottom-left")
+    .attr("data-position", "bottom-left-aligned")
+    .attr("class", "control_div");
 
   var intro_div = selectWithParent("#hint_div")
-  .append("div")
-  .attr("id","intro_div")
-  .attr("class","control_div");
+    .append("div")
+    .attr("id","intro_div");
 
-  introJs().addHints();
+  // Give it some time to load, then initialize the hints, otherwise the positioning is wierd
+  setTimeout(function() {
+    introJs().addHints();
+  }, 100);
 
   intro_div.append('input')
   .attr({

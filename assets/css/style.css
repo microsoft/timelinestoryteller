@@ -396,16 +396,10 @@ select > option:hover {
   color: #94C11F;
 }
 
-#intro_div {
-  right: 10px;
-  top: 10px;
-  height: 34px;
-  padding: 5px;
-}
-
 #hint_div {
   right: 15px;
   top: 20px;
+  height: 34px;
   position: absolute;
   padding: 5px;
   transition: all 0.5s ease;
@@ -413,8 +407,8 @@ select > option:hover {
 }
 
 .introjs-hints a {
-    margin-left: -124px;
-    margin-top: 14px;
+    margin-left: -15px;
+    margin-top: -30px;
 }
 
 .introjs-hint-dot {
