@@ -57,9 +57,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   timelineElement.className = "timeline_storyteller";
   parentElement.appendChild(timelineElement);
 
-  selectWithParent()
-    .append("div")
-    .attr("class", "timeline_storyteller-container");
+  this._container =
+    selectWithParent()
+      .append("div")
+      .attr("class", "timeline_storyteller-container");
 
   var component_width = parentElement.clientWidth;
   var component_height = parentElement.clientHeight;
@@ -116,19 +117,19 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.height = render_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth()
   }
 
-  window.onscroll = function (e) {
+  that._container.on("scroll", function (e) {
+    var axis = that._container.select(".timeline_axis");
+    axis
+      .select(".domain")
+      .attr("transform", function () {
+        return "translate(0," + that._container.node().scrollTop + ")";
+      });
 
-    selectWithParent(".timeline_axis")
-    .select(".domain")
-    .attr("transform", function () {
-      return "translate(0," + window.scrollY + ")";
-    });
-
-    selectWithParent(".timeline_axis")
+    axis
     .selectAll(".tick text")
-    .attr("y", window.scrollY - 6);
+    .attr("y", that._container.node().scrollTop - 6);
 
-  };
+  });
 
   var legendDrag = d3.behavior.drag()
   .origin(function () {
@@ -1689,7 +1690,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.num_facets = 0;
         globals.timeline_facets = [];
 
-        main_svg = d3.select(".timeline_storyteller-container")
+        main_svg = that._container
         .append("svg")
         .attr("id", "main_svg");
 

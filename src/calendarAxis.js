@@ -225,6 +225,6 @@ d3.calendarAxis = function () {
 
   return calendarAxis;
 
-}
+};
 
 module.exports = d3.calendarAxis;
