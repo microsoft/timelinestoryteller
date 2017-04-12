@@ -272,7 +272,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_x = width / 2;
             offset_y = height / 2;
           }
-          return "translate(" + offset_x + "," + offset_y + ")";
+          return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
         });
 
         timeline_facet_exit.select(".timeline_facet_frame")
@@ -327,7 +327,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_y = height / 2;
             rotation = 0;
           }
-          return "translate(" + offset_x + " ," + offset_y + ")rotate(" + rotation + ")";
+          return "translate(" + unNaN(offset_x) + " ," + unNaN(offset_y) + ")rotate(" + unNaN(rotation) + ")";
         });
 
         timeline_facet_exit.select("text.facet_title")
@@ -423,7 +423,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_x = width / 2;
             offset_y = height / 2;
           }
-          return "translate(" + offset_x + "," + offset_y + ")";
+          return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
         });
 
         segment_number = 0;
@@ -1594,7 +1594,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_x = width / 2;
             offset_y = height / 2;
           }
-          return "translate(" + offset_x + "," + offset_y + ")";
+          return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_facet_cols / 2).y_pos(height / globals.num_facet_rows / 2));
 
@@ -1678,7 +1678,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_x = width / 2;
             offset_y = height / 2;
           }
-          return "translate(" + offset_x + "," + offset_y + ")";
+          return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
         })
         .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / globals.num_segment_cols / 2).y_pos(height / globals.num_segment_rows / 2));
 
@@ -2180,7 +2180,7 @@ d3.configurableTL = function (unit_width, padding) {
         }
         d.rect_offset_x = offset_x;
         d.rect_offset_y = offset_y;
-        return "translate(" + offset_x + "," + offset_y + ")";
+        return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
       });
 
       //update rects for linear timelines
@@ -2673,7 +2673,7 @@ d3.configurableTL = function (unit_width, padding) {
           }
         }
 
-        return "translate(" + offset_x + "," + offset_y + ")";
+        return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
       });
 
       if (tl_representation == "Radial") {
@@ -3078,7 +3078,7 @@ d3.configurableTL = function (unit_width, padding) {
             offset_y = Math.floor(span_segment / globals.num_segment_cols) * segment_dim_y + segment_dim_y / 2 + globals.track_height;
           }
         }
-        return "translate(" + offset_x + "," + offset_y + ")";
+        return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
       });
 
       timeline_event_g_update.selectAll("rect.event_span_component")
@@ -3469,7 +3469,7 @@ d3.configurableTL = function (unit_width, padding) {
           offset_x = globals.facets.domain().indexOf(d3.select(this.parentNode).datum().facet) % globals.num_facet_cols * facet_dim_x + facet_dim_x / 2;
           offset_y = Math.floor(globals.facets.domain().indexOf(d3.select(this.parentNode).datum().facet) / globals.num_facet_cols - 1) * facet_dim_y + facet_dim_y + facet_dim_y / 2 + globals.buffer;
         }
-        return "translate(" + offset_x + "," + offset_y + ")";
+        return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
       });
 
       if (tl_representation == "Radial") {
@@ -3868,7 +3868,7 @@ d3.configurableTL = function (unit_width, padding) {
             y_pos = -1 * (globals.centre_radius + d.track * globals.track_height) * Math.cos(timeline_scale(d.start_date)) + y_facet_offset;
           }
         }
-        return "translate(" + x_pos + "," + y_pos + ")rotate(" + rotation + ")"
+        return "translate(" + unNaN(x_pos) + "," + unNaN(y_pos) + ")rotate(" + unNaN(rotation) + ")"
       });
 
       timeline_event_g_final_update.select(".path_end_indicator")
@@ -4286,6 +4286,15 @@ d3.configurableTL = function (unit_width, padding) {
   };
 
   return configurableTL;
+}
+
+/**
+ * Returns a number if not-nan, 0 otherwise
+ * @param {number} num The number to unnan
+ * @returns The number or 0 if the number is NaN
+ */
+function unNaN(num) {
+  return (Number.isNaN(num) ? 0 : num) || 0;
 }
 
 module.exports = d3.configurableTL;

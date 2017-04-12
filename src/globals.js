@@ -34,10 +34,8 @@ var globals = {
       max_legend_item_width: 0,
       facets: undefined, //scale for facets (timelines)
       selected_facets: [],
-      num_facets: undefined,
       total_num_facets: undefined,
       num_facet_cols: undefined,
-      num_facet_rows: undefined,
       segments: undefined, //scale for segments
       present_segments: undefined,
       selected_segments: [],
@@ -117,6 +115,25 @@ var globals = {
       socket: undefined
 }; // Defined in main.js
 
+var num_facet_rows = undefined;
+Object.defineProperty(globals, "num_facet_rows", {
+  get: function() {
+    return num_facet_rows;
+  },
+  set: function (val) {
+    num_facet_rows = val;
+  }
+});
+
+var num_facets = undefined;
+Object.defineProperty(globals, "num_facets", {
+  get: function() {
+    return num_facets;
+  },
+  set: function (val) {
+    num_facets = val;
+  }
+});
 
 globals.formatAbbreviation = function(x) {
 
