@@ -4,6 +4,7 @@ var time = require("./lib/time.min.js");
 var d3 = require("d3");
 var moment = require("moment");
 var globals = require("./globals");
+var arcTween = require("./utils").arcTween;
 
 /**
 
@@ -103,7 +104,7 @@ d3.radialAxis = function (unit_width) {
 
       radial_axis_tracks_delayed_update.selectAll(".rad_track")
       .style('opacity',1)
-      .attr("d", d3.svg.arc()
+      .attrTween("d", arcTween(d3.svg.arc()
       .innerRadius(function (d) {
         return globals.centre_radius + d * globals.track_height;
       })
@@ -111,13 +112,13 @@ d3.radialAxis = function (unit_width) {
         return globals.centre_radius + d * globals.track_height;
       })
       .startAngle(0)
-      .endAngle(radial_axis_scale(final_quantile)));
+      .endAngle(radial_axis_scale(final_quantile))));
 
       radial_axis_tracks_exit.selectAll(".rad_track")
       .attr("transform", function () {
         return "translate(" + x_pos + " ," + y_pos + ")"
       })
-      .attr("d", d3.svg.arc()
+      .attrTween("d", arcTween(d3.svg.arc()
       .innerRadius(function (d) {
         return globals.centre_radius;
       })
@@ -125,7 +126,7 @@ d3.radialAxis = function (unit_width) {
         return globals.centre_radius;
       })
       .startAngle(0)
-      .endAngle(radial_axis_scale(final_quantile)));
+      .endAngle(radial_axis_scale(final_quantile))));
 
       //radial ticks
       var radial_axis_tick = g.selectAll(".radial_axis_tick")
@@ -174,7 +175,7 @@ d3.radialAxis = function (unit_width) {
 
       radial_axis_tick_delayed_update.select("path")
       .style('opacity',1)
-      .attr("d", d3.svg.arc()
+      .attrTween("d", arcTween(d3.svg.arc()
       .innerRadius(globals.centre_radius - globals.track_height)
       .outerRadius(globals.centre_radius + track_bounds * globals.track_height - 0.25 * unit_width)
       .startAngle(function (d) {
@@ -182,7 +183,7 @@ d3.radialAxis = function (unit_width) {
       })
       .endAngle(function (d) {
         return radial_axis_scale(d);
-      }));
+      })));
 
       radial_axis_tick_update.select("text")
       .style('opacity',0)
@@ -214,7 +215,7 @@ d3.radialAxis = function (unit_width) {
       });
 
       radial_axis_tick_exit.select("path")
-      .attr("d", d3.svg.arc()
+      .attrTween("d", arcTween(d3.svg.arc()
       .innerRadius(globals.centre_radius)
       .outerRadius(globals.centre_radius)
       .startAngle(function (d) {
@@ -222,7 +223,7 @@ d3.radialAxis = function (unit_width) {
       })
       .endAngle(function (d) {
         return radial_axis_scale(d);
-      }));
+      })));
 
       radial_axis_tick_exit.select("text")
       .text(function (d) {

@@ -19,6 +19,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var logEvent = utils.logEvent;
+var arcTween = utils.arcTween;
 
 var getNextZIndex = require("./annotations").getNextZIndex;
 
@@ -2679,7 +2680,7 @@ d3.configurableTL = function (unit_width, padding) {
       if (tl_representation == "Radial") {
 
         timeline_event_g_delayed_update.select("path.event_span")
-        .attr("d", d3.svg.arc()
+        .attrTween("d", arcTween(d3.svg.arc()
         .innerRadius(function (d){
           var inner_radius = globals.centre_radius;
           switch (tl_scale) {
@@ -2847,7 +2848,7 @@ d3.configurableTL = function (unit_width, padding) {
             }
           }
           return end_angle;
-        })
+        }))
         )
         .style("opacity", function(d){
           if (tl_layout != "Segmented") {
@@ -3475,7 +3476,7 @@ d3.configurableTL = function (unit_width, padding) {
       if (tl_representation == "Radial") {
 
         timeline_event_g_delayed_update.selectAll("path.event_span_component")
-        .attr("d", d3.svg.arc()
+        .attrTween("d", arcTween(d3.svg.arc()
         .innerRadius(function (d) {
           var inner_radius = globals.centre_radius;
           if (tl_scale == "Relative" || tl_scale == "Chronological"){
@@ -3629,7 +3630,7 @@ d3.configurableTL = function (unit_width, padding) {
             }
           }
           return end_angle;
-        })
+        }))
         )
         .style("opacity", function(d){
           if (tl_layout == "Segmented" && tl_scale == "Chronological") {
