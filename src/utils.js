@@ -1,5 +1,6 @@
 var d3 = require("d3");
 var globals = require("./globals");
+var log = require("debug")("TimelineStoryteller:utils");
 var _nextId = 0;
 
 /**
@@ -37,7 +38,7 @@ module.exports = {
      * @returns {void}
      */
     logEvent: function (detail, category) {
-        console.log(detail);
+        log(detail);
         var log_event = {
             event_time: new Date().valueOf(),
             event_category: category || "annotation",

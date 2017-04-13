@@ -225,6 +225,7 @@ ISSN = {1077-2626}
 - [mocha](https://mochajs.org/)
 - [chai](http://chaijs.com/)
 - [eslint](http://eslint.org/)
+- [debug](https://github.com/visionmedia/debug)
 
 ### Demo dataset provenance
 

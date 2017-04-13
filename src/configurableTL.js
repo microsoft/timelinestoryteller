@@ -14,6 +14,7 @@ var time = require("./lib/time.min.js");
 var d3 = require("d3");
 var moment = require("moment");
 var globals = require("./globals");
+var log = require("debug")("TimelineStoryteller:configurableTL");
 
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
@@ -4025,7 +4026,7 @@ d3.configurableTL = function (unit_width, padding) {
   };
 
   function transitionLog (transition) {
-    console.log(transition.delay() + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
+    log(transition.delay() + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
   };
 
   function eventLabel (item) {
@@ -4295,7 +4296,7 @@ d3.configurableTL = function (unit_width, padding) {
  * @returns The number or 0 if the number is NaN
  */
 function unNaN(num) {
-  return (Number.isNaN(num) ? 0 : num) || 0;
+  return (isNaN(num) ? 0 : num) || 0;
 }
 
 module.exports = d3.configurableTL;

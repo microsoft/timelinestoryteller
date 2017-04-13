@@ -41,6 +41,7 @@ var gif = new GIF({
   workerScript: URL.createObjectURL(new Blob([require("raw-loader!./lib/gif.worker.js")], { type: "text/javascript" })) // Creates a script url with the contents of "gif.worker.js"
 });
 var getNextZIndex = require("./annotations").getNextZIndex;
+var log = require("debug")("TimelineStoryteller:main");
 
 /**
  * Creates a new TimelineStoryteller component
@@ -76,7 +77,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   if (globals.socket) {
     globals.socket.on('hello_from_server', function(data) {
-      console.log(data);
+      log(data);
     });
   }
 
@@ -350,7 +351,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var research_copy_json = JSON.stringify(research_copy);
       var research_blob = new Blob([research_copy_json], {type: "application/json"});
 
-      console.log(research_copy);
+      log(research_copy);
 
       if (globals.socket) {
         globals.socket.emit('export_event', research_copy_json); // raise an event on the server
@@ -782,7 +783,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       story_json = JSON.stringify(globals.timeline_story);
 
-      console.log(story_json);
+      log(story_json);
 
       if (globals.socket) {
         globals.socket.emit('export_event', story_json); // raise an event on the server
@@ -1253,7 +1254,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           return true;
         };
 
-        console.log("worksheet id: " + sheet.worksheets[0].id)
+        log("worksheet id: " + sheet.worksheets[0].id)
 
         setTimeout(function () {
           worksheet_id = sheet.worksheets[0].id;
@@ -1901,7 +1902,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             unique_values.forEach(function (d) {
               unique_data.push(unique_values.get(d));
             });
-            console.log(unique_data.length + " unique events");
+            log(unique_data.length + " unique events");
             processTimeline(unique_data);
           });
         }
@@ -1989,7 +1990,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
                 story.height = min_story_height;
               }
 
-              console.log("s_width: " + story.width + "; window_width: " + render_width);
+              log("s_width: " + story.width + "; window_width: " + render_width);
 
               // if (story.width != render_width) {
               //   var diff_width = (render_width - story.width) / 2;
@@ -2086,7 +2087,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
               story.height = min_story_height;
             }
 
-            console.log("s_width: " + story.width + "; window_width: " + render_width);
+            log("s_width: " + story.width + "; window_width: " + render_width);
 
             // if (story.width != render_width) {
             //   var diff_width = (render_width - story.width) / 2;
@@ -2164,7 +2165,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     }
 
-    console.log("date_granularity after: " + globals.date_granularity)
+    log("date_granularity after: " + globals.date_granularity)
 
     parseDates(data); //parse all the date values, replace blank end_date values
 
@@ -2655,7 +2656,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr('value',globals.categories)
       .on('mouseover', function(d,i){
         globals.color_swap_target = globals.categories.range().indexOf(this.value)
-        console.log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
+        log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
       })
       .on('change', function(d,i) {
         d3.select(this.parentNode).style('background-color',this.value);
@@ -2869,7 +2870,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     var checkExist = setInterval(function() {
       if (document.getElementById('gif_frame' + globals.gif_index) != null) {
-          console.log('gif_frame' + globals.gif_index + " Exists!");
+          log('gif_frame' + globals.gif_index + " Exists!");
           globals.scenes[globals.scenes.length - 1].s_src = document.getElementById('gif_frame' + globals.gif_index).src;
           document.getElementById('gif_frame' + globals.gif_index).remove();
           globals.gif_index++;
@@ -3707,7 +3708,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .style('opacity',1)
     .on('mouseover', function(d,i){
       globals.color_swap_target = globals.categories.range().indexOf(this.value)
-      console.log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
+      log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
     })
     .on('change', function(d,i) {
       var new_color = this.value;
