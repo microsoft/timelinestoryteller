@@ -30,6 +30,7 @@ describe("TimelineStoryteller", function () {
 
         // The order in which we pull these from the DOM indicates their "z-index"
         // The first one has no spaces because it is in multiple tspan elements.
+        console.log(labels);
         expect(labels).to.be.deep.equal(["AritomoYamagata", "Kinmochi Saionji", "Taro Katsura"]);
 
         done();
