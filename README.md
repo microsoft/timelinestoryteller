@@ -1,5 +1,7 @@
 # Timeline Storyteller
 
+!["Build Status"](https://api.travis-ci.org/Microsoft/timelinestoryteller.svg?branch=master)
+
 !["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
 
 [Timeline Storyteller](https://timelinestoryteller.com/) is an expressive browser-based visual storytelling environment for presenting timelines.
