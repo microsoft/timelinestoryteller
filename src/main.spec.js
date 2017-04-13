@@ -28,13 +28,16 @@ describe("TimelineStoryteller", function () {
         var labels = [];
         d3.selectAll(".event_annotation .event_label").each(function () { labels.push(d3.select(this).text()); });
 
+        // Remove all spaces, we only care if it is in the right order.
+        labels = labels.map(function (label) {
+          return label.replace(/\s*/g, "");
+        });
+
         // The order in which we pull these from the DOM indicates their "z-index"
-        // The first one has no spaces because it is in multiple tspan elements.
-        console.log(labels);
-        expect(labels).to.be.deep.equal(["AritomoYamagata", "Kinmochi Saionji", "Taro Katsura"]);
+        expect(labels).to.be.deep.equal(["AritomoYamagata", "KinmochiSaionji", "TaroKatsura"]);
 
         done();
-      }, 100);
+      }, 20);
     });
   });
 });
