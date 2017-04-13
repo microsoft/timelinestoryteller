@@ -92,7 +92,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
 
       var i = 0;
 
-      while (globals.image_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.image_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.image_list[i].x_rel_pos = x_pos / globals.width;
@@ -145,7 +145,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
 
       var i = 0;
 
-      while (globals.image_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.image_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.image_list[i].i_width = image_width;
@@ -191,21 +191,21 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
     .attr("xlink:href", image_url)
     .attr("class", "image_frame")
     .attr("clip-path", function () {
-      if (timeline_vis.tl_representation() == "Radial") {
+      if (timeline_vis.tl_representation() === "Radial") {
         return "url(#circlepath" + clipPathId + ")";
       }
 
       return "none";
     })
     .style("clip-path", function () {
-      if (timeline_vis.tl_representation() == "Radial") {
+      if (timeline_vis.tl_representation() === "Radial") {
         return "circle()";
       }
 
       return "none";
     })
     .style("-webkit-clip-path", function () {
-      if (timeline_vis.tl_representation() == "Radial") {
+      if (timeline_vis.tl_representation() === "Radial") {
         return "circle()";
       }
 

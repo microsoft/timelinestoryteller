@@ -33,7 +33,7 @@ describe("TimelineStoryteller", function () {
         expect(labels).to.be.deep.equal(["AritomoYamagata", "Kinmochi Saionji", "Taro Katsura"]);
 
         done();
-      }, 20);
+      }, 100);
     });
   });
 });

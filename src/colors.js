@@ -1,9 +1,5 @@
-var colorSchemes;
-
-(function (colorSchemes) {
-  "use strict";
-
-  colorSchemes.schema1 = function () {
+module.exports = {
+  schema1: function () {
     return [
       "#775566",
       "#6688bb",
@@ -15,9 +11,8 @@ var colorSchemes;
       "#994422",
       "#331111"
     ];
-  };
-
-  colorSchemes.schema2 = function () {
+  },
+  schema2: function () {
     return [
       "#44b3c2",
       "#f1a94e",
@@ -30,9 +25,8 @@ var colorSchemes;
       "#bcbd22",
       "#e377c2"
     ];
-  };
-
-  colorSchemes.schema3 = function () {
+  },
+  schema3: function () {
     return [
       "#001166",
       "#0055aa",
@@ -44,9 +38,8 @@ var colorSchemes;
       "#779988",
       "#115522"
     ];
-  };
-
-  colorSchemes.schema4 = function () {
+  },
+  schema4: function () {
     return [
       "#1f77b4",
       "#ff7f0e",
@@ -59,9 +52,8 @@ var colorSchemes;
       "#bcbd22",
       "#17becf"
     ];
-  };
-
-  colorSchemes.schema5 = function () {
+  },
+  schema5: function () {
     return [
       "#1f77b4",
       "#aec7e8",
@@ -84,10 +76,9 @@ var colorSchemes;
       "#17becf",
       "#9edae5"
     ];
-  };
-
+  },
   // colorbrewer categorical 12
-  colorSchemes.schema6 = function () {
+  schema6: function () {
     return [
       "#a6cee3",
       "#1f78b4",
@@ -102,7 +93,5 @@ var colorSchemes;
       "#ffff99",
       "#b15928"
     ];
-  };
-})(colorSchemes || (colorSchemes = {}));
-
-module.exports = colorSchemes;
+  }
+};

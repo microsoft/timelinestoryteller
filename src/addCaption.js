@@ -62,7 +62,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
 
       var i = 0;
 
-      while (globals.caption_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.caption_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.caption_list[i].x_rel_pos = x_pos / globals.width;
@@ -109,7 +109,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
 
       var i = 0;
 
-      while (globals.caption_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.caption_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.caption_list[i].caption_width = caption_width;
@@ -248,7 +248,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
       }
     }
     caption_frame.attr("height", ((line_number + 2.5) * 18) + "px");
-    if (caption_drag_area != undefined) {
+    if (caption_drag_area !== undefined) {
       caption_drag_area.attr("height", ((line_number + 2.5) * 18) + "px");
     }
   }

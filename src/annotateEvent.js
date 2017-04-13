@@ -27,14 +27,14 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
   var isEdge = !isIE && !!window.StyleMedia;
 
   if (!isIE && !isEdge) {
-    if (timeline_vis.tl_layout() == "Segmented") {
-      if (timeline_vis.tl_representation() != "Radial") {
+    if (timeline_vis.tl_layout() === "Segmented") {
+      if (timeline_vis.tl_representation() !== "Radial") {
         target = selectWithParent("#event_g" + item_index + " rect.event_span_component")[0][0];
 
         if (target.transform.baseVal.length > 0) {
           x_offset = target.transform.baseVal[0].matrix.e;
           y_offset = target.transform.baseVal[0].matrix.f;
-        }        else {
+        } else {
           x_offset = 0;
           y_offset = 0;
         }
@@ -47,7 +47,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         if (target.transform.baseVal.length > 0) {
           x_offset = target.transform.baseVal[0].matrix.e;
           y_offset = target.transform.baseVal[0].matrix.f;
-        }        else {
+        } else {
           x_offset = 0;
           y_offset = 0;
         }
@@ -55,14 +55,14 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         x_pos = Math.round(target.getPointAtLength(-globals.unit_width).x + x_offset + globals.padding.left);
         y_pos = Math.round(target.getPointAtLength(-globals.unit_width).y + y_offset + globals.padding.top);
       }
-    }    else if (timeline_vis.tl_representation() != "Radial") {
+    }    else if (timeline_vis.tl_representation() !== "Radial") {
       target = selectWithParent("#event_g" + item_index + " rect.event_span")[0][0];
 
 
       if (target.transform.baseVal.length > 0) {
         x_offset = target.transform.baseVal[0].matrix.e;
         y_offset = target.transform.baseVal[0].matrix.f;
-      }        else {
+      } else {
         x_offset = 0;
         y_offset = 0;
       }
@@ -75,7 +75,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       if (target.transform.baseVal.length > 0) {
         x_offset = target.transform.baseVal[0].matrix.e;
         y_offset = target.transform.baseVal[0].matrix.f;
-      }        else {
+      } else {
         x_offset = 0;
         y_offset = 0;
       }
@@ -93,7 +93,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
     .x(function (d) { return d.x; })
     .y(function (d) { return d.y; });
 
-  if (globals.leader_line_style == LINE_CURVE) {
+  if (globals.leader_line_style === LINE_CURVE) {
     drawLeaderLine.interpolate("basis");
   }  else {
     drawLeaderLine.interpolate("linear");
@@ -143,7 +143,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       var i = 0;
 
-      while (globals.annotation_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.annotation_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.annotation_list[i].x_anno_offset = x_anno_offset;
@@ -210,7 +210,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       var i = 0;
 
-      while (globals.annotation_list[i].id != d3.select(this.parentNode).attr("id")) {
+      while (globals.annotation_list[i].id !== d3.select(this.parentNode).attr("id")) {
         i++;
       }
       globals.annotation_list[i].label_width = label_width;
@@ -403,7 +403,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       }
     }
     annotation_frame.attr("height", ((line_number + 3) * 12) + "px");
-    if (annotation_drag_area != undefined) {
+    if (annotation_drag_area !== undefined) {
       annotation_drag_area.attr("height", ((line_number + 3) * 12) + "px");
     }
   }
