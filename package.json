@@ -15,6 +15,7 @@
     "babel-eslint": "^7.2.1",
     "chai": "^3.5.0",
     "copyfiles": "^1.2.0",
+    "debug": "^2.6.3",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-config-airbnb-es5": "^1.1.0",
