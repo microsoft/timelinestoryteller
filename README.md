@@ -216,6 +216,7 @@ ISSN = {1077-2626}
 - [d3-time v0.0.2](https://github.com/d3/d3-time) for date parsing / temporal arithmetic
 - [moment.js v2.10.6](http://momentjs.com/) for date parsing / temporal arithmetic
 - [saveSvgAsPng.js](https://github.com/exupero/saveSvgAsPng) for image export
+- [flexi-color-picker](https://github.com/DavidDurman/FlexiColorPicker) for legacy color picking
 - [intro.js 2.3.0](http://usablica.github.com/intro.js/) for tour
 - [gif.js](https://github.com/jnordberg/gif.js) for GIF exporting
 - [gsheets 2.0.0](https://github.com/interactivethings/gsheets) for Google Spreadsheet import

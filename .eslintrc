@@ -8,7 +8,8 @@
         "one-var": 0,
         "indent": [2, 2],
         "func-names": 0,
-        "consistent-return": 0
+        "consistent-return": 0,
+        "no-inner-declarations": 0
     },
     "env": {
         "browser": true,

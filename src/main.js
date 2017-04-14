@@ -58,6 +58,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   timelineElement.className = "timeline_storyteller";
   parentElement.appendChild(timelineElement);
 
+  require("./inputColorShim")(timelineElement);
+
   this._container =
     selectWithParent()
       .append("div")
@@ -2547,12 +2549,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("type", "color")
         .attr("class", "colorpicker")
         .attr("value", globals.categories)
-        .on("mouseover", function (d, i) {
-          globals.color_swap_target = globals.categories.range().indexOf(this.value);
-          log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
-        })
         .on("change", function (d, i) {
           d3.select(this.parentNode).style("background-color", this.value);
+
+          globals.color_swap_target = globals.categories.range().indexOf(globals.categories(d));
+          log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
 
           var temp_palette = globals.categories.range();
 
@@ -3541,10 +3542,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("height", (globals.legend_rect_size - 2) + "px")
       .style("width", (globals.legend_rect_size - 2) + "px")
       .style("opacity", 1)
-      .on("mouseover", function (d, i) {
-        globals.color_swap_target = globals.categories.range().indexOf(this.value);
-        log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
-      })
       .on("change", function (d, i) {
         var new_color = this.value;
         selectWithParent(".legend").selectAll(".legend_element_g rect").each(function () {
@@ -3552,6 +3549,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             d3.select(this).style("fill", new_color);
           }
         });
+
+        globals.color_swap_target = globals.categories.range().indexOf(globals.categories(d));
+        log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
+
         var temp_palette = globals.categories.range();
 
         temp_palette[globals.color_swap_target] = this.value;
