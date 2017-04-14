@@ -58,8 +58,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   timelineElement.className = "timeline_storyteller";
   parentElement.appendChild(timelineElement);
 
-  require("./inputColorShim")(timelineElement);
-
+  this._colorPicker = require("./colorPickerPopup")(timelineElement);
   this._container =
     selectWithParent()
       .append("div")
@@ -2545,25 +2544,22 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("class", "colorpicker_wrapper")
         .attr("filter", "url(#drop-shadow)")
         .style("background-color", globals.categories)
-        .append("input")
-        .attr("type", "color")
-        .attr("class", "colorpicker")
-        .attr("value", globals.categories)
-        .on("change", function (d, i) {
-          d3.select(this.parentNode).style("background-color", this.value);
+        .on("click", function (d, i) {
+          var colorEle = this;
+          that._colorPicker.show(this, globals.categories(d), function (value) {
+            // Update the display
+            d3.select(colorEle).style("background-color", value);
 
-          globals.color_swap_target = globals.categories.range().indexOf(globals.categories(d));
-          log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
-
-          var temp_palette = globals.categories.range();
-
-          temp_palette[globals.color_swap_target] = this.value;
-          globals.categories.range(temp_palette);
-          temp_palette = undefined;
-          globals.use_custom_palette = true;
-
-          logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
+            that.setCategoryColor(d, i, value);
+          });
         });
+      //   .append("input")
+      //   .attr("type", "color")
+      //   .attr("class", "colorpicker")
+      //   .attr("value", globals.categories)
+      //   .on("change", function (d, i) {
+
+      //   });
 
       category_metadata_element.append("span")
         .attr("class", "metadata_content")
@@ -3385,9 +3381,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("id", "legend_panel")
         .attr("class", "legend")
         .on("mouseover", function () {
-          if (selectAllWithParent("foreignObject")[0].length === 0) {
-            addLegendColorPicker();
-          }
+          // if (selectAllWithParent("foreignObject")[0].length === 0) {
+          //   addLegendColorPicker();
+          // }
           d3.select(this).select(".legend_rect").attr("filter", "url(#drop-shadow)");
           d3.select(this).select("#legend_expand_btn").style("opacity", 1);
         })
@@ -3505,6 +3501,24 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("height", globals.legend_rect_size)
         .attr("transform", "translate(0,-35)")
         .style("fill", globals.categories)
+        .on("click", function (d, i) {
+          var colorEle = this;
+          that._colorPicker.show(this, globals.categories(d), function (value) {
+
+            // Update the display
+            selectWithParent(".legend").selectAll(".legend_element_g rect").each(function () {
+              if (this.__data__ === d) {
+                d3.select(colorEle).style("fill", value);
+              }
+            });
+
+            that.setCategoryColor(d, i, value);
+
+            if (main_svg && timeline_vis) {
+              main_svg.call(timeline_vis.duration(that.options.animations ? 1200 : 0));
+            }
+          });
+        })
         .append("title");
 
       globals.legend.append("text")
@@ -3526,44 +3540,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("dx", "0em")
         .attr("transform", "translate(5,0)rotate(0)");
     }
-  }
-
-  function addLegendColorPicker() {
-    selectAllWithParent(".legend_element_g").append("foreignObject")
-      .attr("width", globals.legend_rect_size)
-      .attr("height", globals.legend_rect_size)
-      .attr("transform", "translate(" + globals.legend_spacing + ",-35)")
-      .append("xhtml:body")
-      .append("input")
-      .attr("type", "color")
-      .attr("filter", "url(#drop-shadow)")
-      .attr("class", "colorpicker")
-      .attr("value", globals.categories)
-      .style("height", (globals.legend_rect_size - 2) + "px")
-      .style("width", (globals.legend_rect_size - 2) + "px")
-      .style("opacity", 1)
-      .on("change", function (d, i) {
-        var new_color = this.value;
-        selectWithParent(".legend").selectAll(".legend_element_g rect").each(function () {
-          if (this.__data__ === d) {
-            d3.select(this).style("fill", new_color);
-          }
-        });
-
-        globals.color_swap_target = globals.categories.range().indexOf(globals.categories(d));
-        log("category " + i + ": " + d + " / " + this.value + " (index # " + globals.color_swap_target + ")");
-
-        var temp_palette = globals.categories.range();
-
-        temp_palette[globals.color_swap_target] = this.value;
-        globals.categories.range(temp_palette);
-        temp_palette = undefined;
-        globals.use_custom_palette = true;
-
-        main_svg.call(timeline_vis.duration(that.options.animations ? 1200 : 0));
-
-        logEvent("category " + i + ": " + d + " now uses " + this.value, "color_palette_change");
-      });
   }
 
   function expandLegend() {
@@ -5081,6 +5057,25 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       loadTimeline();
     }
   };
+
+  /**
+   * Sets the color for the given category
+   * @param {string} category The category to change
+   * @param {number} categoryIndex The index of the category
+   * @param {string} value The category color
+   * @returns {void}
+   */
+  this.setCategoryColorInternal = function(category, categoryIndex, value) {
+    globals.color_swap_target = globals.categories.range().indexOf(globals.categories(category));
+    log("category " + categoryIndex + ": " + category + " / " + value + " (index # " + globals.color_swap_target + ")");
+
+    var temp_palette = globals.categories.range();
+
+    temp_palette[globals.color_swap_target] = value;
+    globals.categories.range(temp_palette);
+    temp_palette = undefined;
+    globals.use_custom_palette = true;
+  };
 }
 
 /**
@@ -5139,6 +5134,17 @@ TimelineStoryteller.prototype.load = function (data) {
  */
 TimelineStoryteller.prototype.loadStory = function (story, delay) {
   return this.loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+};
+
+/**
+ * Sets the color for the given category
+ * @param {string} category The category to change
+ * @param {number} categoryIndex The index of the category
+ * @param {string} value The category color
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.setCategoryColor = function (category, categoryIndex, value) {
+  return this.setCategoryColorInternal(category, categoryIndex, value);
 };
 
 /**
