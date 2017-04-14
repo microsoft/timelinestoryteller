@@ -53,6 +53,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var that = this;
   var timeline_vis = configurableTL(globals.unit_width, globals.padding);
   parentElement = parentElement || document.body;
+  this.parentElement = parentElement;
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -114,9 +115,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.socket.emit("hello_from_client", { hello: "server" });
     }
 
-    // EFFECTIVE_HEIGHT
-    globals.width = render_width - globals.margin.right - globals.margin.left - getScrollbarWidth(),
-      globals.height = render_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth();
+    that._onResized();
   };
 
   that._container.on("scroll", function (e) {
@@ -201,29 +200,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       logEvent("filter options moved to: " + filter_x + ", " + filter_y, "filter");
     });
-
-  function getScrollbarWidth() {
-    var outer = document.createElement("div");
-    outer.style.visibility = "hidden";
-    outer.style.width = "100px";
-    document.querySelector(".timeline_storyteller").appendChild(outer);
-
-    var widthNoScroll = outer.offsetWidth;
-    // force scrollbars
-    outer.style.overflow = "scroll";
-
-    // add innerdiv
-    var inner = document.createElement("div");
-    inner.style.width = "100%";
-    outer.appendChild(inner);
-
-    var widthWithScroll = inner.offsetWidth;
-
-    // remove divs
-    outer.parentNode.removeChild(outer);
-
-    return widthNoScroll - widthWithScroll;
-  }
 
   /**
   --------------------------------------------------------------------------------------
@@ -1732,11 +1708,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           .attr("dy", "0.25em")
           .text("Recorded timeline scenes will appear here.");
 
-        window.onresize = function () {
+        window.addEventListener("resize", function () {
           selectWithParent("#stepper_container").style("width", function () {
             return (render_width * 0.9 - 120 - 12 - 5) + "px";
           });
-        };
+        });
 
         var defs = main_svg.append("defs");
 
@@ -1860,184 +1836,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           if (globals.source_format === "story") {
             var story = d3.json(globals.source, function (error, story) {
-              globals.timeline_json_data = story.timeline_json_data;
-
-              if (story.color_palette !== undefined) {
-                globals.color_palette = story.color_palette;
-                globals.use_custom_palette = true;
-              }
-              globals.scenes = story.scenes;
-              globals.caption_list = story.caption_list;
-              globals.image_list = story.image_list;
-              globals.annotation_list = story.annotation_list;
-              globals.caption_index = story.caption_list.length - 1;
-              globals.image_index = story.image_list.length - 1;
-
-              if (story.tz_offset !== undefined) {
-                globals.story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
-              } else {
-                globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
-              }
-
-              if (new Date().dst() && !(new Date(story.timestamp).dst())) {
-                globals.story_tz_offset += 60;
-              } else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
-                globals.story_tz_offset -= 60;
-              }
-
-              var min_story_width = render_width,
-                max_story_width = render_width,
-                min_story_height = component_height;
-
-              globals.scenes.forEach(function (d, i) {
-                if (d.s_order === undefined) {
-                  d.s_order = i;
-                }
-                if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) < min_story_width) {
-                  min_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-                }
-                if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) > max_story_width) {
-                  max_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-                }
-                if ((d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth()) < min_story_height) {
-                  min_story_height = (d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth());
-                }
-              });
-
-              if (story.width === undefined) {
-                if (max_story_width > render_width) {
-                  story.width = max_story_width;
-                } else {
-                  story.width = min_story_width;
-                }
-              }
-              if (story.height === undefined) {
-                story.height = min_story_height;
-              }
-
-              log("s_width: " + story.width + "; window_width: " + render_width);
-
-              // if (story.width !== render_width) {
-              //   var diff_width = (render_width - story.width) / 2;
-              //   var new_margin_left = globals.margin.left + diff_width,
-              //       new_margin_right = globals.margin.right + diff_width;
-              //   if (new_margin_left < 0) {
-              //     new_margin_left = 0;
-              //   }
-              //   if (new_margin_right < 0) {
-              //     new_margin_right = 0;
-              //   }
-              //   render_width = story.width;
-
-              //   selectWithParent('#main_svg')
-              //     .style('margin-left',new_margin_left + 'px')
-              //     .style('margin-right',new_margin_right + 'px');
-              // }
-
-              render_width = story.width;
-              render_height = story.height;
-
-              story.timeline_json_data.forEach(function (d) {
-                unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-              });
-
-              unique_values.forEach(function (d) {
-                unique_data.push(unique_values.get(d));
-              });
-              logEvent(unique_data.length + " unique events", "preprocessing");
-
-              updateNavigationStepper();
-              processTimeline(unique_data);
+              that.loadDataFromStory(story, component_height, unique_data, unique_values);
             });
           } else if (globals.source_format === "demo_story") {
-            var story = window.timeline_story_demo_story;
-
-            globals.timeline_json_data = story.timeline_json_data;
-
-            if (story.color_palette !== undefined) {
-              globals.color_palette = story.color_palette;
-              globals.use_custom_palette = true;
-            }
-            globals.scenes = story.scenes;
-            globals.caption_list = story.caption_list;
-            globals.image_list = story.image_list;
-            globals.annotation_list = story.annotation_list;
-            globals.caption_index = story.caption_list.length - 1;
-            globals.image_index = story.image_list.length - 1;
-
-            if (story.tz_offset !== undefined) {
-              globals.story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
-            } else {
-              globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
-            }
-
-            if (new Date().dst() && !(new Date(story.timestamp).dst())) {
-              globals.story_tz_offset += 60;
-            } else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
-              globals.story_tz_offset -= 60;
-            }
-
-            var min_story_width = render_width,
-              max_story_width = render_width,
-              min_story_height = render_height;
-
-            globals.scenes.forEach(function (d, i) {
-              if (d.s_order === undefined) {
-                d.s_order = i;
-              }
-              if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) < min_story_width) {
-                min_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-              }
-              if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) > max_story_width) {
-                max_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-              }
-              if ((d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth()) < min_story_height) {
-                min_story_height = (d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth());
-              }
-            });
-
-            if (story.width === undefined) {
-              if (max_story_width > render_width) {
-                story.width = max_story_width;
-              } else {
-                story.width = min_story_width;
-              }
-            }
-            if (story.height === undefined) {
-              story.height = min_story_height;
-            }
-
-            log("s_width: " + story.width + "; window_width: " + render_width);
-
-            // if (story.width !== render_width) {
-            //   var diff_width = (render_width - story.width) / 2;
-            //   var new_margin_left = globals.margin.left + diff_width,
-            //       new_margin_right = globals.margin.right + diff_width;
-            //   if (new_margin_left < 0) {
-            //     new_margin_left = 0;
-            //   }
-            //   if (new_margin_right < 0) {
-            //     new_margin_right = 0;
-            //   }
-            //   selectWithParent('#main_svg')
-            //     .style('margin-left',new_margin_left + 'px')
-            //     .style('margin-right',new_margin_right + 'px');
-            // }
-
-            render_width = story.width;
-            render_height = story.height;
-
-            story.timeline_json_data.forEach(function (d) {
-              unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-            });
-
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            logEvent(unique_data.length + " unique events", "preprocessing");
-
-            updateNavigationStepper();
-            processTimeline(unique_data);
+            that.loadDataFromStory(window.timeline_story_demo_story, render_height, unique_data, unique_values);
           }
         }
       } finally {
@@ -5076,7 +4878,98 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     temp_palette = undefined;
     globals.use_custom_palette = true;
   };
+
+  /**
+   * Loads the data from the given story
+   * @param {object} story The story to load data from
+   * @param {number} min_story_height The minimum height to show the story
+   * @param {object[]} unique_data The unique data
+   * @param {object[]} unique_values The unique values
+   */
+  this.loadDataFromStory = function(story, min_story_height, unique_data, unique_values) {
+    globals.timeline_json_data = story.timeline_json_data;
+
+    if (story.color_palette !== undefined) {
+      globals.color_palette = story.color_palette;
+      globals.use_custom_palette = true;
+    }
+    globals.scenes = story.scenes;
+    globals.caption_list = story.caption_list;
+    globals.image_list = story.image_list;
+    globals.annotation_list = story.annotation_list;
+    globals.caption_index = story.caption_list.length - 1;
+    globals.image_index = story.image_list.length - 1;
+
+    if (story.tz_offset !== undefined) {
+      globals.story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
+    } else {
+      globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
+    }
+
+    if (new Date().dst() && !(new Date(story.timestamp).dst())) {
+      globals.story_tz_offset += 60;
+    } else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
+      globals.story_tz_offset -= 60;
+    }
+
+    var min_story_width = render_width,
+      max_story_width = render_width;
+
+    globals.scenes.forEach(function (d, i) {
+      if (d.s_order === undefined) {
+        d.s_order = i;
+      }
+      if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) < min_story_width) {
+        min_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
+      }
+      if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) > max_story_width) {
+        max_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
+      }
+      if ((d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth()) < min_story_height) {
+        min_story_height = (d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth());
+      }
+    });
+
+    if (story.width === undefined) {
+      if (max_story_width > render_width) {
+        story.width = max_story_width;
+      } else {
+        story.width = min_story_width;
+      }
+    }
+    if (story.height === undefined) {
+      story.height = min_story_height;
+    }
+
+    log("s_width: " + story.width + "; window_width: " + render_width);
+    render_width = story.width;
+    render_height = story.height;
+
+    story.timeline_json_data.forEach(function (d) {
+      unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
+    });
+
+    unique_values.forEach(function (d) {
+      unique_data.push(unique_values.get(d));
+    });
+    logEvent(unique_data.length + " unique events", "preprocessing");
+
+    updateNavigationStepper();
+    processTimeline(unique_data);
+  };
 }
+
+/**
+ * Event listener for when the TimelineStoryteller is resized
+ */
+TimelineStoryteller.prototype._onResized = function() {
+    var component_width = this.parentElement.clientWidth;
+    var component_height = this.parentElement.clientHeight;
+
+    // EFFECTIVE_HEIGHT
+    globals.width = component_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
+    globals.height = component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth();
+};
 
 /**
  * Applies the current options to the elements on the page
@@ -5203,5 +5096,31 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
 
   this.applyOptions();
 };
+
+/**
+ * A utility function to get the scrollbar width
+ */
+function getScrollbarWidth() {
+  var outer = document.createElement("div");
+  outer.style.visibility = "hidden";
+  outer.style.width = "100px";
+  document.querySelector(".timeline_storyteller").appendChild(outer);
+
+  var widthNoScroll = outer.offsetWidth;
+  // force scrollbars
+  outer.style.overflow = "scroll";
+
+  // add innerdiv
+  var inner = document.createElement("div");
+  inner.style.width = "100%";
+  outer.appendChild(inner);
+
+  var widthWithScroll = inner.offsetWidth;
+
+  // remove divs
+  outer.parentNode.removeChild(outer);
+
+  return widthNoScroll - widthWithScroll;
+}
 
 module.exports = TimelineStoryteller;
