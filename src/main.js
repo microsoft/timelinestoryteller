@@ -1836,10 +1836,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           if (globals.source_format === "story") {
             var story = d3.json(globals.source, function (error, story) {
-              that.loadDataFromStory(story, component_height, unique_data, unique_values);
+              that._loadDataFromStory(story, component_height, unique_data, unique_values);
             });
           } else if (globals.source_format === "demo_story") {
-            that.loadDataFromStory(window.timeline_story_demo_story, render_height, unique_data, unique_values);
+            that._loadDataFromStory(window.timeline_story_demo_story, render_height, unique_data, unique_values);
           }
         }
       } finally {
@@ -4821,7 +4821,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .html("<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'><img src='" + imageUrls("mail.png") + "' width=30 height=30 class='img_btn_enabled'></img></a>");
 
   // TODO: This should be moved to TimelineStoryteller.prototype, but right now it depends on global variables (source_format)
-  this.loadInternal = function (data) {
+  this._loadInternal = function (data) {
     globals.source = data;
     globals.source_format = "json_parsed";
     setTimeout(function () {
@@ -4837,7 +4837,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {number} [delay=500] The default delay for loading timeline storyteller
    * @returns {void}
    */
-  this.loadStoryInternal = function (story, delay) {
+  this._loadStoryInternal = function (story, delay) {
     var blob = new Blob([story], { type: "application/json" });
     globals.source = URL.createObjectURL(blob);
     logEvent("story source: " + globals.source, "load");
@@ -4867,7 +4867,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {string} value The category color
    * @returns {void}
    */
-  this.setCategoryColorInternal = function(category, categoryIndex, value) {
+  this._setCategoryColor = function(category, categoryIndex, value) {
     globals.color_swap_target = globals.categories.range().indexOf(globals.categories(category));
     log("category " + categoryIndex + ": " + category + " / " + value + " (index # " + globals.color_swap_target + ")");
 
@@ -4886,7 +4886,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {object[]} unique_data The unique data
    * @param {object[]} unique_values The unique values
    */
-  this.loadDataFromStory = function(story, min_story_height, unique_data, unique_values) {
+  this._loadDataFromStory = function(story, min_story_height, unique_data, unique_values) {
     globals.timeline_json_data = story.timeline_json_data;
 
     if (story.color_palette !== undefined) {
@@ -5016,7 +5016,7 @@ TimelineStoryteller.prototype.setOptions = function (options) {
  * @returns {void}
  */
 TimelineStoryteller.prototype.load = function (data) {
-  return this.loadInternal(data);
+  return this._loadInternal(data);
 };
 
 /**
@@ -5026,7 +5026,7 @@ TimelineStoryteller.prototype.load = function (data) {
  * @returns {void}
  */
 TimelineStoryteller.prototype.loadStory = function (story, delay) {
-  return this.loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+  return this._loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
 };
 
 /**
@@ -5037,7 +5037,7 @@ TimelineStoryteller.prototype.loadStory = function (story, delay) {
  * @returns {void}
  */
 TimelineStoryteller.prototype.setCategoryColor = function (category, categoryIndex, value) {
-  return this.setCategoryColorInternal(category, categoryIndex, value);
+  return this._setCategoryColor(category, categoryIndex, value);
 };
 
 /**
