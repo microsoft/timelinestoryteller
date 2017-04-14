@@ -91,6 +91,22 @@ module.exports = {
       }
       return d3.interpolate(initialMatches.join(""), finalMatches.join(""));
     };
-  }
+  },
 
+  /**
+   * Creates a debounced function
+   * @param {function} fn The function to debounce
+   * @param {number} [delay=100] The debounce delay
+   */
+  debounce: function (fn, delay) {
+    var timeout;
+    return function (){
+      var args = Array.prototype.slice.call(arguments, 0);
+      var that = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        fn.apply(that, args);
+      }, delay || 500);
+    };
+  }
 };
