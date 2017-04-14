@@ -16,7 +16,7 @@ module.exports = function (parentElement) {
   element.className = "color-picker-popup";
   element.innerHTML =
     '<div class="cp-small"></div>' +
-    '<div>' +
+    '<div style="clear:both">' +
       '<button class="color-picker-cancel">Cancel</button>' +
       '<button class="color-picker-ok" style="margin:5px 5px 2px 0px;">OK</button>'
     '</div>';

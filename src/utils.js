@@ -10,7 +10,8 @@ module.exports = {
 
   /**
    * Creates a d3 selection with the correct parent selector
-   * @param selector The selector to seelct
+   * @param {d3.Selection} selector The selector to select
+   * @returns {d3.Selection} d3 selection bound to the parent
    */
   selectWithParent: function (selector) {
     return d3.select(".timeline_storyteller" + (selector ? " " + selector : ""));
@@ -18,7 +19,8 @@ module.exports = {
 
   /**
    * Creates a d3 selection with the correct parent selector
-   * @param selector The selector to seelct
+   * @param {d3.Selection} selector The selector to select
+   * @returns {d3.Selection} d3 selection bound to the parent
    */
   selectAllWithParent: function (selector) {
     return d3.selectAll(".timeline_storyteller" + (selector ? " " + selector : ""));
@@ -26,6 +28,7 @@ module.exports = {
 
   /**
    * A function which will return the next unique id within a session.
+   * @returns {number} The next unique id
    */
   nextId: function () {
     return _nextId++;
@@ -57,8 +60,8 @@ module.exports = {
     // The gist is, basically if we are just transitioning between two states, then we
     // update the arc flags to match between the start and end states so the interpolate function doesn't try to interpolate the flags
     // problem being, if it interpolates the flags, sometimes it can generate values that aren't 0 or 1, but like .2398
-    return function (d, i, a) {
-      var finalValue = arc.call(this, d, i, a);
+    return function (d, idx, a) {
+      var finalValue = arc.call(this, d, idx, a);
       var finalMatches = (finalValue).match(cmdRegEx) || [];
       var initialMatches = (d3.select(this).attr("d") || "").match(cmdRegEx) || [];
       if (finalMatches.length === initialMatches.length) {
