@@ -282,8 +282,8 @@ select > option:focus:active {
 }
 
 select > option {
-  background-color: #000;
-  color: white;
+  background-color: #fff;
+  color: black;
 }
 
 select > option:hover {
@@ -396,16 +396,10 @@ select > option:hover {
   color: #94C11F;
 }
 
-#intro_div {
-  right: 10px;
-  top: 10px;
-  height: 34px;
-  padding: 5px;
-}
-
 #hint_div {
   right: 15px;
   top: 20px;
+  height: 34px;
   position: absolute;
   padding: 5px;
   transition: all 0.5s ease;
@@ -413,8 +407,8 @@ select > option:hover {
 }
 
 .introjs-hints a {
-    margin-left: -124px;
-    margin-top: 14px;
+    margin-left: -15px;
+    margin-top: -30px;
 }
 
 .introjs-hint-dot {
@@ -546,13 +540,15 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .colorpicker {
-  width: 10px;
-  height: 10px;
+  /*width: 10px;
+  height: 10px;*/
+  width: 100%;
+  height: 100%;
   cursor: pointer;
-  margin-right: 5px;
-  margin-top: 2px;
+  /*margin-right: 5px;
+  margin-top: 2px;*/
   padding: 0;
-  opacity: 0;
+  /*opacity: 0;*/
 }
 
 .colorpicker:hover {
@@ -712,6 +708,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .gdocs_info_element .text_input {
+  padding: 0;
   padding-left: 5px;
   margin-bottom: 5px;
   border-top: 1px solid #999;
@@ -887,7 +884,8 @@ input[type="color"]::-moz-color-swatch {
 }
 
 #playback_bar {
-  display: table;
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 
@@ -907,6 +905,11 @@ input[type="color"]::-moz-color-swatch {
   border: 1px solid #f00;
 }
 
+
+#playback_bar .nav_bttn {
+  flex: 0;
+}
+
 .nav_bttn {
   display: table-cell;
   vertical-align: middle;
@@ -924,6 +927,7 @@ input[type="color"]::-moz-color-swatch {
   vertical-align: middle;
   overflow-y: hidden;
   overflow-x: overlay;
+  flex: 1;
 }
 
 #stepper_svg {
@@ -1307,10 +1311,16 @@ input[type="color"]::-moz-color-swatch {
   height: calc(100% - 30px); /* 30px for the "aboutBar" */
   overflow: auto;
   box-sizing: border-box;
-  padding-bottom: 105px;
+  padding-bottom: 100px;
   padding-top: 100px;
   padding-left: 75px;
   padding-right: 70px;
+  text-align: center;
+}
+
+.playback_mode .timeline_storyteller-container {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 html, body {

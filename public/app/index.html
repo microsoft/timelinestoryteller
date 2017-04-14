@@ -21,7 +21,7 @@
 </body>
 
 <!-- external dependencies -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js" charset="UTF-8"></script>
@@ -30,8 +30,15 @@
 <script type="text/javascript" src="js/demoStory.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/demoData.js" charset="UTF-8"></script>
 
-<!-- Timeline Storyteller component -->
+<script>
+  // Turn on all logging for TimelineStoryteller
+  // This needs to be done before the timelinestoryteller code loads
+  localStorage.setItem("debug", "TimelineStoryteller:*");
+</script>
+
 <script type="text/javascript" src="js/timelinestoryteller.js" charset="UTF-8"></script>
+
+<!-- Timeline Storyteller component -->
 <script>
   var teller = new TimelineStoryteller(false, true, document.getElementById("app"));
   // teller.setOptions({
@@ -42,5 +49,6 @@
   // });
   // teller.load(timeline_story_demo_data.authors);
 </script>
+
 
 </html>

@@ -31,6 +31,7 @@ BEGIN Timeline Storyteller Modification - March 2017
 */
 var d3 = require("d3");
 var globals = require("../globals");
+var log = require("debug")("TimelineStoryteller:saveSvgAsPng");
 /*
 
 END Timeline Storyteller Modification
@@ -94,7 +95,7 @@ END Timeline Storyteller Modification
             checkDone();
           }
           img.onerror = function() {
-            console.log("Could not load "+href);
+            log("Could not load "+href);
             left--;
             checkDone();
           }
@@ -361,7 +362,7 @@ END Timeline Storyteller Modification
     var research_copy_json = JSON.stringify(research_copy);
     var research_blob = new Blob([research_copy_json], {type: "application/json"});
 
-    console.log(research_copy_json);
+    log(research_copy_json);
 
     if (globals.socket) {
       globals.socket.emit('export_event', research_copy_json); // raise an event on the server
