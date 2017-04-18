@@ -56,6 +56,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   parentElement = parentElement || document.body;
   this.parentElement = parentElement;
   this._timeline_vis = timeline_vis;
+  this.scale = 1;
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -1848,6 +1849,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           }
         }
       } finally {
+
+        // Reapply the UI scale to new elements
+        instance.setUIScale(instance.scale);
+
         loadDataIndicator.style("display", "none");
         instance.applyOptions();
       }
@@ -4996,6 +5001,23 @@ TimelineStoryteller.prototype._onResized = debounce(function(updateVis) {
     }
   }
 }, 500);
+
+/**
+ * Scales the UI
+ * @param {number} [scale=1] The scale of the UI
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.setUIScale = function (scale) {
+  scale = typeof scale === "undefined" ? 1 : scale;
+  this.scale = scale;
+  selectWithParent("#footer").style("transform", "scale(" + scale + ")");
+  selectWithParent("#logo_div").style("transform", "scale(" + scale + ")");
+  selectWithParent("#option_div").style("transform", "scale(" + scale + ")");
+  selectWithParent("#import_div").style("transform", "scale(" + scale + ")");
+  selectWithParent("#navigation_div").style("transform", "scale(" + scale + ")");
+  selectWithParent("#menu_div").style("transform", "scale(" + scale + ")");
+  selectWithParent("#hint_div").style("transform", "scale(" + scale + ")");
+};
 
 /**
  * Applies the current options to the elements on the page
