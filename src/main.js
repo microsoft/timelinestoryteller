@@ -86,6 +86,32 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
   }
 
+  /**
+   * Creates the import panel
+   * @returns {void}
+   */
+  function createImportPanel() {
+    var element = selectWithParent()
+      .append("div")
+      .attr("id", "import_div")
+      .attr("class", "control_div")
+      .style("top", "25%");
+
+    var panel = {
+      visible: true,
+      element: element,
+      show: function () {
+        panel.visible = true;
+        element.style("top", "25%").style("display", "block");
+      },
+      hide: function() {
+        panel.visible = false;
+        element.style("top", "-210px");
+      }
+    };
+    return panel;
+  }
+
   function showDemoData() {
     return (typeof showDemo === "undefined" || showDemo) && window.timeline_story_demo_data !== undefined;
   }
@@ -235,7 +261,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       goPreviousScene();
     } else if (d3.event.keyCode === 80 && d3.event.altKey) {
       instance.setPlaybackMode(!globals.playback_mode);
-    } else if (d3.event.keyCode === 46 && selectWithParent("#caption_div").style("display") === "none" && selectWithParent("#image_div").style("display") === "none" && selectWithParent("#import_div").style("top") === -210 + "px") {
+    } else if (d3.event.keyCode === 46 && selectWithParent("#caption_div").style("display") === "none" && selectWithParent("#image_div").style("display") === "none" && !instance.importPanel.visible) {
       globals.deleteScene();
     }
   });
@@ -269,7 +295,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   // initialize main visualization containers
   var main_svg,
-    import_div,
     export_div,
     option_div,
     menu_div,
@@ -327,11 +352,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     gif.running = false;
   });
 
-  import_div = selectWithParent()
-    .append("div")
-    .attr("id", "import_div")
-    .attr("class", "control_div")
-    .style("top", "25%");
+  instance.importPanel = createImportPanel();
 
   this.onIntro = true;
 
@@ -369,11 +390,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       logEvent("open import panel", "load");
 
-      if (selectWithParent("#import_div").style("top") !== -210 + "px") {
-        selectWithParent("#import_div").style("top", -210 + "px");
+      if (instance.importPanel.visible) {
+        instance.importPanel.hide();
         selectWithParent("#gdocs_info").style("height", 0 + "px");
         selectAllWithParent(".gdocs_info_element").style("display", "none");
-      } else      { selectWithParent("#import_div").style("top", "25%"); }
+      } else {
+        instance.importPanel.show();
+      }
     });
 
   var control_panel = menu_div.append("g")
@@ -539,7 +562,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent("#filter_div").style("display", "none");
       selectWithParent("#caption_div").style("display", "none");
       selectWithParent("#image_div").style("display", "none");
-      selectWithParent("#import_div").style("top", -210 + "px");
+
+      instance.importPanel.hide();
 
       logEvent("show export panel", "export");
 
@@ -823,7 +847,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr("id", "footer_right")
     .html("<span class='footer_text'><a title='Privacy & cookies' href='https://go.microsoft.com/fwlink/?LinkId=521839' target='_blank'>Privacy & cookies</a></span><span class='footer_text'><a title='Terms of use' href='https://go.microsoft.com/fwlink/?LinkID=760869' target='_blank'>Terms of use</a></span><span class='footer_text'><a title='Trademarks' href='http://go.microsoft.com/fwlink/?LinkId=506942' target='_blank'>Trademarks</a></span><span class='footer_text'><a title='About our ads' href='http://choice.microsoft.com/' target='_blank'>About our ads</a></span><span class='footer_text'>© 2017 Microsoft</span>");
 
-  var boilerplate = selectWithParent("#import_div").append("div")
+  var boilerplate = instance.importPanel.element.append("div")
     .attr("id", "boilerplate")
     .html("<span class='boilerplate_title'>Timeline Storyteller (Alpha)</span>");
 
@@ -842,12 +866,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on("click", function () {
       logEvent("hiding import panel", "load");
 
-      selectWithParent("#import_div").style("top", -210 + "px");
+      instance.importPanel.hide();
+
       selectWithParent("#gdocs_info").style("height", 0 + "px");
       selectAllWithParent(".gdocs_info_element").style("display", "none");
     });
 
-  var data_picker = selectWithParent("#import_div").append("div")
+  var data_picker = instance.importPanel.element.append("div")
     .attr("id", "data_picker");
 
   var dataset_picker = selectWithParent("#data_picker").append("div")
@@ -1054,7 +1079,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.source_format = "demo_story";
         selectWithParent("#timeline_metadata").style("display", "none");
         selectAllWithParent(".gdocs_info_element").style("display", "none");
-        selectWithParent("#import_div").style("top", -210 + "px");
+        instance.importPanel.hide();
+
         selectWithParent("#gdocs_info").style("height", 0 + "px");
         selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
         selectWithParent("#gdoc_worksheet_title_input").property("value", "");
@@ -1110,7 +1136,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       src: imageUrls("story.png")
     });
 
-  var gdocs_info = selectWithParent("#import_div").append("div")
+  var gdocs_info = instance.importPanel.element.append("div")
     .attr("id", "gdocs_info");
 
   gdocs_info.append("div")
@@ -1202,18 +1228,18 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     });
 
-  selectWithParent("#import_div").append("div")
+  instance.importPanel.element.append("div")
     .attr("class", "loading_data_indicator")
     .style("display", "none")
     .html("<span>Loading data...</span>");
 
-  selectWithParent("#import_div").append("div")
+  instance.importPanel.element.append("div")
     .attr("id", "disclaimer")
     .html("<span class='disclaimer_title'style='clear:both'>An expressive visual storytelling environment for presenting timelines.</span><span class='disclaimer_text'><br><strong>A note about privacy</strong>: </span>" +
     "<span class='disclaimer_text'>Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication. " +
     "By using this service, you agree to <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>'s <a title='Privacy' href='https://go.microsoft.com/fwlink/?LinkId=521839'>Privacy Statement</a> and <a title='Terms of Use' href='https://go.microsoft.com/fwlink/?LinkID=760869'>Terms of Use</a>.</span>");
 
-  var timeline_metadata = selectWithParent("#import_div").append("div")
+  var timeline_metadata = instance.importPanel.element.append("div")
     .attr("id", "timeline_metadata")
     .style("display", "none");
 
@@ -1230,7 +1256,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent("#timeline_metadata").style("display", "none");
       selectWithParent("#timeline_metadata_contents").html("");
       selectAllWithParent(".gdocs_info_element").style("display", "none");
-      selectWithParent("#import_div").style("top", -210 + "px");
+      instance.importPanel.hide();
+
       selectWithParent("#gdocs_info").style("height", 0 + "px");
       selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
       selectWithParent("#gdoc_worksheet_title_input").property("value", "");
@@ -1536,9 +1563,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function loadTimeline() {
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
-    var importDiv = selectWithParent("#import_div");
     loadDataIndicator.style("display", "block");
-    importDiv.style("display", "block");
+
+    instance.importPanel.show();
 
     instance._component_width = parentElement.clientWidth;
     instance._component_height = parentElement.clientHeight;
@@ -4815,7 +4842,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       title: "Start tour"
     })
     .on("click", function () {
-      if (selectWithParent("#import_div").style("top") !== -210 + "px") {
+      if (instance.importPanel.visible) {
         importIntro();
       } else if (!globals.playback_mode) {
         mainIntro();
@@ -4857,7 +4884,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.source_format = "story";
     selectWithParent("#timeline_metadata").style("display", "none");
     selectAllWithParent(".gdocs_info_element").style("display", "none");
-    selectWithParent("#import_div").style("top", -210 + "px");
+    instance.importPanel.hide();
+
     selectWithParent("#gdocs_info").style("height", 0 + "px");
     selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
     selectWithParent("#gdoc_worksheet_title_input").property("value", "");
@@ -5013,7 +5041,7 @@ TimelineStoryteller.prototype.setUIScale = function (scale) {
   selectWithParent("#footer").style("transform", "scale(" + scale + ")");
   selectWithParent("#logo_div").style("transform", "scale(" + scale + ")");
   selectWithParent("#option_div").style("transform", "scale(" + scale + ")");
-  selectWithParent("#import_div").style("transform", "scale(" + scale + ")");
+  this.importPanel.element.style("transform", "scale(" + scale + ")");
   selectWithParent("#navigation_div").style("transform", "scale(" + scale + ")");
   selectWithParent("#menu_div").style("transform", "scale(" + scale + ")");
   selectWithParent("#hint_div").style("transform", "scale(" + scale + ")");
@@ -5028,7 +5056,7 @@ TimelineStoryteller.prototype.applyOptions = function () {
   selectWithParent("#footer").style("display", options.showAbout === false ? "none" : null);
   selectWithParent("#logo_div").style("display", options.showLogo === false ? "none" : null);
   selectWithParent("#option_div").style("display", options.showViewOptions === false ? "none" : null);
-  selectWithParent("#import_div").style("display", this.onIntro && options.showIntro === false ? "none" : null);
+  this.importPanel.element.style("display", this.onIntro && options.showIntro === false ? "none" : null);
 
   // showImportOptions
   var showImportVisible = options.showImportOptions === false ? "none" : null;
@@ -5094,7 +5122,7 @@ TimelineStoryteller.prototype.setCategoryColor = function (category, categoryInd
  * @returns {void}
  */
 TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
-  var importDiv = selectWithParent("#import_div");
+  var importDiv = this.importPanel.element;
   var menuDiv = selectWithParent("#menu_div");
   var optionDiv = selectWithParent("#option_div");
 
