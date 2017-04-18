@@ -1308,7 +1308,7 @@ input[type="color"]::-moz-color-swatch {
 
 .timeline_storyteller-container {
   width: 100%;
-  height: calc(100% - 30px); /* 30px for the "aboutBar" */
+  height: 100%;
   overflow: auto;
   box-sizing: border-box;
   padding-bottom: 100px;
