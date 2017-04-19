@@ -6,7 +6,7 @@ var _nextId = 0;
 /**
  * Provides a set of utility functions
  */
-module.exports = {
+var utils = {
 
   /**
    * Creates a d3 selection with the correct parent selector
@@ -108,5 +108,44 @@ module.exports = {
         fn.apply(that, args);
       }, delay || 500);
     };
+  },
+
+  /**
+   * Provides a very basic deep clone of an object, functions get directly copied over
+   * @param {Object} obj The object to clone
+   * @returns {Object} The clone
+   */
+  clone: function (obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = utils.clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = utils.clone(obj[attr]);
+        }
+        return copy;
+    }
   }
 };
+
+module.exports = utils;

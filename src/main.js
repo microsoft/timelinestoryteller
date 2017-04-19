@@ -16,14 +16,6 @@ var addCaption = require("./addCaption");
 var addImage = require("./addImage");
 var annotateEvent = require("./annotateEvent");
 var colorSchemes = require("./colors");
-var DEFAULT_OPTIONS = {
-  showAbout: true,
-  showLogo: true,
-  showViewOptions: true,
-  showIntro: true,
-  showImportOptions: true,
-  animations: true
-};
 var time = require("./lib/time.min");
 var GIF = require("./lib/gif").GIF;
 var gsheets = require("./lib/gsheets.min");
@@ -32,6 +24,7 @@ var imageUrls = require("./imageUrls");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
 var globals = require("./globals");
@@ -73,7 +66,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   instance._render_width = instance._component_width;
   instance._render_height = instance._component_height;
 
-  this.options = JSON.parse(JSON.stringify(DEFAULT_OPTIONS)); // Simple clone
+  this.options = clone(TimelineStoryteller.DEFAULT_OPTIONS);
 
   globals.serverless = isServerless;
   if (typeof isServerless === "undefined" || isServerless === false) {
@@ -352,9 +345,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     gif.running = false;
   });
 
-  instance.importPanel = createImportPanel();
-
   this.onIntro = true;
+
+  instance.importPanel = createImportPanel();
 
   export_div = selectWithParent()
     .append("div")
@@ -367,154 +360,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr("id", "menu_div")
     .attr("class", "control_div");
 
-  menu_div.append("text")
-    .attr("class", "menu_label")
-    .text("Open");
+  var control_panel = instance._control_panel = menu_div.append("g");
 
-  menu_div.append("input")
-    .attr({
-      type: "image",
-      name: "Load timeline data",
-      id: "import_visible_btn",
-      class: "img_btn_enabled",
-      src: imageUrls("open.png"),
-      height: 30,
-      width: 30,
-      title: "Load timeline data"
-    })
-    .on("click", function () {
-      selectWithParent("#filter_div").style("display", "none");
-      selectWithParent("#caption_div").style("display", "none");
-      selectWithParent("#image_div").style("display", "none");
-      selectWithParent("#export_div").style("top", -185 + "px");
-
-      logEvent("open import panel", "load");
-
-      if (instance.importPanel.visible) {
-        instance.importPanel.hide();
-        selectWithParent("#gdocs_info").style("height", 0 + "px");
-        selectAllWithParent(".gdocs_info_element").style("display", "none");
-      } else {
-        instance.importPanel.show();
-      }
-    });
-
-  var control_panel = menu_div.append("g")
-    .attr("id", "control_panel");
-
-  control_panel.append("hr")
-    .attr("class", "menu_hr");
-
-  control_panel.append("text")
-    .attr("class", "menu_label")
-    .style("font-size", "9px")
-    .text("Annotate");
-
-  control_panel.append("input")
-    .style("margin-bottom", "0px")
-    .attr({
-      type: "image",
-      name: "Add caption",
-      class: "img_btn_disabled",
-      src: imageUrls("caption.png"),
-      height: 30,
-      width: 30,
-      title: "Add caption"
-    })
-    .on("click", function () {
-      logEvent("open caption dialog", "annotation");
-
-      selectWithParent("#filter_div").style("display", "none");
-      selectWithParent("#image_div").style("display", "none");
-      if (selectWithParent("#caption_div").style("display") !== "none") {
-        selectWithParent("#caption_div").style("display", "none");
-      } else {
-        selectWithParent("#caption_div").style("display", "inline");
-      }
-    });
-
-  control_panel.append("input")
-    .attr({
-      type: "image",
-      name: "Add image",
-      class: "img_btn_disabled",
-      src: imageUrls("image.png"),
-      height: 30,
-      width: 30,
-      title: "Add image"
-    })
-    .style("margin-bottom", "0px")
-    .on("click", function () {
-      logEvent("open image dialog", "annotation");
-
-      selectWithParent("#filter_div").style("display", "none");
-      selectWithParent("#caption_div").style("display", "none");
-      if (selectWithParent("#image_div").style("display") !== "none") {
-        selectWithParent("#image_div").style("display", "none");
-      } else {
-        selectWithParent("#image_div").style("display", "inline");
-      }
-    });
-
-  control_panel.append("input")
-    .attr({
-      type: "image",
-      name: "Clear labels, captions, & images",
-      class: "img_btn_disabled",
-      src: imageUrls("clear.png"),
-      height: 30,
-      width: 30,
-      title: "Clear annotations, captions, & images"
-    })
-    .on("click", clearCanvas);
-
-  function clearCanvas() {
-    logEvent("clear annotations", "annotation");
-
-    main_svg.selectAll(".timeline_caption").remove();
-
-    main_svg.selectAll(".timeline_image").remove();
-
-    main_svg.selectAll(".event_annotation").remove();
-  }
-
-  /**
-  ---------------------------------------------------------------------------------------
-  FILTER TYPE OPTIONS
-  ---------------------------------------------------------------------------------------
-  **/
-
-  control_panel.append("hr")
-    .attr("class", "menu_hr");
-
-  control_panel.append("text")
-    .attr("class", "menu_label")
-    .text("Filter");
-
-  control_panel.append("input")
-    .attr({
-      type: "image",
-      name: "Filter",
-      class: "img_btn_disabled",
-      src: imageUrls("filter.png"),
-      height: 30,
-      width: 30,
-      title: "Filter"
-    })
-    .on("click", function () {
-      logEvent("open filter dialog", "filter");
-
-      if (d3.select(this).attr("class") === "img_btn_enabled") {
-        selectWithParent("#caption_div").style("display", "none");
-        selectWithParent("#image_div").style("display", "none");
-        if (selectWithParent("#filter_div").style("display") === "none") {
-          selectWithParent("#filter_div").style("display", "inline");
-          globals.effective_filter_width = instance._component_width - parseInt(selectWithParent("#filter_div").style("width")) - getScrollbarWidth() - 10;
-
-          globals.effective_filter_height = instance._component_height - parseInt(selectWithParent("#filter_div").style("height")) - 25 - getScrollbarWidth() - parseInt(selectWithParent("#navigation_div").style("height")) - 10;
-        } else        { selectWithParent("#filter_div").style("display", "none"); }
-      }
-    });
+  var menuItems = instance.options.menu;
+  instance._initializeMenu(menuItems);
 
   /**
   ---------------------------------------------------------------------------------------
@@ -538,40 +387,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent("#export_div").style("top", -185 + "px");
 
       logEvent("hide export panel", "export");
-    });
-
-  control_panel.append("hr")
-    .style("margin-bottom", "0px")
-    .attr("class", "menu_hr");
-
-  control_panel.append("text")
-    .attr("class", "menu_label")
-    .text("Export");
-
-  control_panel.append("input")
-    .attr({
-      type: "image",
-      name: "Export",
-      class: "img_btn_disabled",
-      src: imageUrls("export.png"),
-      height: 30,
-      width: 30,
-      title: "Export"
-    })
-    .on("click", function () {
-      selectWithParent("#filter_div").style("display", "none");
-      selectWithParent("#caption_div").style("display", "none");
-      selectWithParent("#image_div").style("display", "none");
-
-      instance.importPanel.hide();
-
-      logEvent("show export panel", "export");
-
-      if (selectWithParent("#export_div").style("top") !== -185 + "px") {
-        selectWithParent("#export_div").style("top", -185 + "px");
-      } else {
-        selectWithParent("#export_div").style("top", "25%");
-      }
     });
 
   export_div.append("div")
@@ -2430,7 +2245,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   **/
 
   selectAllWithParent("#scale_picker input[name=scale_rb]").on("change", function () {
-    clearCanvas();
+    instance.clearCanvas();
 
     logEvent("scale change: " + this.value, "scale_change");
 
@@ -2453,7 +2268,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   **/
 
   selectAllWithParent("#layout_picker input[name=layout_rb]").on("change", function () {
-    clearCanvas();
+    instance.clearCanvas();
 
     logEvent("layout change: " + this.value, "layout_change");
 
@@ -2476,7 +2291,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   **/
 
   selectAllWithParent("#representation_picker input[name=representation_rb]").on("change", function () {
-    clearCanvas();
+    instance.clearCanvas();
 
     logEvent("representation change: " + this.value, "representation_change");
 
@@ -4546,7 +4361,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   // remove mismatches
   globals.dispatch.on("remove", function (selected_categories, selected_facets, selected_segments) {
-    clearCanvas();
+    instance.clearCanvas();
 
     globals.prev_active_event_list = globals.active_event_list;
     globals.active_event_list = [];
@@ -5000,6 +4815,193 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 }
 
 /**
+ * The default set of options
+ */
+TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
+  showAbout: true,
+  showLogo: true,
+  showViewOptions: true,
+  showIntro: true,
+  showImportOptions: true,
+  animations: true,
+  menu: {
+    open: {
+      label: "Open",
+      items: [{
+        name: "Load timeline data",
+        image: imageUrls("open.png"),
+        id: "import_visible_btn",
+        click: function (instance) {
+          selectWithParent("#filter_div").style("display", "none");
+          selectWithParent("#caption_div").style("display", "none");
+          selectWithParent("#image_div").style("display", "none");
+          selectWithParent("#export_div").style("top", -185 + "px");
+
+          logEvent("open import panel", "load");
+
+          if (instance.importPanel.visible) {
+            instance.importPanel.hide();
+            selectWithParent("#gdocs_info").style("height", 0 + "px");
+            selectAllWithParent(".gdocs_info_element").style("display", "none");
+          } else {
+            instance.importPanel.show();
+          }
+        }
+      }]
+    },
+    annotate: {
+      label: "Annotate",
+      items: [{
+        name: "Add caption",
+        image: imageUrls("caption.png"),
+        click: function () {
+          logEvent("open caption dialog", "annotation");
+
+          selectWithParent("#filter_div").style("display", "none");
+          selectWithParent("#image_div").style("display", "none");
+          if (selectWithParent("#caption_div").style("display") !== "none") {
+            selectWithParent("#caption_div").style("display", "none");
+          } else {
+            selectWithParent("#caption_div").style("display", "inline");
+          }
+        }
+      }, {
+        name: "Add image",
+        image: imageUrls("image.png"),
+        click: function () {
+          logEvent("open image dialog", "annotation");
+
+          selectWithParent("#filter_div").style("display", "none");
+          selectWithParent("#caption_div").style("display", "none");
+          if (selectWithParent("#image_div").style("display") !== "none") {
+            selectWithParent("#image_div").style("display", "none");
+          } else {
+            selectWithParent("#image_div").style("display", "inline");
+          }
+        }
+      }, {
+        name: "Clear annotations, captions, & images",
+        image: imageUrls("clear.png"),
+        click: function(instance) {
+          instance.clearCanvas();
+        }
+      }]
+    },
+    filter: {
+      label: "Filter",
+      items: [{
+        text: "Export",
+        image: imageUrls("filter.png"),
+        click: function(instance) {
+          logEvent("open filter dialog", "filter");
+
+          if (d3.select(this).attr("class") === "img_btn_enabled") {
+            selectWithParent("#caption_div").style("display", "none");
+            selectWithParent("#image_div").style("display", "none");
+            if (selectWithParent("#filter_div").style("display") === "none") {
+              selectWithParent("#filter_div").style("display", "inline");
+              globals.effective_filter_width = instance._component_width - parseInt(selectWithParent("#filter_div").style("width")) - getScrollbarWidth() - 10;
+              globals.effective_filter_height = instance._component_height - parseInt(selectWithParent("#filter_div").style("height")) - 25 - getScrollbarWidth() - parseInt(selectWithParent("#navigation_div").style("height")) - 10;
+            } else {
+              selectWithParent("#filter_div").style("display", "none");
+            }
+          }
+        } // The click handler
+      }]
+    },
+    export: {
+      label: "Export",
+      items: [{
+        text: "Export",
+        image: imageUrls("export.png"),
+        click: function(instance) {
+          selectWithParent("#filter_div").style("display", "none");
+          selectWithParent("#caption_div").style("display", "none");
+          selectWithParent("#image_div").style("display", "none");
+
+          instance.importPanel.hide();
+
+          logEvent("show export panel", "export");
+
+          if (selectWithParent("#export_div").style("top") !== -185 + "px") {
+            selectWithParent("#export_div").style("top", -185 + "px");
+          } else {
+            selectWithParent("#export_div").style("top", "25%");
+          }
+        } // The click handler
+      }]
+    }
+  }
+});
+
+/**
+ * {
+ *    export: {
+ *      label: "Export",
+ *      items: [{
+ *         text: "Export",
+ *         image: "http://image.com/img.jpg",
+ *         height: 30,// optional,
+ *         width: 30, // optional
+ *         class: "custom" // The custom class to bind to this item,
+ *         click: function() { } // The click handler
+ *      }]
+ *    },
+ *    annotate: {
+ *      label: "Annotate"
+ *    }
+ * }
+ * @param {} options
+ */
+TimelineStoryteller.prototype._initializeMenu = function (options) {
+  var that = this;
+  var sectionNames = Object.keys(options);
+
+  // Clear it out first
+  this._control_panel.selectAll("*").remove();
+
+  sectionNames.forEach(function (name, i) {
+    var section = options[name];
+    // No need for an HR if it is the first item
+    if (i > 0) {
+      that._control_panel.append("hr")
+        .style("margin-bottom", "0px")
+        .attr("class", "menu_hr");
+    }
+
+    that._control_panel.append("text")
+      .attr("class", "menu_label")
+      .text(section.label);
+
+    (section.items || []).forEach(function(item) {
+      var itemEle =
+        that._control_panel.append("input")
+          .attr({
+            type: "image",
+            name: item.text,
+            class: "img_btn_disabled" + (" " + (item.class || "")),
+            src: item.image,
+            title: item.text
+          });
+        itemEle.style({
+          height: (item.height || 30) + "px",
+          width: (item.width || 30) + "px"
+        });
+        if (item.id) {
+          itemEle.attr("id", item.id);
+        }
+        if (item.click) {
+          itemEle.on("click", function() {
+            item.click.call(this, that);
+          });
+        }
+    });
+  });
+
+  selectAllWithParent("#menu_div").style("display", sectionNames.length > 0 ? "block" : "none");
+};
+
+/**
  * Event listener for when the TimelineStoryteller is resized
  */
 TimelineStoryteller.prototype._onResized = debounce(function(updateVis) {
@@ -5049,9 +5051,10 @@ TimelineStoryteller.prototype.setUIScale = function (scale) {
 
 /**
  * Applies the current options to the elements on the page
+ * @param {boolean} [updateMenu=false] Whether or not to update the menu
  * @returns {void}
  */
-TimelineStoryteller.prototype.applyOptions = function () {
+TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
   var options = this.options;
   selectWithParent("#footer").style("display", options.showAbout === false ? "none" : null);
   selectWithParent("#logo_div").style("display", options.showLogo === false ? "none" : null);
@@ -5066,6 +5069,10 @@ TimelineStoryteller.prototype.applyOptions = function () {
 
   // showAbout
   selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || globals.playback_mode) ? "20px" : "50px");
+
+  if (updateMenu) {
+    this._initializeMenu(options.menu);
+  }
 };
 
 /**
@@ -5075,14 +5082,28 @@ TimelineStoryteller.prototype.applyOptions = function () {
  */
 TimelineStoryteller.prototype.setOptions = function (options) {
   options = options || {};
+  var updateMenu = false;
   for (var key in options) {
     // If it is a supported option
-    if (DEFAULT_OPTIONS.hasOwnProperty(key)) {
-      var value = typeof options[key] !== "undefined" ? options[key] : DEFAULT_OPTIONS[key];
+    if (TimelineStoryteller.DEFAULT_OPTIONS.hasOwnProperty(key)) {
+      var value = typeof options[key] !== "undefined" ? options[key] : TimelineStoryteller.DEFAULT_OPTIONS[key];
       this.options[key] = value;
+      if (key === "menu") {
+        updateMenu = true;
+      }
     }
   }
-  this.applyOptions();
+  this.applyOptions(updateMenu);
+};
+
+/**
+ * Clears the canvas of annotations
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.clearCanvas = function() {
+  logEvent("clear annotations", "annotation");
+
+  this._main_svg.selectAll(".timeline_caption, .timeline_caption, .event_annotation").remove();
 };
 
 /**
