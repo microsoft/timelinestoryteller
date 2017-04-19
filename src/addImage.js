@@ -8,6 +8,7 @@ var imageUrls = require("./imageUrls");
 var d3 = require("d3");
 var globals = require("./globals");
 var utils = require("./utils");
+var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 var nextId = utils.nextId;
 
