@@ -49,6 +49,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   parentElement = parentElement || document.body;
   this.parentElement = parentElement;
   this._timeline_vis = timeline_vis;
+  this._loaded = false;
   this.scale = 1;
 
   var timelineElement = document.createElement("div");
@@ -1068,14 +1069,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       title: "Draw Timeline"
     })
     .on("click", function () {
-      selectWithParent("#timeline_metadata").style("display", "none");
-      selectWithParent("#timeline_metadata_contents").html("");
-      selectAllWithParent(".gdocs_info_element").style("display", "none");
-      instance.importPanel.hide();
-
       selectWithParent("#gdocs_info").style("height", 0 + "px");
       selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
       selectWithParent("#gdoc_worksheet_title_input").property("value", "");
+      selectAllWithParent(".gdocs_info_element").style("display", "none");
+
       drawTimeline(globals.active_data);
       updateRadioBttns(timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
     })
@@ -1376,11 +1374,18 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   --------------------------------------------------------------------------------------
   **/
 
-  function loadTimeline() {
+  function loadTimeline(skipConfig) {
+    instance._loaded = false;
+
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
     loadDataIndicator.style("display", "block");
 
-    instance.importPanel.show();
+    // Allow the user to configure the timeline first
+    if (!skipConfig) {
+      instance.importPanel.show();
+    } else {
+      instance.importPanel.hide();
+    }
 
     instance._component_width = parentElement.clientWidth;
     instance._component_height = parentElement.clientHeight;
@@ -1683,7 +1688,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           selectWithParent("#stepper_svg_placeholder").remove();
 
           if (globals.source_format === "story") {
-            var story = d3.json(globals.source, function (error, story) {
+            d3.json(globals.source, function (error, story) {
               instance._loadDataFromStory(story, instance._component_height, unique_data, unique_values);
             });
           } else if (globals.source_format === "demo_story") {
@@ -1697,9 +1702,17 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         loadDataIndicator.style("display", "none");
         instance.applyOptions();
+
+        if (skipConfig) {
+          drawTimeline(globals.active_data);
+        }
+
+        instance._loaded = true;
       }
     }, 10);
   }
+
+  instance._loadTimeline = loadTimeline;
 
   function processTimeline(data) {
     // check for earliest and latest numerical dates before parsing
@@ -2989,6 +3002,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   function drawTimeline(data) {
+    selectWithParent("#timeline_metadata").style("display", "none");
+    selectWithParent("#timeline_metadata_contents").html("");
+    instance.importPanel.hide();
+
     /**
     ---------------------------------------------------------------------------------------
     CALL STANDALONE TIMELINE VISUALIZATIONS
@@ -3195,6 +3212,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("transform", "translate(5,0)rotate(0)");
     }
   }
+
+  instance._drawTimeline = drawTimeline;
 
   function expandLegend() {
     selectWithParent(".legend")
@@ -4674,17 +4693,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr("class", "intro_btn")
     .html("<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'><img src='" + imageUrls("mail.png") + "' width=30 height=30 class='img_btn_enabled'></img></a>");
 
-  // TODO: This should be moved to TimelineStoryteller.prototype, but right now it depends on global variables (source_format)
-  this._loadInternal = function (data) {
-    globals.source = data;
-    globals.source_format = "json_parsed";
-    setTimeout(function () {
-      logEvent("loading (" + globals.source_format + ")", "load");
-
-      loadTimeline();
-    }, 500);
-  };
-
   /**
    * Loads a story json object
    * @param {string} story The json stroy object
@@ -4742,7 +4750,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {object[]} unique_values The unique values
    */
   this._loadDataFromStory = function(story, min_story_height, unique_data, unique_values) {
-    globals.timeline_json_data = story.timeline_json_data;
+    var timelineData = globals.timeline_json_data;
+
+    // The original format
+    if (!story.version) {
+      timelineData = story.timeline_json_data;
+    }
+
+    globals.timeline_json_data = timelineData;
 
     if (story.color_palette !== undefined) {
       globals.color_palette = story.color_palette;
@@ -4800,7 +4815,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance._render_width = story.width;
     instance._render_height = story.height;
 
-    story.timeline_json_data.forEach(function (d) {
+    timelineData.forEach(function (d) {
       unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
     });
 
@@ -5107,12 +5122,45 @@ TimelineStoryteller.prototype.clearCanvas = function() {
 };
 
 /**
+ * Updates the set of currently loaded data
+ * @
+ */
+TimelineStoryteller.prototype.update = function (data) {
+  var unique_values = d3.map([]);
+  var unique_data = [];
+
+  globals.timeline_json_data = data;
+
+  data.forEach(function (d) {
+    unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
+  });
+
+  unique_values.forEach(function (d) {
+    unique_data.push(unique_values.get(d));
+  });
+
+  logEvent("Updating data", "update");
+
+  // TODO: Check if DrawTimeline hasn't been called yet
+
+  globals.active_data = unique_data;
+  globals.all_data = unique_data;
+  this._drawTimeline(globals.active_data);
+};
+
+/**
  * Loads the given set of data
  * @param {object[]} data The data to load into the story teller
  * @returns {void}
  */
 TimelineStoryteller.prototype.load = function (data) {
-  return this._loadInternal(data);
+    globals.source = data;
+    globals.source_format = "json_parsed";
+    logEvent("loading (" + globals.source_format + ")", "load");
+    setTimeout(function() {
+      // Give it time for the UI to load
+      this._loadTimeline(true);
+    }.bind(this), 100);
 };
 
 /**
