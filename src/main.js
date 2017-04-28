@@ -24,6 +24,7 @@ var imageUrls = require("./imageUrls");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
+var setScaleValue = utils.setScaleValue;
 var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
@@ -3001,6 +3002,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     return sf.indexOf("story") >= 0;
   }
 
+  /**
+   * Renders the timeline
+   * @param {object[]} data The data to render
+   */
   function drawTimeline(data) {
     selectWithParent("#timeline_metadata").style("display", "none");
     selectWithParent("#timeline_metadata_contents").html("");
@@ -3042,6 +3047,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (isStory(globals.source_format)) {
       globals.current_scene_index = 0;
       changeScene(0);
+    }
+
+    if (globals.legend_panel) {
+      globals.legend_panel.remove();
+      globals.legend_panel = undefined;
     }
 
     if (globals.num_categories <= 12 && globals.num_categories > 1) {
@@ -3096,11 +3106,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .append("title")
         .text("Expand / collapse legend.");
 
-      globals.legend = globals.legend_panel.selectAll(".legend_element_g")
-        .data(globals.categories.domain().sort())
+      var legendElementContainer = globals.legend_panel.selectAll(".legend_element_g").data(globals.categories.domain().sort());
+      globals.legend = legendElementContainer
         .enter()
         .append("g")
         .attr("class", "legend_element_g");
+
+      // Remove the element when not data bound.
+      legendElementContainer.exit().remove();
 
       globals.legend.append("title")
         .text(function (d) {
@@ -4734,11 +4747,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.color_swap_target = globals.categories.range().indexOf(globals.categories(category));
     log("category " + categoryIndex + ": " + category + " / " + value + " (index # " + globals.color_swap_target + ")");
 
-    var temp_palette = globals.categories.range();
+    setScaleValue(globals.categories, category, value);
 
-    temp_palette[globals.color_swap_target] = value;
-    globals.categories.range(temp_palette);
-    temp_palette = undefined;
     globals.use_custom_palette = true;
   };
 
@@ -5145,6 +5155,30 @@ TimelineStoryteller.prototype.update = function (data) {
 
   globals.active_data = unique_data;
   globals.all_data = unique_data;
+
+  // updateCategories
+
+  var categories = d3.map(function (d) {
+    return d.category;
+  }).keys();
+  var existingCategories = globals.categories.domain();
+
+  // Don't worry about removed/changed categories, hopefully if you called updateData
+  // the underlying dataset has not removed categories, so handle adding only
+  if (categories.length > existingCategories.length) {
+    var existingColors = existingCategories.map(globals.categories);
+
+    // determine event categories from data
+    globals.categories.domain(categories);
+
+    existingColors.forEach(function(color, i) {
+      // Restore existing colors
+      setScaleValue(globals.categories, existingCategories[i], color);
+    });
+
+    globals.num_categories = globals.categories.domain().length;
+  }
+
   this._drawTimeline(globals.active_data);
 };
 

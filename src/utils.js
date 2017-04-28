@@ -145,6 +145,19 @@ var utils = {
         }
         return copy;
     }
+  },
+
+  /**
+   * Sets the scale value for the given category
+   * @param {d3.Scale} scale The scale to change
+   * @param {string} category The category to change
+   * @param {object} value The value to set the category to
+   */
+  setScaleValue: function (scale, category, value) {
+    var temp_palette = scale.range();
+    var target = temp_palette.indexOf(category);
+    temp_palette[target] = value;
+    scale.range(temp_palette);
   }
 };
 
