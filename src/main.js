@@ -692,187 +692,189 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var data_picker = instance.importPanel.element.append("div")
     .attr("id", "data_picker");
 
-  var dataset_picker = selectWithParent("#data_picker").append("div")
-    .attr("class", "data_story_picker");
+  if (instance.options.showImportLoadDataOptions) {
+    var dataset_picker = selectWithParent("#data_picker").append("div")
+      .attr("class", "data_story_picker import-load-data-option");
 
-  dataset_picker.append("text")
-    .attr("class", "ui_label")
-    .text("Load timeline data");
+    dataset_picker.append("text")
+      .attr("class", "ui_label")
+      .text("Load timeline data");
 
-  if (showDemoData()) {
-    var demo_dataset_picker_label = dataset_picker.append("label")
-      .attr("class", "import_label demo_dataset_label");
+    if (showDemoData()) {
+      var demo_dataset_picker_label = dataset_picker.append("label")
+        .attr("class", "import_label demo_dataset_label");
 
-    var showDropdown = function (element) {
-      var event = document.createEvent("MouseEvents");
-      event.initMouseEvent("mousedown", true, true, window);
-      element.dispatchEvent(event);
-    };
+      var showDropdown = function (element) {
+        var event = document.createEvent("MouseEvents");
+        event.initMouseEvent("mousedown", true, true, window);
+        element.dispatchEvent(event);
+      };
 
-    demo_dataset_picker_label.append("select")
-      .attr("id", "demo_dataset_picker")
-      .attr("title", "Load demo dataset")
+      demo_dataset_picker_label.append("select")
+        .attr("id", "demo_dataset_picker")
+        .attr("title", "Load demo dataset")
+        .on("change", function () {
+          globals.source = d3.select(this).property("value");
+          if (globals.source !== "") {
+            globals.source_format = "demo_json";
+            setTimeout(function () {
+              logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+
+              loadTimeline();
+            }, 500);
+          }
+        })
+        .selectAll("option")
+        .data([
+          { "path": "", "tl_name": "" },
+          { "path": "priestley", "tl_name": "Priestley's Chart of Biography (faceted by occupation)" },
+          { "path": "philosophers", "tl_name": "Great Philosophers since the 8th Century BC (faceted by region)" },
+          { "path": "empires", "tl_name": "History's Largest Empires (faceted by region)" },
+          { "path": "ch_jp_ko", "tl_name": "East Asian Dynasties (faceted by region)" },
+          { "path": "epidemics", "tl_name": "Epidemics since the 14th Century (faceted by region)" },
+          { "path": "hurricanes50y", "tl_name": "C4-5 Hurricanes: 1960-2010" },
+          { "path": "prime_ministers", "tl_name": "Prime Ministers of Canada" },
+          { "path": "france_presidents", "tl_name": "Presidents of France" },
+          { "path": "germany_chancellors", "tl_name": "Chancellors of Germany" },
+          { "path": "italy_presidents", "tl_name": "Presidents of Italy" },
+          { "path": "japan_prime_ministers", "tl_name": "Prime Ministers of Japan" },
+          { "path": "uk_prime_ministers", "tl_name": "Prime Ministers of the UK" },
+          { "path": "presidents", "tl_name": "Presidents of the USA" },
+          { "path": "heads_of_state_since_1940", "tl_name": "G7 Heads of State since 1940 (faceted by country)" },
+          { "path": "dailyroutines", "tl_name": "Podio's 'Daily Routines of Famous Creative People' (faceted by person)" },
+          { "path": "painters", "tl_name": "Accurat's 'Visualizing painters' lives' (faceted by painter)" },
+          { "path": "authors", "tl_name": "Accurat's 'From first published to masterpieces' (faceted by author)" },
+          { "path": "singularity", "tl_name": "Kurzweil's 'Countdown to Singularity' (4 billion years)" },
+          { "path": "perspective_on_time", "tl_name": "Wait But Why's 'A Perspective on Time' (14 billion years)" },
+          { "path": "typical_american", "tl_name": "Wait But Why's 'Life of a Typical American'" }
+        ])
+        .enter()
+        .append("option")
+        .attr("value", function (d) { return d.path; })
+        .text(function (d) { return d.tl_name; });
+
+      demo_dataset_picker_label.append("img")
+        .style("border", "0px solid transparent")
+        .style("margin", "0px")
+        .attr({
+          name: "Load Demo Data",
+          id: "demo_dataset_picker_label",
+          height: 40,
+          width: 40,
+          title: "Load Demo Data",
+          src: imageUrls("demo.png")
+        })
+        .on("click", function () {
+          var se = document.getElementById("demo_dataset_picker");
+          showDropdown(se);
+        });
+    }
+
+    dataset_picker.append("input")
+      .attr({
+        type: "file",
+        id: "json_uploader",
+        class: "inputfile",
+        accept: ".json"
+      })
       .on("change", function () {
-        globals.source = d3.select(this).property("value");
-        if (globals.source !== "") {
-          globals.source_format = "demo_json";
+        var file = this.files[0];
+        globals.reader.readAsText(file);
+
+        globals.reader.onload = function (e) {
+          var contents = e.target.result;
+          var blob = new Blob([contents], { type: "application/json" });
+          globals.source = URL.createObjectURL(blob);
+          globals.source_format = "json";
           setTimeout(function () {
             logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-
             loadTimeline();
           }, 500);
-        }
-      })
-      .selectAll("option")
-      .data([
-        { "path": "", "tl_name": "" },
-        { "path": "priestley", "tl_name": "Priestley's Chart of Biography (faceted by occupation)" },
-        { "path": "philosophers", "tl_name": "Great Philosophers since the 8th Century BC (faceted by region)" },
-        { "path": "empires", "tl_name": "History's Largest Empires (faceted by region)" },
-        { "path": "ch_jp_ko", "tl_name": "East Asian Dynasties (faceted by region)" },
-        { "path": "epidemics", "tl_name": "Epidemics since the 14th Century (faceted by region)" },
-        { "path": "hurricanes50y", "tl_name": "C4-5 Hurricanes: 1960-2010" },
-        { "path": "prime_ministers", "tl_name": "Prime Ministers of Canada" },
-        { "path": "france_presidents", "tl_name": "Presidents of France" },
-        { "path": "germany_chancellors", "tl_name": "Chancellors of Germany" },
-        { "path": "italy_presidents", "tl_name": "Presidents of Italy" },
-        { "path": "japan_prime_ministers", "tl_name": "Prime Ministers of Japan" },
-        { "path": "uk_prime_ministers", "tl_name": "Prime Ministers of the UK" },
-        { "path": "presidents", "tl_name": "Presidents of the USA" },
-        { "path": "heads_of_state_since_1940", "tl_name": "G7 Heads of State since 1940 (faceted by country)" },
-        { "path": "dailyroutines", "tl_name": "Podio's 'Daily Routines of Famous Creative People' (faceted by person)" },
-        { "path": "painters", "tl_name": "Accurat's 'Visualizing painters' lives' (faceted by painter)" },
-        { "path": "authors", "tl_name": "Accurat's 'From first published to masterpieces' (faceted by author)" },
-        { "path": "singularity", "tl_name": "Kurzweil's 'Countdown to Singularity' (4 billion years)" },
-        { "path": "perspective_on_time", "tl_name": "Wait But Why's 'A Perspective on Time' (14 billion years)" },
-        { "path": "typical_american", "tl_name": "Wait But Why's 'Life of a Typical American'" }
-      ])
-      .enter()
-      .append("option")
-      .attr("value", function (d) { return d.path; })
-      .text(function (d) { return d.tl_name; });
+        };
+      });
 
-    demo_dataset_picker_label.append("img")
-      .style("border", "0px solid transparent")
-      .style("margin", "0px")
+    dataset_picker.append("label")
+      .attr("for", "json_uploader")
+      .attr("class", "import_label")
+      .append("img")
       .attr({
-        name: "Load Demo Data",
-        id: "demo_dataset_picker_label",
+        name: "Load from JSON",
+        id: "json_picker_label",
+        class: "img_btn_enabled import_label",
         height: 40,
         width: 40,
-        title: "Load Demo Data",
-        src: imageUrls("demo.png")
+        title: "Load from JSON",
+        src: imageUrls("json.png")
+      });
+
+    dataset_picker.append("input")
+      .attr({
+        type: "file",
+        id: "csv_uploader",
+        class: "inputfile",
+        accept: ".csv"
+      })
+      .on("change", function () {
+        var file = this.files[0];
+        globals.reader.readAsText(file);
+
+        globals.reader.onload = function (e) {
+          var contents = e.target.result;
+          var blob = new Blob([contents], { type: "application/csv" });
+          globals.source = URL.createObjectURL(blob);
+          globals.source_format = "csv";
+          setTimeout(function () {
+            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+            loadTimeline();
+          }, 500);
+        };
+      });
+
+    dataset_picker.append("label")
+      .attr("for", "csv_uploader")
+      .attr("class", "import_label")
+      .append("img")
+      .attr({
+        name: "Load from CSV",
+        id: "csv_picker_label",
+        class: "img_btn_enabled import_label",
+        height: 40,
+        width: 40,
+        title: "Load from CSV",
+        src: imageUrls("csv.png")
+      });
+
+    dataset_picker.append("input")
+      .attr({
+        id: "gdocs_uploader",
+        class: "inputfile"
       })
       .on("click", function () {
-        var se = document.getElementById("demo_dataset_picker");
-        showDropdown(se);
+        if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
+          selectWithParent("#gdocs_info").style("height", 0 + "px");
+          selectAllWithParent(".gdocs_info_element").style("display", "none");
+        } else {
+          selectWithParent("#gdocs_info").style("height", 27 + "px");
+          setTimeout(function () {
+            selectAllWithParent(".gdocs_info_element").style("display", "inline");
+          }, 500);
+        }
+      });
+
+    dataset_picker.append("label")
+      .attr("for", "gdocs_uploader")
+      .attr("class", "import_label")
+      .append("img")
+      .attr({
+        name: "Load from Google Spreadsheet",
+        id: "gdocs_picker_label",
+        class: "img_btn_enabled import_label",
+        height: 40,
+        width: 40,
+        title: "Load from Google Spreadsheet",
+        src: imageUrls("gdocs.png")
       });
   }
-
-  dataset_picker.append("input")
-    .attr({
-      type: "file",
-      id: "json_uploader",
-      class: "inputfile",
-      accept: ".json"
-    })
-    .on("change", function () {
-      var file = this.files[0];
-      globals.reader.readAsText(file);
-
-      globals.reader.onload = function (e) {
-        var contents = e.target.result;
-        var blob = new Blob([contents], { type: "application/json" });
-        globals.source = URL.createObjectURL(blob);
-        globals.source_format = "json";
-        setTimeout(function () {
-          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-          loadTimeline();
-        }, 500);
-      };
-    });
-
-  dataset_picker.append("label")
-    .attr("for", "json_uploader")
-    .attr("class", "import_label")
-    .append("img")
-    .attr({
-      name: "Load from JSON",
-      id: "json_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from JSON",
-      src: imageUrls("json.png")
-    });
-
-  dataset_picker.append("input")
-    .attr({
-      type: "file",
-      id: "csv_uploader",
-      class: "inputfile",
-      accept: ".csv"
-    })
-    .on("change", function () {
-      var file = this.files[0];
-      globals.reader.readAsText(file);
-
-      globals.reader.onload = function (e) {
-        var contents = e.target.result;
-        var blob = new Blob([contents], { type: "application/csv" });
-        globals.source = URL.createObjectURL(blob);
-        globals.source_format = "csv";
-        setTimeout(function () {
-          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-          loadTimeline();
-        }, 500);
-      };
-    });
-
-  dataset_picker.append("label")
-    .attr("for", "csv_uploader")
-    .attr("class", "import_label")
-    .append("img")
-    .attr({
-      name: "Load from CSV",
-      id: "csv_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from CSV",
-      src: imageUrls("csv.png")
-    });
-
-  dataset_picker.append("input")
-    .attr({
-      id: "gdocs_uploader",
-      class: "inputfile"
-    })
-    .on("click", function () {
-      if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
-        selectWithParent("#gdocs_info").style("height", 0 + "px");
-        selectAllWithParent(".gdocs_info_element").style("display", "none");
-      } else {
-        selectWithParent("#gdocs_info").style("height", 27 + "px");
-        setTimeout(function () {
-          selectAllWithParent(".gdocs_info_element").style("display", "inline");
-        }, 500);
-      }
-    });
-
-  dataset_picker.append("label")
-    .attr("for", "gdocs_uploader")
-    .attr("class", "import_label")
-    .append("img")
-    .attr({
-      name: "Load from Google Spreadsheet",
-      id: "gdocs_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from Google Spreadsheet",
-      src: imageUrls("gdocs.png")
-    });
 
   var story_picker = selectWithParent("#data_picker").append("div")
     .attr("class", "data_story_picker")
@@ -4533,23 +4535,26 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       });
     }
 
-    steps = steps.concat([
-      {
-        element: ".timeline_storyteller #json_picker_label",
-        intro: "Load a timeline dataset in JSON format, where each event is specified by at least a start_date (in either YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:MM format); optionally, events can also be specified by end_date, content_text (a text string that describes the event), category, and facet (a second categorical attribute used for distinguishing between multiple timelines).",
-        position: "right"
-      },
-      {
-        element: ".timeline_storyteller #csv_picker_label",
-        intro: "Load a timeline dataset in CSV format; ensure that the header row contains at least a start_date column; as with JSON datasets, end_date, content_text, category, and facet columns are optional.",
-        position: "right"
-      },
-      {
-        element: ".timeline_storyteller #gdocs_picker_label",
-        intro: "Load a timeline dataset from a published Google Spreadsheet; you will need to provide the spreadsheet key and worksheet title; the worksheet columns must be formatted as text.",
-        position: "right"
-      }
-    ]);
+    if (instance.options.showImportLoadDataOptions) {
+      steps = steps.concat([
+        {
+          element: ".timeline_storyteller #json_picker_label",
+          intro: "Load a timeline dataset in JSON format, where each event is specified by at least a start_date (in either YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:MM format); optionally, events can also be specified by end_date, content_text (a text string that describes the event), category, and facet (a second categorical attribute used for distinguishing between multiple timelines).",
+          position: "right"
+        },
+        {
+          element: ".timeline_storyteller #csv_picker_label",
+          intro: "Load a timeline dataset in CSV format; ensure that the header row contains at least a start_date column; as with JSON datasets, end_date, content_text, category, and facet columns are optional.",
+          position: "right"
+        },
+        {
+          element: ".timeline_storyteller #gdocs_picker_label",
+          intro: "Load a timeline dataset from a published Google Spreadsheet; you will need to provide the spreadsheet key and worksheet title; the worksheet columns must be formatted as text.",
+          position: "right"
+        }
+      ]);
+    }
+
     if (showDemoData()) {
       steps.push({
         element: ".timeline_storyteller #story_demo_label",
@@ -4848,6 +4853,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
   showViewOptions: true,
   showIntro: true,
   showImportOptions: true,
+  showImportLoadDataOptions: true,
   animations: true,
   menu: {
     open: {
@@ -5094,6 +5100,9 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
 
   // showAbout
   selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || globals.playback_mode) ? "20px" : "50px");
+
+  // showImportLoadDataOptions
+  selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "display:none" : null);
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
