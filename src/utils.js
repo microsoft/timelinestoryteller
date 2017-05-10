@@ -6,7 +6,7 @@ var _nextId = 0;
 /**
  * Provides a set of utility functions
  */
-module.exports = {
+var utils = {
 
   /**
    * Creates a d3 selection with the correct parent selector
@@ -91,6 +91,74 @@ module.exports = {
       }
       return d3.interpolate(initialMatches.join(""), finalMatches.join(""));
     };
-  }
+  },
 
+  /**
+   * Creates a debounced function
+   * @param {function} fn The function to debounce
+   * @param {number} [delay=100] The debounce delay
+   */
+  debounce: function (fn, delay) {
+    var timeout;
+    return function (){
+      var args = Array.prototype.slice.call(arguments, 0);
+      var that = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        fn.apply(that, args);
+      }, delay || 500);
+    };
+  },
+
+  /**
+   * Provides a very basic deep clone of an object, functions get directly copied over
+   * @param {Object} obj The object to clone
+   * @returns {Object} The clone
+   */
+  clone: function (obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = utils.clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = utils.clone(obj[attr]);
+        }
+        return copy;
+    }
+  },
+
+  /**
+   * Sets the scale value for the given category
+   * @param {d3.Scale} scale The scale to change
+   * @param {string} category The category to change
+   * @param {object} value The value to set the category to
+   */
+  setScaleValue: function (scale, category, value) {
+    var temp_palette = scale.range();
+    var target = temp_palette.indexOf(category);
+    temp_palette[target] = value;
+    scale.range(temp_palette);
+  }
 };
+
+module.exports = utils;
