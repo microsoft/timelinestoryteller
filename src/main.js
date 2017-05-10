@@ -4966,6 +4966,9 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
 });
 
 /**
+ * Initializes the popup menu
+ * @param {object} menu The JSON object representing the menu
+ * @returns {void}
  * {
  *    export: {
  *      label: "Export",
@@ -4982,17 +4985,16 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
  *      label: "Annotate"
  *    }
  * }
- * @param {} options
  */
-TimelineStoryteller.prototype._initializeMenu = function (options) {
+TimelineStoryteller.prototype._initializeMenu = function (menu) {
   var that = this;
-  var sectionNames = Object.keys(options);
+  var sectionNames = Object.keys(menu);
 
   // Clear it out first
   this._control_panel.selectAll("*").remove();
 
   sectionNames.forEach(function (name, i) {
-    var section = options[name];
+    var section = menu[name];
     // No need for an HR if it is the first item
     if (i > 0) {
       that._control_panel.append("hr")
