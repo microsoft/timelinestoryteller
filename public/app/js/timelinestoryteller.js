@@ -390,7 +390,7 @@ var utils = {
    */
   setScaleValue: function (scale, category, value) {
     var temp_palette = scale.range();
-    var target = temp_palette.indexOf(category);
+    var target = temp_palette.indexOf(scale(category));
     temp_palette[target] = value;
     scale.range(temp_palette);
   }
