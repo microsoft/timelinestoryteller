@@ -2792,6 +2792,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("stroke-width", "0.25px");
 
     function loadAnnotations() {
+      if (globals.current_scene_index !== scene_index) {
+        return;
+      }
+
       // is the legend expanded in this scene?
       globals.legend_expanded = scene.s_legend_expanded;
       if (scene.s_legend_expanded) {
@@ -2847,7 +2851,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           } else if (anno.type === "image") {
             addImage(timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
           } else {
-            var itemEle = selectWithParent("#event_g" + item.item_index).select("rect.event_span")[0][0].__data__,
+            var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
+            var itemEle = itemSel[0][0].__data__,
               item_x_pos = 0,
               item_y_pos = 0;
 
@@ -2860,8 +2865,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             }
 
             annotateEvent(timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.count);
-
-            selectWithParent("#event" + item.item_index + "_" + item.count).transition().duration(instance.options.animations ? 50 : 0).style("opacity", 1);
+            selectWithParent("#event" + item.item_index + "_" + item.count)
+              .transition()
+              .duration(instance.options.animations ? 50 : 0)
+                .style("opacity", 1)
+                .each(function () {
+                  // If after running the transition, the scene has changed, then hide this annotation.
+                  if (globals.current_scene_index !== scene_index) {
+                    this.style.opacity = 0;
+                  }
+                });
           }
         });
 
