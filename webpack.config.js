@@ -12,10 +12,21 @@ module.exports = {
         }, {
             test: /\.(png|svg)$/,
             loader: "binary-loader"
+        }, {
+            test: /\.js$/,
+            exclude: /(node_modules|bower_components)/,
+            use: {
+                loader: "babel-loader",
+                options: {
+                    presets: [
+                        ["env", { modules: false }]
+                    ]
+                }
+            }
         }]
     },
     externals: {
-        d3: 'd3',
+        d3: "d3",
         moment: "moment",
         "intro.js": "introJs",
         "socket.io": "io"
