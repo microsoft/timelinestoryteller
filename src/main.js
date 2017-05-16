@@ -28,6 +28,7 @@ var setScaleValue = utils.setScaleValue;
 var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
+var onTransitionComplete = utils.onTransitionComplete;
 var globals = require("./globals");
 var gif = new GIF({
   workers: 2,
@@ -2622,7 +2623,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
   }
 
+  var prevTransitioning = false;
   function changeScene(scene_index) {
+
+    // Assume we are waiting for transitions if there is already one going.
+    var waitForTransitions = prevTransitioning;
+
     updateNavigationStepper();
 
     var scene_found = false,
@@ -2656,11 +2662,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     }
 
-    var scene_delay = 0;
-
     // set a delay for annotations and captions based on whether the scale, layout, or representation changes
     if (timeline_vis.tl_scale() !== scene.s_scale || timeline_vis.tl_layout() !== scene.s_layout || timeline_vis.tl_representation() !== scene.s_representation) {
-      scene_delay = instance.options.animations ? 1200 * 4 : 0;
+      waitForTransitions = true;
+      prevTransitioning = true;
 
       // how big is the new scene?
       determineSize(globals.active_data, scene.s_scale, scene.s_layout, scene.s_representation);
@@ -2730,7 +2735,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     if (scene_filter_set_length !== globals.filter_set_length) {
       globals.filter_set_length = scene_filter_set_length;
-      scene_delay = instance.options.animations ? 1200 * 4 : 0;
+      waitForTransitions = true;
+      prevTransitioning = true;
     }
 
     globals.selected_categories = scene.s_categories;
@@ -2792,6 +2798,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("stroke-width", "0.25px");
 
     function loadAnnotations() {
+      prevTransitioning = false;
+
+      log("Loading Annotations");
       if (globals.current_scene_index !== scene_index) {
         return;
       }
@@ -2917,8 +2926,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
 
     // delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
-    if (scene_delay > 0) {
-      setTimeout(loadAnnotations, scene_delay);
+    if (waitForTransitions && timeline_vis.currentTransition) {
+      log("Waiting for transitions");
+      onTransitionComplete(timeline_vis.currentTransition, loadAnnotations);
     } else {
       loadAnnotations();
     }

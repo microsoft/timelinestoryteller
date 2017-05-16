@@ -158,6 +158,20 @@ var utils = {
     var target = temp_palette.indexOf(scale(category));
     temp_palette[target] = value;
     scale.range(temp_palette);
+  },
+
+  /**
+   * Adds a listener on a transition for when the transition is complete
+   * @param {d3.Transition} transition The transition to listen for completion
+   * @param {Function} callback The callback for when the transition is complete
+   */
+  onTransitionComplete: function (transition, callback) {
+    if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
+    if (transition.size() === 0) { callback() }
+    var n = 0;
+    transition
+        .each(() => ++n)
+        .each("end", () => { if (!--n) callback.apply(this, arguments); });
   }
 };
 

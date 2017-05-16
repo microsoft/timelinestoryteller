@@ -21,6 +21,7 @@ var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var logEvent = utils.logEvent;
 var arcTween = utils.arcTween;
+var onTransitionComplete = utils.onTransitionComplete;
 
 var getNextZIndex = require("./annotations").getNextZIndex;
 
@@ -46,7 +47,11 @@ d3.configurableTL = function (unit_width) {
     grid_axis = gridAxis(unit_width),
     render_path,
     active_line,
-    fresh_canvas = true;
+    fresh_canvas = true,
+    timeline_event_g_early_update,
+    timeline_event_g_update,
+    timeline_event_g_delayed_update,
+    timeline_event_g_final_update;
 
   function configurableTL(selection) {
     selection.each(function (data) {
@@ -1885,31 +1890,37 @@ d3.configurableTL = function (unit_width) {
       ---------------------------------------------------------------------------------------
       **/
 
-      var timeline_event_g_early_update = timeline_event_g.transition()
+      timeline_event_g_early_update = timeline_event_g.transition()
         .delay(0)
         .duration(duration)
         .call(transitionLog);
 
-      var timeline_event_g_update = timeline_event_g.transition()
+      timeline_event_g_update = timeline_event_g.transition()
         .delay(function (d, i) {
           return duration + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
-      var timeline_event_g_delayed_update = timeline_event_g.transition()
+      timeline_event_g_delayed_update = timeline_event_g.transition()
         .delay(function (d, i) {
           return duration * 2 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
-      var timeline_event_g_final_update = timeline_event_g.transition()
+      timeline_event_g_final_update = timeline_event_g.transition()
         .delay(function (d, i) {
           return duration * 3 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
+
+      configurableTL.currentTransition = timeline_event_g_final_update;
+
+      onTransitionComplete(timeline_event_g_final_update.transition(), () => {
+        configurableTL.currentTransition = timeline_event_g_final_update = undefined;
+      });
 
       timeline_event_g_update.attr("id", function (d) {
         return "event_g" + d.event_id;
