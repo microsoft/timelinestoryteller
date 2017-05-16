@@ -5127,7 +5127,7 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
   selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || globals.playback_mode) ? "20px" : "50px");
 
   // showImportLoadDataOptions
-  selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "display:none" : null);
+  selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "none" : null);
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
