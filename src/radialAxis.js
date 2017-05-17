@@ -26,8 +26,7 @@ d3.radialAxis = function (unit_width) {
 
   function radialAxis(selection) {
     selection.each(function (data) {
-      var g = d3.select(this),
-        old_radial_axis_scale;
+      var g = d3.select(this);
 
       if (moment(data[0]).year() <= 0) {
         bc_origin = true;
@@ -42,11 +41,6 @@ d3.radialAxis = function (unit_width) {
       } else {
         longer_than_a_day = false;
       }
-
-      // retrieve the old scale, if this is an update
-      old_radial_axis_scale = this.__chart__ || d3.scale.linear()
-        .range([0, 2 * Math.PI])
-        .domain(radial_axis_scale.range());
 
       // stash the new scale and quantiles
       this.__chart__ = radial_axis_scale;
@@ -292,6 +286,8 @@ d3.radialAxis = function (unit_width) {
       case "epochs":
         radial_axis_tick_label = globals.formatAbbreviation(d);
         break;
+      default:
+        break;
       }
     } else if (radial_axis_units === "Segments") {
       switch (globals.segment_granularity) {
@@ -302,7 +298,7 @@ d3.radialAxis = function (unit_width) {
         radial_axis_tick_label = moment().weekday(d).format("ddd");
         break;
       case "months":
-        if ((d - 1) % 7 != 0) {
+        if ((d - 1) % 7 !== 0) {
           radial_axis_tick_label = "";
         } else {
           radial_axis_tick_label = moment().date(d).format("Do");
@@ -326,6 +322,8 @@ d3.radialAxis = function (unit_width) {
         break;
       case "epochs":
         radial_axis_tick_label = "";
+        break;
+      default:
         break;
       }
       if (i === num_ticks - 1) {

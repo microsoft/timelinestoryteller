@@ -41,9 +41,10 @@ var log = require("debug")("TimelineStoryteller:main");
 
 /**
  * Creates a new TimelineStoryteller component
- * @param isServerless True if the component is being run in a serverless environment (default false)
- * @param showDemo True if the demo code should be shown (default true)
- * @param parentElement The element in which the Timeline Storyteller is contained (default: body)
+ * @param {boolean} [isServerless=false] True if the component is being run in a serverless environment (default false)
+ * @param {boolean} [showDemo=false] True if the demo code should be shown (default true)
+ * @param {HTMLElement} parentElement The element in which the Timeline Storyteller is contained (default: body)
+ * @returns {TimelineStoryteller} An instance of the TimelineStoryteller
  */
 function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var instance = this;
@@ -100,7 +101,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         panel.visible = true;
         element.style("top", "25%").style("display", "block");
       },
-      hide: function() {
+      hide: function () {
         panel.visible = false;
         element.style("top", "-210px");
       }
@@ -125,13 +126,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   instance._adjustSvgSize = adjustSvgSize;
 
-  Date.prototype.stdTimezoneOffset = function () {
+  Date.prototype.stdTimezoneOffset = function () { // eslint-disable-line no-extend-native
     var jan = new Date(this.getFullYear(), 0, 1);
     var jul = new Date(this.getFullYear(), 6, 1);
     return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
   };
 
-  Date.prototype.dst = function () {
+  Date.prototype.dst = function () { // eslint-disable-line no-extend-native
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
   };
 
@@ -145,7 +146,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance._onResized(false);
   };
 
-  instance._container.on("scroll", function (e) {
+  instance._container.on("scroll", function () {
     var axis = instance._container.select(".timeline_axis");
     axis
       .select(".domain")
@@ -197,22 +198,22 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var t = selectWithParent("#filter_div");
 
       return {
-        x: parseInt(t.style("left")),
-        y: parseInt(t.style("top"))
+        x: parseInt(t.style("left"), 10),
+        y: parseInt(t.style("top"), 10)
       };
     })
     .on("drag", function () {
       var x_pos = d3.event.x;
       var y_pos = d3.event.y;
 
-      if (x_pos < (10 + parseInt(selectWithParent("#menu_div").style("width")) + 10)) {
-        x_pos = (10 + parseInt(selectWithParent("#menu_div").style("width")) + 10);
+      if (x_pos < (10 + parseInt(selectWithParent("#menu_div").style("width"), 10) + 10)) {
+        x_pos = (10 + parseInt(selectWithParent("#menu_div").style("width"), 10) + 10);
       } else if (x_pos >= globals.effective_filter_width) {
         x_pos = globals.effective_filter_width - 10;
       }
 
-      if (y_pos < (180 + parseInt(selectWithParent("#option_div").style("height")) + 20)) {
-        y_pos = (180 + parseInt(selectWithParent("#option_div").style("height")) + 20);
+      if (y_pos < (180 + parseInt(selectWithParent("#option_div").style("height"), 10) + 20)) {
+        y_pos = (180 + parseInt(selectWithParent("#option_div").style("height"), 10) + 20);
       } else if (y_pos >= globals.effective_filter_height + 155) {
         y_pos = globals.effective_filter_height + 155;
       }
@@ -292,10 +293,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   // initialize main visualization containers
   var main_svg,
     export_div,
-    option_div,
     menu_div,
-    caption_div,
-    image_div,
     filter_div,
     navigation_div;
 
@@ -336,7 +334,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         };
       }
       var research_copy_json = JSON.stringify(research_copy);
-      var research_blob = new Blob([research_copy_json], { type: "application/json" });
+      // var research_blob = new Blob([research_copy_json], { type: "application/json" });
 
       log(research_copy);
 
@@ -615,7 +613,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  option_div = selectWithParent()
+  selectWithParent()
     .append("div")
     .attr("id", "option_div")
     .attr("class", "control_div");
@@ -626,7 +624,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  caption_div = selectWithParent()
+  selectWithParent()
     .append("div")
     .attr("id", "caption_div")
     .attr("class", "annotation_div control_div")
@@ -638,7 +636,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  image_div = selectWithParent()
+  selectWithParent()
     .append("div")
     .attr("id", "image_div")
     .attr("class", "annotation_div control_div")
@@ -694,7 +692,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr("id", "data_picker");
 
   if (instance.options.showImportLoadDataOptions) {
-    var dataset_picker = selectWithParent("#data_picker").append("div")
+    var dataset_picker = data_picker.append("div")
       .attr("class", "data_story_picker import-load-data-option");
 
     dataset_picker.append("text")
@@ -1008,7 +1006,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       if (globals.gdoc_worksheet !== "") {
         gsheets.getWorksheet(globals.gdoc_key, globals.gdoc_worksheet, function (err, sheet) {
           if (err !== null) {
-            alert(err);
+            alert(err); // eslint-disable-line no-alert
             return true;
           }
 
@@ -1023,7 +1021,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         gsheets.getSpreadsheet(globals.gdoc_key, function (err, sheet) {
           if (err !== null) {
-            alert(err);
+            alert(err); // eslint-disable-line no-alert
             return true;
           }
 
@@ -1031,9 +1029,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           setTimeout(function () {
             worksheet_id = sheet.worksheets[0].id;
-            gsheets.getWorksheetById(globals.gdoc_key, worksheet_id, function (err, sheet) {
+            gsheets.getWorksheetById(globals.gdoc_key, worksheet_id, function () {
               if (err !== null) {
-                alert(err);
+                alert(err); // eslint-disable-line no-alert
                 return true;
               }
 
@@ -1112,11 +1110,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var representation_rb_label = representation_rb.append("label")
     .attr("class", "option_rb")
     .on("mouseover", function (d) {
-      var rb_hint = representation_picker.append("div")
+      representation_picker.append("div")
         .attr("id", "rb_hint")
         .html(d.hint);
     })
-    .on("mouseout", function (d) {
+    .on("mouseout", function () {
       selectWithParent("#rb_hint").remove();
     });
 
@@ -1169,7 +1167,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("id", "rb_hint")
         .html(d.hint);
     })
-    .on("mouseout", function (d) {
+    .on("mouseout", function () {
       selectWithParent("#rb_hint").remove();
     });
 
@@ -1413,7 +1411,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.use_custom_palette = false;
 
         if (main_svg !== undefined) {
-          console.clear();
+          // console.clear();
           main_svg.remove();
           filter_div.remove();
           navigation_div.remove();
@@ -1615,11 +1613,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         var unique_data = [];
 
         if (globals.source_format === "demo_json") {
-          var data = window.timeline_story_demo_data[globals.source];
-
-          globals.timeline_json_data = data;
-
-          data.forEach(function (d) {
+          globals.timeline_json_data = window.timeline_story_demo_data[globals.source];
+          globals.timeline_json_data.forEach(function (d) {
             unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
           });
 
@@ -1630,7 +1625,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           processTimeline(unique_data);
         } else if (globals.source_format === "json") {
-          var data = d3.json(globals.source, function (error, data) {
+          d3.json(globals.source, function (error, data) {
             globals.timeline_json_data = data;
 
             data.forEach(function (d) {
@@ -1658,7 +1653,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           processTimeline(unique_data);
         } else if (globals.source_format === "csv") {
-          var data = d3.csv(globals.source, function (error, data) {
+          d3.csv(globals.source, function (error, data) {
             globals.timeline_json_data = data;
 
             data.forEach(function (d) {
@@ -1673,9 +1668,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             processTimeline(unique_data);
           });
         } else if (globals.source_format === "gdoc") {
-          var data = globals.timeline_json_data;
-
-          data.forEach(function (d) {
+          globals.timeline_json_data.forEach(function (d) {
             unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
           });
 
@@ -1700,7 +1693,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           }
         }
       } finally {
-
         // Reapply the UI scale to new elements
         instance.setUIScale(instance.scale);
 
@@ -1790,21 +1782,22 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     logEvent("# categories: " + globals.num_categories, "preprocessing");
 
+    var temp_palette;
     // assign colour labels to categories if # categories < 12
     if (globals.num_categories <= 20 && globals.num_categories >= 11) {
-      var temp_palette = colorSchemes.schema5();
+      temp_palette = colorSchemes.schema5();
       globals.categories.range(temp_palette);
       temp_palette = undefined;
     } else if (globals.num_categories <= 10 && globals.num_categories >= 3) {
-      var temp_palette = colorSchemes.schema2();
+      temp_palette = colorSchemes.schema2();
       globals.categories.range(temp_palette);
       temp_palette = undefined;
     } else if (globals.num_categories === 2) {
-      var temp_palette = ["#E45641", "#44B3C2"];
+      temp_palette = ["#E45641", "#44B3C2"];
       globals.categories.range(temp_palette);
       temp_palette = undefined;
     } else {
-      var temp_palette = ["#E45641"];
+      temp_palette = ["#E45641"];
       globals.categories.range(temp_palette);
       temp_palette = undefined;
     }
@@ -1900,9 +1893,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       logEvent("filter type changed: " + this.value, "filter");
 
+      var trigger_remove_filter = false;
       globals.filter_type = this.value;
       if (globals.filter_type === "Hide") {
-        var trigger_remove_filter = false;
         if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
           trigger_remove_filter = true;
         } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
@@ -1917,7 +1910,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
       } else if (globals.filter_type === "Emphasize") {
         globals.active_data = globals.all_data;
-        var trigger_remove_filter = false;
         if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
           trigger_remove_filter = true;
         } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
@@ -1969,7 +1961,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .on("change", function () {
         globals.selected_categories = d3.select(this)
           .selectAll("option")
-          .filter(function (d, i) {
+          .filter(function () {
             return this.selected;
           });
         if (globals.filter_type === "Hide") {
@@ -1983,13 +1975,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .enter()
       .append("option")
       .text(function (d) { return d; })
-      .property("selected", function (d, i) {
+      .property("selected", function (d) {
         return d === "( All )";
       });
 
     globals.selected_categories = selectWithParent("#category_picker")
       .selectAll("option")
-      .filter(function (d, i) {
+      .filter(function () {
         return this.selected;
       });
 
@@ -2040,7 +2032,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     var all_facets = ["( All )"];
 
-    var facet_picker = facet_filter.append("select")
+    facet_filter.append("select")
       .attr("class", "filter_select")
       .attr("size", 8)
       .attr("id", "facet_picker")
@@ -2050,7 +2042,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .on("change", function () {
         globals.selected_facets = d3.select(this)
           .selectAll("option")
-          .filter(function (d, i) {
+          .filter(function () {
             return this.selected;
           });
         if (globals.filter_type === "Hide") {
@@ -2064,13 +2056,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .enter()
       .append("option")
       .text(function (d) { return d; })
-      .property("selected", function (d, i) {
+      .property("selected", function (d) {
         return d === "( All )";
       });
 
     globals.selected_facets = selectWithParent("#facet_picker")
       .selectAll("option")
-      .filter(function (d, i) {
+      .filter(function () {
         return this.selected;
       });
 
@@ -2150,7 +2142,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .on("change", function () {
         globals.selected_segments = d3.select(this)
           .selectAll("option")
-          .filter(function (d, i) {
+          .filter(function () {
             return this.selected;
           });
         if (globals.filter_type === "Hide") {
@@ -2460,7 +2452,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       })
       .style("cursor", "pointer");
 
-    navigation_step_update.attr("transform", function (d, i) {
+    navigation_step_update.attr("transform", function (d) {
       return "translate(" + (d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + ",0)";
     })
       .attr("id", function (d) {
@@ -2499,7 +2491,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr("y", 2)
       .attr("width", STEPPER_STEP_WIDTH - 4)
       .attr("height", STEPPER_STEP_WIDTH - 4)
-      .on("click", function (d) {
+      .on("click", function () {
         globals.current_scene_index = +d3.select(this.parentNode).attr("id").substr(5);
         changeScene(globals.current_scene_index);
       });
@@ -2536,13 +2528,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         // delete current scene unless image or caption div is open
         logEvent("scene " + (d.s_order + 1) + " deleted.", "deletion");
 
-        for (var j = 0; j < globals.scenes.length; j++) {
+        var j;
+        for (j = 0; j < globals.scenes.length; j++) {
           if (globals.scenes[j].s_order === d.s_order) {
             globals.scenes.splice(j, 1);
           }
         }
 
-        for (var j = 0; j < globals.scenes.length; j++) {
+        for (j = 0; j < globals.scenes.length; j++) {
           if (globals.scenes[j].s_order > d.s_order) {
             globals.scenes[j].s_order--;
           }
@@ -2575,7 +2568,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .text("Delete Scene");
 
     navigation_step_svg.selectAll(".framePoint")
-      .on("mouseover", function (d, i) {
+      .on("mouseover", function (d) {
         var x_pos = d3.min([(d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + 100, instance._component_width - globals.margin.right - globals.margin.left - getScrollbarWidth() - 300]);
 
         var img_src = d3.select(this).select("image").attr("href");
@@ -2601,7 +2594,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           .attr("width", 296)
           .attr("height", 296);
       })
-      .on("mouseout", function (d, i) {
+      .on("mouseout", function (d) {
         d3.select(this).select(".scene_delete")
           .style("opacity", 0);
 
@@ -2625,7 +2618,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   var prevTransitioning = false;
   function changeScene(scene_index) {
-
     // Assume we are waiting for transitions if there is already one going.
     var waitForTransitions = prevTransitioning;
 
@@ -2816,7 +2808,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       /**
        * Creates a mapper, that adds a type property
        * @param {string} type The type of the item
-       * @returns {object}
+       * @returns {object} An object with the type and item properties
        */
       function mapWithType(type) {
         return function (item) {
@@ -2840,7 +2832,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
           var sceneList = scene["s_" + anno.type + "s"];
 
-          for (var i = 0; i < sceneList.length; i++) {
+          for (var i = 0; i < sceneList.length; i++) { // eslint-disable-line no-shadow
             // Basically the id property in the scene, so image_id or caption_id or annotation_id
             if (sceneList[i][anno.type + "_id"] === anno.item.id) {
               return true;
@@ -3030,6 +3022,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   /**
    * Renders the timeline
    * @param {object[]} data The data to render
+   * @returns {void}
    */
   function drawTimeline(data) {
     selectWithParent("#timeline_metadata").style("display", "none");
@@ -3157,7 +3150,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select("rect").style("stroke", "#f00");
         d3.select(this).select("text").style("font-weight", "bolder")
           .style("fill", "#f00");
-        selectAllWithParent(".timeline_event_g").each(function (d) {
+        selectAllWithParent(".timeline_event_g").each(function (d) { // eslint-disable-line no-shadow
           if (d.category === hovered_legend_element || d.selected) {
             d3.select(this).selectAll(".event_span")
               .style("stroke", "#f00")
@@ -3179,7 +3172,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select("rect").style("stroke", "#fff");
         d3.select(this).select("text").style("font-weight", "normal")
           .style("fill", "#666");
-        selectAllWithParent(".timeline_event_g").each(function (d) {
+        selectAllWithParent(".timeline_event_g").each(function () {
           d3.select(this).selectAll(".event_span")
             .style("stroke", "#fff")
             .style("stroke-width", "0.25px")
@@ -3213,7 +3206,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .on("click", function (d, i) {
           var colorEle = this;
           instance._colorPicker.show(this, globals.categories(d), function (value) {
-
             // Update the display
             selectWithParent(".legend").selectAll(".legend_element_g rect").each(function () {
               if (this.__data__ === d) {
@@ -3564,7 +3556,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     });
 
-    globals.num_tracks = d3.max(data, function (d) {
+    globals.num_tracks = d3.max(data, function (d) { // eslint-disable-line no-shadow
       return d.track;
     });
   }
@@ -3595,7 +3587,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     var index = 0;
     if (globals.date_granularity !== "epochs") {
-      latest_start_date = data[0].start_date.getTime();
+      globals.latest_start_date = data[0].start_date.getTime();
     }
 
     // older items end deeper
@@ -3736,6 +3728,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       segment = (Math.floor(item.getUTCFullYear() / 1000) * 1000).toString() + " - " + (Math.ceil((item.getUTCFullYear() + 1) / 1000) * 1000).toString();
       break;
     case "epochs":
+    default:
       segment = "";
       break;
     }
@@ -3816,6 +3809,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     case "epochs":
       segments_domain = [""];
       break;
+    default:
+      break;
     }
     return segments_domain;
   }
@@ -3857,6 +3852,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           globals.width = instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
           globals.height = (globals.num_tracks * globals.track_height + 1.5 * globals.track_height) * globals.num_segments + globals.margin.top + globals.margin.bottom;
+          break;
+        default:
           break;
         }
         break;
@@ -3946,6 +3943,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           globals.height = 0;
         }
         break;
+      default:
+        break;
       }
       break;
 
@@ -4006,6 +4005,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           }
           globals.height = (2 * globals.centre_radius + (globals.num_tracks + 2) * 2 * globals.track_height) * globals.num_segment_rows + globals.margin.top + globals.margin.bottom + globals.num_segment_rows * globals.buffer;
           break;
+        default:
+          break;
         }
         break;
 
@@ -4016,7 +4017,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           logEvent("# within-facet tracks: " + (globals.max_num_tracks + 1), "sizing");
 
           globals.centre_radius = 50;
-          var estimated_facet_width = (2 * globals.centre_radius + (globals.max_num_tracks + 2) * 2 * globals.track_height);
+          estimated_facet_width = (2 * globals.centre_radius + (globals.max_num_tracks + 2) * 2 * globals.track_height);
 
           globals.num_facet_cols = d3.min([globals.num_facet_cols, Math.floor(effective_size / estimated_facet_width)]);
           globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
@@ -4054,7 +4055,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           globals.max_seq_index = d3.max(data, function (d) { return d.seq_index; }) + 1;
 
           globals.centre_radius = 50;
-          var estimated_facet_width = (2 * globals.centre_radius + (4 * globals.track_height));
+          estimated_facet_width = (2 * globals.centre_radius + (4 * globals.track_height));
 
           globals.num_facet_cols = d3.min([globals.num_facet_cols, Math.floor(effective_size / estimated_facet_width)]);
           globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
@@ -4072,6 +4073,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           globals.width = 0;
           globals.height = 0;
         }
+        break;
+      default:
         break;
       }
       break;
@@ -4115,16 +4118,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         assignTracks(data, [], layout);
 
-        var cell_size = 20,
-          year_height = cell_size * 8, // 7 days of week + buffer
+        cell_size = 20;
+        var year_height = cell_size * 8, // 7 days of week + buffer
           year_width = cell_size * 53; // 53 weeks of the year + buffer
 
         // determine the range, round to whole centuries
-        var range_floor = data.min_start_date.getUTCFullYear(),
-          range_ceil = data.max_end_date.getUTCFullYear();
+        range_floor = data.min_start_date.getUTCFullYear();
+        range_ceil = data.max_end_date.getUTCFullYear();
 
         // determine the time domain of the data along a linear quantitative scale
-        var year_range = d3.range(range_floor, range_ceil + 1);
+        year_range = d3.range(range_floor, range_ceil + 1);
 
         globals.width = year_width + globals.margin.left + globals.margin.right;
         globals.height = year_range.length * year_height + globals.margin.top + globals.margin.bottom - cell_size;
@@ -4180,8 +4183,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           globals.max_seq_index = d3.max(data, function (d) { return d.seq_index; }) + 1;
 
           globals.timeline_facets.forEach(function (timeline) {
-            var angle = 0,
-              i = 0;
+            angle = 0;
+            i = 0;
 
             timeline.values.forEach(function (item) {
               var radius = Math.sqrt(i + 1);
@@ -4193,15 +4196,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             });
           });
 
-          var max_x = d3.max(data, function (d) { return d.spiral_x; });
-          var max_y = d3.max(data, function (d) { return d.spiral_y; });
-          var min_x = d3.min(data, function (d) { return d.spiral_x; });
-          var min_y = d3.min(data, function (d) { return d.spiral_y; });
+          max_x = d3.max(data, function (d) { return d.spiral_x; });
+          max_y = d3.max(data, function (d) { return d.spiral_y; });
+          min_x = d3.min(data, function (d) { return d.spiral_x; });
+          min_y = d3.min(data, function (d) { return d.spiral_y; });
 
           globals.spiral_dim = d3.max([(max_x + 2 * globals.spiral_padding) - (min_x - 2 * globals.spiral_padding), (max_y + 2 * globals.spiral_padding) - (min_y - 2 * globals.spiral_padding)]);
 
-          var facet_number = 0,
-            effective_size = instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
+          effective_size = instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
 
           globals.num_facet_cols = d3.min([globals.num_facet_cols, Math.floor(effective_size / globals.spiral_dim)]);
           globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
@@ -4240,6 +4242,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         globals.height = 0;
       }
       break;
+    default:
+      break;
     }
     logEvent("dimensions: " + globals.width + " (W) x " + globals.height + " (H)", "sizing");
   }
@@ -4248,13 +4252,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function updateRadioBttns(scale, layout, representation) {
     // update the control radio buttons
-    selectAllWithParent("#scale_picker input[name=scale_rb]").property("checked", function (d, i) {
+    selectAllWithParent("#scale_picker input[name=scale_rb]").property("checked", function (d) {
       return d === scale;
     });
-    selectAllWithParent("#layout_picker input[name=layout_rb]").property("checked", function (d, i) {
+    selectAllWithParent("#layout_picker input[name=layout_rb]").property("checked", function (d) {
       return d === layout;
     });
-    selectAllWithParent("#representation_picker input[name=representation_rb]").property("checked", function (d, i) {
+    selectAllWithParent("#representation_picker input[name=representation_rb]").property("checked", function (d) {
       return d === representation;
     });
 
@@ -4324,6 +4328,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       case "Curve":
         return !(scale === "Sequential" && layout === "Unified");
+      default:
+        return;
       }
     });
 
@@ -4357,6 +4363,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         return (scale === "Sequential" && (layout === "Unified" || layout === "Faceted")) ? "img_btn_enabled" : "img_btn_disabled";
       case "Curve":
         return (scale === "Sequential" && layout === "Unified") ? "img_btn_enabled" :  "img_btn_disabled";
+      default:
+        return;
       }
     });
   }
@@ -4771,7 +4779,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {string} value The category color
    * @returns {void}
    */
-  this._setCategoryColor = function(category, categoryIndex, value) {
+  this._setCategoryColor = function (category, categoryIndex, value) {
     globals.color_swap_target = globals.categories.range().indexOf(globals.categories(category));
     log("category " + categoryIndex + ": " + category + " / " + value + " (index # " + globals.color_swap_target + ")");
 
@@ -4786,8 +4794,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {number} min_story_height The minimum height to show the story
    * @param {object[]} unique_data The unique data
    * @param {object[]} unique_values The unique values
+   * @returns {void}
    */
-  this._loadDataFromStory = function(story, min_story_height, unique_data, unique_values) {
+  this._loadDataFromStory = function (story, min_story_height, unique_data, unique_values) {
     var timelineData = globals.timeline_json_data;
 
     // The original format
@@ -4936,7 +4945,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       }, {
         name: "Clear annotations, captions, & images",
         image: imageUrls("clear.png"),
-        click: function(instance) {
+        click: function (instance) {
           instance.clearCanvas();
         }
       }]
@@ -4946,7 +4955,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       items: [{
         text: "Export",
         image: imageUrls("filter.png"),
-        click: function(instance) {
+        click: function (instance) {
           logEvent("open filter dialog", "filter");
 
           if (d3.select(this).attr("class") === "img_btn_enabled") {
@@ -4954,8 +4963,8 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
             selectWithParent("#image_div").style("display", "none");
             if (selectWithParent("#filter_div").style("display") === "none") {
               selectWithParent("#filter_div").style("display", "inline");
-              globals.effective_filter_width = instance._component_width - parseInt(selectWithParent("#filter_div").style("width")) - getScrollbarWidth() - 10;
-              globals.effective_filter_height = instance._component_height - parseInt(selectWithParent("#filter_div").style("height")) - 25 - getScrollbarWidth() - parseInt(selectWithParent("#navigation_div").style("height")) - 10;
+              globals.effective_filter_width = instance._component_width - parseInt(selectWithParent("#filter_div").style("width"), 10) - getScrollbarWidth() - 10;
+              globals.effective_filter_height = instance._component_height - parseInt(selectWithParent("#filter_div").style("height"), 10) - 25 - getScrollbarWidth() - parseInt(selectWithParent("#navigation_div").style("height"), 10) - 10;
             } else {
               selectWithParent("#filter_div").style("display", "none");
             }
@@ -4968,7 +4977,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       items: [{
         text: "Export",
         image: imageUrls("export.png"),
-        click: function(instance) {
+        click: function (instance) {
           selectWithParent("#filter_div").style("display", "none");
           selectWithParent("#caption_div").style("display", "none");
           selectWithParent("#image_div").style("display", "none");
@@ -5029,7 +5038,7 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
       .attr("class", "menu_label")
       .text(section.label);
 
-    (section.items || []).forEach(function(item) {
+    (section.items || []).forEach(function (item) {
       var itemEle =
         that._control_panel.append("input")
           .attr({
@@ -5039,18 +5048,18 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
             src: item.image,
             title: item.text
           });
-        itemEle.style({
-          height: (item.height || 30) + "px",
-          width: (item.width || 30) + "px"
+      itemEle.style({
+        height: (item.height || 30) + "px",
+        width: (item.width || 30) + "px"
+      });
+      if (item.id) {
+        itemEle.attr("id", item.id);
+      }
+      if (item.click) {
+        itemEle.on("click", function () {
+          item.click.call(this, that);
         });
-        if (item.id) {
-          itemEle.attr("id", item.id);
-        }
-        if (item.click) {
-          itemEle.on("click", function() {
-            item.click.call(this, that);
-          });
-        }
+      }
     });
   });
 
@@ -5060,7 +5069,7 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
 /**
  * Event listener for when the TimelineStoryteller is resized
  */
-TimelineStoryteller.prototype._onResized = debounce(function(updateVis) {
+TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
   // Only tweak the size if we are not playing back
   if (!globals.playback_mode) {
     this._component_width = this.parentElement.clientWidth;
@@ -5159,7 +5168,7 @@ TimelineStoryteller.prototype.setOptions = function (options) {
  * Clears the canvas of annotations
  * @returns {void}
  */
-TimelineStoryteller.prototype.clearCanvas = function() {
+TimelineStoryteller.prototype.clearCanvas = function () {
   logEvent("clear annotations", "annotation");
 
   this._main_svg.selectAll(".timeline_caption, .timeline_caption, .event_annotation").remove();
@@ -5167,7 +5176,8 @@ TimelineStoryteller.prototype.clearCanvas = function() {
 
 /**
  * Updates the set of currently loaded data
- * @
+ * @param {object[]} data The data to load into TimelineStoryteller
+ * @returns {void}
  */
 TimelineStoryteller.prototype.update = function (data) {
   var unique_values = d3.map([]);
@@ -5205,7 +5215,7 @@ TimelineStoryteller.prototype.update = function (data) {
     // determine event categories from data
     globals.categories.domain(categories);
 
-    existingColors.forEach(function(color, i) {
+    existingColors.forEach(function (color, i) {
       // Restore existing colors
       setScaleValue(globals.categories, existingCategories[i], color);
     });
@@ -5222,13 +5232,13 @@ TimelineStoryteller.prototype.update = function (data) {
  * @returns {void}
  */
 TimelineStoryteller.prototype.load = function (data) {
-    globals.source = data;
-    globals.source_format = "json_parsed";
-    logEvent("loading (" + globals.source_format + ")", "load");
-    setTimeout(function() {
-      // Give it time for the UI to load
-      this._loadTimeline(true);
-    }.bind(this), 100);
+  globals.source = data;
+  globals.source_format = "json_parsed";
+  logEvent("loading (" + globals.source_format + ")", "load");
+  setTimeout(function () {
+    // Give it time for the UI to load
+    this._loadTimeline(true);
+  }.bind(this), 100);
 };
 
 /**
@@ -5311,6 +5321,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
 
 /**
  * A utility function to get the scrollbar width
+ * @returns {number} The scrollbar width
  */
 function getScrollbarWidth() {
   var outer = document.createElement("div");
