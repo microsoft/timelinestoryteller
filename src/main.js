@@ -691,193 +691,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectAllWithParent(".gdocs_info_element").style("display", "none");
     });
 
-  var data_picker = instance.importPanel.element.append("div")
-    .attr("id", "data_picker");
-
-  if (instance.options.showImportLoadDataOptions) {
-    var dataset_picker = data_picker.append("div")
-      .attr("class", "data_story_picker import-load-data-option");
-
-    dataset_picker.append("text")
-      .attr("class", "ui_label")
-      .text("Load timeline data");
-
-    if (showDemoData()) {
-      var demo_dataset_picker_label = dataset_picker.append("label")
-        .attr("class", "import_label demo_dataset_label");
-
-      var showDropdown = function (element) {
-        var event = document.createEvent("MouseEvents");
-        event.initMouseEvent("mousedown", true, true, window);
-        element.dispatchEvent(event);
-      };
-
-      demo_dataset_picker_label.append("select")
-        .attr("id", "demo_dataset_picker")
-        .attr("title", "Load demo dataset")
-        .on("change", function () {
-          globals.source = d3.select(this).property("value");
-          if (globals.source !== "") {
-            globals.source_format = "demo_json";
-            setTimeout(function () {
-              logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-
-              loadTimeline();
-            }, 500);
-          }
-        })
-        .selectAll("option")
-        .data([
-          { "path": "", "tl_name": "" },
-          { "path": "priestley", "tl_name": "Priestley's Chart of Biography (faceted by occupation)" },
-          { "path": "philosophers", "tl_name": "Great Philosophers since the 8th Century BC (faceted by region)" },
-          { "path": "empires", "tl_name": "History's Largest Empires (faceted by region)" },
-          { "path": "ch_jp_ko", "tl_name": "East Asian Dynasties (faceted by region)" },
-          { "path": "epidemics", "tl_name": "Epidemics since the 14th Century (faceted by region)" },
-          { "path": "hurricanes50y", "tl_name": "C4-5 Hurricanes: 1960-2010" },
-          { "path": "prime_ministers", "tl_name": "Prime Ministers of Canada" },
-          { "path": "france_presidents", "tl_name": "Presidents of France" },
-          { "path": "germany_chancellors", "tl_name": "Chancellors of Germany" },
-          { "path": "italy_presidents", "tl_name": "Presidents of Italy" },
-          { "path": "japan_prime_ministers", "tl_name": "Prime Ministers of Japan" },
-          { "path": "uk_prime_ministers", "tl_name": "Prime Ministers of the UK" },
-          { "path": "presidents", "tl_name": "Presidents of the USA" },
-          { "path": "heads_of_state_since_1940", "tl_name": "G7 Heads of State since 1940 (faceted by country)" },
-          { "path": "dailyroutines", "tl_name": "Podio's 'Daily Routines of Famous Creative People' (faceted by person)" },
-          { "path": "painters", "tl_name": "Accurat's 'Visualizing painters' lives' (faceted by painter)" },
-          { "path": "authors", "tl_name": "Accurat's 'From first published to masterpieces' (faceted by author)" },
-          { "path": "singularity", "tl_name": "Kurzweil's 'Countdown to Singularity' (4 billion years)" },
-          { "path": "perspective_on_time", "tl_name": "Wait But Why's 'A Perspective on Time' (14 billion years)" },
-          { "path": "typical_american", "tl_name": "Wait But Why's 'Life of a Typical American'" }
-        ])
-        .enter()
-        .append("option")
-        .attr("value", function (d) { return d.path; })
-        .text(function (d) { return d.tl_name; });
-
-      demo_dataset_picker_label.append("img")
-        .style("border", "0px solid transparent")
-        .style("margin", "0px")
-        .attr({
-          name: "Load Demo Data",
-          id: "demo_dataset_picker_label",
-          height: 40,
-          width: 40,
-          title: "Load Demo Data",
-          src: imageUrls("demo.png")
-        })
-        .on("click", function () {
-          var se = document.getElementById("demo_dataset_picker");
-          showDropdown(se);
-        });
-    }
-
-    dataset_picker.append("input")
-      .attr({
-        type: "file",
-        id: "json_uploader",
-        class: "inputfile",
-        accept: ".json"
-      })
-      .on("change", function () {
-        var file = this.files[0];
-        globals.reader.readAsText(file);
-
-        globals.reader.onload = function (e) {
-          var contents = e.target.result;
-          var blob = new Blob([contents], { type: "application/json" });
-          globals.source = URL.createObjectURL(blob);
-          globals.source_format = "json";
-          setTimeout(function () {
-            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-            loadTimeline();
-          }, 500);
-        };
-      });
-
-    dataset_picker.append("label")
-      .attr("for", "json_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from JSON",
-        id: "json_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from JSON",
-        src: imageUrls("json.png")
-      });
-
-    dataset_picker.append("input")
-      .attr({
-        type: "file",
-        id: "csv_uploader",
-        class: "inputfile",
-        accept: ".csv"
-      })
-      .on("change", function () {
-        var file = this.files[0];
-        globals.reader.readAsText(file);
-
-        globals.reader.onload = function (e) {
-          var contents = e.target.result;
-          var blob = new Blob([contents], { type: "application/csv" });
-          globals.source = URL.createObjectURL(blob);
-          globals.source_format = "csv";
-          setTimeout(function () {
-            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-            loadTimeline();
-          }, 500);
-        };
-      });
-
-    dataset_picker.append("label")
-      .attr("for", "csv_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from CSV",
-        id: "csv_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from CSV",
-        src: imageUrls("csv.png")
-      });
-
-    dataset_picker.append("input")
-      .attr({
-        id: "gdocs_uploader",
-        class: "inputfile"
-      })
-      .on("click", function () {
-        if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
-          selectWithParent("#gdocs_info").style("height", 0 + "px");
-          selectAllWithParent(".gdocs_info_element").style("display", "none");
-        } else {
-          selectWithParent("#gdocs_info").style("height", 27 + "px");
-          setTimeout(function () {
-            selectAllWithParent(".gdocs_info_element").style("display", "inline");
-          }, 500);
-        }
-      });
-
-    dataset_picker.append("label")
-      .attr("for", "gdocs_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from Google Spreadsheet",
-        id: "gdocs_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from Google Spreadsheet",
-        src: imageUrls("gdocs.png")
-      });
-  }
-
   instance._initializeImportPanel();
 
   var gdocs_info = instance.importPanel.element.append("div")
@@ -1538,19 +1351,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         var unique_values = d3.map([]);
         var unique_data = [];
 
-        if (globals.source_format === "demo_json") {
-          globals.timeline_json_data = window.timeline_story_demo_data[globals.source];
-          globals.timeline_json_data.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
-        } else if (globals.source_format === "json") {
+        if (globals.source_format === "json") {
           d3.json(globals.source, function (error, data) {
             globals.timeline_json_data = data;
 
@@ -5094,6 +4895,180 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
  * @returns {void}
  */
 TimelineStoryteller.prototype._initializeImportDataSection = function () {
+  if (this.options.showImportLoadDataOptions) {
+    var data_picker = this.importPanel.element.append("div")
+      .attr("id", "data_picker");
+
+    var dataset_picker = data_picker.append("div")
+      .attr("class", "data_story_picker import-load-data-option");
+
+    dataset_picker.append("text")
+      .attr("class", "ui_label")
+      .text("Load timeline data");
+
+    if (this._showDemoData()) {
+      var demoData = [
+          { "path": "", "tl_name": "" }
+      ].concat(Object.keys(window.timeline_story_demo_data).map(path => {
+        return {
+          path,
+          tl_name: window.timeline_story_demo_data[path].name
+        };
+      }));
+      var demo_dataset_picker_label = dataset_picker.append("label")
+        .attr("class", "import_label demo_dataset_label");
+
+      var showDropdown = function (element) {
+        var event = document.createEvent("MouseEvents");
+        event.initMouseEvent("mousedown", true, true, window);
+        element.dispatchEvent(event);
+      };
+      var that = this;
+      demo_dataset_picker_label.append("select")
+        .attr("id", "demo_dataset_picker")
+        .attr("title", "Load demo dataset")
+        .on("change", function () {
+          var source = d3.select(this).property("value");
+          if (source !== "") {
+            globals.source = window.timeline_story_demo_data[source].data;
+            globals.source_format = "json_parsed";
+            setTimeout(() => {
+              logEvent("loading " + source + " (demo_story)", "load");
+
+              that._loadTimeline();
+            }, 500);
+          } else {
+            globals.source = source;
+          }
+        })
+        .selectAll("option")
+        .data(demoData)
+        .enter()
+        .append("option")
+        .attr("value", function (d) { return d.path; })
+        .text(function (d) { return d.tl_name; });
+
+      demo_dataset_picker_label.append("img")
+        .style("border", "0px solid transparent")
+        .style("margin", "0px")
+        .attr({
+          name: "Load Demo Data",
+          id: "demo_dataset_picker_label",
+          height: 40,
+          width: 40,
+          title: "Load Demo Data",
+          src: imageUrls("demo.png")
+        })
+        .on("click", function () {
+          var se = document.getElementById("demo_dataset_picker");
+          showDropdown(se);
+        });
+    }
+
+    dataset_picker.append("input")
+      .attr({
+        type: "file",
+        id: "json_uploader",
+        class: "inputfile",
+        accept: ".json"
+      })
+      .on("change", () => {
+        var file = this.files[0];
+        globals.reader.readAsText(file);
+
+        globals.reader.onload = (e) => {
+          var contents = e.target.result;
+          var blob = new Blob([contents], { type: "application/json" });
+          globals.source = URL.createObjectURL(blob);
+          globals.source_format = "json";
+          setTimeout(() => {
+            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+            this._loadTimeline();
+          }, 500);
+        };
+      });
+
+    dataset_picker.append("label")
+      .attr("for", "json_uploader")
+      .attr("class", "import_label")
+      .append("img")
+      .attr({
+        name: "Load from JSON",
+        id: "json_picker_label",
+        class: "img_btn_enabled import_label",
+        height: 40,
+        width: 40,
+        title: "Load from JSON",
+        src: imageUrls("json.png")
+      });
+
+    dataset_picker.append("input")
+      .attr({
+        type: "file",
+        id: "csv_uploader",
+        class: "inputfile",
+        accept: ".csv"
+      })
+      .on("change", () => {
+        var file = this.files[0];
+        globals.reader.readAsText(file);
+        globals.reader.onload = (e) => {
+          var contents = e.target.result;
+          var blob = new Blob([contents], { type: "application/csv" });
+          globals.source = URL.createObjectURL(blob);
+          globals.source_format = "csv";
+          setTimeout(() => {
+            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+            this._loadTimeline();
+          }, 500);
+        };
+      });
+
+    dataset_picker.append("label")
+      .attr("for", "csv_uploader")
+      .attr("class", "import_label")
+      .append("img")
+      .attr({
+        name: "Load from CSV",
+        id: "csv_picker_label",
+        class: "img_btn_enabled import_label",
+        height: 40,
+        width: 40,
+        title: "Load from CSV",
+        src: imageUrls("csv.png")
+      });
+
+    dataset_picker.append("input")
+      .attr({
+        id: "gdocs_uploader",
+        class: "inputfile"
+      })
+      .on("click", function () {
+        if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
+          selectWithParent("#gdocs_info").style("height", 0 + "px");
+          selectAllWithParent(".gdocs_info_element").style("display", "none");
+        } else {
+          selectWithParent("#gdocs_info").style("height", 27 + "px");
+          setTimeout(function () {
+            selectAllWithParent(".gdocs_info_element").style("display", "inline");
+          }, 500);
+        }
+      });
+
+    dataset_picker.append("label")
+      .attr("for", "gdocs_uploader")
+      .attr("class", "import_label")
+      .append("img")
+      .attr({
+        name: "Load from Google Spreadsheet",
+        id: "gdocs_picker_label",
+        class: "img_btn_enabled import_label",
+        height: 40,
+        width: 40,
+        title: "Load from Google Spreadsheet",
+        src: imageUrls("gdocs.png")
+      });
+  }
 };
 
 /**
