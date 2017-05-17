@@ -4759,7 +4759,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
               .attr({
                 type: "file",
                 id: "story_uploader",
-                style: "opacity:0;",
+                style: "display:none;",
                 accept: ".cdc"
               })
               .on("change", function () {
@@ -4774,6 +4774,83 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
           },
           click: function (inst, element) {
             element.select("#story_uploader").node().click();
+          }
+        }
+      }
+    },
+    dataMenu: {
+      items: {
+        json: {
+          name: "Load from JSON",
+          image: imageUrls("json.png"),
+          init: (inst, element) => {
+            element
+              .append("input")
+              .attr({
+                type: "file",
+                id: "json_uploader",
+                style: "display:none;",
+                accept: ".json"
+              })
+              .on("change", (e) => {
+                var contents = e.target.result;
+                var blob = new Blob([contents], { type: "application/json" });
+                globals.source = URL.createObjectURL(blob);
+                globals.source_format = "json";
+                setTimeout(() => {
+                  logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+                  this._loadTimeline();
+                }, 500);
+              });
+          },
+          click: (inst, element) => {
+            element.select("#json_uploader").node().click();
+          }
+        },
+        csv: {
+          name: "Load from CSV",
+          image: imageUrls("csv.png"),
+          init: (inst, element) => {
+            element
+              .append("input")
+              .attr({
+                type: "file",
+                id: "csv_uploader",
+                style: "display:none;",
+                accept: ".csv"
+              })
+              .on("change", function () {
+                var file = this.files[0];
+                globals.reader.readAsText(file);
+                globals.reader.onload = (e) => {
+                  var contents = e.target.result;
+                  var blob = new Blob([contents], { type: "application/csv" });
+                  globals.source = URL.createObjectURL(blob);
+                  globals.source_format = "csv";
+                  setTimeout(() => {
+                    logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+                    that._loadTimeline();
+                  }, 500);
+                };
+              });
+          },
+          click: (inst, element) => {
+            element.select("#csv_uploader").node().click();
+          }
+        },
+        gdocs: {
+          name: "Load from Google Spreadsheet",
+          image: imageUrls("gdocs.png"),
+          click: () => {
+            if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
+              selectWithParent("#gdocs_info").style("height", 0 + "px");
+              selectAllWithParent(".gdocs_info_element").style("display", "none");
+            } else {
+              selectWithParent("#gdocs_info").style("height", 27 + "px");
+              setTimeout(function () {
+                selectAllWithParent(".gdocs_info_element").style("display", "inline");
+              }, 500);
+            }
           }
         }
       }
@@ -4886,8 +4963,11 @@ TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
  * @returns {void}
  */
 TimelineStoryteller.prototype._initializeImportPanel = function () {
-  this._initializeImportStorySection();
+  this.importPanel.element.append("div")
+    .attr("id", "data_picker");
+
   this._initializeImportDataSection();
+  this._initializeImportStorySection();
 };
 
 /**
@@ -4896,10 +4976,7 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
  */
 TimelineStoryteller.prototype._initializeImportDataSection = function () {
   if (this.options.showImportLoadDataOptions) {
-    var data_picker = this.importPanel.element.append("div")
-      .attr("id", "data_picker");
-
-    var dataset_picker = data_picker.append("div")
+    var dataset_picker = selectWithParent("#data_picker").append("div")
       .attr("class", "data_story_picker import-load-data-option");
 
     dataset_picker.append("text")
@@ -4907,22 +4984,16 @@ TimelineStoryteller.prototype._initializeImportDataSection = function () {
       .text("Load timeline data");
 
     if (this._showDemoData()) {
-      var demoData = [
-          { "path": "", "tl_name": "" }
-      ].concat(Object.keys(window.timeline_story_demo_data).map(path => {
+      var demoData = window.timeline_story_demo_data;
+      var demoOptions = Object.keys(demoData).map(path => {
         return {
           path,
-          tl_name: window.timeline_story_demo_data[path].name
+          tl_name: demoData[path].name
         };
-      }));
+      });
       var demo_dataset_picker_label = dataset_picker.append("label")
         .attr("class", "import_label demo_dataset_label");
 
-      var showDropdown = function (element) {
-        var event = document.createEvent("MouseEvents");
-        event.initMouseEvent("mousedown", true, true, window);
-        element.dispatchEvent(event);
-      };
       var that = this;
       demo_dataset_picker_label.append("select")
         .attr("id", "demo_dataset_picker")
@@ -4930,7 +5001,7 @@ TimelineStoryteller.prototype._initializeImportDataSection = function () {
         .on("change", function () {
           var source = d3.select(this).property("value");
           if (source !== "") {
-            globals.source = window.timeline_story_demo_data[source].data;
+            globals.source = demoData[source].data;
             globals.source_format = "json_parsed";
             setTimeout(() => {
               logEvent("loading " + source + " (demo_story)", "load");
@@ -4942,7 +5013,7 @@ TimelineStoryteller.prototype._initializeImportDataSection = function () {
           }
         })
         .selectAll("option")
-        .data(demoData)
+        .data([{ "path": "", "tl_name": "" }].concat(demoOptions)) // Blank + demo options
         .enter()
         .append("option")
         .attr("value", function (d) { return d.path; })
@@ -4960,114 +5031,24 @@ TimelineStoryteller.prototype._initializeImportDataSection = function () {
           src: imageUrls("demo.png")
         })
         .on("click", function () {
-          var se = document.getElementById("demo_dataset_picker");
-          showDropdown(se);
+          var event = document.createEvent("MouseEvents");
+          event.initMouseEvent("mousedown", true, true, window);
         });
     }
 
-    dataset_picker.append("input")
-      .attr({
-        type: "file",
-        id: "json_uploader",
-        class: "inputfile",
-        accept: ".json"
-      })
-      .on("change", () => {
-        var file = this.files[0];
-        globals.reader.readAsText(file);
+    var importOptions = this.options.import || {};
+    var importDataMenu = (importOptions.dataMenu || {}).items || {};
+    var importDataItems = Object.keys(importDataMenu);
 
-        globals.reader.onload = (e) => {
-          var contents = e.target.result;
-          var blob = new Blob([contents], { type: "application/json" });
-          globals.source = URL.createObjectURL(blob);
-          globals.source_format = "json";
-          setTimeout(() => {
-            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-            this._loadTimeline();
-          }, 500);
-        };
-      });
-
-    dataset_picker.append("label")
-      .attr("for", "json_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from JSON",
-        id: "json_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from JSON",
-        src: imageUrls("json.png")
-      });
-
-    dataset_picker.append("input")
-      .attr({
-        type: "file",
-        id: "csv_uploader",
-        class: "inputfile",
-        accept: ".csv"
-      })
-      .on("change", () => {
-        var file = this.files[0];
-        globals.reader.readAsText(file);
-        globals.reader.onload = (e) => {
-          var contents = e.target.result;
-          var blob = new Blob([contents], { type: "application/csv" });
-          globals.source = URL.createObjectURL(blob);
-          globals.source_format = "csv";
-          setTimeout(() => {
-            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-            this._loadTimeline();
-          }, 500);
-        };
-      });
-
-    dataset_picker.append("label")
-      .attr("for", "csv_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from CSV",
-        id: "csv_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from CSV",
-        src: imageUrls("csv.png")
-      });
-
-    dataset_picker.append("input")
-      .attr({
-        id: "gdocs_uploader",
-        class: "inputfile"
-      })
-      .on("click", function () {
-        if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
-          selectWithParent("#gdocs_info").style("height", 0 + "px");
-          selectAllWithParent(".gdocs_info_element").style("display", "none");
-        } else {
-          selectWithParent("#gdocs_info").style("height", 27 + "px");
-          setTimeout(function () {
-            selectAllWithParent(".gdocs_info_element").style("display", "inline");
-          }, 500);
+    // We really only need to add the section if there is any items to show
+    if (importDataItems.length) {
+      importDataItems.forEach((key) => {
+        var buttonEle = this._createImportPanelButton(importDataMenu[key]);
+        if (buttonEle) {
+          dataset_picker.node().appendChild(buttonEle.node());
         }
       });
-
-    dataset_picker.append("label")
-      .attr("for", "gdocs_uploader")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load from Google Spreadsheet",
-        id: "gdocs_picker_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load from Google Spreadsheet",
-        src: imageUrls("gdocs.png")
-      });
+    }
   }
 };
 
@@ -5091,32 +5072,43 @@ TimelineStoryteller.prototype._initializeImportStorySection = function () {
       .text("Load timeline story");
 
     importItems.forEach((key) => {
-      var button = storyMenu[key];
-      if (!button.demo || this._showDemoStory()) {
-        var sizeCss = "height:" + (button.height || 40) + "px;width:" + (button.width || 40) + "px";
-        var item = story_picker.append("div")
-          .attr("class", "import_label")
-          .attr("style", "margin-right:6px;position:relative;" + sizeCss);
-        item
-          .append("img")
-          .attr({
-            name: button.text,
-            class: "img_btn_enabled import_label " + (button.class || ""),
-            title: button.text,
-            src: button.image,
-            style: "position:absolute;left:0;right:0;top:0;bottom:0;" + sizeCss
-          })
-          .on("click", () => {
-            if (button.click) {
-              button.click(this, element);
-            }
-          });
-        var element = item.append("div").attr("style", "margin-top:10px;display:inline-block");
-        if (button.init) {
-          button.init(this, element);
-        }
+      var buttonEle = this._createImportPanelButton(storyMenu[key]);
+      if (buttonEle) {
+        story_picker.node().appendChild(buttonEle.node());
       }
     });
+  }
+};
+
+/**
+ * Creates an import panel button from the given button config
+ * @param {object} button The button configuration
+ * @return {d3.Selection} The d3 button
+ */
+TimelineStoryteller.prototype._createImportPanelButton = function (button) {
+  if (!button.demo || this._showDemoStory()) {
+    var sizeCss = "height:" + (button.height || 40) + "px;width:" + (button.width || 40) + "px";
+    var item = d3.select(document.createElement("div"))
+      .attr("style", "margin-top:20px;margin-bottom:10px;margin-right:6px;position:relative;" + sizeCss);
+    item
+      .append("img")
+      .attr({
+        name: button.text,
+        class: "img_btn_enabled " + (button.class || ""),
+        title: button.text,
+        src: button.image,
+        style: "width:100%;height:100%"
+      })
+      .on("click", () => {
+        if (button.click) {
+          button.click(this, element);
+        }
+      });
+    var element = item.append("div");
+    if (button.init) {
+      button.init(this, element);
+    }
+    return item;
   }
 };
 
