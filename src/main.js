@@ -117,6 +117,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     return (typeof showDemo === "undefined" || showDemo) && window.timeline_story_demo_story !== undefined;
   }
 
+  instance._showDemoStory = showDemoStory;
+  instance._showDemoData = showDemoData;
+
   function adjustSvgSize() {
     main_svg.transition()
       .duration(instance.options.animations ? 1200 : 0)
@@ -875,84 +878,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       });
   }
 
-  var story_picker = selectWithParent("#data_picker").append("div")
-    .attr("class", "data_story_picker")
-    .style("border-right", "1px solid transparent");
-
-  story_picker.append("text")
-    .attr("class", "ui_label")
-    .text("Load timeline story");
-
-  if (showDemoStory()) {
-    story_picker.append("input")
-      .attr({
-        id: "story_demo",
-        class: "inputfile"
-      })
-      .on("click", function () {
-        globals.source = "demoStory";
-
-        logEvent("demo story source", "load");
-
-        globals.source_format = "demo_story";
-        selectWithParent("#timeline_metadata").style("display", "none");
-        selectAllWithParent(".gdocs_info_element").style("display", "none");
-        instance.importPanel.hide();
-
-        selectWithParent("#gdocs_info").style("height", 0 + "px");
-        selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
-        selectWithParent("#gdoc_worksheet_title_input").property("value", "");
-
-        setTimeout(function () {
-          loadTimeline();
-        }, 500);
-      });
-
-    story_picker.append("label")
-      .attr("for", "story_demo")
-      .attr("class", "import_label")
-      .append("img")
-      .attr({
-        name: "Load Demo Story",
-        id: "story_demo_label",
-        class: "img_btn_enabled import_label",
-        height: 40,
-        width: 40,
-        title: "Load Demo Story",
-        src: imageUrls("demo_story.png")
-      });
-  }
-
-  story_picker.append("input")
-    .attr({
-      type: "file",
-      id: "story_uploader",
-      class: "inputfile",
-      accept: ".cdc"
-    })
-    .on("change", function () {
-      var file = this.files[0];
-      globals.reader.readAsText(file);
-
-      globals.reader.onload = function (e) {
-        var contents = e.target.result;
-        instance.loadStory(contents);
-      };
-    });
-
-  story_picker.append("label")
-    .attr("for", "story_uploader")
-    .attr("class", "import_label")
-    .append("img")
-    .attr({
-      name: "Load Saved Story",
-      id: "story_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load Saved Story",
-      src: imageUrls("story.png")
-    });
+  instance._initializeImportPanel();
 
   var gdocs_info = instance.importPanel.element.append("div")
     .attr("id", "gdocs_info");
@@ -4994,6 +4920,63 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
         } // The click handler
       }]
     }
+  },
+  import: {
+    storyMenu: {
+      items: {
+        demo: {
+          demo: true,
+          text: "Load Demo Story",
+          image: imageUrls("demo_story.png"),
+          click: function (instance) {
+            globals.source = "demoStory";
+
+            logEvent("demo story source", "load");
+
+            globals.source_format = "demo_story";
+            selectWithParent("#timeline_metadata").style("display", "none");
+            selectAllWithParent(".gdocs_info_element").style("display", "none");
+            instance.importPanel.hide();
+
+            selectWithParent("#gdocs_info").style("height", 0 + "px");
+            selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
+            selectWithParent("#gdoc_worksheet_title_input").property("value", "");
+
+            setTimeout(function () {
+              instance._loadTimeline();
+            }, 500);
+          }
+        },
+        file: {
+          text: "Load Saved Story",
+          image: imageUrls("story.png"),
+          width: 40,
+          height: 40,
+          init: function (inst, element) {
+            element
+              .append("input")
+              .attr({
+                type: "file",
+                id: "story_uploader",
+                style: "opacity:0;",
+                accept: ".cdc"
+              })
+              .on("change", function () {
+                var file = this.files[0];
+                globals.reader.readAsText(file);
+
+                globals.reader.onload = function (e) {
+                  var contents = e.target.result;
+                  inst.loadStory(contents);
+                };
+              });
+          },
+          click: function (inst, element) {
+            element.select("#story_uploader").node().click();
+          }
+        }
+      }
+    }
   }
 });
 
@@ -5096,6 +5079,71 @@ TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
     }
   }
 }, 500);
+
+/**
+ * Initializes the import panel
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportPanel = function () {
+  this._initializeImportStorySection();
+  this._initializeImportDataSection();
+};
+
+/**
+ * Initializes the data section within the import dialog
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportDataSection = function () {
+};
+
+/**
+ * Initializes the story section within the import dialog
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportStorySection = function () {
+  var importOptions = this.options.import || {};
+  var storyMenu = (importOptions.storyMenu || {}).items || {};
+  var importItems = Object.keys(storyMenu);
+
+  // We really only need to add the section if there is any items to show
+  if (importItems.length) {
+    var story_picker = selectWithParent("#data_picker").append("div")
+      .attr("class", "data_story_picker")
+      .style("border-right", "1px solid transparent");
+
+    story_picker.append("text")
+      .attr("class", "ui_label")
+      .text("Load timeline story");
+
+    importItems.forEach((key) => {
+      var button = storyMenu[key];
+      if (!button.demo || this._showDemoStory()) {
+        var sizeCss = "height:" + (button.height || 40) + "px;width:" + (button.width || 40) + "px";
+        var item = story_picker.append("div")
+          .attr("class", "import_label")
+          .attr("style", "margin-right:6px;position:relative;" + sizeCss);
+        item
+          .append("img")
+          .attr({
+            name: button.text,
+            class: "img_btn_enabled import_label " + (button.class || ""),
+            title: button.text,
+            src: button.image,
+            style: "position:absolute;left:0;right:0;top:0;bottom:0;" + sizeCss
+          })
+          .on("click", () => {
+            if (button.click) {
+              button.click(this, element);
+            }
+          });
+        var element = item.append("div").attr("style", "margin-top:10px;display:inline-block");
+        if (button.init) {
+          button.init(this, element);
+        }
+      }
+    });
+  }
+};
 
 /**
  * Scales the UI
