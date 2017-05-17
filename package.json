@@ -46,8 +46,8 @@
     "start": "node app.js",
     "lint": "eslint src",
     "karma": "karma start",
-    "package": "webpack && copyfiles -u 1 'dist/*.js' public/app/js && copyfiles -u 1 'src/**/*' lib",
-    "test": "(npm run lint || exit 0) && npm run karma && npm run package"
+    "package": "webpack && copyfiles -u 1 \"dist/*.js\" public/app/js && copyfiles -u 1 \"src/**/*\" lib",
+    "test": "npm run lint && npm run karma && npm run package"
   },
   "repository": {
     "type": "git",
