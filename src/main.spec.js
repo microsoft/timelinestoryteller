@@ -41,5 +41,10 @@ describe("TimelineStoryteller", function () {
     });
     it("should draw annotations with the correct position if scenes are switched quickly");
     it("should not draw annotations on the wrong scene");
+    it("should import and preprocess demo_json correctly");
+    it("should import and preprocess json correctly");
+    it("should import and preprocess json_parsed correctly");
+    it("should import and preprocess csv correctly");
+    it("should import and preprocess gdoc correctly");
   });
 });
