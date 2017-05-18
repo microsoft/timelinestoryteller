@@ -1358,7 +1358,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             initTimelineData(data);
           });
         } else if (globals.source_format === "json_parsed") {
-          initTimelineData(global.source);
+          initTimelineData(globals.source);
         } else if (globals.source_format === "csv") {
           d3.csv(globals.source, function (error, data) {
             initTimelineData(data);
