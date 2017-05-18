@@ -4980,6 +4980,16 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
   this.importPanel.element.append("div")
     .attr("id", "data_picker");
 
+  this._initializeImportDataMenus();
+};
+
+/**
+ * Initializes the sections in the import panel
+ * @return {void}
+ */
+TimelineStoryteller.prototype._initializeImportDataMenus = function () {
+  selectAllWithParent("#data_picker .data_story_picker").remove();
+
   this._initializeImportDataSection();
   this._initializeImportStorySection();
 };
@@ -4990,19 +5000,19 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
  */
 TimelineStoryteller.prototype._initializeImportDataSection = function () {
   if (this.options.showImportLoadDataOptions) {
-    var dataset_picker = selectWithParent("#data_picker").append("div")
-      .attr("class", "data_story_picker import-load-data-option");
-
-    dataset_picker.append("text")
-      .attr("class", "ui_label")
-      .text("Load timeline data");
-
     var importOptions = this.options.import || {};
     var importDataMenu = (importOptions.dataMenu || {}).items || {};
     var importDataItems = Object.keys(importDataMenu);
 
     // We really only need to add the section if there is any items to show
     if (importDataItems.length) {
+      var dataset_picker = selectWithParent("#data_picker").append("div")
+        .attr("class", "data_story_picker import-load-data-option");
+
+      dataset_picker.append("text")
+        .attr("class", "ui_label")
+        .text("Load timeline data");
+
       importDataItems.forEach((key) => {
         var buttonEle = this._createImportPanelButton(importDataMenu[key]);
         if (buttonEle) {
@@ -5119,6 +5129,7 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
+    this._initializeImportDataMenus();
   }
 };
 
@@ -5136,6 +5147,9 @@ TimelineStoryteller.prototype.setOptions = function (options) {
       var value = typeof options[key] !== "undefined" ? options[key] : TimelineStoryteller.DEFAULT_OPTIONS[key];
       this.options[key] = value;
       if (key === "menu") {
+        updateMenu = true;
+      }
+      if (key === "import") {
         updateMenu = true;
       }
     }
