@@ -1405,11 +1405,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.timeline_json_data = data;
 
     data.forEach(function (d) {
-        unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
+      unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
     });
     // find unique values
     unique_values.forEach(function (d) {
-        unique_data.push(unique_values.get(d));
+      unique_data.push(unique_values.get(d));
     });
     logEvent(unique_data.length + " unique events", "preprocessing");
 
