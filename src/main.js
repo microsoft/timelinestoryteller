@@ -1401,7 +1401,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {object} data The data to preprocess
    * @returns {void}
    */
-  function initTimelineData(data) {
+  function initTimelineData(data, unique_values, unique_data) {
+    var unique_values = d3.map([]);
+    var unique_data = [];
+
     globals.timeline_json_data = data;
 
     data.forEach(function (d) {
@@ -4498,19 +4501,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * Loads the data from the given story
    * @param {object} story The story to load data from
    * @param {number} min_story_height The minimum height to show the story
-   * @param {object[]} unique_data The unique data
-   * @param {object[]} unique_values The unique values
    * @returns {void}
    */
-  this._loadDataFromStory = function (story, min_story_height, unique_data, unique_values) {
+  this._loadDataFromStory = function(story, min_story_height) {
     var timelineData = globals.timeline_json_data;
 
     // The original format
     if (!story.version) {
       timelineData = story.timeline_json_data;
     }
-
-    globals.timeline_json_data = timelineData;
 
     if (story.color_palette !== undefined) {
       globals.color_palette = story.color_palette;
@@ -4568,17 +4567,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance._render_width = story.width;
     instance._render_height = story.height;
 
-    timelineData.forEach(function (d) {
-      unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-    });
-
-    unique_values.forEach(function (d) {
-      unique_data.push(unique_values.get(d));
-    });
-    logEvent(unique_data.length + " unique events", "preprocessing");
+    initTimelineData(timelineData);
 
     updateNavigationStepper();
-    processTimeline(unique_data);
   };
 }
 
