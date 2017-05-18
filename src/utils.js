@@ -85,7 +85,7 @@ var utils = {
           }
         }
       } else {
-        return function (t) {
+        return function () {
           return finalValue;
         };
       }
@@ -97,14 +97,15 @@ var utils = {
    * Creates a debounced function
    * @param {function} fn The function to debounce
    * @param {number} [delay=100] The debounce delay
+   * @returns {function} The debounced function
    */
   debounce: function (fn, delay) {
     var timeout;
-    return function (){
+    return function () {
       var args = Array.prototype.slice.call(arguments, 0);
       var that = this;
       clearTimeout(timeout);
-      timeout = setTimeout(function() {
+      timeout = setTimeout(function () {
         fn.apply(that, args);
       }, delay || 500);
     };
@@ -119,31 +120,33 @@ var utils = {
     var copy;
 
     // Handle the 3 simple types, and null or undefined
-    if (null == obj || "object" != typeof obj) return obj;
+    if (obj === null || typeof obj !== "object") return obj;
 
     // Handle Date
     if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-        return copy;
+      copy = new Date();
+      copy.setTime(obj.getTime());
+      return copy;
     }
 
     // Handle Array
     if (obj instanceof Array) {
-        copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = utils.clone(obj[i]);
-        }
-        return copy;
+      copy = [];
+      for (var i = 0, len = obj.length; i < len; i++) {
+        copy[i] = utils.clone(obj[i]);
+      }
+      return copy;
     }
 
     // Handle Object
     if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) copy[attr] = utils.clone(obj[attr]);
+      copy = {};
+      for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) {
+          copy[attr] = utils.clone(obj[attr]);
         }
-        return copy;
+      }
+      return copy;
     }
   },
 
@@ -152,6 +155,7 @@ var utils = {
    * @param {d3.Scale} scale The scale to change
    * @param {string} category The category to change
    * @param {object} value The value to set the category to
+   * @returns {void}
    */
   setScaleValue: function (scale, category, value) {
     var temp_palette = scale.range();
@@ -164,10 +168,13 @@ var utils = {
    * Adds a listener on a transition for when the transition is complete
    * @param {d3.Transition} transition The transition to listen for completion
    * @param {Function} callback The callback for when the transition is complete
+   * @returns {void}
    */
   onTransitionComplete: function (transition, callback) {
     if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
-    if (transition.size() === 0) { callback() }
+    if (transition.size() === 0) {
+      callback();
+    }
     var n = 0;
     transition
         .each(() => ++n)

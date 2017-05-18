@@ -1,18 +1,19 @@
 /**
  * Forms the url for the given image name
  * @param {string} name The name of the image to get the url for
+ * @returns {string} The final url for the given image
  */
 function formUrl(name) {
   if (name.indexOf("demo") >= 0) {
     return "img/" + name;
-  } else {
-    var raw = require("../assets/img/" + name);
-    var imageContents = toArrayBuffer(raw);
-    var blob = new Blob([imageContents], {
-      type: name.indexOf(".png") >= 0 ? "image/png" : "image/svg+xml"
-    });
-    return URL.createObjectURL(blob);
   }
+
+  var raw = require("../assets/img/" + name);
+  var imageContents = toArrayBuffer(raw);
+  var blob = new Blob([imageContents], {
+    type: name.indexOf(".png") >= 0 ? "image/png" : "image/svg+xml"
+  });
+  return URL.createObjectURL(blob);
 }
 
 function toArrayBuffer(str) {

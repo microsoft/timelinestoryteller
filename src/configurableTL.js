@@ -62,12 +62,12 @@ d3.configurableTL = function (unit_width) {
 
       // update timeline dimensions
       var g = d3.select(this),
-        old_timeline_scale, // old timeline scale
-        old_interim_duration_scale, // old bar chart scale
-        last_end_date = data.max_end_date.valueOf() + 1,
-        last_start_date = data.max_start_date.valueOf(),
-        timeline_span = last_end_date - data.min_start_date.valueOf(),
-        domain_bound = (last_end_date - last_start_date) / timeline_span,
+        // old_timeline_scale, // old timeline scale
+        // old_interim_duration_scale, // old bar chart scale
+        // last_end_date = data.max_end_date.valueOf() + 1,
+        // last_start_date = data.max_start_date.valueOf(),
+        // timeline_span = last_end_date - data.min_start_date.valueOf(),
+        // domain_bound = (last_end_date - last_start_date) / timeline_span,
         log_bounds = -1,
         curve_margin = 20;
 
@@ -603,6 +603,8 @@ d3.configurableTL = function (unit_width) {
 
             logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
+          default:
+            break;
           }
           break;
 
@@ -657,14 +659,14 @@ d3.configurableTL = function (unit_width) {
               }
               break;
             case "centuries":
-              var year_offset = 20;
+              year_offset = 20;
               if ((data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) >= 500) {
                 year_offset = 100;
               } else {
                 year_offset = 20;
               }
-              var start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
-              var end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
+              start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
+              end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
               if (start < 0 && end <= 0) {
                 timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), year_offset);
                 timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date((end + year_offset), 0, 1).setUTCFullYear(("0000" + end).slice(-4) * -1)]);
@@ -677,14 +679,14 @@ d3.configurableTL = function (unit_width) {
               }
               break;
             case "millenia":
-              var year_offset = 200;
+              year_offset = 200;
               if ((data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) >= 5000) {
                 year_offset = 1000;
               } else {
                 year_offset = 200;
               }
-              var start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
-              var end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
+              start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
+              end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
               if (start < 0 && end <= 0) {
                 timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), year_offset);
                 timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), new Date((end + year_offset), 0, 1).setUTCFullYear(("0000" + end).slice(-4))]);
@@ -699,6 +701,8 @@ d3.configurableTL = function (unit_width) {
             case "epochs":
               timeline_scale_segments = [data.min_start_date.valueOf(), data.min_start_date.valueOf() * 0.25, data.min_start_date.valueOf() * 0.5, data.min_start_date.valueOf() * 0.75];
               timeline_scale.domain([data.min_start_date, data.max_end_date]);
+              break;
+            default:
               break;
             }
             logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
@@ -724,11 +728,16 @@ d3.configurableTL = function (unit_width) {
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
             logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
+          default:
+            break;
           }
+          break;
+        default:
           break;
         }
         break;
-
+      default:
+        break;
       case "Faceted":
         switch (tl_representation) {
 
@@ -852,8 +861,7 @@ d3.configurableTL = function (unit_width) {
               break;
             }
             timeline_scale.domain([log_bounds, -1]);
-            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update"); break;
-
+            logEvent(tl_scale + " scale updated with " + globals.segment_granularity + " granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
             break;
 
           case "Sequential":
@@ -863,6 +871,8 @@ d3.configurableTL = function (unit_width) {
                     .domain([0, globals.max_seq_index * unit_width]);
             logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
 
+            break;
+          default:
             break;
           }
           break;
@@ -897,14 +907,14 @@ d3.configurableTL = function (unit_width) {
               timeline_scale.domain([time.year.floor(data.min_start_date), time.year.offset(data.max_end_date, 1)]);
               break;
             case "decades":
-              var year_offset = 5;
+              year_offset = 5;
               if ((data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) >= 50) {
                 year_offset = 10;
               } else {
                 year_offset = 5;
               }
-              var start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
-              var end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
+              start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
+              end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
               if (start < 0 && end <= 0) {
                 timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), year_offset);
                 timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), new Date((end + year_offset), 0, 1).setUTCFullYear(("0000" + end).slice(-4))]);
@@ -918,14 +928,14 @@ d3.configurableTL = function (unit_width) {
               break;
 
             case "centuries":
-              var year_offset = 20;
+              year_offset = 20;
               if ((data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) >= 500) {
                 year_offset = 100;
               } else {
                 year_offset = 20;
               }
-              var start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
-              var end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
+              start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
+              end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
               if (start < 0 && end <= 0) {
                 timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), year_offset);
                 timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date((end + year_offset), 0, 1).setUTCFullYear(("0000" + end).slice(-4) * -1)]);
@@ -938,14 +948,14 @@ d3.configurableTL = function (unit_width) {
               }
               break;
             case "millenia":
-              var year_offset = 200;
+              year_offset = 200;
               if ((data.max_end_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()) >= 5000) {
                 year_offset = 1000;
               } else {
                 year_offset = 200;
               }
-              var start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
-              var end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
+              start = Math.floor(data.min_start_date.getUTCFullYear() / year_offset) * year_offset;
+              end = (Math.ceil((data.max_end_date.getUTCFullYear() + 1) / year_offset) + 1) * year_offset;
 
               if (start < 0 && end <= 0) {
                 timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4)), year_offset);
@@ -963,6 +973,8 @@ d3.configurableTL = function (unit_width) {
               timeline_scale.domain([data.min_start_date, data.max_end_date]);
               logEvent(tl_scale + " scale updated with " + globals.date_granularity + " date granularity and range: " + data.min_start_date + " - " + data.max_end_date, "scale_update");
 
+              break;
+            default:
               break;
             }
             break;
@@ -984,7 +996,7 @@ d3.configurableTL = function (unit_width) {
 
           case "Sequential":
                   // valid scale
-            var index_offset = 5;
+            index_offset = 5;
             if (globals.max_seq_index > 500) {
               index_offset = 100;
             } else if (globals.max_seq_index > 100) {
@@ -1002,7 +1014,11 @@ d3.configurableTL = function (unit_width) {
             timeline_scale_segments = d3.range(0, (Math.ceil(globals.max_seq_index / index_offset) + 1) * index_offset, index_offset);
             logEvent(tl_scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
             break;
+          default:
+            break;
           }
+          break;
+        default:
           break;
         }
         break;
@@ -1027,8 +1043,8 @@ d3.configurableTL = function (unit_width) {
             timeline_scale.domain([1, 53]);
             break;
           case "decades":
-            var start = Math.floor(data.min_start_date.getUTCFullYear() / 10) * 10;
-            var end = Math.ceil(data.max_end_date.getUTCFullYear() / 10) * 10;
+            start = Math.floor(data.min_start_date.getUTCFullYear() / 10) * 10;
+            end = Math.ceil(data.max_end_date.getUTCFullYear() / 10) * 10;
             timeline_scale.domain([0, 120]);
             break;
           case "centuries":
@@ -1039,6 +1055,8 @@ d3.configurableTL = function (unit_width) {
             break;
           case "epochs":
             timeline_scale.domain([data.min_start_date.valueOf(), data.max_end_date.valueOf()]);
+            break;
+          default:
             break;
           }
           logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
@@ -1080,6 +1098,8 @@ d3.configurableTL = function (unit_width) {
             timeline_scale_segments = [data.min_start_date.valueOf()];
             timeline_scale.domain([data.min_start_date.valueOf(), data.max_end_date.valueOf()]);
             break;
+          default:
+            break;
           }
           logEvent(tl_scale + " scale updated with domain: " + timeline_scale.domain(), "scale_update");
         }
@@ -1087,9 +1107,9 @@ d3.configurableTL = function (unit_width) {
       }
 
       // retrieve the old scales, if this is an update
-      old_timeline_scale = this.__chart__ || d3.scale.linear()
-        .range([0, Infinity])
-        .domain(timeline_scale.range());
+      // old_timeline_scale = this.__chart__ || d3.scale.linear()
+      //   .range([0, Infinity])
+      //   .domain(timeline_scale.range());
 
       // stash the new scales
       this.__chart__ = timeline_scale;
@@ -1158,6 +1178,8 @@ d3.configurableTL = function (unit_width) {
             case "epochs":
               converted_tick = globals.formatAbbreviation(d) + " years";
               break;
+            default:
+              break;
             }
             return converted_tick;
           });
@@ -1190,6 +1212,8 @@ d3.configurableTL = function (unit_width) {
             case "epochs":
               converted_tick = globals.formatAbbreviation(d);
               break;
+            default:
+              break;
             }
             return converted_tick;
           });
@@ -1199,12 +1223,12 @@ d3.configurableTL = function (unit_width) {
         var timeline_axis_container = timeline_container.selectAll(".timeline_axis")
           .data([null]);
 
-        var timeline_axis_enter = timeline_axis_container.enter()
+        timeline_axis_container.enter()
           .append("g")
           .attr("class", "timeline_axis")
           .style("opacity", 0);
 
-        var bottom_timeline_axis_enter = timeline_axis_container.enter()
+        timeline_axis_container.enter()
           .append("g")
           .attr("class", "timeline_axis")
           .attr("id", "bottom_timeline_axis")
@@ -1223,7 +1247,7 @@ d3.configurableTL = function (unit_width) {
           .style("font-weight", "normal");
 
         timeline_axis_update.selectAll(".tick line")
-          .delay(function (d, i) {
+          .delay(function (d, i) { // eslint-disable-line no-shadow
             return i * duration / timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y1", -6)
@@ -1237,7 +1261,7 @@ d3.configurableTL = function (unit_width) {
           .call(timeline_axis);
 
         bottom_timeline_axis_update.selectAll("text")
-          .delay(function (d, i) {
+          .delay(function (d, i) { // eslint-disable-line no-shadow
             return i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y", height + 18);
@@ -1248,7 +1272,7 @@ d3.configurableTL = function (unit_width) {
           });
 
         bottom_timeline_axis_update.selectAll(".tick line")
-          .delay(function (d, i) {
+          .delay(function (d, i) { // eslint-disable-line no-shadow
             return i * duration / bottom_timeline_axis_update.selectAll(".tick line")[0].length;
           })
           .attr("y1", 0)
@@ -1316,13 +1340,13 @@ d3.configurableTL = function (unit_width) {
         var interim_duration_axis_container = timeline_container.selectAll(".interim_duration_axis")
           .data([null]);
 
-        var interim_duration_axis_enter = interim_duration_axis_container.enter()
+        interim_duration_axis_container.enter()
           .append("g")
           .attr("class", "interim_duration_axis")
           .attr("transform", "translate(" + globals.max_seq_index * 1.5 * unit_width + "," + (height - unit_width * 4) + ")")
           .style("opacity", 0);
 
-        var interim_duration_axis_update = timeline_container.selectAll(".interim_duration_axis")
+        timeline_container.selectAll(".interim_duration_axis")
           .transition()
           .delay(0)
           .duration(duration)
@@ -1372,7 +1396,7 @@ d3.configurableTL = function (unit_width) {
         var radial_axis_container = timeline_container.selectAll(".radial_axis_container")
           .data([radial_axis_quantiles]);
 
-        var radial_axis_enter = radial_axis_container.enter()
+        radial_axis_container.enter()
           .append("g")
           .attr("class", "radial_axis_container")
           .each(function () {
@@ -1383,7 +1407,7 @@ d3.configurableTL = function (unit_width) {
           })
           .style("opacity", 0);
 
-        var radial_axis_update = timeline_container.selectAll(".radial_axis_container")
+        timeline_container.selectAll(".radial_axis_container")
           .transition()
           .duration(duration)
           .style("opacity", 1)
@@ -1457,14 +1481,14 @@ d3.configurableTL = function (unit_width) {
         var faceted_radial_axis = timeline_facet.selectAll(".faceted_radial_axis")
           .data([radial_axis_quantiles]);
 
-        var faceted_radial_axis_enter = faceted_radial_axis.enter()
+        faceted_radial_axis.enter()
           .append("g")
           .attr("class", "faceted_radial_axis")
           .style("opacity", 0);
 
         facet_number = 0;
 
-        var faceted_radial_axis_update = timeline_facet.selectAll(".faceted_radial_axis")
+        timeline_facet.selectAll(".faceted_radial_axis")
           .transition()
           .duration(duration)
           .style("opacity", 1)
@@ -1536,12 +1560,12 @@ d3.configurableTL = function (unit_width) {
 
         segment_number = 0;
 
-        var segmented_radial_axis_enter = segmented_radial_axis.enter()
+        segmented_radial_axis.enter()
           .append("g")
           .attr("class", "segmented_radial_axis")
           .style("opacity", 0);
 
-        var segmented_radial_axis_update = timeline_segment.selectAll(".segmented_radial_axis")
+        timeline_segment.selectAll(".segmented_radial_axis")
           .transition()
           .duration(0)
           .style("opacity", 1)
@@ -1600,12 +1624,12 @@ d3.configurableTL = function (unit_width) {
         var calendar_axis_container = timeline_container.selectAll(".calendar_axis")
           .data([d3.range(range_floor, range_ceil + 1)]);
 
-        var calendar_axis_enter = calendar_axis_container.enter()
+        calendar_axis_container.enter()
           .append("g")
           .attr("class", "calendar_axis")
           .style("opacity", 0);
 
-        var calendar_axis_update = timeline_container.selectAll(".calendar_axis")
+        timeline_container.selectAll(".calendar_axis")
           .transition()
           .delay(0)
           .duration(duration)
@@ -1644,12 +1668,12 @@ d3.configurableTL = function (unit_width) {
 
         logEvent("Grid axis domain: " + grid_min + " - " + grid_max, "axis_update");
 
-        var grid_axis_enter = grid_axis_container.enter()
+        grid_axis_container.enter()
           .append("g")
           .attr("class", "grid_axis")
           .style("opacity", 0);
 
-        var grid_axis_update = timeline_container.selectAll(".grid_axis")
+        timeline_container.selectAll(".grid_axis")
           .transition()
           .delay(0)
           .duration(duration)
@@ -1679,7 +1703,7 @@ d3.configurableTL = function (unit_width) {
       var timeline_event_g = timeline_container.selectAll(".timeline_event_g")
         .data(data);
 
-      var timeline_event_g_exit = timeline_event_g.exit().transition()
+      timeline_event_g.exit().transition()
         .duration(duration)
         .remove();
 
@@ -1698,7 +1722,7 @@ d3.configurableTL = function (unit_width) {
         });
 
       // define event behaviour
-      timeline_event_g_enter.on("click", function (d, i) {
+      timeline_event_g_enter.on("click", function (d, i) { // eslint-disable-line no-shadow
         logEvent("event " + d.event_id + " clicked", "event_click");
 
         if (!d.selected || d.selected === undefined) {
@@ -1718,8 +1742,8 @@ d3.configurableTL = function (unit_width) {
 
           // annotate the event with its label if shift is not clicked
           if (!d3.event.shiftKey) {
-            var x_pos = d3.event.x,
-              y_pos = d3.event.y;
+            x_pos = d3.event.x;
+            y_pos = d3.event.y;
 
             var item_x_pos = 0;
             var item_y_pos = 0;
@@ -1776,7 +1800,7 @@ d3.configurableTL = function (unit_width) {
           logEvent("event " + d.event_id + " annotation removed");
 
           // remove annotations for the event
-          for (var i = 0; i <= d.annotation_count; i++) {
+          for (i = 0; i <= d.annotation_count; i++) {
             selectWithParent("#event" + d.event_id + "_" + i).remove();
           }
         }
@@ -1896,21 +1920,21 @@ d3.configurableTL = function (unit_width) {
         .call(transitionLog);
 
       timeline_event_g_update = timeline_event_g.transition()
-        .delay(function (d, i) {
+        .delay(function (d, i) {  // eslint-disable-line no-shadow
           return duration + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
       timeline_event_g_delayed_update = timeline_event_g.transition()
-        .delay(function (d, i) {
+        .delay(function (d, i) { // eslint-disable-line no-shadow
           return duration * 2 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
       timeline_event_g_final_update = timeline_event_g.transition()
-        .delay(function (d, i) {
+        .delay(function (d, i) { // eslint-disable-line no-shadow
           return duration * 3 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
@@ -1958,7 +1982,7 @@ d3.configurableTL = function (unit_width) {
             return 0.1;
           }
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           return "none";
         })
         .style("fill", function (d) {
@@ -2011,6 +2035,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 span_segment = 0;
                 break;
+              default:
+                break;
               }
               offset_y = (height / globals.num_segments) * span_segment;
               break;
@@ -2043,7 +2069,7 @@ d3.configurableTL = function (unit_width) {
 
       // update rects for linear timelines
       timeline_event_g_update.select("rect.event_span")
-        .attr("height", function (d) {
+        .attr("height", function () {
           var rect_height = unit_width;
           if (tl_layout === "Segmented") {
             rect_height = unit_width;
@@ -2130,6 +2156,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 rect_x = timeline_scale(d.start_date);
                 break;
+              default:
+                break;
               }
             } else {
               switch (tl_scale) {
@@ -2177,6 +2205,8 @@ d3.configurableTL = function (unit_width) {
 
               case "Sequential":
                 rect_x = timeline_scale(d.seq_index) * unit_width + 0.5 * unit_width;
+                break;
+              default:
                 break;
               }
             }
@@ -2265,7 +2295,8 @@ d3.configurableTL = function (unit_width) {
             case "Segmented":
               rect_y = (height / globals.num_segments) - (globals.track_height * d.track + globals.track_height);
               break;
-
+            default:
+              break;
             }
           } else if (tl_representation === "Radial") {
             switch (tl_scale) {
@@ -2409,7 +2440,7 @@ d3.configurableTL = function (unit_width) {
             return 0.1;
           }
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           return "none";
         })
         .style("fill", function (d) {
@@ -2465,11 +2496,15 @@ d3.configurableTL = function (unit_width) {
             case "epochs":
               span_segment = 0;
               break;
+            default:
+              break;
             }
             var segment_dim_x = width / globals.num_segment_cols;
             var segment_dim_y = height / globals.num_segment_rows;
             offset_x = span_segment % globals.num_segment_cols * segment_dim_x + segment_dim_x / 2;
             offset_y = Math.floor(span_segment / globals.num_segment_cols) * segment_dim_y + segment_dim_y / 2 + globals.buffer;
+            break;
+          default:
             break;
           }
           d.path_offset_x = offset_x;
@@ -2491,6 +2526,8 @@ d3.configurableTL = function (unit_width) {
             case "Sequential":
               d.path_x_pos = (globals.centre_radius + d.seq_track * globals.track_height + 0.25 * globals.track_height) * Math.sin(timeline_scale(d.seq_index));
               d.path_y_pos = -1 * (globals.centre_radius + d.seq_track * globals.track_height + 0.25 * globals.track_height) * Math.cos(timeline_scale(d.seq_index));
+              break;
+            default:
               break;
             }
           }
@@ -2516,6 +2553,8 @@ d3.configurableTL = function (unit_width) {
               case "Sequential":
                 inner_radius = d3.max([globals.centre_radius, globals.centre_radius + d.seq_track * globals.track_height]);
                 break;
+              default:
+                break;
               }
               return inner_radius;
             })
@@ -2534,7 +2573,8 @@ d3.configurableTL = function (unit_width) {
               case "Sequential":
                 outer_radius = d3.max([globals.centre_radius + unit_width, globals.centre_radius + d.seq_track * globals.track_height + unit_width]);
                 break;
-
+              default:
+                break;
               }
               return outer_radius;
             })
@@ -2555,6 +2595,8 @@ d3.configurableTL = function (unit_width) {
 
                 case "Sequential":
                   start_angle = timeline_scale(d.seq_index);
+                  break;
+                default:
                   break;
                 }
               } else if (tl_layout === "Segmented") {
@@ -2595,6 +2637,8 @@ d3.configurableTL = function (unit_width) {
                 case "epochs":
                   start_angle = timeline_scale(d.start_date);
                   break;
+                default:
+                  break;
                 }
               }
               return start_angle;
@@ -2617,6 +2661,8 @@ d3.configurableTL = function (unit_width) {
 
                 case "Sequential":
                   end_angle = timeline_scale(d.seq_index + 1);
+                  break;
+                default:
                   break;
                 }
               } else if (tl_layout === "Segmented") {
@@ -2656,6 +2702,8 @@ d3.configurableTL = function (unit_width) {
                   break;
                 case "epochs":
                   end_angle = timeline_scale(d.start_date) + unit_arc;
+                  break;
+                default:
                   break;
                 }
               }
@@ -2730,6 +2778,8 @@ d3.configurableTL = function (unit_width) {
           case "epochs":
             event_span_component = [d.start_date];
             break;
+          default:
+            break;
           }
           return event_span_component;
         })
@@ -2738,7 +2788,7 @@ d3.configurableTL = function (unit_width) {
       event_span.append("rect")
         .attr("class", "event_span_component")
         .style("opacity", 0)
-        .style("fill", function (d) {
+        .style("fill", function () {
           if (globals.categories.domain()[0] === undefined) {
             return "#E45641";
           }
@@ -2753,7 +2803,7 @@ d3.configurableTL = function (unit_width) {
       event_span.append("path")
         .attr("class", "event_span_component")
         .style("opacity", 0)
-        .style("fill", function (d) {
+        .style("fill", function () {
           if (globals.categories.domain()[0] === undefined) {
             return "#E45641";
           }
@@ -2768,7 +2818,7 @@ d3.configurableTL = function (unit_width) {
       **/
 
       timeline_event_g_early_update.selectAll("rect.event_span_component")
-        .style("opacity", function (d) {
+        .style("opacity", function () {
           if (tl_layout !== "Segmented" || prev_tl_layout !== "Segmented" || (tl_representation === "Radial" && prev_tl_representation === "Radial")) {
             return 0;
           } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
@@ -2793,10 +2843,10 @@ d3.configurableTL = function (unit_width) {
             return 0.1;
           }
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           return "none";
         })
-        .style("fill", function (d) {
+        .style("fill", function () {
           if (globals.categories.domain()[0] === undefined) {
             return "#E45641";
           }
@@ -2838,6 +2888,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 offset_y = 0;
                 break;
+              default:
+                break;
               }
             } else if (tl_representation === "Radial" && tl_scale === "Chronological") {
               var span_segment = 0;
@@ -2866,6 +2918,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 span_segment = 0;
                 break;
+              default:
+                break;
               }
               var segment_dim_x = width / globals.num_segment_cols;
               var segment_dim_y = height / globals.num_segment_rows;
@@ -2877,7 +2931,7 @@ d3.configurableTL = function (unit_width) {
         });
 
       timeline_event_g_update.selectAll("rect.event_span_component")
-        .attr("height", function (d) {
+        .attr("height", function () {
           var span_height = unit_width;
           if (tl_layout === "Segmented" && tl_representation === "Calendar" && tl_scale === "Chronological") {
             span_height = 20;
@@ -2886,7 +2940,7 @@ d3.configurableTL = function (unit_width) {
           }
           return span_height;
         })
-        .attr("width", function (d) {
+        .attr("width", function () {
           var span_width = unit_width;
           if (tl_layout === "Segmented" && tl_representation === "Linear" && tl_scale === "Chronological") {
             switch (globals.segment_granularity) {
@@ -2913,6 +2967,8 @@ d3.configurableTL = function (unit_width) {
               break;
             case "epochs":
               span_width = d3.max([0, unit_width]);
+              break;
+            default:
               break;
             }
           } else if (tl_layout === "Segmented" && tl_representation === "Radial" && tl_scale === "Chronological" && prev_tl_representation !== "Radial") {
@@ -2968,6 +3024,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 y_cos = d3.max([0, timeline_scale(d)]);
                 break;
+              default:
+                break;
               }
               y_pos = -1 * (globals.centre_radius + d3.select(this.parentNode).datum().track * globals.track_height + globals.track_height) * Math.cos(y_cos);
             } else if (tl_layout === "Segmented" && tl_representation === "Grid" && tl_scale === "Chronological") {
@@ -2988,8 +3046,8 @@ d3.configurableTL = function (unit_width) {
               }
             } else if (tl_layout === "Segmented" && tl_representation === "Calendar" && tl_scale === "Chronological") {
               var cell_size = 20,
-                year_height = cell_size * 8,
-                range_floor = data.min_start_date.getUTCFullYear();
+                year_height = cell_size * 8;
+              range_floor = data.min_start_date.getUTCFullYear();
               year_offset = 0;
               if (globals.segment_granularity === "centuries" || globals.segment_granularity === "millenia" || globals.segment_granularity === "epochs") {
                 y_pos = 0;
@@ -3046,6 +3104,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 x_pos = d3.max([0, timeline_scale(d)]);
                 break;
+              default:
+                break;
               }
             } else if (tl_representation === "Radial" && tl_scale === "Chronological") {
               var x_sin = 0;
@@ -3078,6 +3138,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 x_sin = d3.max([0, timeline_scale(d)]);
                 break;
+              default:
+                break;
               }
               x_pos = (globals.centre_radius + d3.select(this.parentNode).datum().track * globals.track_height + globals.track_height) * Math.sin(x_sin);
             } else if (tl_layout === "Segmented" && tl_representation === "Grid" && tl_scale === "Chronological") {
@@ -3108,7 +3170,7 @@ d3.configurableTL = function (unit_width) {
         });
 
       timeline_event_g_delayed_update.selectAll("rect.event_span_component")
-        .style("opacity", function (d) {
+        .style("opacity", function () {
           if (tl_layout === "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
             return 1;
           }
@@ -3119,7 +3181,7 @@ d3.configurableTL = function (unit_width) {
 
           return 0.1;
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           if (tl_layout === "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
             return "inherit";
           }
@@ -3134,7 +3196,7 @@ d3.configurableTL = function (unit_width) {
       **/
 
       timeline_event_g_early_update.selectAll("path.event_span_component")
-        .style("opacity", function (d) {
+        .style("opacity", function () {
           if ((tl_layout !== "Segmented" || prev_tl_layout !== "Segmented") || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
             return 0;
           } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
@@ -3159,7 +3221,7 @@ d3.configurableTL = function (unit_width) {
             return 0.1;
           }
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           if (prev_tl_layout !== "Segmented" || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
             return "none";
           } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
@@ -3168,7 +3230,7 @@ d3.configurableTL = function (unit_width) {
 
           return "none";
         })
-        .style("fill", function (d) {
+        .style("fill", function () {
           if (globals.categories.domain()[0] === undefined) {
             return "#E45641";
           }
@@ -3207,6 +3269,8 @@ d3.configurableTL = function (unit_width) {
             case "epochs":
               span_segment = 0;
               break;
+            default:
+              break;
             }
             var segment_dim_x = width / globals.num_segment_cols;
             var segment_dim_y = height / globals.num_segment_rows;
@@ -3227,14 +3291,14 @@ d3.configurableTL = function (unit_width) {
       if (tl_representation === "Radial") {
         timeline_event_g_delayed_update.selectAll("path.event_span_component")
           .attrTween("d", arcTween(d3.svg.arc()
-            .innerRadius(function (d) {
+            .innerRadius(function () {
               var inner_radius = globals.centre_radius;
               if (tl_scale === "Relative" || tl_scale === "Chronological") {
                 inner_radius = d3.max([globals.centre_radius, globals.centre_radius + d3.select(this.parentNode).datum().track * globals.track_height]);
               }
               return inner_radius;
             })
-            .outerRadius(function (d) {
+            .outerRadius(function () {
               var outer_radius = globals.centre_radius + unit_width;
               if (tl_scale === "Relative" || tl_scale === "Chronological") {
                 outer_radius = d3.max([globals.centre_radius + unit_width, globals.centre_radius + d3.select(this.parentNode).datum().track * globals.track_height + unit_width]);
@@ -3281,6 +3345,8 @@ d3.configurableTL = function (unit_width) {
                 case "epochs":
                   start_angle = d3.max([0, timeline_scale(d.valueOf())]);
                   break;
+                default:
+                  break;
                 }
               } else if (tl_layout === "Unified" || tl_layout === "Faceted") {
                 switch (tl_scale) {
@@ -3297,6 +3363,8 @@ d3.configurableTL = function (unit_width) {
 
                 case "Sequential":
                   start_angle = timeline_scale(d3.select(this.parentNode).datum().seq_index);
+                  break;
+                default:
                   break;
                 }
               }
@@ -3351,6 +3419,8 @@ d3.configurableTL = function (unit_width) {
                   unit_arc = Math.PI * 2 / 100;
                   end_angle = d3.max([0, timeline_scale(d.valueOf()) + unit_arc]);
                   break;
+                default:
+                  break;
                 }
               } else if (tl_layout === "Unified" || tl_layout === "Faceted") {
                 unit_arc = Math.PI * 2 / 100;
@@ -3369,12 +3439,14 @@ d3.configurableTL = function (unit_width) {
                 case "Sequential":
                   end_angle = timeline_scale(d3.select(this.parentNode).datum().seq_index + 1);
                   break;
+                default:
+                  break;
                 }
               }
               return end_angle;
             }))
           )
-          .style("opacity", function (d) {
+          .style("opacity", function () {
             if (tl_layout === "Segmented" && tl_scale === "Chronological") {
               if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
                 return 1;
@@ -3389,7 +3461,7 @@ d3.configurableTL = function (unit_width) {
 
             return 0;
           })
-          .style("pointer-events", function (d) {
+          .style("pointer-events", function () {
             if (tl_layout === "Segmented" && tl_scale === "Chronological") {
               if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
                 return "inherit";
@@ -3433,7 +3505,7 @@ d3.configurableTL = function (unit_width) {
             y_pos = 0,
             span_segment = 0,
             rotation = 0,
-            rect_x = 0;
+            rect_x = 0; // eslint-disable-line no-unused-vars
 
           if (tl_layout === "Segmented") {
             if (tl_representation === "Linear") {
@@ -3486,6 +3558,8 @@ d3.configurableTL = function (unit_width) {
               case "epochs":
                 x_pos = d3.max([0, timeline_scale(d.start_date)]);
                 y_pos = 0;
+                break;
+              default:
                 break;
               }
               x_pos = x_pos + unit_width * 0.33;
@@ -3541,6 +3615,8 @@ d3.configurableTL = function (unit_width) {
                 span_segment = 0;
                 pos = timeline_scale(d.start_date.valueOf() + 0.5);
                 break;
+              default:
+                break;
               }
               var segment_dim_x = width / globals.num_segment_cols;
               var segment_dim_y = height / globals.num_segment_rows;
@@ -3557,8 +3633,8 @@ d3.configurableTL = function (unit_width) {
               y_pos = getYGridPosition(d.start_date.getUTCFullYear(), data.min_start_date.getUTCFullYear()) + unit_width * 0.5;
             } else if (tl_representation === "Calendar" && tl_scale === "Chronological") {
               var cell_size = 20,
-                year_height = cell_size * 8,
-                range_floor = data.min_start_date.getUTCFullYear();
+                year_height = cell_size * 8;
+              range_floor = data.min_start_date.getUTCFullYear();
               year_offset = year_height * (d.start_date.getUTCFullYear() - range_floor);
               rotation = 180;
               x_pos = d3.max([0, d3.time.weekOfYear(d.start_date) * 20 + 0.33 * unit_width]);
@@ -3594,21 +3670,21 @@ d3.configurableTL = function (unit_width) {
         });
 
       timeline_event_g_final_update.select(".path_end_indicator")
-        .style("opacity", function (d) {
+        .style("opacity", function () {
           if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
             return 1;
           }
 
           return 0;
         })
-        .style("pointer-events", function (d) {
+        .style("pointer-events", function () {
           if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
             return "inherit";
           }
 
           return "none";
         })
-        .style("display", function (d) {
+        .style("display", function () {
           if (tl_layout === "Segmented") {
             return "inline";
           }
@@ -3735,42 +3811,6 @@ d3.configurableTL = function (unit_width) {
 
   function transitionLog(transition) {
     log(transition.delay() + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
-  }
-
-  function eventLabel(item) {
-    var label = "";
-
-    if (globals.date_granularity === "epochs") {
-      var format = function (d) {
-        return globals.formatAbbreviation(d);
-      };
-      var today = new Date().getUTCFullYear();
-      label += format(today - item.start_date.valueOf()) + " years ago";
-    } else if (globals.date_granularity === "years") {
-      if (moment(item.start_date).format("YYYY") === moment(item.end_date).format("YYYY")) {
-        label += item.start_date.getUTCFullYear();
-      } else {
-        label += item.start_date.getUTCFullYear() + " - " + item.end_date.getUTCFullYear();
-      }
-    } else if (moment(item.start_date).format("MMM D") === moment(item.end_date).format("MMM D")) {
-      label += moment(item.start_date).format("MMMM Do, YYYY");
-    } else if (moment(item.start_date).dayOfYear() <= 2 && moment(item.end_date).dayOfYear() >= 365) {
-      if (item.start_date.getUTCFullYear() !== item.end_date.getUTCFullYear()) {
-        label += item.start_date.getUTCFullYear() + " - " + item.end_date.getUTCFullYear();
-      } else {
-        label += item.start_date.getUTCFullYear();
-      }
-    } else {
-      label += moment(item.start_date).format("MMMM Do, YYYY") + " - " + moment(item.end_date).format("MMMM Do, YYYY");
-    }
-
-    if (globals.segment_granularity === "days") {
-      label += " " + moment(item.start_date).format("HH:mm") + " - " + moment(item.end_date).format("HH:mm");
-    }
-
-    label += ": " + item.content_text;
-
-    return label;
   }
 
   configurableTL.reproduceCurve = function () {
@@ -3986,7 +4026,7 @@ d3.configurableTL = function (unit_width) {
 /**
  * Returns a number if not-nan, 0 otherwise
  * @param {number} num The number to unnan
- * @returns The number or 0 if the number is NaN
+ * @returns {number} The number or 0 if the number is NaN
  */
 function unNaN(num) {
   return (isNaN(num) ? 0 : num) || 0;
