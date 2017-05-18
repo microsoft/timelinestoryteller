@@ -530,21 +530,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         logEvent("exporting story as .cdc", "export");
 
-        globals.timeline_story = {
-          "timeline_json_data": globals.timeline_json_data,
-          "name": "timeline_story.cdc",
-          "scenes": globals.scenes,
-          "width": instance._component_width,
-          "height": instance._component_height,
-          "color_palette": globals.categories.range(),
-          "usage_log": globals.usage_log,
-          "caption_list": globals.caption_list,
-          "annotation_list": globals.annotation_list,
-          "image_list": globals.image_list,
-          "author": globals.email_address,
-          "tz_offset": new Date().getTimezoneOffset(),
-          "timestamp": new Date().valueOf()
-        };
+        globals.timeline_story = instance.saveStoryJSON();
 
         var story_json = JSON.stringify(globals.timeline_story);
         var blob = new Blob([story_json], { type: "application/json" });
@@ -4901,7 +4887,19 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
       .attr("class", "menu_label")
       .text(section.label);
 
-    (section.items || []).forEach(function (item) {
+    // support both arrays and object based items definitions.
+    var sectionItems = {};
+    if (section.items) {
+      if (section.items.forEach) {
+        section.items.forEach((item, itemIdx) => {
+          sectionItems["item" + itemIdx] = item;
+        });
+      } else {
+        sectionItems = section.items;
+      }
+    }
+    Object.keys(sectionItems).forEach(function (itemKey) {
+      var item = sectionItems[itemKey];
       var itemEle =
         that._control_panel.append("input")
           .attr({
@@ -5230,6 +5228,29 @@ TimelineStoryteller.prototype.load = function (data) {
  */
 TimelineStoryteller.prototype.loadStory = function (story, delay) {
   return this._loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+};
+
+/**
+ * Saves the current state as a story
+ * @returns {object} The story in JSON format
+ */
+TimelineStoryteller.prototype.saveStoryJSON = function () {
+  return {
+    "version": 2,
+    "timeline_json_data": globals.timeline_json_data,
+    "name": "timeline_story.cdc",
+    "scenes": globals.scenes,
+    "width": this._component_width,
+    "height": this._component_height,
+    "color_palette": globals.categories.range(),
+    "usage_log": globals.usage_log,
+    "caption_list": globals.caption_list,
+    "annotation_list": globals.annotation_list,
+    "image_list": globals.image_list,
+    "author": globals.email_address,
+    "tz_offset": new Date().getTimezoneOffset(),
+    "timestamp": new Date().valueOf()
+  };
 };
 
 /**
