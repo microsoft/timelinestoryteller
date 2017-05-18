@@ -4726,7 +4726,9 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
     storyMenu: {
       items: {
         demo: {
-          demo: true,
+          visible: function (instance) {
+            return instance._showDemoStory();
+          },
           text: "Load Demo Story",
           image: imageUrls("demo_story.png"),
           click: function (instance) {
@@ -4759,7 +4761,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
               .attr({
                 type: "file",
                 id: "story_uploader",
-                style: "display:none;",
+                style: "opacity:0;width:100%;height:100%;cursor:pointer;cursor:pointer",
                 accept: ".cdc"
               })
               .on("change", function () {
@@ -4771,15 +4773,51 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                   inst.loadStory(contents);
                 };
               });
-          },
-          click: function (inst, element) {
-            element.select("#story_uploader").node().click();
           }
         }
       }
     },
     dataMenu: {
       items: {
+        demo: {
+          visible: function (instance) {
+            return instance._showDemoData();
+          },
+          name: "Load Demo Data",
+          image: imageUrls("demo.png"),
+          init: function (that, element) {
+            var demoData = window.timeline_story_demo_data;
+            var demoOptions = Object.keys(demoData).map(path => {
+              return {
+                path,
+                tl_name: demoData[path].name
+              };
+            });
+            element.append("select")
+              .attr("id", "demo_dataset_picker")
+              .attr("title", "Load demo dataset")
+              .attr("style", "top:0;left:0")
+              .on("change", function () {
+                var source = d3.select(this).property("value");
+                if (source !== "") {
+                  globals.source = demoData[source].data;
+                  globals.source_format = "json_parsed";
+                  setTimeout(() => {
+                    logEvent("loading " + source + " (demo_story)", "load");
+                    that._loadTimeline();
+                  }, 500);
+                } else {
+                  globals.source = source;
+                }
+              })
+              .selectAll("option")
+              .data([{ "path": "", "tl_name": "" }].concat(demoOptions)) // Blank + demo options
+              .enter()
+              .append("option")
+              .attr("value", function (d) { return d.path; })
+              .text(function (d) { return d.tl_name; });
+          }
+        },
         json: {
           name: "Load from JSON",
           image: imageUrls("json.png"),
@@ -4816,7 +4854,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
               .attr({
                 type: "file",
                 id: "csv_uploader",
-                style: "display:none;",
+                style: "opacity:0;width:100%;height:100%;cursor:pointer",
                 accept: ".csv"
               })
               .on("change", function () {
@@ -4829,13 +4867,10 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                   globals.source_format = "csv";
                   setTimeout(() => {
                     logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-                    that._loadTimeline();
+                    inst._loadTimeline();
                   }, 500);
                 };
               });
-          },
-          click: (inst, element) => {
-            element.select("#csv_uploader").node().click();
           }
         },
         gdocs: {
@@ -4983,59 +5018,6 @@ TimelineStoryteller.prototype._initializeImportDataSection = function () {
       .attr("class", "ui_label")
       .text("Load timeline data");
 
-    if (this._showDemoData()) {
-      var demoData = window.timeline_story_demo_data;
-      var demoOptions = Object.keys(demoData).map(path => {
-        return {
-          path,
-          tl_name: demoData[path].name
-        };
-      });
-      var demo_dataset_picker_label = dataset_picker.append("label")
-        .attr("class", "import_label demo_dataset_label");
-
-      var that = this;
-      demo_dataset_picker_label.append("select")
-        .attr("id", "demo_dataset_picker")
-        .attr("title", "Load demo dataset")
-        .on("change", function () {
-          var source = d3.select(this).property("value");
-          if (source !== "") {
-            globals.source = demoData[source].data;
-            globals.source_format = "json_parsed";
-            setTimeout(() => {
-              logEvent("loading " + source + " (demo_story)", "load");
-
-              that._loadTimeline();
-            }, 500);
-          } else {
-            globals.source = source;
-          }
-        })
-        .selectAll("option")
-        .data([{ "path": "", "tl_name": "" }].concat(demoOptions)) // Blank + demo options
-        .enter()
-        .append("option")
-        .attr("value", function (d) { return d.path; })
-        .text(function (d) { return d.tl_name; });
-
-      demo_dataset_picker_label.append("img")
-        .style("border", "0px solid transparent")
-        .style("margin", "0px")
-        .attr({
-          name: "Load Demo Data",
-          id: "demo_dataset_picker_label",
-          height: 40,
-          width: 40,
-          title: "Load Demo Data",
-          src: imageUrls("demo.png")
-        })
-        .on("click", function () {
-          var event = document.createEvent("MouseEvents");
-          event.initMouseEvent("mousedown", true, true, window);
-        });
-    }
-
     var importOptions = this.options.import || {};
     var importDataMenu = (importOptions.dataMenu || {}).items || {};
     var importDataItems = Object.keys(importDataMenu);
@@ -5086,10 +5068,13 @@ TimelineStoryteller.prototype._initializeImportStorySection = function () {
  * @return {d3.Selection} The d3 button
  */
 TimelineStoryteller.prototype._createImportPanelButton = function (button) {
-  if (!button.demo || this._showDemoStory()) {
+  if ((typeof button.visible === "function" && button.visible(this)) ||
+       button.visible === undefined ||
+      (typeof button.visible === "boolean" && button.visible)) {
     var sizeCss = "height:" + (button.height || 40) + "px;width:" + (button.width || 40) + "px";
     var item = d3.select(document.createElement("div"))
-      .attr("style", "margin-top:20px;margin-bottom:10px;margin-right:6px;position:relative;" + sizeCss);
+      .attr("class", "import-button")
+      .attr("style",  sizeCss);
     item
       .append("img")
       .attr({
@@ -5097,14 +5082,14 @@ TimelineStoryteller.prototype._createImportPanelButton = function (button) {
         class: "img_btn_enabled " + (button.class || ""),
         title: button.text,
         src: button.image,
-        style: "width:100%;height:100%"
-      })
-      .on("click", () => {
-        if (button.click) {
-          button.click(this, element);
-        }
+        style: "width:100%;height:100%;position:absolute;left:0;top:0"
       });
-    var element = item.append("div");
+    item.on("click", () => {
+      if (button.click) {
+        button.click(this, element);
+      }
+    });
+    var element = item.append("div").attr("class", "import-button-container");
     if (button.init) {
       button.init(this, element);
     }
