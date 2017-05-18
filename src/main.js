@@ -1662,7 +1662,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   instance._loadTimeline = loadTimeline;
 
-  // Preprocess data after loading
+  /**
+   * Preprocess data after loading
+   * @param {object} data The data to preprocess
+   * @returns {void}
+   */
   function initTimelineData(data) {
     globals.timeline_json_data = data;
 
