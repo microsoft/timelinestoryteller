@@ -1,4 +1,4 @@
-/**
+    /**
  * Styles
  */
 require("../assets/css/style.css");
@@ -1616,76 +1616,20 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         if (globals.source_format === "demo_json") {
           var data = window.timeline_story_demo_data[globals.source];
-
-          globals.timeline_json_data = data;
-
-          data.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(data);
         } else if (globals.source_format === "json") {
           var data = d3.json(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-            });
-
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            logEvent(unique_data.length + " unique events", "preprocessing");
-
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "json_parsed") {
-          globals.timeline_json_data = globals.source;
-
-          globals.source.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(global.source);
         } else if (globals.source_format === "csv") {
           var data = d3.csv(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-            });
-
-            // find unique elements
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            log(unique_data.length + " unique events");
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "gdoc") {
           var data = globals.timeline_json_data;
-
-          data.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          // find unique elements
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(data);
         } else if (isStory(globals.source_format)) {
           globals.playback_mode = true;
 
@@ -1717,6 +1661,22 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   instance._loadTimeline = loadTimeline;
+
+  // Preprocess data after loading
+  function initTimelineData(data) {
+    globals.timeline_json_data = data;
+
+    data.forEach(function (d) {
+        unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
+    });
+    // find unique values
+    unique_values.forEach(function (d) {
+        unique_data.push(unique_values.get(d));
+    });
+    logEvent(unique_data.length + " unique events", "preprocessing");
+
+    processTimeline(unique_data);
+  }
 
   function processTimeline(data) {
     // check for earliest and latest numerical dates before parsing
