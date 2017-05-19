@@ -4980,7 +4980,7 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, {
     backgroundColor: "white",
-    encoderType: "image/gif",
+    encoderType: "image/jpeg",
     scale: 300 / Math.max(this._render_width, this._render_height)
   });
 
