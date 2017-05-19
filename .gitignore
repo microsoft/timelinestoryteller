@@ -6,3 +6,4 @@ dist
 # This is necessary for deployment right now
 #public/app/js/timelinestoryteller.js
 /lib
+.vs/slnx.sqlite
