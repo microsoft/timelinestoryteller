@@ -65,10 +65,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .append("div")
       .attr("class", "timeline_storyteller-container");
 
-  instance._component_width = parentElement.clientWidth;
-  instance._component_height = parentElement.clientHeight;
-  instance._render_width = instance._component_width;
-  instance._render_height = instance._component_height;
+  this._component_width = parentElement.clientWidth;
+  this._component_height = parentElement.clientHeight;
+  this._render_width = this._component_width;
+  this._render_height = this._component_height;
 
   this.options = clone(TimelineStoryteller.DEFAULT_OPTIONS);
 
@@ -253,7 +253,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (d3.event.keyCode === 82 && d3.event.altKey) {
       // recover legend
       if (!globals.playback_mode) {
-        recordScene();
+        instance._recordScene();
       }
     } else if (globals.playback_mode && d3.event.keyCode === 39) {
       goNextScene();
@@ -1214,7 +1214,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           })
           .on("click", function () {
             if (!globals.playback_mode) {
-              recordScene();
+              instance._recordScene();
             }
           });
 
@@ -2030,94 +2030,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  function recordScene() {
-    selectAllWithParent("foreignObject").remove();
-
-    selectWithParent("#stepper_svg_placeholder").remove();
-
-    globals.record_width = globals.width;
-    globals.record_height = globals.height;
-
-    logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
-
-    var scene_captions = [];
-    var scene_images = [];
-    var scene_annotations = [];
-    var scene_selections = [];
-
-    main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
-      var scene_caption = {
-        caption_id: caption.id
-      };
-      scene_captions.push(scene_caption);
-    });
-
-    main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
-      var scene_image = {
-        image_id: image.id
-      };
-      scene_images.push(scene_image);
-    });
-
-    main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
-      var scene_annotation = {
-        annotation_id: annotation.id
-      };
-      scene_annotations.push(scene_annotation);
-    });
-
-    main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
-      if (event.__data__.selected === true) {
-        scene_selections.push(event.__data__.event_id);
-      }
-    });
-
-    for (var i = 0; i < globals.scenes.length; i++) {
-      if (globals.scenes[i].s_order > globals.current_scene_index) {
-        globals.scenes[i].s_order++;
-      }
-    }
-
-    var scene = {
-      s_width: globals.width,
-      s_height: globals.height,
-      s_scale: timeline_vis.tl_scale(),
-      s_layout: timeline_vis.tl_layout(),
-      s_representation: timeline_vis.tl_representation(),
-      s_categories: globals.selected_categories,
-      s_facets: globals.selected_facets,
-      s_segments: globals.selected_segments,
-      s_filter_type: globals.filter_type,
-      s_legend_x: globals.legend_x,
-      s_legend_y: globals.legend_y,
-      s_legend_expanded: globals.legend_expanded,
-      s_captions: scene_captions,
-      s_images: scene_images,
-      s_annotations: scene_annotations,
-      s_selections: scene_selections,
-      s_timecurve: selectWithParent("#timecurve").attr("d"),
-      s_order: globals.current_scene_index + 1
-    };
-    globals.scenes.push(scene);
-
-    globals.current_scene_index++;
-
-    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, { backgroundColor: "white" });
-
-    var checkExist = setInterval(function () {
-      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
-        log("gif_frame" + globals.gif_index + " Exists!");
-        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
-        document.getElementById("gif_frame" + globals.gif_index).remove();
-        globals.gif_index++;
-        updateNavigationStepper();
-        clearInterval(checkExist);
-      }
-    }, 100); // check every 100ms
-
-    return true;
-  }
-
   function updateNavigationStepper() {
     var STEPPER_STEP_WIDTH = 50;
 
@@ -2307,6 +2219,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
   }
+
+  instance._updateNavigationStepper = updateNavigationStepper;
 
   var prevTransitioning = false;
   function changeScene(scene_index) {
@@ -4560,12 +4474,45 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
  * The default set of options
  */
 TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
+
+  /**
+   * If true, the about bar is shown
+   */
   showAbout: true,
+
+  /**
+   * If true, the Microsoft logo is shown
+   */
   showLogo: true,
+
+  /**
+   * If true, the chart view options are shown
+   */
   showViewOptions: true,
+
+  /**
+   * If true, when TimelineStoryteller is initially loaded, it will show the intro import dialog
+   */
   showIntro: true,
+
+  /**
+   * If true, import options/open will be enabled
+   */
   showImportOptions: true,
+
+  /**
+   * If true, load data options will be shown on the import popup
+   */
   showImportLoadDataOptions: true,
+
+  /**
+   * If true, png snapshots will be used on the navigation bar
+   */
+  useSceneSnapshots: true,
+
+  /**
+   * If true, animations will be enabled
+   */
   animations: true,
   menu: {
     open: {
@@ -4957,6 +4904,105 @@ TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
     }
   }
 }, 500);
+
+/**
+ * Records the current scene
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._recordScene = function () {
+  selectAllWithParent("foreignObject").remove();
+
+  selectWithParent("#stepper_svg_placeholder").remove();
+
+  globals.record_width = globals.width;
+  globals.record_height = globals.height;
+
+  var timeline_vis = this._timeline_vis;
+
+  logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
+
+  var scene_captions = [];
+  var scene_images = [];
+  var scene_annotations = [];
+  var scene_selections = [];
+
+  this._main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
+    var scene_caption = {
+      caption_id: caption.id
+    };
+    scene_captions.push(scene_caption);
+  });
+
+  this._main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
+    var scene_image = {
+      image_id: image.id
+    };
+    scene_images.push(scene_image);
+  });
+
+  this._main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
+    var scene_annotation = {
+      annotation_id: annotation.id
+    };
+    scene_annotations.push(scene_annotation);
+  });
+
+  this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
+    if (event.__data__.selected === true) {
+      scene_selections.push(event.__data__.event_id);
+    }
+  });
+
+  for (var i = 0; i < globals.scenes.length; i++) {
+    if (globals.scenes[i].s_order > globals.current_scene_index) {
+      globals.scenes[i].s_order++;
+    }
+  }
+
+  var scene = {
+    s_width: globals.width,
+    s_height: globals.height,
+    s_scale: timeline_vis.tl_scale(),
+    s_layout: timeline_vis.tl_layout(),
+    s_representation: timeline_vis.tl_representation(),
+    s_categories: globals.selected_categories,
+    s_facets: globals.selected_facets,
+    s_segments: globals.selected_segments,
+    s_filter_type: globals.filter_type,
+    s_legend_x: globals.legend_x,
+    s_legend_y: globals.legend_y,
+    s_legend_expanded: globals.legend_expanded,
+    s_captions: scene_captions,
+    s_images: scene_images,
+    s_annotations: scene_annotations,
+    s_selections: scene_selections,
+    s_timecurve: selectWithParent("#timecurve").attr("d"),
+    s_order: globals.current_scene_index + 1
+  };
+  globals.scenes.push(scene);
+
+  globals.current_scene_index++;
+
+  if (this.options.useSceneSnapshots) {
+    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, { backgroundColor: "white" });
+
+    var that = this;
+    var checkExist = setInterval(function () {
+      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
+        log("gif_frame" + globals.gif_index + " Exists!");
+        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
+        document.getElementById("gif_frame" + globals.gif_index).remove();
+        globals.gif_index++;
+        that._updateNavigationStepper();
+        clearInterval(checkExist);
+      }
+    }, 100); // check every 100ms
+  } else {
+    this._updateNavigationStepper();
+  }
+
+  return true;
+};
 
 /**
  * Initializes the import panel
