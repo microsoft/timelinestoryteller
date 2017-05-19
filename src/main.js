@@ -530,21 +530,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         logEvent("exporting story as .cdc", "export");
 
-        globals.timeline_story = {
-          "timeline_json_data": globals.timeline_json_data,
-          "name": "timeline_story.cdc",
-          "scenes": globals.scenes,
-          "width": instance._component_width,
-          "height": instance._component_height,
-          "color_palette": globals.categories.range(),
-          "usage_log": globals.usage_log,
-          "caption_list": globals.caption_list,
-          "annotation_list": globals.annotation_list,
-          "image_list": globals.image_list,
-          "author": globals.email_address,
-          "tz_offset": new Date().getTimezoneOffset(),
-          "timestamp": new Date().valueOf()
-        };
+        globals.timeline_story = instance.saveStoryJSON();
 
         var story_json = JSON.stringify(globals.timeline_story);
         var blob = new Blob([story_json], { type: "application/json" });
@@ -1348,64 +1334,20 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         ---------------------------------------------------------------------------------------
         **/
 
-        var unique_values = d3.map([]);
-        var unique_data = [];
-
-        if (globals.source_format === "json") {
+        if (globals.source_format === "demo_json") {
+          initTimelineData(window.timeline_story_demo_data[globals.source]);
+        } else if (globals.source_format === "json") {
           d3.json(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-            });
-
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            logEvent(unique_data.length + " unique events", "preprocessing");
-
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "json_parsed") {
-          globals.timeline_json_data = globals.source;
-
-          globals.source.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(globals.source);
         } else if (globals.source_format === "csv") {
           d3.csv(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-            });
-
-            // find unique elements
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            log(unique_data.length + " unique events");
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "gdoc") {
-          globals.timeline_json_data.forEach(function (d) {
-            unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-          });
-
-          // find unique elements
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(globals.timeline_json_data);
         } else if (isStory(globals.source_format)) {
           globals.playback_mode = true;
 
@@ -1413,10 +1355,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           if (globals.source_format === "story") {
             d3.json(globals.source, function (error, story) {
-              instance._loadDataFromStory(story, instance._component_height, unique_data, unique_values);
+              instance._loadDataFromStory(story, instance._component_height);
             });
           } else if (globals.source_format === "demo_story") {
-            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height, unique_data, unique_values);
+            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height);
           }
         }
       } finally {
@@ -1436,6 +1378,29 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   instance._loadTimeline = loadTimeline;
+
+  /**
+   * Preprocess data after loading
+   * @param {object} data The data to preprocess
+   * @returns {void}
+   */
+  function initTimelineData(data) {
+    var unique_values = d3.map([]);
+    var unique_data = [];
+
+    globals.timeline_json_data = data;
+
+    data.forEach(function (d) {
+      unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
+    });
+    // find unique values
+    unique_values.forEach(function (d) {
+      unique_data.push(unique_values.get(d));
+    });
+    logEvent(unique_data.length + " unique events", "preprocessing");
+
+    processTimeline(unique_data);
+  }
 
   function processTimeline(data) {
     // check for earliest and latest numerical dates before parsing
@@ -4519,19 +4484,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * Loads the data from the given story
    * @param {object} story The story to load data from
    * @param {number} min_story_height The minimum height to show the story
-   * @param {object[]} unique_data The unique data
-   * @param {object[]} unique_values The unique values
    * @returns {void}
    */
-  this._loadDataFromStory = function (story, min_story_height, unique_data, unique_values) {
+  this._loadDataFromStory = function (story, min_story_height) {
     var timelineData = globals.timeline_json_data;
 
     // The original format
     if (!story.version) {
       timelineData = story.timeline_json_data;
     }
-
-    globals.timeline_json_data = timelineData;
 
     if (story.color_palette !== undefined) {
       globals.color_palette = story.color_palette;
@@ -4589,17 +4550,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance._render_width = story.width;
     instance._render_height = story.height;
 
-    timelineData.forEach(function (d) {
-      unique_values.set((d.content_text + d.start_date + d.end_date + d.category + d.facet), d);
-    });
-
-    unique_values.forEach(function (d) {
-      unique_data.push(unique_values.get(d));
-    });
-    logEvent(unique_data.length + " unique events", "preprocessing");
+    initTimelineData(timelineData);
 
     updateNavigationStepper();
-    processTimeline(unique_data);
   };
 }
 
@@ -4934,7 +4887,19 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
       .attr("class", "menu_label")
       .text(section.label);
 
-    (section.items || []).forEach(function (item) {
+    // support both arrays and object based items definitions.
+    var sectionItems = {};
+    if (section.items) {
+      if (section.items.forEach) {
+        section.items.forEach((item, itemIdx) => {
+          sectionItems["item" + itemIdx] = item;
+        });
+      } else {
+        sectionItems = section.items;
+      }
+    }
+    Object.keys(sectionItems).forEach(function (itemKey) {
+      var item = sectionItems[itemKey];
       var itemEle =
         that._control_panel.append("input")
           .attr({
@@ -5001,6 +4966,16 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
   this.importPanel.element.append("div")
     .attr("id", "data_picker");
 
+  this._initializeImportDataMenus();
+};
+
+/**
+ * Initializes the sections in the import panel
+ * @return {void}
+ */
+TimelineStoryteller.prototype._initializeImportDataMenus = function () {
+  selectAllWithParent("#data_picker .data_story_picker").remove();
+
   this._initializeImportDataSection();
   this._initializeImportStorySection();
 };
@@ -5011,19 +4986,19 @@ TimelineStoryteller.prototype._initializeImportPanel = function () {
  */
 TimelineStoryteller.prototype._initializeImportDataSection = function () {
   if (this.options.showImportLoadDataOptions) {
-    var dataset_picker = selectWithParent("#data_picker").append("div")
-      .attr("class", "data_story_picker import-load-data-option");
-
-    dataset_picker.append("text")
-      .attr("class", "ui_label")
-      .text("Load timeline data");
-
     var importOptions = this.options.import || {};
     var importDataMenu = (importOptions.dataMenu || {}).items || {};
     var importDataItems = Object.keys(importDataMenu);
 
     // We really only need to add the section if there is any items to show
     if (importDataItems.length) {
+      var dataset_picker = selectWithParent("#data_picker").append("div")
+        .attr("class", "data_story_picker import-load-data-option");
+
+      dataset_picker.append("text")
+        .attr("class", "ui_label")
+        .text("Load timeline data");
+
       importDataItems.forEach((key) => {
         var buttonEle = this._createImportPanelButton(importDataMenu[key]);
         if (buttonEle) {
@@ -5140,6 +5115,7 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
+    this._initializeImportDataMenus();
   }
 };
 
@@ -5157,6 +5133,9 @@ TimelineStoryteller.prototype.setOptions = function (options) {
       var value = typeof options[key] !== "undefined" ? options[key] : TimelineStoryteller.DEFAULT_OPTIONS[key];
       this.options[key] = value;
       if (key === "menu") {
+        updateMenu = true;
+      }
+      if (key === "import") {
         updateMenu = true;
       }
     }
@@ -5249,6 +5228,29 @@ TimelineStoryteller.prototype.load = function (data) {
  */
 TimelineStoryteller.prototype.loadStory = function (story, delay) {
   return this._loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+};
+
+/**
+ * Saves the current state as a story
+ * @returns {object} The story in JSON format
+ */
+TimelineStoryteller.prototype.saveStoryJSON = function () {
+  return {
+    "version": 2,
+    "timeline_json_data": globals.timeline_json_data,
+    "name": "timeline_story.cdc",
+    "scenes": globals.scenes,
+    "width": this._component_width,
+    "height": this._component_height,
+    "color_palette": globals.categories.range(),
+    "usage_log": globals.usage_log,
+    "caption_list": globals.caption_list,
+    "annotation_list": globals.annotation_list,
+    "image_list": globals.image_list,
+    "author": globals.email_address,
+    "tz_offset": new Date().getTimezoneOffset(),
+    "timestamp": new Date().valueOf()
+  };
 };
 
 /**

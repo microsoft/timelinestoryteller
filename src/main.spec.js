@@ -41,5 +41,15 @@ describe("TimelineStoryteller", function () {
     });
     it("should draw annotations with the correct position if scenes are switched quickly");
     it("should not draw annotations on the wrong scene");
+    it("should import and preprocess demo_json correctly");
+    it("should import and preprocess json correctly");
+    it("should import and preprocess json_parsed correctly");
+    it("should import and preprocess csv correctly");
+    it("should import and preprocess gdoc correctly");
+    it("should allow for the configuration of the import data menu options");
+    it("should hide the load data section if there are no data menu options");
+    it("should allow for the configuration of the import data story options");
+    it("should hide the load data section if there are no data story options");
+    it("should import and preprocess data from given story correctly");
   });
 });
