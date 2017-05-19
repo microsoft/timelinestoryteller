@@ -1387,7 +1387,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function initTimelineData(data) {
     var unique_values = d3.map([]);
     var unique_data = [];
-    
+
     globals.timeline_json_data = data;
 
     data.forEach(function (d) {
@@ -4486,7 +4486,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {number} min_story_height The minimum height to show the story
    * @returns {void}
    */
-  this._loadDataFromStory = function(story, min_story_height) {
+  this._loadDataFromStory = function (story, min_story_height) {
     var timelineData = globals.timeline_json_data;
 
     // The original format
