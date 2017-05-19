@@ -4506,11 +4506,6 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
   showImportLoadDataOptions: true,
 
   /**
-   * If true, png snapshots will be used on the navigation bar
-   */
-  useSceneSnapshots: true,
-
-  /**
    * If true, animations will be enabled
    */
   animations: true,
@@ -4983,24 +4978,23 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   globals.current_scene_index++;
 
-  if (this.options.useSceneSnapshots) {
-    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, { backgroundColor: "white" });
+  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, {
+    backgroundColor: "white",
+    encoderType: "image/gif",
+    scale: 300 / Math.max(this._render_width, this._render_height)
+  });
 
-    var that = this;
-    var checkExist = setInterval(function () {
-      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
-        log("gif_frame" + globals.gif_index + " Exists!");
-        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
-        document.getElementById("gif_frame" + globals.gif_index).remove();
-        globals.gif_index++;
-        that._updateNavigationStepper();
-        clearInterval(checkExist);
-      }
-    }, 100); // check every 100ms
-  } else {
-    this._updateNavigationStepper();
-  }
-
+  var that = this;
+  var checkExist = setInterval(function () {
+    if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
+      log("gif_frame" + globals.gif_index + " Exists!");
+      globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
+      document.getElementById("gif_frame" + globals.gif_index).remove();
+      globals.gif_index++;
+      that._updateNavigationStepper();
+      clearInterval(checkExist);
+    }
+  }, 100); // check every 100ms
   return true;
 };
 
