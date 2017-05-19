@@ -1,4 +1,4 @@
-    /**
+/**
  * Styles
  */
 require("../assets/css/style.css");
@@ -1348,9 +1348,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         ---------------------------------------------------------------------------------------
         **/
 
-        var unique_values = d3.map([]);
-        var unique_data = [];
-
         if (globals.source_format === "demo_json") {
           initTimelineData(window.timeline_story_demo_data[globals.source]);
         } else if (globals.source_format === "json") {
@@ -1372,10 +1369,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           if (globals.source_format === "story") {
             d3.json(globals.source, function (error, story) {
-              instance._loadDataFromStory(story, instance._component_height, unique_data, unique_values);
+              instance._loadDataFromStory(story, instance._component_height);
             });
           } else if (globals.source_format === "demo_story") {
-            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height, unique_data, unique_values);
+            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height);
           }
         }
       } finally {
@@ -1401,10 +1398,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * @param {object} data The data to preprocess
    * @returns {void}
    */
-  function initTimelineData(data, unique_values, unique_data) {
+  function initTimelineData(data) {
     var unique_values = d3.map([]);
     var unique_data = [];
-
+    
     globals.timeline_json_data = data;
 
     data.forEach(function (d) {
