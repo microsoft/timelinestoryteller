@@ -1111,8 +1111,35 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var representation_rb_label = representation_rb.append("label")
     .attr("class", "option_rb")
     .on("mouseover", function (d) {
-      var rb_hint = representation_picker.append("div")
+      var pos_x = this.getBoundingClientRect().left;
+      var offset_x = 0;
+      if (pos_x > globals.width / 2) {
+        offset_x = pos_x - 235;
+      }
+      else {
+         offset_x = pos_x + 53;
+      }
+      var offset_y = this.getBoundingClientRect().top;
+      selectWithParent().append("div")
         .attr("id", "rb_hint")
+        .style("left",offset_x + "px")
+        .style("top",offset_y + "px")
+        .attr("class",function(){
+          if (pos_x > globals.width / 2) {
+            return "rb_hint_right";
+          }
+          else {
+            return "rb_hint_left"
+          }
+        })
+        .style("text-align",function(){
+          if (pos_x > globals.width / 2) {
+            return "right";
+          }
+          else {
+            return "left"
+          }
+        })
         .html(d.hint);
     })
     .on("mouseout", function (d) {
@@ -1164,8 +1191,35 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var scale_rb_label = scale_rb.append("label")
     .attr("class", "option_rb")
     .on("mouseover", function (d) {
-      scale_picker.append("div")
+      var pos_x = this.getBoundingClientRect().left;
+      var offset_x = 0;
+      if (pos_x > globals.width / 2) {
+        offset_x = pos_x - 235;
+      }
+      else {
+         offset_x = pos_x + 53;
+      }
+      var offset_y = this.getBoundingClientRect().top;
+      selectWithParent().append("div")
         .attr("id", "rb_hint")
+        .style("left",offset_x + "px")
+        .style("top",offset_y + "px")
+        .attr("class",function(){
+          if (pos_x > globals.width / 2) {
+            return "rb_hint_right";
+          }
+          else {
+            return "rb_hint_left"
+          }
+        })
+        .style("text-align",function(){
+          if (pos_x > globals.width / 2) {
+            return "right";
+          }
+          else {
+            return "left"
+          }
+        })
         .html(d.hint);
     })
     .on("mouseout", function (d) {
@@ -1218,8 +1272,35 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var layout_rb_label = layout_rb.append("label")
     .attr("class", "option_rb")
     .on("mouseover", function (d) {
-      layout_picker.append("div")
+      var pos_x = this.getBoundingClientRect().left;
+      var offset_x = 0;
+      if (pos_x > globals.width / 2) {
+        offset_x = pos_x - 235;
+      }
+      else {
+         offset_x = pos_x + 53;
+      }
+      var offset_y = this.getBoundingClientRect().top;
+      selectWithParent().append("div")
         .attr("id", "rb_hint")
+        .attr("class",function(){
+          if (pos_x > globals.width / 2) {
+            return "rb_hint_right";
+          }
+          else {
+            return "rb_hint_left"
+          }
+        })
+        .style("left",offset_x + "px")
+        .style("top",offset_y + "px")
+        .style("text-align",function(){
+          if (pos_x > globals.width / 2) {
+            return "right";
+          }
+          else {
+            return "left"
+          }
+        })
         .html(d.hint);
     })
     .on("mouseout", function () {
@@ -3061,6 +3142,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.legend_panel = main_svg.append("svg")
         .attr("height", 35 + globals.track_height * (globals.num_categories + 1) + 5)
         .attr("width", globals.max_legend_item_width + 10 + globals.unit_width + 10 + 20)
+        .attr("y",100)
         .attr("id", "legend_panel")
         .attr("class", "legend")
         .on("mouseover", function () {
