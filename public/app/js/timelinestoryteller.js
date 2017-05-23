@@ -86,14 +86,14 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_0__;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var imageUrls = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 var d3 = __webpack_require__(0);
 var u;
 
 // global dimensions
 var globals = {
-  margin: { top: 100, right: 70, bottom: 105, left: 75 },
-  padding: { top: 100, right: 70, bottom: 105, left: 75 },
+  margin: { top: 100, right: 50, bottom: 105, left: 50 },
+  padding: { top: 100, right: 50, bottom: 105, left: 50 },
   effective_filter_width: u,
   effective_filter_height: u,
   width: u,
@@ -110,8 +110,8 @@ var globals = {
   legend_rect_size: u,
   legend_spacing: u,
   legend_expanded: true,
-  legend_x: 0,
-  legend_y: 0,
+  legend_x: 100,
+  legend_y: 100,
   source: u,
   source_format: u,
   earliest_date: u,
@@ -144,9 +144,9 @@ var globals = {
   max_seq_index: u,
   dispatch: d3.dispatch("Emphasize", "remove"),
   filter_result: u,
-  scales: [{ "name": "Chronological", "icon": imageUrls("s-chron.png"), "hint": "A <span class='rb_hint_scale_highlight'>Chronological</span> scale is useful for showing absolute dates and times, like 2017, or 1999-12-31, or 6:37 PM." }, { "name": "Relative", "icon": imageUrls("s-rel.png"), "hint": "A <span class='rb_hint_scale_highlight'>Relative</span> scale is useful when comparing <span class='rb_hint_layout_highlight'>Faceted</span> timelines with a common baseline at time 'zero'.<br>For example, consider a timeline of person 'A' who lived between 1940 to 2010 and person 'B' who lived between 1720 and 1790. <br>A <span class='rb_hint_scale_highlight'>Relative</span> scale in this case would span from 0 to 70 years." }, { "name": "Log", "icon": imageUrls("s-log.png"), "hint": "A base-10 <span class='rb_hint_scale_highlight'>Logarithmic</span> scale is useful for long-spanning timelines and a skewed distributions of events. <br> This scale is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation." }, { "name": "Sequential", "icon": imageUrls("s-seq.png"), "hint": "A <span class='rb_hint_scale_highlight'>Sequential</span> scale is useful for showing simply the order and number of events." }, { "name": "Collapsed", "icon": imageUrls("s-intdur.png"), "hint": "A <span class='rb_hint_scale_highlight'>Collapsed</span> scale is a hybrid between <span class='rb_hint_scale_highlight'>Sequential</span> and <span class='rb_hint_scale_highlight'>Chronological</span>, and is useful for showing uneven distributions of events. <br>It is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation and <span class='rb_hint_layout_highlight'>Unified</span> layout. The duration between events is encoded as the length of bars." }],
-  layouts: [{ "name": "Unified", "icon": imageUrls("l-uni.png"), "hint": "A <span class='rb_hint_layout_highlight'>Unified</span> layout is a single uninterrupted timeline and is useful when your data contains no facets." }, { "name": "Faceted", "icon": imageUrls("l-fac.png"), "hint": "A <span class='rb_hint_layout_highlight'>Faceted</span> layout is useful when you have multiple timelines to compare." }, { "name": "Segmented", "icon": imageUrls("l-seg.png"), "hint": "A <span class='rb_hint_layout_highlight'>Segmented</span> layout splits a timeline into meaningful segments like centuries or days, depending on the extent of your timeline.<br>It is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and is useful for showing patterns or differences across segments, such as periodicity." }],
-  representations: [{ "name": "Linear", "icon": imageUrls("r-lin.png"), "hint": "A <span class='rb_hint_rep_highlight'>Linear</span> representation is read left-to-right and is the most familiar timeline representation." }, { "name": "Radial", "icon": imageUrls("r-rad.png"), "hint": "A <span class='rb_hint_rep_highlight'>Radial</span> representation is useful for showing cyclical patterns. <br>It has the added benefit of a square aspect ratio." }, { "name": "Spiral", "icon": imageUrls("r-spi.png"), "hint": "A <span class='rb_hint_rep_highlight'>Spiral</span> is a compact and playful way to show a sequence of events. <br>It has a square aspect ratio and is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale." }, { "name": "Curve", "icon": imageUrls("r-arb.png"), "hint": "A <span class='rb_hint_rep_highlight'>Curve</span> is a playful way to show a sequence of events.<br> It is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale and a <span class='rb_hint_layout_highlight'>Unified</span> layout.<br>Drag to draw a curve on the canvas; double click the canvas to reset the curve." }, { "name": "Calendar", "icon": imageUrls("r-cal.png"), "hint": "A month-week-day <span class='rb_hint_rep_highlight'>Calendar</span> is a familiar representation that is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. <br>This representation does not currently support timelines spanning decades or longer." }, { "name": "Grid", "icon": imageUrls("r-grid.png"), "hint": "A 10x10 <span class='rb_hint_rep_highlight'>Grid</span> representation is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. <br>This representation is ideal for timelines spanning decades or centuries." }],
+  scales: [{ "name": "Chronological", "icon": imageUrls("s-chron.png"), "hint": "A <span class='rb_hint_scale_highlight'>CHRONOLOGICAL</span> scale is useful for showing absolute dates and times, like 2017, or 1999-12-31, or 6:37 PM." }, { "name": "Relative", "icon": imageUrls("s-rel.png"), "hint": "A <span class='rb_hint_scale_highlight'>RELATIVE</span> scale is useful when comparing <span class='rb_hint_layout_highlight'>Faceted</span> timelines with a common baseline at time 'zero'.For example, consider a timeline of person 'A' who lived between 1940 to 2010 and person 'B' who lived between 1720 and 1790. A <span class='rb_hint_scale_highlight'>Relative</span> scale in this case would span from 0 to 70 years." }, { "name": "Log", "icon": imageUrls("s-log.png"), "hint": "A base-10 <span class='rb_hint_scale_highlight'>LOGARITHMIC</span> scale is useful for long-spanning timelines and a skewed distributions of events.  This scale is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation." }, { "name": "Sequential", "icon": imageUrls("s-seq.png"), "hint": "A <span class='rb_hint_scale_highlight'>SEQUENTIAL</span> scale is useful for showing simply the order and number of events." }, { "name": "Collapsed", "icon": imageUrls("s-intdur.png"), "hint": "A <span class='rb_hint_scale_highlight'>COLLAPSED</span> scale is a hybrid between <span class='rb_hint_scale_highlight'>Sequential</span> and <span class='rb_hint_scale_highlight'>Chronological</span>, and is useful for showing uneven distributions of events. It is compatible with a <span class='rb_hint_rep_highlight'>Linear</span> representation and <span class='rb_hint_layout_highlight'>Unified</span> layout. The duration between events is encoded as the length of bars." }],
+  layouts: [{ "name": "Unified", "icon": imageUrls("l-uni.png"), "hint": "A <span class='rb_hint_layout_highlight'>UNIFIED</span> layout is a single uninterrupted timeline and is useful when your data contains no facets." }, { "name": "Faceted", "icon": imageUrls("l-fac.png"), "hint": "A <span class='rb_hint_layout_highlight'>FACETED</span> layout is useful when you have multiple timelines to compare." }, { "name": "Segmented", "icon": imageUrls("l-seg.png"), "hint": "A <span class='rb_hint_layout_highlight'>SEGMENTED</span> layout splits a timeline into meaningful segments like centuries or days, depending on the extent of your timeline.It is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and is useful for showing patterns or differences across segments, such as periodicity." }],
+  representations: [{ "name": "Linear", "icon": imageUrls("r-lin.png"), "hint": "A <span class='rb_hint_rep_highlight'>LINEAR</span> representation is read left-to-right and is the most familiar timeline representation." }, { "name": "Radial", "icon": imageUrls("r-rad.png"), "hint": "A <span class='rb_hint_rep_highlight'>RADIAL</span> representation is useful for showing cyclical patterns. It has the added benefit of a square aspect ratio." }, { "name": "Spiral", "icon": imageUrls("r-spi.png"), "hint": "A <span class='rb_hint_rep_highlight'>SPIRAL</span> is a compact and playful way to show a sequence of events. It has a square aspect ratio and is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale." }, { "name": "Curve", "icon": imageUrls("r-arb.png"), "hint": "A <span class='rb_hint_rep_highlight'>CURVE</span> is a playful way to show a sequence of events. It is only compatible with a <span class='rb_hint_scale_highlight'>Sequential</span> scale and a <span class='rb_hint_layout_highlight'>Unified</span> layout.Drag to draw a curve on the canvas; double click the canvas to reset the curve." }, { "name": "Calendar", "icon": imageUrls("r-cal.png"), "hint": "A month-week-day <span class='rb_hint_rep_highlight'>CALENDAR</span> is a familiar representation that is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. This representation does not currently support timelines spanning decades or longer." }, { "name": "Grid", "icon": imageUrls("r-grid.png"), "hint": "A 10x10 <span class='rb_hint_rep_highlight'>GRID</span> representation is compatible with a <span class='rb_hint_scale_highlight'>Chronological</span> scale and a <span class='rb_hint_layout_highlight'>Segmented</span> layout. This representation is ideal for timelines spanning decades or centuries." }],
   unit_width: 15,
   track_height: 15 * 1.5,
   spiral_padding: 15 * 1.25,
@@ -217,6 +217,100 @@ module.exports = globals;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Forms the url for the given image name
+ * @param {string} name The name of the image to get the url for
+ * @returns {string} The final url for the given image
+ */
+function formUrl(name) {
+  if (name.indexOf("demo") >= 0) {
+    return "img/" + name;
+  }
+
+  var raw = __webpack_require__(12)("./" + name);
+  var imageContents = toArrayBuffer(raw);
+  var blob = new Blob([imageContents], {
+    type: name.indexOf(".png") >= 0 ? "image/png" : "image/svg+xml"
+  });
+  return URL.createObjectURL(blob);
+}
+
+function toArrayBuffer(str) {
+  var buffer = new ArrayBuffer(str.length);
+  var array = new Uint8Array(buffer);
+  for (var i = 0; i < str.length; i++) {
+    array[i] = str.charCodeAt(i);
+  }
+  return buffer;
+}
+
+var imageUrlMapping = {
+  "caption.png": formUrl("caption.png"),
+  "categories.png": formUrl("categories.png"),
+  "check.png": formUrl("check.png"),
+  "clear.png": formUrl("clear.png"),
+  "close.png": formUrl("close.png"),
+  "csv.png": formUrl("csv.png"),
+  "delete.png": formUrl("delete.png"),
+
+  /**
+   * Demo images
+   */
+  "demo.png": formUrl("demo.png"),
+  "demo_story.png": formUrl("demo_story.png"),
+
+  "draw.png": formUrl("draw.png"),
+  "expand.png": formUrl("expand.png"),
+  "export.png": formUrl("export.png"),
+  "facets.png": formUrl("facets.png"),
+  "filter.png": formUrl("filter.png"),
+  "gdocs.png": formUrl("gdocs.png"),
+  "gif.png": formUrl("gif.png"),
+  "hide.png": formUrl("hide.png"),
+  "highlight.png": formUrl("highlight.png"),
+  "image.png": formUrl("image.png"),
+  "info.png": formUrl("info.png"),
+  "json.png": formUrl("json.png"),
+  "l-fac.png": formUrl("l-fac.png"),
+  "l-seg.png": formUrl("l-seg.png"),
+  "l-uni.png": formUrl("l-uni.png"),
+  "mail.png": formUrl("mail.png"),
+  "min.png": formUrl("min.png"),
+  "ms-logo.svg": formUrl("ms-logo.svg"),
+  "next.png": formUrl("next.png"),
+  "open.png": formUrl("open.png"),
+  "pin.png": formUrl("pin.png"),
+  "play.png": formUrl("play.png"),
+  "png.png": formUrl("png.png"),
+  "prev.png": formUrl("prev.png"),
+  "q.png": formUrl("q.png"),
+  "r-arb.png": formUrl("r-arb.png"),
+  "r-cal.png": formUrl("r-cal.png"),
+  "r-grid.png": formUrl("r-grid.png"),
+  "r-lin.png": formUrl("r-lin.png"),
+  "r-rad.png": formUrl("r-rad.png"),
+  "r-spi.png": formUrl("r-spi.png"),
+  "record.png": formUrl("record.png"),
+  "reset.png": formUrl("reset.png"),
+  "s-chron.png": formUrl("s-chron.png"),
+  "s-intdur.png": formUrl("s-intdur.png"),
+  "s-log.png": formUrl("s-log.png"),
+  "s-rel.png": formUrl("s-rel.png"),
+  "s-seq.png": formUrl("s-seq.png"),
+  "segments.png": formUrl("segments.png"),
+  "story.png": formUrl("story.png"),
+  "svg.png": formUrl("svg.png"),
+  "timeline.png": formUrl("timeline.png"),
+  "vl.png": formUrl("vl.png")
+};
+module.exports = function (imageName) {
+  return imageUrlMapping[imageName];
+};
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -411,100 +505,6 @@ var utils = {
 };
 
 module.exports = utils;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * Forms the url for the given image name
- * @param {string} name The name of the image to get the url for
- * @returns {string} The final url for the given image
- */
-function formUrl(name) {
-  if (name.indexOf("demo") >= 0) {
-    return "img/" + name;
-  }
-
-  var raw = __webpack_require__(12)("./" + name);
-  var imageContents = toArrayBuffer(raw);
-  var blob = new Blob([imageContents], {
-    type: name.indexOf(".png") >= 0 ? "image/png" : "image/svg+xml"
-  });
-  return URL.createObjectURL(blob);
-}
-
-function toArrayBuffer(str) {
-  var buffer = new ArrayBuffer(str.length);
-  var array = new Uint8Array(buffer);
-  for (var i = 0; i < str.length; i++) {
-    array[i] = str.charCodeAt(i);
-  }
-  return buffer;
-}
-
-var imageUrlMapping = {
-  "caption.png": formUrl("caption.png"),
-  "categories.png": formUrl("categories.png"),
-  "check.png": formUrl("check.png"),
-  "clear.png": formUrl("clear.png"),
-  "close.png": formUrl("close.png"),
-  "csv.png": formUrl("csv.png"),
-  "delete.png": formUrl("delete.png"),
-
-  /**
-   * Demo images
-   */
-  "demo.png": formUrl("demo.png"),
-  "demo_story.png": formUrl("demo_story.png"),
-
-  "draw.png": formUrl("draw.png"),
-  "expand.png": formUrl("expand.png"),
-  "export.png": formUrl("export.png"),
-  "facets.png": formUrl("facets.png"),
-  "filter.png": formUrl("filter.png"),
-  "gdocs.png": formUrl("gdocs.png"),
-  "gif.png": formUrl("gif.png"),
-  "hide.png": formUrl("hide.png"),
-  "highlight.png": formUrl("highlight.png"),
-  "image.png": formUrl("image.png"),
-  "info.png": formUrl("info.png"),
-  "json.png": formUrl("json.png"),
-  "l-fac.png": formUrl("l-fac.png"),
-  "l-seg.png": formUrl("l-seg.png"),
-  "l-uni.png": formUrl("l-uni.png"),
-  "mail.png": formUrl("mail.png"),
-  "min.png": formUrl("min.png"),
-  "ms-logo.svg": formUrl("ms-logo.svg"),
-  "next.png": formUrl("next.png"),
-  "open.png": formUrl("open.png"),
-  "pin.png": formUrl("pin.png"),
-  "play.png": formUrl("play.png"),
-  "png.png": formUrl("png.png"),
-  "prev.png": formUrl("prev.png"),
-  "q.png": formUrl("q.png"),
-  "r-arb.png": formUrl("r-arb.png"),
-  "r-cal.png": formUrl("r-cal.png"),
-  "r-grid.png": formUrl("r-grid.png"),
-  "r-lin.png": formUrl("r-lin.png"),
-  "r-rad.png": formUrl("r-rad.png"),
-  "r-spi.png": formUrl("r-spi.png"),
-  "record.png": formUrl("record.png"),
-  "reset.png": formUrl("reset.png"),
-  "s-chron.png": formUrl("s-chron.png"),
-  "s-intdur.png": formUrl("s-intdur.png"),
-  "s-log.png": formUrl("s-log.png"),
-  "s-rel.png": formUrl("s-rel.png"),
-  "s-seq.png": formUrl("s-seq.png"),
-  "segments.png": formUrl("segments.png"),
-  "story.png": formUrl("story.png"),
-  "svg.png": formUrl("svg.png"),
-  "timeline.png": formUrl("timeline.png"),
-  "vl.png": formUrl("vl.png")
-};
-module.exports = function (imageName) {
-  return imageUrlMapping[imageName];
-};
 
 /***/ }),
 /* 4 */
@@ -848,11 +848,11 @@ anotateEvent: //on-demand persistent content_text label for an event
 
 **/
 
-var imageUrls = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 var d3 = __webpack_require__(0);
 var globals = __webpack_require__(1);
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
 
@@ -1526,6 +1526,8 @@ function updateLink(linkElement, options, obj) {
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var _this = this;
+
 /**
  * Styles
  */
@@ -1548,8 +1550,8 @@ var time = __webpack_require__(6);
 var GIF = __webpack_require__(22).GIF;
 var gsheets = __webpack_require__(23);
 var svgImageUtils = __webpack_require__(24);
-var imageUrls = __webpack_require__(3);
-var utils = __webpack_require__(2);
+var imageUrls = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var setScaleValue = utils.setScaleValue;
@@ -1590,10 +1592,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._colorPicker = __webpack_require__(16)(timelineElement);
   this._container = selectWithParent().append("div").attr("class", "timeline_storyteller-container");
 
-  instance._component_width = parentElement.clientWidth;
-  instance._component_height = parentElement.clientHeight;
-  instance._render_width = instance._component_width;
-  instance._render_height = instance._component_height;
+  this._component_width = parentElement.clientWidth;
+  this._component_height = parentElement.clientHeight;
+  this._render_width = this._component_width;
+  this._render_height = this._component_height;
 
   this.options = clone(TimelineStoryteller.DEFAULT_OPTIONS);
 
@@ -1637,6 +1639,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function showDemoStory() {
     return (typeof showDemo === "undefined" || showDemo) && window.timeline_story_demo_story !== undefined;
   }
+
+  instance._showDemoStory = showDemoStory;
+  instance._showDemoData = showDemoData;
 
   function adjustSvgSize() {
     main_svg.transition().duration(instance.options.animations ? 1200 : 0).attr("width", d3.max([globals.width, instance._render_width - globals.margin.left - globals.margin.right - getScrollbarWidth()])).attr("height", d3.max([globals.height, instance._component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth()]));
@@ -1752,7 +1757,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (d3.event.keyCode === 82 && d3.event.altKey) {
       // recover legend
       if (!globals.playback_mode) {
-        recordScene();
+        instance._recordScene();
       }
     } else if (globals.playback_mode && d3.event.keyCode === 39) {
       goNextScene();
@@ -1902,7 +1907,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   export_formats.append("input").attr({
     type: "image",
     name: "Export PNG",
-    class: "img_btn_disabled",
+    class: "img_btn_disabled export--image",
     src: imageUrls("png.png"),
     height: 30,
     width: 30,
@@ -1920,7 +1925,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   export_formats.append("input").attr({
     type: "image",
     name: "Export SVG",
-    class: "img_btn_disabled",
+    class: "img_btn_disabled export--image",
     src: imageUrls("svg.png"),
     height: 30,
     width: 30,
@@ -1938,7 +1943,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   export_formats.append("input").attr({
     type: "image",
     name: "Export animated GIF",
-    class: "img_btn_disabled",
+    class: "img_btn_disabled export--image",
     src: imageUrls("gif.png"),
     height: 30,
     width: 30,
@@ -1997,21 +2002,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       logEvent("exporting story as .cdc", "export");
 
-      globals.timeline_story = {
-        "timeline_json_data": globals.timeline_json_data,
-        "name": "timeline_story.cdc",
-        "scenes": globals.scenes,
-        "width": instance._component_width,
-        "height": instance._component_height,
-        "color_palette": globals.categories.range(),
-        "usage_log": globals.usage_log,
-        "caption_list": globals.caption_list,
-        "annotation_list": globals.annotation_list,
-        "image_list": globals.image_list,
-        "author": globals.email_address,
-        "tz_offset": new Date().getTimezoneOffset(),
-        "timestamp": new Date().valueOf()
-      };
+      globals.timeline_story = instance.saveStoryJSON();
 
       var story_json = JSON.stringify(globals.timeline_story);
       var blob = new Blob([story_json], { type: "application/json" });
@@ -2124,201 +2115,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectAllWithParent(".gdocs_info_element").style("display", "none");
   });
 
-  var data_picker = instance.importPanel.element.append("div").attr("id", "data_picker");
-
-  if (instance.options.showImportLoadDataOptions) {
-    var dataset_picker = data_picker.append("div").attr("class", "data_story_picker import-load-data-option");
-
-    dataset_picker.append("text").attr("class", "ui_label").text("Load timeline data");
-
-    if (showDemoData()) {
-      var demo_dataset_picker_label = dataset_picker.append("label").attr("class", "import_label demo_dataset_label");
-
-      var showDropdown = function showDropdown(element) {
-        var event = document.createEvent("MouseEvents");
-        event.initMouseEvent("mousedown", true, true, window);
-        element.dispatchEvent(event);
-      };
-
-      demo_dataset_picker_label.append("select").attr("id", "demo_dataset_picker").attr("title", "Load demo dataset").on("change", function () {
-        globals.source = d3.select(this).property("value");
-        if (globals.source !== "") {
-          globals.source_format = "demo_json";
-          setTimeout(function () {
-            logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-
-            loadTimeline();
-          }, 500);
-        }
-      }).selectAll("option").data([{ "path": "", "tl_name": "" }, { "path": "priestley", "tl_name": "Priestley's Chart of Biography (faceted by occupation)" }, { "path": "philosophers", "tl_name": "Great Philosophers since the 8th Century BC (faceted by region)" }, { "path": "empires", "tl_name": "History's Largest Empires (faceted by region)" }, { "path": "ch_jp_ko", "tl_name": "East Asian Dynasties (faceted by region)" }, { "path": "epidemics", "tl_name": "Epidemics since the 14th Century (faceted by region)" }, { "path": "hurricanes50y", "tl_name": "C4-5 Hurricanes: 1960-2010" }, { "path": "prime_ministers", "tl_name": "Prime Ministers of Canada" }, { "path": "france_presidents", "tl_name": "Presidents of France" }, { "path": "germany_chancellors", "tl_name": "Chancellors of Germany" }, { "path": "italy_presidents", "tl_name": "Presidents of Italy" }, { "path": "japan_prime_ministers", "tl_name": "Prime Ministers of Japan" }, { "path": "uk_prime_ministers", "tl_name": "Prime Ministers of the UK" }, { "path": "presidents", "tl_name": "Presidents of the USA" }, { "path": "heads_of_state_since_1940", "tl_name": "G7 Heads of State since 1940 (faceted by country)" }, { "path": "dailyroutines", "tl_name": "Podio's 'Daily Routines of Famous Creative People' (faceted by person)" }, { "path": "painters", "tl_name": "Accurat's 'Visualizing painters' lives' (faceted by painter)" }, { "path": "authors", "tl_name": "Accurat's 'From first published to masterpieces' (faceted by author)" }, { "path": "singularity", "tl_name": "Kurzweil's 'Countdown to Singularity' (4 billion years)" }, { "path": "perspective_on_time", "tl_name": "Wait But Why's 'A Perspective on Time' (14 billion years)" }, { "path": "typical_american", "tl_name": "Wait But Why's 'Life of a Typical American'" }]).enter().append("option").attr("value", function (d) {
-        return d.path;
-      }).text(function (d) {
-        return d.tl_name;
-      });
-
-      demo_dataset_picker_label.append("img").style("border", "0px solid transparent").style("margin", "0px").attr({
-        name: "Load Demo Data",
-        id: "demo_dataset_picker_label",
-        height: 40,
-        width: 40,
-        title: "Load Demo Data",
-        src: imageUrls("demo.png")
-      }).on("click", function () {
-        var se = document.getElementById("demo_dataset_picker");
-        showDropdown(se);
-      });
-    }
-
-    dataset_picker.append("input").attr({
-      type: "file",
-      id: "json_uploader",
-      class: "inputfile",
-      accept: ".json"
-    }).on("change", function () {
-      var file = this.files[0];
-      globals.reader.readAsText(file);
-
-      globals.reader.onload = function (e) {
-        var contents = e.target.result;
-        var blob = new Blob([contents], { type: "application/json" });
-        globals.source = URL.createObjectURL(blob);
-        globals.source_format = "json";
-        setTimeout(function () {
-          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-          loadTimeline();
-        }, 500);
-      };
-    });
-
-    dataset_picker.append("label").attr("for", "json_uploader").attr("class", "import_label").append("img").attr({
-      name: "Load from JSON",
-      id: "json_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from JSON",
-      src: imageUrls("json.png")
-    });
-
-    dataset_picker.append("input").attr({
-      type: "file",
-      id: "csv_uploader",
-      class: "inputfile",
-      accept: ".csv"
-    }).on("change", function () {
-      var file = this.files[0];
-      globals.reader.readAsText(file);
-
-      globals.reader.onload = function (e) {
-        var contents = e.target.result;
-        var blob = new Blob([contents], { type: "application/csv" });
-        globals.source = URL.createObjectURL(blob);
-        globals.source_format = "csv";
-        setTimeout(function () {
-          logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-          loadTimeline();
-        }, 500);
-      };
-    });
-
-    dataset_picker.append("label").attr("for", "csv_uploader").attr("class", "import_label").append("img").attr({
-      name: "Load from CSV",
-      id: "csv_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from CSV",
-      src: imageUrls("csv.png")
-    });
-
-    dataset_picker.append("input").attr({
-      id: "gdocs_uploader",
-      class: "inputfile"
-    }).on("click", function () {
-      if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
-        selectWithParent("#gdocs_info").style("height", 0 + "px");
-        selectAllWithParent(".gdocs_info_element").style("display", "none");
-      } else {
-        selectWithParent("#gdocs_info").style("height", 27 + "px");
-        setTimeout(function () {
-          selectAllWithParent(".gdocs_info_element").style("display", "inline");
-        }, 500);
-      }
-    });
-
-    dataset_picker.append("label").attr("for", "gdocs_uploader").attr("class", "import_label").append("img").attr({
-      name: "Load from Google Spreadsheet",
-      id: "gdocs_picker_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load from Google Spreadsheet",
-      src: imageUrls("gdocs.png")
-    });
-  }
-
-  var story_picker = selectWithParent("#data_picker").append("div").attr("class", "data_story_picker").style("border-right", "1px solid transparent");
-
-  story_picker.append("text").attr("class", "ui_label").text("Load timeline story");
-
-  if (showDemoStory()) {
-    story_picker.append("input").attr({
-      id: "story_demo",
-      class: "inputfile"
-    }).on("click", function () {
-      globals.source = "demoStory";
-
-      logEvent("demo story source", "load");
-
-      globals.source_format = "demo_story";
-      selectWithParent("#timeline_metadata").style("display", "none");
-      selectAllWithParent(".gdocs_info_element").style("display", "none");
-      instance.importPanel.hide();
-
-      selectWithParent("#gdocs_info").style("height", 0 + "px");
-      selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
-      selectWithParent("#gdoc_worksheet_title_input").property("value", "");
-
-      setTimeout(function () {
-        loadTimeline();
-      }, 500);
-    });
-
-    story_picker.append("label").attr("for", "story_demo").attr("class", "import_label").append("img").attr({
-      name: "Load Demo Story",
-      id: "story_demo_label",
-      class: "img_btn_enabled import_label",
-      height: 40,
-      width: 40,
-      title: "Load Demo Story",
-      src: imageUrls("demo_story.png")
-    });
-  }
-
-  story_picker.append("input").attr({
-    type: "file",
-    id: "story_uploader",
-    class: "inputfile",
-    accept: ".cdc"
-  }).on("change", function () {
-    var file = this.files[0];
-    globals.reader.readAsText(file);
-
-    globals.reader.onload = function (e) {
-      var contents = e.target.result;
-      instance.loadStory(contents);
-    };
-  });
-
-  story_picker.append("label").attr("for", "story_uploader").attr("class", "import_label").append("img").attr({
-    name: "Load Saved Story",
-    id: "story_picker_label",
-    class: "img_btn_enabled import_label",
-    height: 40,
-    width: 40,
-    title: "Load Saved Story",
-    src: imageUrls("story.png")
-  });
+  instance._initializeImportPanel();
 
   var gdocs_info = instance.importPanel.element.append("div").attr("id", "gdocs_info");
 
@@ -2435,7 +2232,25 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var representation_rb = representation_picker.selectAll("div").data(globals.representations).enter();
 
   var representation_rb_label = representation_rb.append("label").attr("class", "option_rb").on("mouseover", function (d) {
-    representation_picker.append("div").attr("id", "rb_hint").html(d.hint);
+    var pos_x = this.getBoundingClientRect().left;
+    var offset_x = 0;
+    if (pos_x > globals.width / 2) {
+      offset_x = pos_x - 235;
+    } else {
+      offset_x = pos_x + 53;
+    }
+    var offset_y = this.getBoundingClientRect().top;
+    selectWithParent().append("div").attr("id", "rb_hint").style("left", offset_x + "px").style("top", offset_y + "px").attr("class", function () {
+      if (pos_x > globals.width / 2) {
+        return "rb_hint_right";
+      }
+      return "rb_hint_left";
+    }).style("text-align", function () {
+      if (pos_x > globals.width / 2) {
+        return "right";
+      }
+      return "left";
+    }).html(d.hint);
   }).on("mouseout", function () {
     selectWithParent("#rb_hint").remove();
   });
@@ -2471,7 +2286,25 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var scale_rb = scale_picker.selectAll("div").data(globals.scales).enter();
 
   var scale_rb_label = scale_rb.append("label").attr("class", "option_rb").on("mouseover", function (d) {
-    scale_picker.append("div").attr("id", "rb_hint").html(d.hint);
+    var pos_x = this.getBoundingClientRect().left;
+    var offset_x = 0;
+    if (pos_x > globals.width / 2) {
+      offset_x = pos_x - 235;
+    } else {
+      offset_x = pos_x + 53;
+    }
+    var offset_y = this.getBoundingClientRect().top;
+    selectWithParent().append("div").attr("id", "rb_hint").style("left", offset_x + "px").style("top", offset_y + "px").attr("class", function () {
+      if (pos_x > globals.width / 2) {
+        return "rb_hint_right";
+      }
+      return "rb_hint_left";
+    }).style("text-align", function () {
+      if (pos_x > globals.width / 2) {
+        return "right";
+      }
+      return "left";
+    }).html(d.hint);
   }).on("mouseout", function () {
     selectWithParent("#rb_hint").remove();
   });
@@ -2507,7 +2340,25 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   var layout_rb = layout_picker.selectAll("div").data(globals.layouts).enter();
 
   var layout_rb_label = layout_rb.append("label").attr("class", "option_rb").on("mouseover", function (d) {
-    layout_picker.append("div").attr("id", "rb_hint").html(d.hint);
+    var pos_x = this.getBoundingClientRect().left;
+    var offset_x = 0;
+    if (pos_x > globals.width / 2) {
+      offset_x = pos_x - 235;
+    } else {
+      offset_x = pos_x + 53;
+    }
+    var offset_y = this.getBoundingClientRect().top;
+    selectWithParent().append("div").attr("id", "rb_hint").attr("class", function () {
+      if (pos_x > globals.width / 2) {
+        return "rb_hint_right";
+      }
+      return "rb_hint_left";
+    }).style("left", offset_x + "px").style("top", offset_y + "px").style("text-align", function () {
+      if (pos_x > globals.width / 2) {
+        return "right";
+      }
+      return "left";
+    }).html(d.hint);
   }).on("mouseout", function () {
     selectWithParent("#rb_hint").remove();
   });
@@ -2745,7 +2596,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           title: "Record Scene"
         }).on("click", function () {
           if (!globals.playback_mode) {
-            recordScene();
+            instance._recordScene();
           }
         });
 
@@ -2811,76 +2662,20 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         ---------------------------------------------------------------------------------------
         **/
 
-        var unique_values = d3.map([]);
-        var unique_data = [];
-
         if (globals.source_format === "demo_json") {
-          globals.timeline_json_data = window.timeline_story_demo_data[globals.source];
-          globals.timeline_json_data.forEach(function (d) {
-            unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(window.timeline_story_demo_data[globals.source]);
         } else if (globals.source_format === "json") {
           d3.json(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-            });
-
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            logEvent(unique_data.length + " unique events", "preprocessing");
-
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "json_parsed") {
-          globals.timeline_json_data = globals.source;
-
-          globals.source.forEach(function (d) {
-            unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-          });
-
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(globals.source);
         } else if (globals.source_format === "csv") {
           d3.csv(globals.source, function (error, data) {
-            globals.timeline_json_data = data;
-
-            data.forEach(function (d) {
-              unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-            });
-
-            // find unique elements
-            unique_values.forEach(function (d) {
-              unique_data.push(unique_values.get(d));
-            });
-            log(unique_data.length + " unique events");
-            processTimeline(unique_data);
+            initTimelineData(data);
           });
         } else if (globals.source_format === "gdoc") {
-          globals.timeline_json_data.forEach(function (d) {
-            unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-          });
-
-          // find unique elements
-          unique_values.forEach(function (d) {
-            unique_data.push(unique_values.get(d));
-          });
-          logEvent(unique_data.length + " unique events", "preprocessing");
-
-          processTimeline(unique_data);
+          initTimelineData(globals.timeline_json_data);
         } else if (isStory(globals.source_format)) {
           globals.playback_mode = true;
 
@@ -2888,10 +2683,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           if (globals.source_format === "story") {
             d3.json(globals.source, function (error, story) {
-              instance._loadDataFromStory(story, instance._component_height, unique_data, unique_values);
+              instance._loadDataFromStory(story, instance._component_height);
             });
           } else if (globals.source_format === "demo_story") {
-            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height, unique_data, unique_values);
+            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height);
           }
         }
       } finally {
@@ -2911,6 +2706,29 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   instance._loadTimeline = loadTimeline;
+
+  /**
+   * Preprocess data after loading
+   * @param {object} data The data to preprocess
+   * @returns {void}
+   */
+  function initTimelineData(data) {
+    var unique_values = d3.map([]);
+    var unique_data = [];
+
+    globals.timeline_json_data = data;
+
+    data.forEach(function (d) {
+      unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
+    });
+    // find unique values
+    unique_values.forEach(function (d) {
+      unique_data.push(unique_values.get(d));
+    });
+    logEvent(unique_data.length + " unique events", "preprocessing");
+
+    processTimeline(unique_data);
+  }
 
   function processTimeline(data) {
     // check for earliest and latest numerical dates before parsing
@@ -3401,94 +3219,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  function recordScene() {
-    selectAllWithParent("foreignObject").remove();
-
-    selectWithParent("#stepper_svg_placeholder").remove();
-
-    globals.record_width = globals.width;
-    globals.record_height = globals.height;
-
-    logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
-
-    var scene_captions = [];
-    var scene_images = [];
-    var scene_annotations = [];
-    var scene_selections = [];
-
-    main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
-      var scene_caption = {
-        caption_id: caption.id
-      };
-      scene_captions.push(scene_caption);
-    });
-
-    main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
-      var scene_image = {
-        image_id: image.id
-      };
-      scene_images.push(scene_image);
-    });
-
-    main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
-      var scene_annotation = {
-        annotation_id: annotation.id
-      };
-      scene_annotations.push(scene_annotation);
-    });
-
-    main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
-      if (event.__data__.selected === true) {
-        scene_selections.push(event.__data__.event_id);
-      }
-    });
-
-    for (var i = 0; i < globals.scenes.length; i++) {
-      if (globals.scenes[i].s_order > globals.current_scene_index) {
-        globals.scenes[i].s_order++;
-      }
-    }
-
-    var scene = {
-      s_width: globals.width,
-      s_height: globals.height,
-      s_scale: timeline_vis.tl_scale(),
-      s_layout: timeline_vis.tl_layout(),
-      s_representation: timeline_vis.tl_representation(),
-      s_categories: globals.selected_categories,
-      s_facets: globals.selected_facets,
-      s_segments: globals.selected_segments,
-      s_filter_type: globals.filter_type,
-      s_legend_x: globals.legend_x,
-      s_legend_y: globals.legend_y,
-      s_legend_expanded: globals.legend_expanded,
-      s_captions: scene_captions,
-      s_images: scene_images,
-      s_annotations: scene_annotations,
-      s_selections: scene_selections,
-      s_timecurve: selectWithParent("#timecurve").attr("d"),
-      s_order: globals.current_scene_index + 1
-    };
-    globals.scenes.push(scene);
-
-    globals.current_scene_index++;
-
-    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, { backgroundColor: "white" });
-
-    var checkExist = setInterval(function () {
-      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
-        log("gif_frame" + globals.gif_index + " Exists!");
-        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
-        document.getElementById("gif_frame" + globals.gif_index).remove();
-        globals.gif_index++;
-        updateNavigationStepper();
-        clearInterval(checkExist);
-      }
-    }, 100); // check every 100ms
-
-    return true;
-  }
-
   function updateNavigationStepper() {
     var STEPPER_STEP_WIDTH = 50;
 
@@ -3619,6 +3349,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
   }
+
+  instance._updateNavigationStepper = updateNavigationStepper;
 
   var prevTransitioning = false;
   function changeScene(scene_index) {
@@ -4032,7 +3764,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     if (globals.num_categories <= 12 && globals.num_categories > 1) {
       // setup legend
-      globals.legend_panel = main_svg.append("svg").attr("height", 35 + globals.track_height * (globals.num_categories + 1) + 5).attr("width", globals.max_legend_item_width + 10 + globals.unit_width + 10 + 20).attr("id", "legend_panel").attr("class", "legend").on("mouseover", function () {
+      globals.legend_panel = main_svg.append("svg").attr("height", 35 + globals.track_height * (globals.num_categories + 1) + 5).attr("width", globals.max_legend_item_width + 10 + globals.unit_width + 10 + 20).attr("y", 100).attr("id", "legend_panel").attr("class", "legend").on("mouseover", function () {
         // if (selectAllWithParent("foreignObject")[0].length === 0) {
         //   addLegendColorPicker();
         // }
@@ -5619,19 +5351,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
    * Loads the data from the given story
    * @param {object} story The story to load data from
    * @param {number} min_story_height The minimum height to show the story
-   * @param {object[]} unique_data The unique data
-   * @param {object[]} unique_values The unique values
    * @returns {void}
    */
-  this._loadDataFromStory = function (story, min_story_height, unique_data, unique_values) {
+  this._loadDataFromStory = function (story, min_story_height) {
     var timelineData = globals.timeline_json_data;
 
-    // The original format
-    if (!story.version) {
+    if (story.timeline_json_data) {
       timelineData = story.timeline_json_data;
     }
-
-    globals.timeline_json_data = timelineData;
 
     if (story.color_palette !== undefined) {
       globals.color_palette = story.color_palette;
@@ -5689,17 +5416,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance._render_width = story.width;
     instance._render_height = story.height;
 
-    timelineData.forEach(function (d) {
-      unique_values.set(d.content_text + d.start_date + d.end_date + d.category + d.facet, d);
-    });
-
-    unique_values.forEach(function (d) {
-      unique_data.push(unique_values.get(d));
-    });
-    logEvent(unique_data.length + " unique events", "preprocessing");
+    initTimelineData(timelineData);
 
     updateNavigationStepper();
-    processTimeline(unique_data);
   };
 }
 
@@ -5707,12 +5426,40 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
  * The default set of options
  */
 TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
+
+  /**
+   * If true, the about bar is shown
+   */
   showAbout: true,
+
+  /**
+   * If true, the Microsoft logo is shown
+   */
   showLogo: true,
+
+  /**
+   * If true, the chart view options are shown
+   */
   showViewOptions: true,
+
+  /**
+   * If true, when TimelineStoryteller is initially loaded, it will show the intro import dialog
+   */
   showIntro: true,
+
+  /**
+   * If true, import options/open will be enabled
+   */
   showImportOptions: true,
+
+  /**
+   * If true, load data options will be shown on the import popup
+   */
   showImportLoadDataOptions: true,
+
+  /**
+   * If true, animations will be enabled
+   */
   animations: true,
   menu: {
     open: {
@@ -5821,6 +5568,167 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
         } // The click handler
       }]
     }
+  },
+  export: {
+    /**
+     * If true, the image export options will be available
+     */
+    images: true
+  },
+  import: {
+    storyMenu: {
+      items: {
+        demo: {
+          visible: function visible(instance) {
+            return instance._showDemoStory();
+          },
+          text: "Load Demo Story",
+          image: imageUrls("demo_story.png"),
+          click: function click(instance) {
+            globals.source = "demoStory";
+
+            logEvent("demo story source", "load");
+
+            globals.source_format = "demo_story";
+            selectWithParent("#timeline_metadata").style("display", "none");
+            selectAllWithParent(".gdocs_info_element").style("display", "none");
+            instance.importPanel.hide();
+
+            selectWithParent("#gdocs_info").style("height", 0 + "px");
+            selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
+            selectWithParent("#gdoc_worksheet_title_input").property("value", "");
+
+            setTimeout(function () {
+              instance._loadTimeline();
+            }, 500);
+          }
+        },
+        file: {
+          text: "Load Saved Story",
+          image: imageUrls("story.png"),
+          width: 40,
+          height: 40,
+          init: function init(inst, element) {
+            element.append("input").attr({
+              type: "file",
+              id: "story_uploader",
+              style: "opacity:0;width:100%;height:100%;cursor:pointer;cursor:pointer",
+              accept: ".cdc"
+            }).on("change", function () {
+              var file = this.files[0];
+              globals.reader.readAsText(file);
+
+              globals.reader.onload = function (e) {
+                var contents = e.target.result;
+                inst.loadStory(contents);
+              };
+            });
+          }
+        }
+      }
+    },
+    dataMenu: {
+      items: {
+        demo: {
+          visible: function visible(instance) {
+            return instance._showDemoData();
+          },
+          name: "Load Demo Data",
+          image: imageUrls("demo.png"),
+          init: function init(that, element) {
+            var demoData = window.timeline_story_demo_data;
+            var demoOptions = Object.keys(demoData).map(function (path) {
+              return {
+                path: path,
+                tl_name: demoData[path].name
+              };
+            });
+            element.append("select").attr("id", "demo_dataset_picker").attr("title", "Load demo dataset").attr("style", "top:0;left:0").on("change", function () {
+              var source = d3.select(this).property("value");
+              if (source !== "") {
+                globals.source = demoData[source].data;
+                globals.source_format = "json_parsed";
+                setTimeout(function () {
+                  logEvent("loading " + source + " (demo_story)", "load");
+                  that._loadTimeline();
+                }, 500);
+              } else {
+                globals.source = source;
+              }
+            }).selectAll("option").data([{ "path": "", "tl_name": "" }].concat(demoOptions)) // Blank + demo options
+            .enter().append("option").attr("value", function (d) {
+              return d.path;
+            }).text(function (d) {
+              return d.tl_name;
+            });
+          }
+        },
+        json: {
+          name: "Load from JSON",
+          image: imageUrls("json.png"),
+          init: function init(inst, element) {
+            element.append("input").attr({
+              type: "file",
+              id: "json_uploader",
+              style: "display:none;",
+              accept: ".json"
+            }).on("change", function (e) {
+              var contents = e.target.result;
+              var blob = new Blob([contents], { type: "application/json" });
+              globals.source = URL.createObjectURL(blob);
+              globals.source_format = "json";
+              setTimeout(function () {
+                logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+                _this._loadTimeline();
+              }, 500);
+            });
+          },
+          click: function click(inst, element) {
+            element.select("#json_uploader").node().click();
+          }
+        },
+        csv: {
+          name: "Load from CSV",
+          image: imageUrls("csv.png"),
+          init: function init(inst, element) {
+            element.append("input").attr({
+              type: "file",
+              id: "csv_uploader",
+              style: "opacity:0;width:100%;height:100%;cursor:pointer",
+              accept: ".csv"
+            }).on("change", function () {
+              var file = this.files[0];
+              globals.reader.readAsText(file);
+              globals.reader.onload = function (e) {
+                var contents = e.target.result;
+                var blob = new Blob([contents], { type: "application/csv" });
+                globals.source = URL.createObjectURL(blob);
+                globals.source_format = "csv";
+                setTimeout(function () {
+                  logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
+                  inst._loadTimeline();
+                }, 500);
+              };
+            });
+          }
+        },
+        gdocs: {
+          name: "Load from Google Spreadsheet",
+          image: imageUrls("gdocs.png"),
+          click: function click() {
+            if (selectAllWithParent(".gdocs_info_element").style("display") !== "none") {
+              selectWithParent("#gdocs_info").style("height", 0 + "px");
+              selectAllWithParent(".gdocs_info_element").style("display", "none");
+            } else {
+              selectWithParent("#gdocs_info").style("height", 27 + "px");
+              setTimeout(function () {
+                selectAllWithParent(".gdocs_info_element").style("display", "inline");
+              }, 500);
+            }
+          }
+        }
+      }
+    }
   }
 });
 
@@ -5861,7 +5769,19 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
 
     that._control_panel.append("text").attr("class", "menu_label").text(section.label);
 
-    (section.items || []).forEach(function (item) {
+    // support both arrays and object based items definitions.
+    var sectionItems = {};
+    if (section.items) {
+      if (section.items.forEach) {
+        section.items.forEach(function (item, itemIdx) {
+          sectionItems["item" + itemIdx] = item;
+        });
+      } else {
+        sectionItems = section.items;
+      }
+    }
+    Object.keys(sectionItems).forEach(function (itemKey) {
+      var item = sectionItems[itemKey];
       var itemEle = that._control_panel.append("input").attr({
         type: "image",
         name: item.text,
@@ -5916,6 +5836,216 @@ TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
 }, 500);
 
 /**
+ * Records the current scene
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._recordScene = function () {
+  selectAllWithParent("foreignObject").remove();
+
+  selectWithParent("#stepper_svg_placeholder").remove();
+
+  globals.record_width = globals.width;
+  globals.record_height = globals.height;
+
+  var timeline_vis = this._timeline_vis;
+
+  logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
+
+  var scene_captions = [];
+  var scene_images = [];
+  var scene_annotations = [];
+  var scene_selections = [];
+
+  this._main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
+    var scene_caption = {
+      caption_id: caption.id
+    };
+    scene_captions.push(scene_caption);
+  });
+
+  this._main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
+    var scene_image = {
+      image_id: image.id
+    };
+    scene_images.push(scene_image);
+  });
+
+  this._main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
+    var scene_annotation = {
+      annotation_id: annotation.id
+    };
+    scene_annotations.push(scene_annotation);
+  });
+
+  this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
+    if (event.__data__.selected === true) {
+      scene_selections.push(event.__data__.event_id);
+    }
+  });
+
+  for (var i = 0; i < globals.scenes.length; i++) {
+    if (globals.scenes[i].s_order > globals.current_scene_index) {
+      globals.scenes[i].s_order++;
+    }
+  }
+
+  var scene = {
+    s_width: globals.width,
+    s_height: globals.height,
+    s_scale: timeline_vis.tl_scale(),
+    s_layout: timeline_vis.tl_layout(),
+    s_representation: timeline_vis.tl_representation(),
+    s_categories: globals.selected_categories,
+    s_facets: globals.selected_facets,
+    s_segments: globals.selected_segments,
+    s_filter_type: globals.filter_type,
+    s_legend_x: globals.legend_x,
+    s_legend_y: globals.legend_y,
+    s_legend_expanded: globals.legend_expanded,
+    s_captions: scene_captions,
+    s_images: scene_images,
+    s_annotations: scene_annotations,
+    s_selections: scene_selections,
+    s_timecurve: selectWithParent("#timecurve").attr("d"),
+    s_order: globals.current_scene_index + 1
+  };
+  globals.scenes.push(scene);
+
+  globals.current_scene_index++;
+
+  var compressed = !(this.options.export && this.options.export.images);
+  var renderOptions = {
+    backgroundColor: "white"
+  };
+
+  if (compressed) {
+    renderOptions.encoderType = "image/jpeg";
+    renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
+  }
+
+  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
+
+  var that = this;
+  var checkExist = setInterval(function () {
+    if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
+      log("gif_frame" + globals.gif_index + " Exists!");
+      globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
+      document.getElementById("gif_frame" + globals.gif_index).remove();
+      globals.gif_index++;
+      that._updateNavigationStepper();
+      clearInterval(checkExist);
+    }
+  }, 100); // check every 100ms
+  return true;
+};
+
+/**
+ * Initializes the import panel
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportPanel = function () {
+  this.importPanel.element.append("div").attr("id", "data_picker");
+
+  this._initializeImportDataMenus();
+};
+
+/**
+ * Initializes the sections in the import panel
+ * @return {void}
+ */
+TimelineStoryteller.prototype._initializeImportDataMenus = function () {
+  selectAllWithParent("#data_picker .data_story_picker").remove();
+
+  this._initializeImportDataSection();
+  this._initializeImportStorySection();
+};
+
+/**
+ * Initializes the data section within the import dialog
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportDataSection = function () {
+  var _this2 = this;
+
+  if (this.options.showImportLoadDataOptions) {
+    var importOptions = this.options.import || {};
+    var importDataMenu = (importOptions.dataMenu || {}).items || {};
+    var importDataItems = Object.keys(importDataMenu);
+
+    // We really only need to add the section if there is any items to show
+    if (importDataItems.length) {
+      var dataset_picker = selectWithParent("#data_picker").append("div").attr("class", "data_story_picker import-load-data-option");
+
+      dataset_picker.append("text").attr("class", "ui_label").text("Load timeline data");
+
+      importDataItems.forEach(function (key) {
+        var buttonEle = _this2._createImportPanelButton(importDataMenu[key]);
+        if (buttonEle) {
+          dataset_picker.node().appendChild(buttonEle.node());
+        }
+      });
+    }
+  }
+};
+
+/**
+ * Initializes the story section within the import dialog
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._initializeImportStorySection = function () {
+  var _this3 = this;
+
+  var importOptions = this.options.import || {};
+  var storyMenu = (importOptions.storyMenu || {}).items || {};
+  var importItems = Object.keys(storyMenu);
+
+  // We really only need to add the section if there is any items to show
+  if (importItems.length) {
+    var story_picker = selectWithParent("#data_picker").append("div").attr("class", "data_story_picker").style("border-right", "1px solid transparent");
+
+    story_picker.append("text").attr("class", "ui_label").text("Load timeline story");
+
+    importItems.forEach(function (key) {
+      var buttonEle = _this3._createImportPanelButton(storyMenu[key]);
+      if (buttonEle) {
+        story_picker.node().appendChild(buttonEle.node());
+      }
+    });
+  }
+};
+
+/**
+ * Creates an import panel button from the given button config
+ * @param {object} button The button configuration
+ * @return {d3.Selection} The d3 button
+ */
+TimelineStoryteller.prototype._createImportPanelButton = function (button) {
+  var _this4 = this;
+
+  if (typeof button.visible === "function" && button.visible(this) || button.visible === undefined || typeof button.visible === "boolean" && button.visible) {
+    var sizeCss = "height:" + (button.height || 40) + "px;width:" + (button.width || 40) + "px";
+    var item = d3.select(document.createElement("div")).attr("class", "import-button").attr("style", sizeCss);
+    item.append("img").attr({
+      name: button.text,
+      class: "img_btn_enabled " + (button.class || ""),
+      title: button.text,
+      src: button.image,
+      style: "width:100%;height:100%;position:absolute;left:0;top:0"
+    });
+    item.on("click", function () {
+      if (button.click) {
+        button.click(_this4, element);
+      }
+    });
+    var element = item.append("div").attr("class", "import-button-container");
+    if (button.init) {
+      button.init(this, element);
+    }
+    return item;
+  }
+};
+
+/**
  * Scales the UI
  * @param {number} [scale=1] The scale of the UI
  * @returns {void}
@@ -5956,8 +6086,12 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
   // showImportLoadDataOptions
   selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "none" : null);
 
+  // allowImageExport
+  selectAllWithParent(".export--image").style("display", !options.export || options.export.images === false ? "none" : null);
+
   if (updateMenu) {
     this._initializeMenu(options.menu);
+    this._initializeImportDataMenus();
   }
 };
 
@@ -5975,6 +6109,9 @@ TimelineStoryteller.prototype.setOptions = function (options) {
       var value = typeof options[key] !== "undefined" ? options[key] : TimelineStoryteller.DEFAULT_OPTIONS[key];
       this.options[key] = value;
       if (key === "menu") {
+        updateMenu = true;
+      }
+      if (key === "import") {
         updateMenu = true;
       }
     }
@@ -6067,6 +6204,29 @@ TimelineStoryteller.prototype.load = function (data) {
  */
 TimelineStoryteller.prototype.loadStory = function (story, delay) {
   return this._loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
+};
+
+/**
+ * Saves the current state as a story
+ * @returns {object} The story in JSON format
+ */
+TimelineStoryteller.prototype.saveStoryJSON = function () {
+  return {
+    "version": 2,
+    "timeline_json_data": globals.timeline_json_data,
+    "name": "timeline_story.cdc",
+    "scenes": globals.scenes,
+    "width": this._component_width,
+    "height": this._component_height,
+    "color_palette": globals.categories.range(),
+    "usage_log": globals.usage_log,
+    "caption_list": globals.caption_list,
+    "annotation_list": globals.annotation_list,
+    "image_list": globals.image_list,
+    "author": globals.email_address,
+    "tz_offset": new Date().getTimezoneOffset(),
+    "timestamp": new Date().valueOf()
+  };
 };
 
 /**
@@ -6246,11 +6406,11 @@ addCaption: //on-demand captions for a timeline
 
 **/
 
-var imageUrls = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 var d3 = __webpack_require__(0);
 var globals = __webpack_require__(1);
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 
@@ -6404,10 +6564,10 @@ addImage: //on-demand image for a timeline
 
 **/
 
-var imageUrls = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 var d3 = __webpack_require__(0);
 var globals = __webpack_require__(1);
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 var nextId = utils.nextId;
@@ -6861,7 +7021,7 @@ configurableTL: //a configurable timeline
 var gridAxis = __webpack_require__(19);
 var calendarAxis = __webpack_require__(15);
 var radialAxis = __webpack_require__(25);
-var imageUrls = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 var annotateEvent = __webpack_require__(7);
 var time = __webpack_require__(6);
 var d3 = __webpack_require__(0);
@@ -6869,7 +7029,7 @@ var moment = __webpack_require__(5);
 var globals = __webpack_require__(1);
 var log = __webpack_require__(4)("TimelineStoryteller:configurableTL");
 
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var logEvent = utils.logEvent;
@@ -10591,10 +10751,12 @@ module.exports = d3.gridAxis;
 /***/ (function(module, exports, __webpack_require__) {
 
 var TimelineStoryteller = __webpack_require__(11);
-var utils = __webpack_require__(2);
+var utils = __webpack_require__(3);
+var imageUrls = __webpack_require__(2);
 
 // Expose the utils as well
 TimelineStoryteller.utils = utils;
+TimelineStoryteller.images = imageUrls;
 
 module.exports = TimelineStoryteller;
 
@@ -11871,7 +12033,7 @@ var time = __webpack_require__(6);
 var d3 = __webpack_require__(0);
 var moment = __webpack_require__(5);
 var globals = __webpack_require__(1);
-var arcTween = __webpack_require__(2).arcTween;
+var arcTween = __webpack_require__(3).arcTween;
 
 /**
 
@@ -14464,7 +14626,7 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n\nbody, input, textarea, select, text {\n  font-family: \"Segoe UI Web Regular\",\"wf_segoe-ui_normal\",\"Segoe UI\",\"Segoe UI Symbol\",\"Myriad\",\"Calibri\",\"UnDotum\",\"Optima\",\"Tahoma\",\"Century Gothic\",\"Helvetica Neue\",\"BBAlpha Sans\",\"S60 Sans\",\"Arial\",sans-serif;\n  margin: 0px;\n}\n\na {\n  text-decoration: none;\n  color: #626262;\n}\n\na:hover {\n  text-decoration: underline;\n}\n\n.img_btn_enabled {\n  filter: grayscale(0%);\n  cursor: pointer;\n  opacity: 1;\n  transition: all 0.3s ease;\n  border: 1px solid #CCCCCC;\n  margin: 2px;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px;\n  display:inline-block;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n  user-select: none;\n}\n\n.img_btn_enabled:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.img_btn_disabled {\n  filter: grayscale(100%);\n  cursor: default;\n  border: 1px solid #cccccc;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n  user-select: none;\n}\n\n.filter_header_icon {\n  cursor: default;\n  border: 1px solid transparent;\n  user-select: none;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n}\n\n.intro_btn {\n  width: 36px;\n  height: 36px;\n  float: left;\n}\n\n.text_input {\n  margin: 0px ;\n  line-height: 18px;\n  font-size: 14px;\n  padding: 9px;\n  border: 0;\n}\n\ninput {\n  display: block;\n  float: left;\n}\n\nlabel > input{ /* HIDE RADIO */\n  visibility: hidden; /* Makes input not-clickable */\n  position: absolute; /* Remove input from document flow */\n  height: 0px;\n  width: 0px;\n}\n\ntext {\n  color: #666;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  user-select: none;\n  -ms-user-select: none;\n  cursor: default;\n}\n\n#footer {\n  bottom: 0px;\n  left: 0px;\n  position: absolute;\n  z-index: 1;\n  background: #F2F2F2;\n  border: 1px solid #999;\n  text-align: right;\n  vertical-align: middle;\n  width: 100%;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select:none;\n}\n\n#footer_left {\n  bottom: 0px;\n  left: 0px;\n  z-index: 1;\n  text-align: left;\n  vertical-align: middle;\n  margin-right: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: left;\n}\n\n#footer_right {\n  bottom: 0px;\n  right: 0px;\n  z-index: 1;\n  text-align: right;\n  vertical-align: middle;\n  margin-left: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: right;\n}\n\n.control_div {\n  background: #F2F2F2;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.ui_label {\n  margin-left: auto;\n  margin-right: auto;\n  position: absolute;\n  text-align: center;\n  vertical-align: top;\n  font-size: 12px;\n}\n\n#menu_div {\n  left: -50px;\n  top: 50%;\n  width: 34px;\n  margin-top: -166px;\n  position: absolute;\n  padding: 5px;\n}\n\n.menu_label {\n  font-weight: normal;\n  font-size: 10px;\n}\n\n.menu_hr {\n  margin-bottom: 0px;\n  margin-top: 5px\n}\n\n.menu_rb {\n  float: left;\n}\n\n.menu_rb > input:disabled + img{ /* IMAGE STYLES */\n  cursor:default;\n  opacity: 0.3;\n}\n\n.menu_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #ccc;\n  cursor:pointer;\n  opacity: 1;\n}\n\n.menu_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.menu_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.menu_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n\n#menu_div input {\n  margin-top: 5px;\n  margin-bottom: 5px;\n}\n\n\n#export_formats .img_btn_disabled, #control_panel .img_btn_disabled{\n  opacity: 0.3;\n}\n\n#filter_div {\n  left: 56px;\n  top: 50%;\n  margin-top: -166px;\n  padding: 5px;\n  position: absolute;\n  min-width: 280px;\n}\n\n.filter_div_section {\n  position: relative;\n  clear: both;\n}\n\n.filter_div_header {\n  float: left;\n  width: 44px;\n  margin: 5px;\n  top: 50%;\n  transform: translate(0%,50%);\n}\n\n.filter_div_header text {\n  margin-left: -5px;\n}\n\n\n.filter_label {\n  display: block;\n}\n\n.filter_select {\n  margin-top: 5px;\n  width: 225px;\n  font-size: 10px;\n  border: solid #999 1px;\n  cursor:pointer;\n}\n\n.filter_select option:focus {\n  background-color: #000;\n}\n\nselect > option:focus:active {\n  background-color: #000;\n}\n\nselect > option {\n  background-color: #fff;\n  color: black;\n}\n\nselect > option:hover {\n  background-color: #999;\n  color: white;\n}\n\n#option_div {\n  top: 10px;\n  left: 50%;\n  width:712px;\n  margin-left: -356px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 5px;\n  user-select:none;\n}\n\n.option_rb {\n  margin-top: 20px;\n  vertical-align: top;\n  display: inline-block;\n  text-align: center;\n}\n\n.option_rb > input + img{ /* IMAGE STYLES */\n  cursor:pointer;\n  border: 2px solid transparent;\n}\n\n.option_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.option_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #eee;\n  background-color: #fff;\n}\n\n.option_rb > .img_btn_enabled {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));\n  background-image: -webkit-linear-gradient(top, #fff, #fff);\n  background-image: -moz-linear-gradient(top, #fff, #fff);\n  background-image: -ms-linear-gradient(top, #fff, #fff);\n  background-image: -o-linear-gradient(top, #fff, #fff);\n  background-image: linear-gradient(to bottom, #fff, #fff);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#fff);\n}\n\n.option_rb > .img_btn_enabled:hover {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));\n  background-image: -webkit-linear-gradient(top, #fff, #eee);\n  background-image: -moz-linear-gradient(top, #fff, #eee);\n  background-image: -ms-linear-gradient(top, #fff, #eee);\n  background-image: -o-linear-gradient(top, #fff, #eee);\n  background-image: linear-gradient(to bottom, #fff, #eee);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#eee);\n}\n\n.option_rb > input:disabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  filter: grayscale(100%);\n}\n\n.option_rb_label {\n  font-weight: normal;\n  font-size: 9px;\n  display: block;\n  color: #777;\n  user-select:none;\n}\n\n#rb_hint {\n  position: absolute;\n  width: 702px;\n  top: 108px;\n  left: 50%;\n  margin-left: -356px;\n  font-size: 12px;\n  padding: 5px;\n  font-style: italic;\n  background-color: #fff;\n  color: #666;\n}\n\n.rb_hint_rep_highlight {\n  font-weight: bolder;\n  color: #2DAAE1;\n}\n\n.rb_hint_scale_highlight {\n  font-weight: bolder;\n  color: #E94E1B;\n}\n\n.rb_hint_layout_highlight {\n  font-weight: bolder;\n  color: #94C11F;\n}\n\n#hint_div {\n  right: 15px;\n  top: 20px;\n  height: 34px;\n  position: absolute;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.introjs-hints a {\n    margin-left: -15px;\n    margin-top: -30px;\n}\n\n.introjs-hint-dot {\n  border: 10px solid rgba(255,165,0,0.7);\n}\n\n#export_div {\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#export_formats {\n  text-align: center;\n  display: inline-flex;\n}\n\n#opt_out_div {\n  margin-top: 10px;\n}\n\n#import_div {\n  text-align: center;\n  position: absolute;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#boilerplate {\n  justify-content: center;\n  height: 25px;\n}\n\n#disclaimer {\n  justify-content: center;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  padding: 5px;\n  clear: both;\n}\n\n.boilerplate_title {\n  text-align: center;\n  font-weight: 600;\n  font-stretch: ultra-expanded;\n  font-size: 16px;\n  color: #000;\n  bottom: 0px;\n  margin-left: -17px\n}\n\n.disclaimer_title {\n  text-align: center;\n  font-size: 12px;\n  color: #333;\n  margin-left: -17px\n}\n\n.metadata_title {\n  font-weight: bold;\n  font-size: 12px;\n  color: #333;\n  vertical-align: sub;\n}\n\n.boilerplate_text {\n  text-align: center;\n  font-size: 12px;\n  font-weight: bold;\n  color: #777;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.disclaimer_text {\n  font-weight: normal;\n  font-size: 10px;\n  text-align: center;\n  color: #333;\n}\n\n.metadata_content {\n  font-weight: normal;\n  font-size: 12px;\n  text-align: left;\n  color: #333;\n  margin-right: 10px;\n}\n\n.category_element {\n  width: auto;\n}\n\ninput[type=\"color\"]::-webkit-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-webkit-color-swatch {\n\tborder: none;\n}\n\ninput[type=\"color\"]::-moz-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-moz-color-swatch {\n\tborder: none;\n}\n\n.colorpicker_wrapper {\n  float: left;\n  width: 12px;\n  height: 12px;\n  margin-right: 5px;\n  margin-top: 2px;\n  cursor: pointer;\n  border: 1px solid #999;\n  padding: 0;\n  box-shadow: #999 0px 1px 1px;\n  -webkit-box-shadow: #999 0px 1px 1px;\n  -moz-box-shadow: #999 0px 1px 1px ;\n}\n\n.colorpicker {\n  /*width: 10px;\n  height: 10px;*/\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  /*margin-right: 5px;\n  margin-top: 2px;*/\n  padding: 0;\n  /*opacity: 0;*/\n}\n\n.colorpicker:hover {\n  border: 1px solid #f00;\n}\n\n.colorpicker_wrapper:hover {\n  border: 1px solid #f00;\n}\n\n.footer_text_left {\n  text-align: left;\n  font-size: .8em;\n  margin-left: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.footer_text {\n  text-align: right;\n  font-size: .8em;\n  margin-right: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n#logo_div {\n  left: 10px;\n  top: 10px;\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select: none;\n}\n\n.ms-logo {\n  height: 23px;\n  max-height: 23px;\n  display: block;\n  vertical-align: baseline;\n}\n\n#data_picker {\n  width: 650px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  display: flex;\n}\n\n.data_story_picker {\n  /*float: left;*/\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  width: 320px;\n  border-right: 1px solid #999;\n}\n\n#timeline_metadata {\n  width: 650px;\n  transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n  font-size: 12px;\n}\n\n#timeline_metadata_contents{\n  width: 630px;\n  float: left;\n  padding-left: 10px;\n  padding-right: 10px;\n  padding-bottom: 0px;\n}\n\n.timeline_metadata_contents_div{\n  width: 630px;\n  clear: both;\n}\n\n#draw_timeline {\n  margin-left: 5px;\n  margin-left: 5px;\n  margin-bottom: 5px;\n  margin-top: 0px;\n  width: 320px;\n  padding-top: 15px;\n  padding-bottom: 15px;\n  height: 25px;\n  bottom: 0px;\n  right: 0px;\n  border-radius: 10px;\n  background-color: #ff7f0e;\n  border-color: #da6600;\n  background: #ff7f0e;\n  background-image: -webkit-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -moz-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -ms-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -o-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: linear-gradient(to bottom, #ff7f0e, #da6600);\n}\n\n#draw_timeline:hover {\n  background-color: #da6600;\n  border-color: #ff7f0e;\n  background: #da6600;\n  background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -o-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: linear-gradient(to bottom, #da6600, #ff7f0e);\n}\n\n#gdocs_info {\n  width: 650px;\n  height: 0px;\n  justify-content: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n}\n\n.gdocs_info_element {\n  display: none;\n  vertical-align: middle;\n  text-align: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  margin: 0px;\n  float: left;\n  height: 27px;\n}\n\n.gdocs_info_element .text_input {\n  padding: 0;\n  padding-left: 5px;\n  margin-bottom: 5px;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  border-left: none;\n}\n\n#gdoc_spreadsheet_key_input {\n  margin-left: 0px;\n  width: 315px;\n}\n\n#gdoc_worksheet_title_input {\n  margin-left: 0px;\n  width: 297px;\n}\n\n.gdocs_info_element .img_btn_enabled {\n  margin-left: 2px;\n  margin-top: 0px;\n}\n\n.inputfile {\n  width: 0px;\n  height: 0px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;\n  margin: auto;\n}\n\n#demo_dataset_picker {\n  width: 40px;\n  height: 40px;\n  opacity: 0;\n  border: 0px solid transparent;\n  cursor: pointer;\n  position: absolute;\n  z-index: 1;\n  font-size: 10px;\n  background: transparent;\n}\n\n.import_label > select + img {\n  border:1px solid #cccccc;\n}\n\n.import_label > select:hover + img:hover{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 1px solid #f00;\n}\n.import_label {\n  margin-top: 10px;\n}\n\n.demo_dataset_label {\n  border: 1px solid #cccccc;\n  width: 40px;\n  height: 40px;\n  margin-right: 2px;\n  margin-top: 20px;\n  border-radius: 5px;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n}\n\n.demo_dataset_label:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.annotation_div {\n  position: absolute;\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  left: 56px;\n  top: 50%;\n}\n\n.annotation_circle {\n  fill: #fff;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.annotation_line {\n  fill: none;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.event_annotation_line {\n  stroke: dashed .5px #aaa;\n}\n\n.annotation_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.annotation_control {\n  border: 1px solid #ccc;\n  stroke-width: 1px;\n  stroke: #ccc;\n  cursor: pointer;\n  fill: transparent;\n}\n\n#caption_div {\n  margin-top: -95px;\n}\n\n.caption_frame, .image_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.caption_drag_area, .annotation_drag_area, .image_drag_area {\n  fill: transparent;\n  fill-opacity: 0;\n  stroke-width: 1px;\n  stroke: transparent;\n  cursor: move;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n}\n\n.caption_label {\n  font-size: 18px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n#add_caption_text_input {\n  resize: vertical;\n  display: block;\n  float: left;\n  padding: 10px;\n}\n\n#image_div {\n  margin-top: -55px;\n}\n\n.onhover {\n  opacity: 0.33;\n}\n\n.onhover:hover {\n  opacity: 1;\n}\n\n#playback_bar {\n  display: flex;\n  align-items: center;\n  width: 100%;\n}\n\n#navigation_div {\n  left: 50%;\n  width: 90%;\n  margin-left: -45%;\n  bottom: -100px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 5px;\n  padding-top: 5px;\n}\n\n.nav_cb > input:enabled:checked + img {\n  border: 1px solid #f00;\n}\n\n\n#playback_bar .nav_bttn {\n  flex: 0;\n}\n\n.nav_bttn {\n  display: table-cell;\n  vertical-align: middle;\n  width: 30px;\n}\n\n#stepper_container {\n  height: 50px;\n  padding: 0px;\n  margin-right: 5px;\n  background-color: white;\n  border: 1px solid #999;\n  padding: 5px;\n  border-radius: 5px;\n  vertical-align: middle;\n  overflow-y: hidden;\n  overflow-x: overlay;\n  flex: 1;\n}\n\n#stepper_svg {\n  height: 50px;\n  padding: 0px;\n  float: left;\n}\n\n#stepper_svg_placeholder {\n  fill: #ccc;\n  font-size: 0.8em;\n}\n\n.scene_delete rect {\n  fill: transparent;\n  stroke: #ccc;\n  stroke-width: '1px';\n}\n\n.frame_hover {\n  height: 300px;\n  width: 300px;\n  background: #fff;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  position: absolute;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.option_picker {\n  float: left;\n  display: flex;\n  justify-content: center;\n  border-right: 1px solid #999;\n  padding-bottom: 0px;\n  padding-top: 0px;\n  padding-left: 5px;\n  padding-right: 5px;\n  margin: 0px;\n}\n\n#main_svg {\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.legend {\n  margin: 0px 0px 0px 0px;\n  fill: none;\n  position: absolute;\n  top: 0px;\n  left: 0px;\n  z-index: 1;\n}\n\n.legend_rect {\n  fill: #fff;\n  stroke: #aaa;\n  stroke-width: 1px;\n}\n\n.legend_title {\n  fill: #666;\n  font-size: 12px;\n  font-weight: bolder;\n  font-stretch: expanded;\n}\n\n.legend:hover > .legend_rect:hover, .legend_title:hover {\n  cursor:move;\n}\n\n.legend:hover > .legend_rect {\n  stroke: #f00;\n}\n\n.legend_element_g text {\n  fill: #666;\n  font-size: 12px;\n  cursor:pointer;\n}\n\n.legend_element rect {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.time_elapsed {\n  fill:#aaa;\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.timeline_frame {\n  fill:transparent;\n  opacity: 0.1;\n  stroke: none;\n}\n\n.timeline_frame:hover {\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_facet_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_segment_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.form-group {\n  margin-bottom: 0px;\n  display:inline-block;\n}\n\n.radio-inline {\n  padding-left: 0px;\n  margin-left: 0px;\n}\n\n.radio-inline label {\n  padding-left: 0px;\n}\n\n.radio-inline input[type=radio] {\n  margin-left: 0px;\n}\n\n.unit_circle {\n  fill: #fff;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.x_axis path, .interim_duration_axis path, .timeline_axis path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  z-index: -1;\n}\n\n.radial_axis_tick path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n@keyframes dash {\n  to {\n    stroke-dashoffset: 0;\n  }\n}\n\n@keyframes undash {\n  from {\n    stroke-dashoffset: 0;\n  }\n  to {\n    stroke-dashoffset: -110%;\n  }\n}\n\n.x_axis line, .interim_duration_axis line, .timeline_axis line {\n  fill: none;\n  stroke: #999;\n  shape-rendering: crispEdges;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n.x_axis text, .interim_duration_axis text, .timeline_axis text {\n  font-size: 12px;\n  z-index: 1;\n}\n\n.event_rect {\n  fill: #8dd3c7;\n  stroke: #fff;\n}\n\n.event_rect:hover {\n  fill: #8dd3c7;\n  stroke: #00f;\n}\n\n.event_span, .event_span_component {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.event_span_selected {\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.event_dropline {\n  stroke: #00f;\n  stroke-width: 0px;\n}\n\n.frame_resizer:hover {\n  cursor: ew-resize;\n}\n\n.start_end_label, .radial_axis_tick, .weekday_label {\n  font-size: 12px;\n}\n\n.facet_title, .segment_title {\n  font-size: 13px;\n  font-weight:bold;\n  font-stretch: extra-expanded;\n}\n\n.event_label {\n  fill: #f00;\n  font-size: 12px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n.event_date {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.spiral_seq_number {\n  font: 10px sans-serif;\n  fill: #666;\n}\n\n.event_text {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.year_cell, .day_cell, .rad_center, .day_cell_rect {\n  stroke: #aaa;\n  stroke-width: 0.25px;\n  fill: none;\n}\n\n.rad_track {\n  stroke: #999;\n  stroke-width: 0.5px;\n  fill: none;\n  z-index: -1;\n}\n\n.timeline_start_line {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.year_label {\n  font-size: 10px;\n}\n\n.day_cell_label {\n  font-size: 7px;\n}\n\n.month {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n}\n\n.time_elapsed {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n  fill: #ccc;\n}\n\n.time_elapsed:hover {\n  stroke: #00f;\n  stroke-width: 0.5px;\n  fill: #00f;\n  fill-opacity: 0.25;\n}\n\n.point_event {\n  fill: #000;\n  fill-opacity: .1;\n  stroke: #000;\n  stroke-width: 0.5px;\n}\n\n.event_start {\n  fill: #f00;\n  fill-opacity: .1;\n  stroke: #f00;\n  stroke-width: 0.5px;\n}\n\n.event_end {\n  fill: #00f;\n  fill-opacity: .1;\n  stroke: #00f;\n  stroke-width: 0.5px;\n}\n\n.non_event {\n  display: none;\n}\n\n.span_line {\n  stroke: #00f;\n  stroke-opacity: 0.2;\n  stroke-width: 5px;\n}\n\n.span_line:hover {\n  stroke: #ff0;\n  stroke-opacity: 1;\n  stroke-width: 5px;\n}\n\n.arc {\n  fill: #aaa;\n}\n\n.line {\n  fill: none;\n  stroke: #aaa;\n  stroke-width: 1px;\n  stroke-linejoin: round;\n  stroke-linecap: round;\n  z-index:-1;\n}\n\n.path_end_indicator {\n  fill: none;\n  stroke: #fff;\n}\n\n#timecurve{\n  fill:none;\n  stroke-width:10px;\n  stroke:#777777;\n  opacity: .2;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n/* introjs overrides */\n\n.introjs-overlay {\n  background-color: #999;\n  background: -webkit-radial-gradient(center,ellipse cover,rgba(153,153,153,0.4) 0,rgba(153,153,153,0.9) 100%)\n}\n\n.introjs-helperLayer {\n  border: 1px solid #f00;\n  background-color: transparent;\n}\n\n.timeline_storyteller-container {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  box-sizing: border-box;\n  padding-bottom: 100px;\n  padding-top: 100px;\n  padding-left: 75px;\n  padding-right: 70px;\n  text-align: center;\n}\n\n.playback_mode .timeline_storyteller-container {\n  padding-left: 0;\n  padding-right: 0;\n}\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n}\n\n.timeline_storyteller {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n\n.loading_data_indicator {\n  font-weight: bold;\n  margin-bottom: 10px;\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n\nbody, input, textarea, select, text {\n  font-family: \"Segoe UI Web Regular\",\"wf_segoe-ui_normal\",\"Segoe UI\",\"Segoe UI Symbol\",\"Myriad\",\"Calibri\",\"UnDotum\",\"Optima\",\"Tahoma\",\"Century Gothic\",\"Helvetica Neue\",\"BBAlpha Sans\",\"S60 Sans\",\"Arial\",sans-serif;\n  margin: 0px;\n}\n\na {\n  text-decoration: none;\n  color: #626262;\n}\n\na:hover {\n  text-decoration: underline;\n}\n\n.img_btn_enabled {\n  filter: grayscale(0%);\n  cursor: pointer;\n  opacity: 1;\n  transition: all 0.3s ease;\n  border: 1px solid #CCCCCC;\n  margin: 2px;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px;\n  display:inline-block;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n  user-select: none;\n}\n\n.img_btn_enabled:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.import-button-container {\n  position:absolute;\n  left:0;\n  top:0;\n  width:100%;\n  height:100%;\n  margin:2px;\n}\n\n.import-button {\n  margin-top:20px;\n  margin-bottom:10px;\n  margin-right:6px;\n  position:relative;\n}\n\n.import-button:hover {\n  cursor: pointer;\n}\n\n.import-button:hover img {\n  border: 1px solid #f00;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.img_btn_disabled {\n  filter: grayscale(100%);\n  cursor: default;\n  border: 1px solid #cccccc;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n  user-select: none;\n}\n\n.filter_header_icon {\n  cursor: default;\n  border: 1px solid transparent;\n  user-select: none;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n}\n\n.intro_btn {\n  width: 36px;\n  height: 36px;\n  float: left;\n}\n\n.text_input {\n  margin: 0px ;\n  line-height: 18px;\n  font-size: 14px;\n  padding: 9px;\n  border: 0;\n}\n\ninput {\n  display: block;\n  float: left;\n}\n\nlabel > input{ /* HIDE RADIO */\n  visibility: hidden; /* Makes input not-clickable */\n  position: absolute; /* Remove input from document flow */\n  height: 0px;\n  width: 0px;\n}\n\ntext {\n  color: #666;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  user-select: none;\n  -ms-user-select: none;\n  cursor: default;\n}\n\n#footer {\n  bottom: 0px;\n  left: 0px;\n  position: absolute;\n  z-index: 1;\n  background: #F2F2F2;\n  border: 1px solid #999;\n  text-align: right;\n  vertical-align: middle;\n  width: 100%;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select:none;\n}\n\n#footer_left {\n  bottom: 0px;\n  left: 0px;\n  z-index: 1;\n  text-align: left;\n  vertical-align: middle;\n  margin-right: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: left;\n}\n\n#footer_right {\n  bottom: 0px;\n  right: 0px;\n  z-index: 1;\n  text-align: right;\n  vertical-align: middle;\n  margin-left: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: right;\n}\n\n.control_div {\n  background: #F2F2F2;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.ui_label {\n  margin-left: auto;\n  margin-right: auto;\n  position: absolute;\n  text-align: center;\n  vertical-align: top;\n  font-size: 12px;\n}\n\n#menu_div {\n  left: -50px;\n  top: 50%;\n  width: 34px;\n  margin-top: -166px;\n  position: absolute;\n  padding: 5px;\n}\n\n.menu_label {\n  font-weight: normal;\n  font-size: 10px;\n}\n\n.menu_hr {\n  margin-bottom: 0px;\n  margin-top: 5px\n}\n\n.menu_rb {\n  float: left;\n}\n\n.menu_rb > input:disabled + img{ /* IMAGE STYLES */\n  cursor:default;\n  opacity: 0.3;\n}\n\n.menu_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #ccc;\n  cursor:pointer;\n  opacity: 1;\n}\n\n.menu_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.menu_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.menu_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n\n#menu_div input {\n  margin-top: 5px;\n  margin-bottom: 5px;\n}\n\n\n#export_formats .img_btn_disabled, #control_panel .img_btn_disabled{\n  opacity: 0.3;\n}\n\n#filter_div {\n  left: 56px;\n  top: 50%;\n  margin-top: -166px;\n  padding: 5px;\n  position: absolute;\n  min-width: 280px;\n}\n\n.filter_div_section {\n  position: relative;\n  clear: both;\n}\n\n.filter_div_header {\n  float: left;\n  width: 44px;\n  margin: 5px;\n  top: 50%;\n  transform: translate(0%,50%);\n}\n\n.filter_div_header text {\n  margin-left: -5px;\n}\n\n\n.filter_label {\n  display: block;\n}\n\n.filter_select {\n  margin-top: 5px;\n  width: 225px;\n  font-size: 10px;\n  border: solid #999 1px;\n  cursor:pointer;\n}\n\n.filter_select option:focus {\n  background-color: #000;\n}\n\nselect > option:focus:active {\n  background-color: #000;\n}\n\nselect > option {\n  background-color: #fff;\n  color: black;\n}\n\nselect > option:hover {\n  background-color: #999;\n  color: white;\n}\n\n#option_div {\n  top: 10px;\n  left: 50%;\n  width:712px;\n  margin-left: -356px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 5px;\n  user-select:none;\n}\n\n.option_rb {\n  margin-top: 20px;\n  vertical-align: top;\n  display: inline-block;\n  text-align: center;\n}\n\n.option_rb > input + img{ /* IMAGE STYLES */\n  cursor:pointer;\n  border: 2px solid transparent;\n}\n\n.option_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.option_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #eee;\n  background-color: #fff;\n}\n\n.option_rb > .img_btn_enabled {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));\n  background-image: -webkit-linear-gradient(top, #fff, #fff);\n  background-image: -moz-linear-gradient(top, #fff, #fff);\n  background-image: -ms-linear-gradient(top, #fff, #fff);\n  background-image: -o-linear-gradient(top, #fff, #fff);\n  background-image: linear-gradient(to bottom, #fff, #fff);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#fff);\n}\n\n.option_rb > .img_btn_enabled:hover {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));\n  background-image: -webkit-linear-gradient(top, #fff, #eee);\n  background-image: -moz-linear-gradient(top, #fff, #eee);\n  background-image: -ms-linear-gradient(top, #fff, #eee);\n  background-image: -o-linear-gradient(top, #fff, #eee);\n  background-image: linear-gradient(to bottom, #fff, #eee);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#eee);\n}\n\n.option_rb > input:disabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  filter: grayscale(100%);\n}\n\n.option_rb_label {\n  font-weight: normal;\n  font-size: 9px;\n  display: block;\n  color: #777;\n  user-select:none;\n}\n\n#rb_hint {\n  position: absolute;\n  border: 1px solid #444;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  border-radius: 10px;\n  max-width: 220px;\n  z-index: 1;\n  font-size: 12px;\n  padding: 5px;\n  font-style: italic;\n  background-color: #444;\n  color: #fff;\n  -webkit-box-shadow: 2px 2px 4px #888;\n  -moz-box-shadow: 2px 2px 4px #888;\n  box-shadow: 2px 2px 4px #888;\n}\n\n.rb_hint_left:before {\n  content: ' ';\n  position: absolute;\n  width: 0;\n  height: 0;\n  left: -15px;\n  top: 10px;\n  border-width: 10px 15px 10px 0;\n  border-style: solid;\n  border-color: transparent #444;\n}\n\n.rb_hint_right:before {\n  content: ' ';\n  position: absolute;\n  width: 0;\n  height: 0;\n  right: -15px;\n  top: 10px;\n  border-width: 10px 0px 10px 15px;\n  border-style: solid;\n  border-color: transparent #444;\n}\n\n.rb_hint_rep_highlight {\n  font-weight: bolder;\n  color: #2DAAE1;\n}\n\n.rb_hint_scale_highlight {\n  font-weight: bolder;\n  color: #E94E1B;\n}\n\n.rb_hint_layout_highlight {\n  font-weight: bolder;\n  color: #94C11F;\n}\n\n#hint_div {\n  right: 15px;\n  top: 20px;\n  height: 34px;\n  position: absolute;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.introjs-hints a {\n    margin-left: -15px;\n    margin-top: -30px;\n}\n\n.introjs-hint-dot {\n  border: 10px solid rgba(255,165,0,0.7);\n}\n\n#export_div {\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#export_formats {\n  text-align: center;\n  display: inline-flex;\n}\n\n#opt_out_div {\n  margin-top: 10px;\n}\n\n#import_div {\n  text-align: center;\n  position: absolute;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#boilerplate {\n  justify-content: center;\n  height: 25px;\n}\n\n#disclaimer {\n  justify-content: center;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  padding: 5px;\n  clear: both;\n}\n\n.boilerplate_title {\n  text-align: center;\n  font-weight: 600;\n  font-stretch: ultra-expanded;\n  font-size: 16px;\n  color: #000;\n  bottom: 0px;\n  margin-left: -17px\n}\n\n.disclaimer_title {\n  text-align: center;\n  font-size: 12px;\n  color: #333;\n  margin-left: -17px\n}\n\n.metadata_title {\n  font-weight: bold;\n  font-size: 12px;\n  color: #333;\n  vertical-align: sub;\n}\n\n.boilerplate_text {\n  text-align: center;\n  font-size: 12px;\n  font-weight: bold;\n  color: #777;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.disclaimer_text {\n  font-weight: normal;\n  font-size: 10px;\n  text-align: center;\n  color: #333;\n}\n\n.metadata_content {\n  font-weight: normal;\n  font-size: 12px;\n  text-align: left;\n  color: #333;\n  margin-right: 10px;\n}\n\n.category_element {\n  width: auto;\n}\n\ninput[type=\"color\"]::-webkit-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-webkit-color-swatch {\n\tborder: none;\n}\n\ninput[type=\"color\"]::-moz-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-moz-color-swatch {\n\tborder: none;\n}\n\n.colorpicker_wrapper {\n  float: left;\n  width: 12px;\n  height: 12px;\n  margin-right: 5px;\n  margin-top: 2px;\n  cursor: pointer;\n  border: 1px solid #999;\n  padding: 0;\n  box-shadow: #999 0px 1px 1px;\n  -webkit-box-shadow: #999 0px 1px 1px;\n  -moz-box-shadow: #999 0px 1px 1px ;\n}\n\n.colorpicker {\n  /*width: 10px;\n  height: 10px;*/\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  /*margin-right: 5px;\n  margin-top: 2px;*/\n  padding: 0;\n  /*opacity: 0;*/\n}\n\n.colorpicker:hover {\n  border: 1px solid #f00;\n}\n\n.colorpicker_wrapper:hover {\n  border: 1px solid #f00;\n}\n\n.footer_text_left {\n  text-align: left;\n  font-size: .8em;\n  margin-left: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.footer_text {\n  text-align: right;\n  font-size: .8em;\n  margin-right: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n#logo_div {\n  left: 10px;\n  top: 10px;\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select: none;\n}\n\n.ms-logo {\n  height: 23px;\n  max-height: 23px;\n  display: block;\n  vertical-align: baseline;\n}\n\n#data_picker {\n  width: 650px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  display: flex;\n}\n\n.data_story_picker {\n  /*float: left;*/\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  width: 320px;\n  border-right: 1px solid #999;\n}\n\n#timeline_metadata {\n  width: 650px;\n  transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n  font-size: 12px;\n}\n\n#timeline_metadata_contents{\n  width: 630px;\n  float: left;\n  padding-left: 10px;\n  padding-right: 10px;\n  padding-bottom: 0px;\n}\n\n.timeline_metadata_contents_div{\n  width: 630px;\n  clear: both;\n}\n\n#draw_timeline {\n  margin-left: 5px;\n  margin-left: 5px;\n  margin-bottom: 5px;\n  margin-top: 0px;\n  width: 320px;\n  padding-top: 15px;\n  padding-bottom: 15px;\n  height: 25px;\n  bottom: 0px;\n  right: 0px;\n  border-radius: 10px;\n  background-color: #ff7f0e;\n  border-color: #da6600;\n  background: #ff7f0e;\n  background-image: -webkit-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -moz-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -ms-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -o-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: linear-gradient(to bottom, #ff7f0e, #da6600);\n}\n\n#draw_timeline:hover {\n  background-color: #da6600;\n  border-color: #ff7f0e;\n  background: #da6600;\n  background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -o-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: linear-gradient(to bottom, #da6600, #ff7f0e);\n}\n\n#gdocs_info {\n  width: 650px;\n  height: 0px;\n  justify-content: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n}\n\n.gdocs_info_element {\n  display: none;\n  vertical-align: middle;\n  text-align: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  margin: 0px;\n  float: left;\n  height: 27px;\n}\n\n.gdocs_info_element .text_input {\n  padding: 0;\n  padding-left: 5px;\n  margin-bottom: 5px;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  border-left: none;\n}\n\n#gdoc_spreadsheet_key_input {\n  margin-left: 0px;\n  width: 319px;\n}\n\n#gdoc_worksheet_title_input {\n  margin-left: 0px;\n  width: 295px;\n}\n\n.gdocs_info_element .img_btn_enabled {\n  margin-left: 2px;\n  margin-top: 0px;\n}\n\n.inputfile {\n  width: 0px;\n  height: 0px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;\n  margin: auto;\n}\n\n#demo_dataset_picker {\n  width: 40px;\n  height: 40px;\n  opacity: 0;\n  border: 0px solid transparent;\n  cursor: pointer;\n  position: absolute;\n  z-index: 1;\n  font-size: 10px;\n  background: transparent;\n}\n\n.import_label > select + img {\n  border:1px solid #cccccc;\n}\n\n.import_label > select:hover + img:hover{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 1px solid #f00;\n}\n.import_label {\n  margin-top: 10px;\n}\n\n.demo_dataset_label {\n  border: 1px solid #cccccc;\n  width: 40px;\n  height: 40px;\n  margin-right: 2px;\n  margin-top: 20px;\n  border-radius: 5px;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n}\n\n.demo_dataset_label:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.annotation_div {\n  position: absolute;\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  left: 56px;\n  top: 50%;\n}\n\n.annotation_circle {\n  fill: #fff;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.annotation_line {\n  fill: none;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.event_annotation_line {\n  stroke: dashed .5px #aaa;\n}\n\n.annotation_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.annotation_control {\n  border: 1px solid #ccc;\n  stroke-width: 1px;\n  stroke: #ccc;\n  cursor: pointer;\n  fill: transparent;\n}\n\n#caption_div {\n  margin-top: -95px;\n}\n\n.caption_frame, .image_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.caption_drag_area, .annotation_drag_area, .image_drag_area {\n  fill: transparent;\n  fill-opacity: 0;\n  stroke-width: 1px;\n  stroke: transparent;\n  cursor: move;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n}\n\n.caption_label {\n  font-size: 18px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n#add_caption_text_input {\n  resize: vertical;\n  display: block;\n  float: left;\n  padding: 10px;\n}\n\n#image_div {\n  margin-top: -55px;\n}\n\n.onhover {\n  opacity: 0.33;\n}\n\n.onhover:hover {\n  opacity: 1;\n}\n\n#playback_bar {\n  display: flex;\n  align-items: center;\n  width: 100%;\n}\n\n#navigation_div {\n  left: 50%;\n  width: 70%;\n  margin-left: -35%;\n  bottom: -100px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 5px;\n}\n\n.nav_cb > input:enabled:checked + img {\n  border: 1px solid #f00;\n}\n\n\n#playback_bar .nav_bttn {\n  flex: 0;\n}\n\n.nav_bttn {\n  display: table-cell;\n  vertical-align: middle;\n  width: 30px;\n}\n\n#stepper_container {\n  height: 50px;\n  padding: 0px;\n  margin-right: 5px;\n  background-color: white;\n  border: 1px solid #999;\n  padding: 5px;\n  border-radius: 5px;\n  vertical-align: middle;\n  overflow-y: hidden;\n  overflow-x: overlay;\n  flex: 1;\n}\n\n#stepper_svg {\n  height: 50px;\n  padding: 0px;\n  float: left;\n}\n\n#stepper_svg_placeholder {\n  fill: #ccc;\n  font-size: 0.8em;\n}\n\n.scene_delete rect {\n  fill: transparent;\n  stroke: #ccc;\n  stroke-width: '1px';\n}\n\n.frame_hover {\n  height: 300px;\n  width: 300px;\n  background: #fff;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  position: absolute;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.option_picker {\n  float: left;\n  display: flex;\n  justify-content: center;\n  border-right: 1px solid #999;\n  padding-bottom: 0px;\n  padding-top: 0px;\n  padding-left: 5px;\n  padding-right: 5px;\n  margin: 0px;\n}\n\n#main_svg {\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.legend {\n  margin: 0px 0px 0px 0px;\n  fill: none;\n  position: absolute;\n  top: 0px;\n  left: 0px;\n  z-index: 1;\n}\n\n.legend_rect {\n  fill: #fff;\n  stroke: #aaa;\n  stroke-width: 1px;\n}\n\n.legend_title {\n  fill: #666;\n  font-size: 12px;\n  font-weight: bolder;\n  font-stretch: expanded;\n}\n\n.legend:hover > .legend_rect:hover, .legend_title:hover {\n  cursor:move;\n}\n\n.legend:hover > .legend_rect {\n  stroke: #f00;\n}\n\n.legend_element_g text {\n  fill: #666;\n  font-size: 12px;\n  cursor:pointer;\n}\n\n.legend_element rect {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.time_elapsed {\n  fill:#aaa;\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.timeline_frame {\n  fill:transparent;\n  opacity: 0.1;\n  stroke: none;\n}\n\n.timeline_frame:hover {\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_facet_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_segment_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.form-group {\n  margin-bottom: 0px;\n  display:inline-block;\n}\n\n.radio-inline {\n  padding-left: 0px;\n  margin-left: 0px;\n}\n\n.radio-inline label {\n  padding-left: 0px;\n}\n\n.radio-inline input[type=radio] {\n  margin-left: 0px;\n}\n\n.unit_circle {\n  fill: #fff;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.x_axis path, .interim_duration_axis path, .timeline_axis path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  z-index: -1;\n}\n\n.radial_axis_tick path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n@keyframes dash {\n  to {\n    stroke-dashoffset: 0;\n  }\n}\n\n@keyframes undash {\n  from {\n    stroke-dashoffset: 0;\n  }\n  to {\n    stroke-dashoffset: -110%;\n  }\n}\n\n.x_axis line, .interim_duration_axis line, .timeline_axis line {\n  fill: none;\n  stroke: #999;\n  shape-rendering: crispEdges;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n.x_axis text, .interim_duration_axis text, .timeline_axis text {\n  font-size: 12px;\n  z-index: 1;\n}\n\n.event_rect {\n  fill: #8dd3c7;\n  stroke: #fff;\n}\n\n.event_rect:hover {\n  fill: #8dd3c7;\n  stroke: #00f;\n}\n\n.event_span, .event_span_component {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.event_span_selected {\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.event_dropline {\n  stroke: #00f;\n  stroke-width: 0px;\n}\n\n.frame_resizer:hover {\n  cursor: ew-resize;\n}\n\n.start_end_label, .radial_axis_tick, .weekday_label {\n  font-size: 12px;\n}\n\n.facet_title, .segment_title {\n  font-size: 13px;\n  font-weight:bold;\n  font-stretch: extra-expanded;\n}\n\n.event_label {\n  fill: #f00;\n  font-size: 12px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n.event_date {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.spiral_seq_number {\n  font: 10px sans-serif;\n  fill: #666;\n}\n\n.event_text {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.year_cell, .day_cell, .rad_center, .day_cell_rect {\n  stroke: #aaa;\n  stroke-width: 0.25px;\n  fill: none;\n}\n\n.rad_track {\n  stroke: #999;\n  stroke-width: 0.5px;\n  fill: none;\n  z-index: -1;\n}\n\n.timeline_start_line {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.year_label {\n  font-size: 10px;\n}\n\n.day_cell_label {\n  font-size: 7px;\n}\n\n.month {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n}\n\n.time_elapsed {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n  fill: #ccc;\n}\n\n.time_elapsed:hover {\n  stroke: #00f;\n  stroke-width: 0.5px;\n  fill: #00f;\n  fill-opacity: 0.25;\n}\n\n.point_event {\n  fill: #000;\n  fill-opacity: .1;\n  stroke: #000;\n  stroke-width: 0.5px;\n}\n\n.event_start {\n  fill: #f00;\n  fill-opacity: .1;\n  stroke: #f00;\n  stroke-width: 0.5px;\n}\n\n.event_end {\n  fill: #00f;\n  fill-opacity: .1;\n  stroke: #00f;\n  stroke-width: 0.5px;\n}\n\n.non_event {\n  display: none;\n}\n\n.span_line {\n  stroke: #00f;\n  stroke-opacity: 0.2;\n  stroke-width: 5px;\n}\n\n.span_line:hover {\n  stroke: #ff0;\n  stroke-opacity: 1;\n  stroke-width: 5px;\n}\n\n.arc {\n  fill: #aaa;\n}\n\n.line {\n  fill: none;\n  stroke: #aaa;\n  stroke-width: 1px;\n  stroke-linejoin: round;\n  stroke-linecap: round;\n  z-index:-1;\n}\n\n.path_end_indicator {\n  fill: none;\n  stroke: #fff;\n}\n\n#timecurve{\n  fill:none;\n  stroke-width:10px;\n  stroke:#777777;\n  opacity: .2;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n/* introjs overrides */\n\n.introjs-overlay {\n  background-color: #999;\n  background: -webkit-radial-gradient(center,ellipse cover,rgba(153,153,153,0.4) 0,rgba(153,153,153,0.9) 100%)\n}\n\n.introjs-helperLayer {\n  border: 1px solid #f00;\n  background-color: transparent;\n}\n\n.timeline_storyteller-container {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  box-sizing: border-box;\n  padding-bottom: 50px;\n  padding-top: 50px;\n  padding-left: 50px;\n  padding-right: 50px;\n  text-align: center;\n}\n\n.playback_mode .timeline_storyteller-container {\n  padding-left: 0;\n  padding-right: 0;\n}\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n}\n\n.timeline_storyteller {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n\n.loading_data_indicator {\n  font-weight: bold;\n  margin-bottom: 10px;\n}", ""]);
 
 // exports
 

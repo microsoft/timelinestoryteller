@@ -402,15 +402,44 @@ select > option:hover {
 
 #rb_hint {
   position: absolute;
-  width: 702px;
-  top: 108px;
-  left: 50%;
-  margin-left: -356px;
+  border: 1px solid #444;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  max-width: 220px;
+  z-index: 1;
   font-size: 12px;
   padding: 5px;
   font-style: italic;
-  background-color: #fff;
-  color: #666;
+  background-color: #444;
+  color: #fff;
+  -webkit-box-shadow: 2px 2px 4px #888;
+  -moz-box-shadow: 2px 2px 4px #888;
+  box-shadow: 2px 2px 4px #888;
+}
+
+.rb_hint_left:before {
+  content: ' ';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -15px;
+  top: 10px;
+  border-width: 10px 15px 10px 0;
+  border-style: solid;
+  border-color: transparent #444;
+}
+
+.rb_hint_right:before {
+  content: ' ';
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: -15px;
+  top: 10px;
+  border-width: 10px 0px 10px 15px;
+  border-style: solid;
+  border-color: transparent #444;
 }
 
 .rb_hint_rep_highlight {
@@ -924,13 +953,13 @@ input[type="color"]::-moz-color-swatch {
 
 #navigation_div {
   left: 50%;
-  width: 90%;
-  margin-left: -45%;
+  width: 70%;
+  margin-left: -35%;
   bottom: -100px;
   position: absolute;
   padding-bottom: 5px;
   padding-left: 0px;
-  padding-right: 5px;
+  padding-right: 0px;
   padding-top: 5px;
 }
 
@@ -1344,10 +1373,10 @@ input[type="color"]::-moz-color-swatch {
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
-  padding-bottom: 100px;
-  padding-top: 100px;
-  padding-left: 75px;
-  padding-right: 70px;
+  padding-bottom: 50px;
+  padding-top: 50px;
+  padding-left: 50px;
+  padding-right: 50px;
   text-align: center;
 }
 
