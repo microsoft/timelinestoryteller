@@ -19,7 +19,6 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
     y_pos = y_rel_pos * globals.height;
 
   var orig_image_weight = image_width,
-    orig_image_height = image_height,
     min_image_width = 10;
 
   var scaling_ratio = 1;
@@ -135,9 +134,6 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
       };
     })
     .on("drag", function () {
-      var prev_image_width = d3.select(this.parentNode).select(".image_frame").attr("width"),
-        prev_image_height = d3.select(this.parentNode).select(".image_frame").attr("height");
-
       d3.select(this).attr("x", d3.max([x_pos + image_width, x_pos + (d3.event.x - x_pos)]));
 
       image_width = d3.max([min_image_width, d3.event.x - x_pos]);
@@ -180,7 +176,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
   var image_defs = timeline_image.append("defs");
 
   var clipPathId = nextId();
-  var circle_clip_path = image_defs.append("clipPath")
+  image_defs.append("clipPath")
     .attr("id", "circlepath" + clipPathId)
     .attr("class", "image-clip-path")
     .append("circle")
@@ -188,7 +184,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
     .attr("cy", y_pos + image_height / 2)
     .attr("r", image_width / 2);
 
-  var image_frame = timeline_image.append("svg:image")
+  timeline_image.append("svg:image")
     .attr("xlink:href", image_url)
     .attr("class", "image_frame")
     .attr("clip-path", function () {
@@ -278,7 +274,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
     .append("title")
     .text("Remove image");
 
-  var image_drag_area = timeline_image.append("rect")
+  timeline_image.append("rect")
     .attr("class", "image_drag_area")
     .attr("x", x_pos)
     .attr("y", y_pos)

@@ -127,7 +127,6 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         .attr("filter", "none");
     });
 
-  var p;
   var drag = d3.behavior.drag()
     .origin(function () {
       var t = d3.select(this);
@@ -169,8 +168,6 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         .attr("x", x_pos + x_anno_offset + label_width + 7.5 + 20)
         .attr("y", y_pos + y_anno_offset);
 
-      var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
-
       leader_line_path[2] = {
         x: x_pos + x_anno_offset,
         y: y_pos + y_anno_offset + 18
@@ -184,7 +181,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         leader_line_path[2].x = x_pos + x_anno_offset + label_width;
       }
 
-      var p = d3.select(this.parentNode).select(".annotation_line")
+      d3.select(this.parentNode).select(".annotation_line")
         .data([leader_line_path])
         .attr("d", function (d) {
           return drawLeaderLine(d);
@@ -235,8 +232,6 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         .attr("x", x_pos + x_anno_offset + label_width + 7.5 + 20)
         .attr("y", y_pos + y_anno_offset);
 
-      var annotation_line_y2 = d3.select(this.parentNode).select(".annotation_frame").attr("height") / 2;
-
       leader_line_path[2] = {
         x: x_pos + x_anno_offset,
         y: y_pos + y_anno_offset + 18
@@ -250,7 +245,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         leader_line_path[2].x = x_pos + x_anno_offset + label_width;
       }
 
-      var p = d3.select(this.parentNode).select(".annotation_line")
+      d3.select(this.parentNode).select(".annotation_line")
         .data([leader_line_path])
         .attr("d", function (d) {
           return drawLeaderLine(d);
@@ -389,7 +384,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         .attr("dy", dy + "em")
         .attr("x", x_pos + x_anno_offset + 7.5)
         .attr("y", y_pos + y_anno_offset + annotation_buffer);
-    while (word = words.pop()) {
+    while (word = words.pop()) { // eslint-disable-line no-cond-assign
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {

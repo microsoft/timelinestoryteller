@@ -234,7 +234,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
         .attr("dy", dy + "em")
         .attr("x", x_pos + 7.5)
         .attr("y", y_pos + globals.unit_width);
-    while (word = words.pop()) {
+    while (word = words.pop()) { // eslint-disable-line no-cond-assign
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {
