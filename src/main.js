@@ -428,7 +428,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr({
       type: "image",
       name: "Export PNG",
-      class: "img_btn_disabled",
+      class: "img_btn_disabled export--image",
       src: imageUrls("png.png"),
       height: 30,
       width: 30,
@@ -448,7 +448,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr({
       type: "image",
       name: "Export SVG",
-      class: "img_btn_disabled",
+      class: "img_btn_disabled export--image",
       src: imageUrls("svg.png"),
       height: 30,
       width: 30,
@@ -468,7 +468,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .attr({
       type: "image",
       name: "Export animated GIF",
-      class: "img_btn_disabled",
+      class: "img_btn_disabled export--image",
       src: imageUrls("gif.png"),
       height: 30,
       width: 30,
@@ -4617,6 +4617,12 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       }]
     }
   },
+  export: {
+    /**
+     * If true, the image export options will be available
+     */
+    images: true
+  },
   import: {
     storyMenu: {
       items: {
@@ -4978,11 +4984,17 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   globals.current_scene_index++;
 
-  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, {
-    backgroundColor: "white",
-    encoderType: "image/jpeg",
-    scale: 300 / Math.max(this._render_width, this._render_height)
-  });
+  var compressed = !(this.options.export && this.options.export.images);
+  var renderOptions = {
+    backgroundColor: "white"
+  };
+
+  if (compressed) {
+    renderOptions.encoderType = "image/jpeg";
+    renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
+  }
+
+  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
 
   var that = this;
   var checkExist = setInterval(function () {
@@ -5152,6 +5164,9 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
 
   // showImportLoadDataOptions
   selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "none" : null);
+
+  // allowImageExport
+  selectAllWithParent(".export--image").style("display", (!options.export || options.export.images === false) ? "none" : null);
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
