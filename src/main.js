@@ -4403,8 +4403,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._loadDataFromStory = function (story, min_story_height) {
     var timelineData = globals.timeline_json_data;
 
-    // The original format
-    if (!story.version) {
+    if (story.timeline_json_data) {
       timelineData = story.timeline_json_data;
     }
 
