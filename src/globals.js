@@ -93,7 +93,6 @@ var globals = {
   annotation_list: [],
   current_scene_index: -1,
   gif_index: 0,
-  playback_mode: false,
   filter_set_length: 0,
   leader_line_styles: ["Rectangular", "Octoline", "Curved"],
   leader_line_style: 1, // 0=OCTO, 1=RECT, 2=CURVE
@@ -113,6 +112,7 @@ var globals = {
   color_palette: [],
   color_swap_target: 0,
   use_custom_palette: false,
+  has_tz_offset: false,
   story_tz_offset: 0,
   serverless: false,
   socket: u
