@@ -2223,8 +2223,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .text("Delete Scene");
 
     navigation_step_svg.selectAll(".framePoint")
-      .on("mouseover", function (d) {
-        var x_pos = d3.min([(d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + 100, instance._component_width - globals.margin.right - globals.margin.left - getScrollbarWidth() - 300]);
+      .on("mouseover", function () {
+        const popupSize = 300;
+        const frameRect = this.getBoundingClientRect();
+        const relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
+        const offscreenAmount = (frameRect.right + popupSize) - relativeParentRect.right;
+
+        // If we're offscreen, then adjust the position to take the offsceen amount into account
+        const x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
+        const y_pos = frameRect.top - relativeParentRect.top;
 
         var img_src = d3.select(this).select("image").attr("href");
 
@@ -2236,12 +2243,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         selectWithParent().append("div")
           .attr("class", "frame_hover")
-          .style("left", x_pos + "px")
-          .style("top", (instance._component_height - globals.margin.bottom - 320) + "px")
+          .style("left", `${x_pos}px`)
+          .style("top", `${y_pos - popupSize - 20}px`)
           .append("svg")
           .style("padding", "0px")
-          .style("width", "300px")
-          .style("height", "300px")
+          .style("width", `${popupSize}px`)
+          .style("height", `${popupSize}px`)
           .append("svg:image")
           .attr("xlink:href", img_src)
           .attr("x", 2)

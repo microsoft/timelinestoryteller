@@ -53,5 +53,7 @@ describe("TimelineStoryteller", function () {
     it("should allow for the configuration of the import data story options");
     it("should hide the load data section if there are no data story options");
     it("should import and preprocess data from given story correctly");
+    it("should show the frame popup in the correct position");
+    it("should show the frame popup on the screen, it should not overflow off the screen when the component is small");
   });
 });
