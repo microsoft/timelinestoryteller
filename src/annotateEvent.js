@@ -140,14 +140,6 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       x_anno_offset = d3.event.x - x_pos;
       y_anno_offset = d3.event.y - y_pos;
 
-      var i = 0;
-
-      while (globals.annotation_list[i].id !== d3.select(this.parentNode).attr("id")) {
-        i++;
-      }
-      globals.annotation_list[i].x_anno_offset = x_anno_offset;
-      globals.annotation_list[i].y_anno_offset = y_anno_offset;
-
       d3.select(this)
         .attr("x", x_pos + x_anno_offset)
         .attr("y", y_pos + y_anno_offset);
@@ -186,6 +178,16 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
         .attr("d", function (d) {
           return drawLeaderLine(d);
         });
+
+      const myId = d3.select(this.parentNode).attr("id");
+      const annoList = globals.annotation_list || [];
+      for (var i = 0; i < annoList.length; i++) {
+        if (myId === annoList[i].id) {
+          annoList[i].x_anno_offset = x_anno_offset;
+          annoList[i].y_anno_offset = y_anno_offset;
+          break;
+        }
+      }
     })
     .on("dragend", function () {
       logEvent("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
