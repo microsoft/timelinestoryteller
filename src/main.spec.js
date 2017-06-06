@@ -21,8 +21,10 @@ describe("TimelineStoryteller", function () {
   });
   describe("playback", function () {
     it("should draw annotations with the z-index in which they were created", function (done) {
+      this.timeout(5000);
+
       var teller = createInstance();
-      teller.loadStory(JSON.stringify(sceneWithAnnotations), 0);
+      teller.load(sceneWithAnnotations, true, true, 0);
 
       setTimeout(function () {
         var labels = [];
@@ -37,7 +39,7 @@ describe("TimelineStoryteller", function () {
         expect(labels).to.be.deep.equal(["AritomoYamagata", "KinmochiSaionji", "TaroKatsura"]);
 
         done();
-      }, 20);
+      }, 1000);
     });
     it("should draw annotations with the correct position if scenes are switched quickly");
     it("should not draw annotations on the wrong scene");
@@ -51,5 +53,7 @@ describe("TimelineStoryteller", function () {
     it("should allow for the configuration of the import data story options");
     it("should hide the load data section if there are no data story options");
     it("should import and preprocess data from given story correctly");
+    it("should show the frame popup in the correct position");
+    it("should show the frame popup on the screen, it should not overflow off the screen when the component is small");
   });
 });

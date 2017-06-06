@@ -73,6 +73,7 @@ var imageUrlMapping = {
   "r-spi.png": formUrl("r-spi.png"),
   "record.png": formUrl("record.png"),
   "reset.png": formUrl("reset.png"),
+  "resetBasic.png": formUrl("resetBasic.png"),
   "s-chron.png": formUrl("s-chron.png"),
   "s-intdur.png": formUrl("s-intdur.png"),
   "s-log.png": formUrl("s-log.png"),

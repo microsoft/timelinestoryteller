@@ -54,6 +54,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._timeline_vis = timeline_vis;
   this._loaded = false;
   this.scale = 1;
+  this._dispatch = d3.dispatch("stateChanged");
+  this.on = this._dispatch.on.bind(this._dispatch);
+  this.playback_mode = false;
+
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -252,15 +256,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
     if (d3.event.keyCode === 82 && d3.event.altKey) {
       // recover legend
-      if (!globals.playback_mode) {
+      if (!instance.playback_mode) {
         instance._recordScene();
       }
-    } else if (globals.playback_mode && d3.event.keyCode === 39) {
+    } else if (instance.playback_mode && d3.event.keyCode === 39) {
       goNextScene();
-    } else if (globals.playback_mode && d3.event.keyCode === 37) {
+    } else if (instance.playback_mode && d3.event.keyCode === 37) {
       goPreviousScene();
     } else if (d3.event.keyCode === 80 && d3.event.altKey) {
-      instance.setPlaybackMode(!globals.playback_mode);
+      instance.setPlaybackMode(!instance.playback_mode);
     } else if (d3.event.keyCode === 46 && selectWithParent("#caption_div").style("display") === "none" && selectWithParent("#image_div").style("display") === "none" && !instance.importPanel.visible) {
       globals.deleteScene();
     }
@@ -530,7 +534,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         logEvent("exporting story as .cdc", "export");
 
-        globals.timeline_story = instance.saveStoryJSON();
+        globals.timeline_story = instance.saveState();
 
         var story_json = JSON.stringify(globals.timeline_story);
         var blob = new Blob([story_json], { type: "application/json" });
@@ -726,19 +730,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.gdoc_worksheet = selectWithParent("#gdoc_worksheet_title_input").property("value");
       logEvent("gdoc spreadsheet " + globals.gdoc_worksheet + " added using key \"" + globals.gdoc_key + "\"", "load");
 
-      globals.source_format = "gdoc";
-
       if (globals.gdoc_worksheet !== "") {
         gsheets.getWorksheet(globals.gdoc_key, globals.gdoc_worksheet, function (err, sheet) {
           if (err !== null) {
             alert(err); // eslint-disable-line no-alert
             return true;
           }
-
-          globals.timeline_json_data = sheet.data;
-          globals.source_format = "gdoc";
           setTimeout(function () {
-            loadTimeline();
+            instance._loadTimeline({ timeline_json_data: sheet.data });
           }, 500);
         });
       } else {
@@ -754,16 +753,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
           setTimeout(function () {
             worksheet_id = sheet.worksheets[0].id;
-            gsheets.getWorksheetById(globals.gdoc_key, worksheet_id, function () {
-              if (err !== null) {
-                alert(err); // eslint-disable-line no-alert
+            gsheets.getWorksheetById(globals.gdoc_key, worksheet_id, function (err2, sheetWithData) {
+              if (err2 !== null) {
+                alert(err2); // eslint-disable-line no-alert
                 return true;
               }
 
-              globals.timeline_json_data = sheet.data;
-              globals.source_format = "gdoc";
+              globals.timeline_json_data = sheetWithData.data;
               setTimeout(function () {
-                loadTimeline();
+                instance._loadTimeline({ timeline_json_data: sheetWithData.data });
               }, 500);
             });
           }, 500);
@@ -802,6 +800,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectAllWithParent(".gdocs_info_element").style("display", "none");
 
       drawTimeline(globals.active_data);
+
+      instance.setPlaybackMode(false, false);
+
       updateRadioBttns(timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
     })
     .append("text")
@@ -1167,7 +1168,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   --------------------------------------------------------------------------------------
   **/
 
-  function loadTimeline(skipConfig) {
+  function loadTimeline(state, skipConfig) {
     instance._loaded = false;
 
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
@@ -1208,9 +1209,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           navigation_div.remove();
           timeline_vis.prev_tl_representation("None");
 
-          if (!isStory(globals.source_format)) {
+          // If we have no scenes, reset everything to default
+          if (!(state.scenes && state.scenes.length)) {
             globals.caption_index = 0;
             globals.image_index = 0;
+            globals.current_scene_index = -1;
+            globals.gif_index = 0;
             globals.scenes = [];
             globals.caption_list = [];
             globals.image_list = [];
@@ -1279,7 +1283,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             title: "Record Scene"
           })
           .on("click", function () {
-            if (!globals.playback_mode) {
+            if (!instance.playback_mode) {
               instance._recordScene();
             }
           });
@@ -1323,11 +1327,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           .attr({
             type: "checkbox",
             name: "playback_cb",
-            value: globals.playback_mode
+            value: instance.playback_mode
           })
           .property("checked", false)
           .on("change", function () {
-            instance.setPlaybackMode(!globals.playback_mode);
+            instance.setPlaybackMode(!instance.playback_mode);
           });
 
         playback_cb_label.append("img")
@@ -1399,32 +1403,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         LOAD DATA
         ---------------------------------------------------------------------------------------
         **/
+        if (state) {
+          instance._loadTimelineFromState(state, instance._render_height);
 
-        if (globals.source_format === "demo_json") {
-          initTimelineData(window.timeline_story_demo_data[globals.source]);
-        } else if (globals.source_format === "json") {
-          d3.json(globals.source, function (error, data) {
-            initTimelineData(data);
-          });
-        } else if (globals.source_format === "json_parsed") {
-          initTimelineData(globals.source);
-        } else if (globals.source_format === "csv") {
-          d3.csv(globals.source, function (error, data) {
-            initTimelineData(data);
-          });
-        } else if (globals.source_format === "gdoc") {
-          initTimelineData(globals.timeline_json_data);
-        } else if (isStory(globals.source_format)) {
-          globals.playback_mode = true;
-
-          selectWithParent("#stepper_svg_placeholder").remove();
-
-          if (globals.source_format === "story") {
-            d3.json(globals.source, function (error, story) {
-              instance._loadDataFromStory(story, instance._component_height);
-            });
-          } else if (globals.source_format === "demo_story") {
-            instance._loadDataFromStory(window.timeline_story_demo_story, instance._render_height);
+          // if we have scenes to show, we don't need the tooltip
+          if (state.scenes && state.scenes.length) {
+            selectWithParent("#stepper_svg_placeholder").remove();
           }
         }
       } finally {
@@ -1438,6 +1422,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           drawTimeline(globals.active_data);
         }
 
+        // call this again afterward, cause some elements are created in loadTimeline function
+        // and we need to ensure they are hidden/visible
+        instance.setPlaybackMode(instance.playback_mode, false);
+
         instance._loaded = true;
       }
     }, 10);
@@ -1448,9 +1436,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   /**
    * Preprocess data after loading
    * @param {object} data The data to preprocess
+   * @param {boolean} shouldDrawTimeline If the timeline should be drawn after it is initialized
    * @returns {void}
    */
-  function initTimelineData(data) {
+  function initTimelineData(data, shouldDrawTimeline) {
     var unique_values = d3.map([]);
     var unique_data = [];
 
@@ -1465,10 +1454,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
     logEvent(unique_data.length + " unique events", "preprocessing");
 
-    processTimeline(unique_data);
+    processTimeline(unique_data, shouldDrawTimeline);
   }
 
-  function processTimeline(data) {
+  function processTimeline(data, shouldDrawTimeline) {
     // check for earliest and latest numerical dates before parsing
     globals.earliest_date = d3.min(data, function (d) {
       if (d.start_date instanceof Date) {
@@ -1928,80 +1917,76 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.active_data = globals.all_data;
 
     measureTimeline(globals.active_data);
+    selectWithParent("#timeline_metadata").style("display", "inline");
+    selectWithParent("#timeline_metadata_contents")
+      .append("span")
+      .attr("class", "metadata_title")
+      .style("text-decoration", "underline")
+      .text("About this data:");
 
-    if (isStory(globals.source_format)) {
-      instance.setPlaybackMode(true, false);
+    selectWithParent("#timeline_metadata_contents")
+      .append("div")
+      .attr("class", "timeline_metadata_contents_div")
+      .html("<p class='metadata_content'><img src='" + imageUrls("timeline.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Cardinality & extent</strong>: " +
+      globals.active_data.length + " unique events spanning " + globals.range_text + " <br><strong>Granularity</strong>: " + globals.segment_granularity + "</p>");
+
+    var category_metadata = selectWithParent("#timeline_metadata_contents")
+      .append("div")
+      .attr("class", "timeline_metadata_contents_div")
+      .style("border-top", "1px dashed #999");
+
+    var category_metadata_p = category_metadata
+      .append("p")
+      .attr("class", "metadata_content")
+      .html("<img src='" + imageUrls("categories.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Event categories</strong>: ( " + globals.num_categories + " ) <em><strong>Note</strong>: click on the swatches to assign custom colors to categories.</em><br>");
+
+    var category_metadata_element = category_metadata_p.selectAll(".category_element")
+      .data(globals.categories.domain().sort())
+      .enter()
+      .append("g")
+      .attr("class", "category_element");
+
+    category_metadata_element.append("div")
+      .attr("class", "colorpicker_wrapper")
+      .attr("filter", "url(#drop-shadow)")
+      .style("background-color", globals.categories)
+      .on("click", function (d, i) {
+        var colorEle = this;
+        instance._colorPicker.show(this, globals.categories(d), function (value) {
+          // Update the display
+          d3.select(colorEle).style("background-color", value);
+
+          instance.setCategoryColor(d, i, value);
+        });
+      });
+    //   .append("input")
+    //   .attr("type", "color")
+    //   .attr("class", "colorpicker")
+    //   .attr("value", globals.categories)
+    //   .on("change", function (d, i) {
+
+    //   });
+
+    category_metadata_element.append("span")
+      .attr("class", "metadata_content")
+      .style("float", "left")
+      .text(function (d) {
+        return " " + d + " ..";
+      });
+
+    category_metadata.append("p")
+      .html("<br>");
+
+    selectWithParent("#timeline_metadata_contents")
+      .append("div")
+      .attr("class", "timeline_metadata_contents_div")
+      .style("border-top", "1px dashed #999")
+      .html(
+      "<p class='metadata_content'><img src='" + imageUrls("facets.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: " +
+      ((globals.facets.domain().length > 1) ? ("( " + globals.num_facets + " ) " + globals.facets.domain().slice(0, 30).join(" .. ")) : "(none)") + "</p>");
+
+    if (shouldDrawTimeline) {
       drawTimeline(globals.active_data);
-    } else {
-      selectWithParent("#timeline_metadata_contents")
-        .append("span")
-        .attr("class", "metadata_title")
-        .style("text-decoration", "underline")
-        .text("About this data:");
-
-      selectWithParent("#timeline_metadata_contents")
-        .append("div")
-        .attr("class", "timeline_metadata_contents_div")
-        .html("<p class='metadata_content'><img src='" + imageUrls("timeline.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Cardinality & extent</strong>: " +
-        globals.active_data.length + " unique events spanning " + globals.range_text + " <br><strong>Granularity</strong>: " + globals.segment_granularity + "</p>");
-
-      var category_metadata = selectWithParent("#timeline_metadata_contents")
-        .append("div")
-        .attr("class", "timeline_metadata_contents_div")
-        .style("border-top", "1px dashed #999");
-
-      var category_metadata_p = category_metadata
-        .append("p")
-        .attr("class", "metadata_content")
-        .html("<img src='" + imageUrls("categories.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Event categories</strong>: ( " + globals.num_categories + " ) <em><strong>Note</strong>: click on the swatches to assign custom colors to categories.</em><br>");
-
-      var category_metadata_element = category_metadata_p.selectAll(".category_element")
-        .data(globals.categories.domain().sort())
-        .enter()
-        .append("g")
-        .attr("class", "category_element");
-
-      category_metadata_element.append("div")
-        .attr("class", "colorpicker_wrapper")
-        .attr("filter", "url(#drop-shadow)")
-        .style("background-color", globals.categories)
-        .on("click", function (d, i) {
-          var colorEle = this;
-          instance._colorPicker.show(this, globals.categories(d), function (value) {
-            // Update the display
-            d3.select(colorEle).style("background-color", value);
-
-            instance.setCategoryColor(d, i, value);
-          });
-        });
-      //   .append("input")
-      //   .attr("type", "color")
-      //   .attr("class", "colorpicker")
-      //   .attr("value", globals.categories)
-      //   .on("change", function (d, i) {
-
-      //   });
-
-      category_metadata_element.append("span")
-        .attr("class", "metadata_content")
-        .style("float", "left")
-        .text(function (d) {
-          return " " + d + " ..";
-        });
-
-      category_metadata.append("p")
-        .html("<br>");
-
-      selectWithParent("#timeline_metadata_contents")
-        .append("div")
-        .attr("class", "timeline_metadata_contents_div")
-        .style("border-top", "1px dashed #999")
-        .html(
-        "<p class='metadata_content'><img src='" + imageUrls("facets.png") + "' width='36px' style='float: left; padding-right: 5px;'/><strong>Timeline facets</strong>: " +
-        ((globals.facets.domain().length > 1) ? ("( " + globals.num_facets + " ) " + globals.facets.domain().slice(0, 30).join(" .. ")) : "(none)") + "</p>");
-
-
-      timeline_metadata.style("display", "inline");
     }
   }
 
@@ -2217,6 +2202,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         updateNavigationStepper();
 
+        instance._dispatch.stateChanged();
+
         if (globals.current_scene_index === d.s_order) { // is current scene to be deleted?
           if (globals.current_scene_index === globals.scenes.length - 1) { // is it the final scene?
             globals.current_scene_index = 0; // set current scene to first scene
@@ -2238,8 +2225,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .text("Delete Scene");
 
     navigation_step_svg.selectAll(".framePoint")
-      .on("mouseover", function (d) {
-        var x_pos = d3.min([(d.s_order * STEPPER_STEP_WIDTH + d.s_order * 5) + 100, instance._component_width - globals.margin.right - globals.margin.left - getScrollbarWidth() - 300]);
+      .on("mouseover", function () {
+        const popupSize = 300;
+        const frameRect = this.getBoundingClientRect();
+        const relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
+        const offscreenAmount = (frameRect.right + popupSize) - relativeParentRect.right;
+
+        // If we're offscreen, then adjust the position to take the offsceen amount into account
+        const x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
+        const y_pos = frameRect.top - relativeParentRect.top;
 
         var img_src = d3.select(this).select("image").attr("href");
 
@@ -2251,12 +2245,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         selectWithParent().append("div")
           .attr("class", "frame_hover")
-          .style("left", x_pos + "px")
-          .style("top", (instance._component_height - globals.margin.bottom - 300 + window.scrollY) + "px")
+          .style("left", `${x_pos}px`)
+          .style("top", `${y_pos - popupSize - 20}px`)
           .append("svg")
           .style("padding", "0px")
-          .style("width", "300px")
-          .style("height", "300px")
+          .style("width", `${popupSize}px`)
+          .style("height", `${popupSize}px`)
           .append("svg:image")
           .attr("xlink:href", img_src)
           .attr("x", 2)
@@ -2598,6 +2592,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
   }
 
+  instance._changeScene = changeScene;
+
   function measureTimeline(data) {
     /**
     ---------------------------------------------------------------------------------------
@@ -2686,11 +2682,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
     globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
   }
-
-  function isStory(sf) {
-    return sf.indexOf("story") >= 0;
-  }
-
   /**
    * Renders the timeline
    * @param {object[]} data The data to render
@@ -2708,18 +2699,17 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     **/
 
     control_panel.selectAll("input").attr("class", "img_btn_enabled");
-    selectWithParent("#navigation_div").style("bottom", (instance.options.showAbout === false || globals.playback_mode) ? "20px" : "50px");
+    selectWithParent("#navigation_div").style("bottom", (instance.options.showAbout === false || instance.playback_mode) ? "20px" : "50px");
     selectWithParent("#filter_type_picker").selectAll("input").property("disabled", false);
     selectWithParent("#filter_type_picker").selectAll("img").attr("class", "img_btn_enabled");
     selectWithParent("#playback_bar").selectAll("img").attr("class", "img_btn_enabled");
 
-    if (isStory(globals.source_format)) {
+    var hasScenes = globals.scenes && globals.scenes.length;
+    if (hasScenes) {
       selectWithParent("#record_scene_btn").attr("class", "img_btn_disabled");
       timeline_vis.tl_scale(globals.scenes[0].s_scale)
         .tl_layout(globals.scenes[0].s_layout)
         .tl_representation(globals.scenes[0].s_representation);
-    } else {
-      selectWithParent("#menu_div").style("left", 10 + "px");
     }
 
     updateRadioBttns(timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
@@ -2734,7 +2724,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     main_svg.datum(data)
       .call(timeline_vis.duration(instance.options.animations ? 1200 : 0).height(globals.height).width(globals.width));
 
-    if (isStory(globals.source_format)) {
+    if (hasScenes) {
       globals.current_scene_index = 0;
       changeScene(0);
     }
@@ -3015,6 +3005,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       // watch out for dates that start/end in BC
       var bc_start;
       var bc_end;
+      var hasTZOffset = globals.has_tz_offset;
 
       // is start date a numeric year?
       if (globals.isNumber(item.start_date)) {
@@ -3029,7 +3020,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         // convert start_date to date object
         item.start_date = moment((new Date(item.start_date))).toDate();
 
-        if (isStory(globals.source_format)) {
+        if (hasTZOffset) {
           item.start_date = new Date(item.start_date.valueOf() + (globals.story_tz_offset * 60000));
         } else {
           item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
@@ -3038,7 +3029,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         // convert end_date to date object
         item.end_date = moment((new Date(item.end_date))).toDate();
 
-        if (isStory(globals.source_format)) {
+        if (hasTZOffset) {
           item.end_date = new Date(item.end_date.valueOf() + (globals.story_tz_offset * 60000));
         } else {
           item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
@@ -3071,7 +3062,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         // check for start_date string validity
         if (moment(item.start_date).isValid()) {
           item.start_date = moment(item.start_date).startOf("hour").toDate(); // account for UTC offset
-          if (isStory(globals.source_format)) {
+          if (hasTZOffset) {
             item.start_date = new Date(item.start_date.valueOf() + (globals.story_tz_offset * 60000));
           } else {
             item.start_date = new Date(item.start_date.valueOf() + item.start_date.getTimezoneOffset() * 60000);
@@ -3086,7 +3077,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         // check for end_date string validity
         if (moment(item.end_date).isValid()) {
           item.end_date = moment(item.end_date).endOf("hour").toDate(); // account for UTC offset
-          if (isStory(globals.source_format)) {
+          if (hasTZOffset) {
             item.end_date = new Date(item.end_date.valueOf() + (globals.story_tz_offset * 60000));
           } else {
             item.end_date = new Date(item.end_date.valueOf() + item.end_date.getTimezoneOffset() * 60000);
@@ -4400,7 +4391,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     .on("click", function () {
       if (instance.importPanel.visible) {
         importIntro();
-      } else if (!globals.playback_mode) {
+      } else if (!instance.playback_mode) {
         mainIntro();
       } else {
         playbackIntro();
@@ -4414,36 +4405,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   intro_div.append("div")
     .attr("class", "intro_btn")
     .html("<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'><img src='" + imageUrls("mail.png") + "' width=30 height=30 class='img_btn_enabled'></img></a>");
-
-  /**
-   * Loads a story json object
-   * @param {string} story The json stroy object
-   * @param {number} [delay=500] The default delay for loading timeline storyteller
-   * @returns {void}
-   */
-  this._loadStoryInternal = function (story, delay) {
-    var blob = new Blob([story], { type: "application/json" });
-    globals.source = URL.createObjectURL(blob);
-    logEvent("story source: " + globals.source, "load");
-
-    globals.source_format = "story";
-    selectWithParent("#timeline_metadata").style("display", "none");
-    selectAllWithParent(".gdocs_info_element").style("display", "none");
-    instance.importPanel.hide();
-
-    selectWithParent("#gdocs_info").style("height", 0 + "px");
-    selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
-    selectWithParent("#gdoc_worksheet_title_input").property("value", "");
-
-    delay = typeof delay === "undefined" ? 500 : delay;
-    if (delay > 0) {
-      setTimeout(function () {
-        loadTimeline();
-      }, delay);
-    } else {
-      loadTimeline();
-    }
-  };
 
   /**
    * Sets the color for the given category
@@ -4462,77 +4423,95 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   };
 
   /**
-   * Loads the data from the given story
-   * @param {object} story The story to load data from
+   * Loads the data from the given state
+   * @param {object} state The state to load data from
    * @param {number} min_story_height The minimum height to show the story
    * @returns {void}
    */
-  this._loadDataFromStory = function (story, min_story_height) {
-    var timelineData = globals.timeline_json_data;
+  this._loadTimelineFromState = function (state, min_story_height) {
+    var timelineData = state.timeline_json_data;
+    var hasScenes = !!(state.scenes && state.scenes.length);
 
-    if (story.timeline_json_data) {
-      timelineData = story.timeline_json_data;
-    }
+    /**
+     * {
+     *    timeline_json_data: ...,
+     *    scenes: ...,
+     *    caption_list: ...,
+     *    image_list: ...,
+     *    annotation_list: ...,
+     *    caption_index: ...,
+     *    image_index: ...,
+     *    tz_offset: ...,
+     *    width: ...,
+     *    height: ...
+     * }
+     */
 
-    if (story.color_palette !== undefined) {
-      globals.color_palette = story.color_palette;
-      globals.use_custom_palette = true;
-    }
-    globals.scenes = story.scenes;
-    globals.caption_list = story.caption_list;
-    globals.image_list = story.image_list;
-    globals.annotation_list = story.annotation_list;
-    globals.caption_index = story.caption_list.length - 1;
-    globals.image_index = story.image_list.length - 1;
-
-    if (story.tz_offset !== undefined) {
-      globals.story_tz_offset = new Date().getTimezoneOffset() - story.tz_offset;
-    } else {
-      globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
-    }
-
-    if (new Date().dst() && !(new Date(story.timestamp).dst())) {
-      globals.story_tz_offset += 60;
-    } else if (!(new Date().dst()) && new Date(story.timestamp).dst()) {
-      globals.story_tz_offset -= 60;
-    }
-
-    var min_story_width = instance._render_width,
-      max_story_width = instance._render_width;
-
-    globals.scenes.forEach(function (d, i) {
-      if (d.s_order === undefined) {
-        d.s_order = i;
+    globals.timeline_json_data = timelineData;
+    globals.has_tz_offset = state.tz_offset !== undefined;
+    if (hasScenes) {
+      if (state.color_palette !== undefined) {
+        globals.color_palette = state.color_palette;
+        globals.use_custom_palette = true;
       }
-      if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) < min_story_width) {
-        min_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-      }
-      if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) > max_story_width) {
-        max_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
-      }
-      if ((d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth()) < min_story_height) {
-        min_story_height = (d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth());
-      }
-    });
+      globals.scenes = state.scenes;
+      globals.caption_list = state.caption_list;
+      globals.image_list = state.image_list;
+      globals.annotation_list = state.annotation_list;
+      globals.caption_index = state.caption_list.length - 1;
+      globals.image_index = state.image_list.length - 1;
 
-    if (story.width === undefined) {
-      if (max_story_width > instance._render_width) {
-        story.width = max_story_width;
+      if (state.tz_offset !== undefined) {
+        globals.story_tz_offset = new Date().getTimezoneOffset() - state.tz_offset;
       } else {
-        story.width = min_story_width;
+        globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
       }
+
+      if (new Date().dst() && !(new Date(state.timestamp).dst())) {
+        globals.story_tz_offset += 60;
+      } else if (!(new Date().dst()) && new Date(state.timestamp).dst()) {
+        globals.story_tz_offset -= 60;
+      }
+
+      var min_story_width = instance._render_width,
+        max_story_width = instance._render_width;
+
+      globals.scenes.forEach(function (d, i) {
+        if (d.s_order === undefined) {
+          d.s_order = i;
+        }
+        if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) < min_story_width) {
+          min_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
+        }
+        if ((d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth()) > max_story_width) {
+          max_story_width = (d.s_width + globals.margin.left + globals.margin.right + getScrollbarWidth());
+        }
+        if ((d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth()) < min_story_height) {
+          min_story_height = (d.s_height + globals.margin.top + globals.margin.bottom + getScrollbarWidth());
+        }
+      });
+
+      if (state.width === undefined) {
+        if (max_story_width > instance._render_width) {
+          state.width = max_story_width;
+        } else {
+          state.width = min_story_width;
+        }
+      }
+      if (state.height === undefined) {
+        state.height = min_story_height;
+      }
+
+      log("s_width: " + state.width + "; window_width: " + instance._render_width);
+      instance._render_width = state.width;
+      instance._render_height = state.height;
     }
-    if (story.height === undefined) {
-      story.height = min_story_height;
+
+    initTimelineData(timelineData, hasScenes);
+
+    if (hasScenes) {
+      updateNavigationStepper();
     }
-
-    log("s_width: " + story.width + "; window_width: " + instance._render_width);
-    instance._render_width = story.width;
-    instance._render_height = story.height;
-
-    initTimelineData(timelineData);
-
-    updateNavigationStepper();
   };
 }
 
@@ -4565,6 +4544,11 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
    * If true, import options/open will be enabled
    */
   showImportOptions: true,
+
+  /**
+   * Shows the hints popup
+   */
+  showHints: true,
 
   /**
    * If true, load data options will be shown on the import popup
@@ -4699,11 +4683,8 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
           text: "Load Demo Story",
           image: imageUrls("demo_story.png"),
           click: function (instance) {
-            globals.source = "demoStory";
-
             logEvent("demo story source", "load");
 
-            globals.source_format = "demo_story";
             selectWithParent("#timeline_metadata").style("display", "none");
             selectAllWithParent(".gdocs_info_element").style("display", "none");
             instance.importPanel.hide();
@@ -4713,7 +4694,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
             selectWithParent("#gdoc_worksheet_title_input").property("value", "");
 
             setTimeout(function () {
-              instance._loadTimeline();
+              instance._loadTimeline(window.timeline_story_demo_story);
             }, 500);
           }
         },
@@ -4737,7 +4718,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
 
                 globals.reader.onload = function (e) {
                   var contents = e.target.result;
-                  inst.loadStory(contents);
+                  inst.load(JSON.parse(contents), true);
                 };
               });
           }
@@ -4767,11 +4748,9 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
               .on("change", function () {
                 var source = d3.select(this).property("value");
                 if (source !== "") {
-                  globals.source = demoData[source].data;
-                  globals.source_format = "json_parsed";
                   setTimeout(() => {
-                    logEvent("loading " + source + " (demo_story)", "load");
-                    that._loadTimeline();
+                    logEvent("loading (demo_story)", "load");
+                    that._loadTimeline({ timeline_json_data: demoData[source].data });
                   }, 500);
                 } else {
                   globals.source = source;
@@ -4800,11 +4779,11 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
               .on("change", (e) => {
                 var contents = e.target.result;
                 var blob = new Blob([contents], { type: "application/json" });
-                globals.source = URL.createObjectURL(blob);
-                globals.source_format = "json";
                 setTimeout(() => {
-                  logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-                  this._loadTimeline();
+                  logEvent("loading (json)", "load");
+                  d3.json(URL.createObjectURL(blob), function (error, data) {
+                    inst._loadTimeline({ timeline_json_data: data });
+                  });
                 }, 500);
               });
           },
@@ -4830,11 +4809,11 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                 globals.reader.onload = (e) => {
                   var contents = e.target.result;
                   var blob = new Blob([contents], { type: "application/csv" });
-                  globals.source = URL.createObjectURL(blob);
-                  globals.source_format = "csv";
                   setTimeout(() => {
-                    logEvent("loading " + globals.source + " (" + globals.source_format + ")", "load");
-                    inst._loadTimeline();
+                    logEvent("loading (csv)", "load");
+                    d3.csv(URL.createObjectURL(blob), function (error, data) {
+                      inst._loadTimeline({ timeline_json_data: data });
+                    });
                   }, 500);
                 };
               });
@@ -4946,7 +4925,7 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
  */
 TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
   // Only tweak the size if we are not playing back
-  if (!globals.playback_mode) {
+  if (!this.playback_mode) {
     this._component_width = this.parentElement.clientWidth;
     this._component_height = this.parentElement.clientHeight;
 
@@ -5071,6 +5050,9 @@ TimelineStoryteller.prototype._recordScene = function () {
       globals.gif_index++;
       that._updateNavigationStepper();
       clearInterval(checkExist);
+
+      // Dispatch after state has changed
+      that._dispatch.stateChanged();
     }
   }, 100); // check every 100ms
   return true;
@@ -5226,13 +5208,15 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
   selectWithParent("#menu_div #import_visible_btn").style("display", showImportVisible);
 
   // showAbout
-  selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || globals.playback_mode) ? "20px" : "50px");
+  selectWithParent("#navigation_div").style("bottom", (options.showAbout === false || this.playback_mode) ? "20px" : "50px");
 
   // showImportLoadDataOptions
   selectAllWithParent(".import-load-data-option").style("display", options.showImportLoadDataOptions === false ? "none" : null);
 
   // allowImageExport
   selectAllWithParent(".export--image").style("display", (!options.export || options.export.images === false) ? "none" : null);
+
+  selectAllWithParent("#hint_div").style("display", options.showHints === false ? "none" : null);
 
   if (updateMenu) {
     this._initializeMenu(options.menu);
@@ -5327,35 +5311,55 @@ TimelineStoryteller.prototype.update = function (data) {
 };
 
 /**
- * Loads the given set of data
- * @param {object[]} data The data to load into the story teller
+ * Loads the given set of data into timeline storyteller
+ * @param {object} state The state to load into the story teller
+ * @param {boolean} storyMode If true, the timeline storyteller will load the data and load into story mode
+ * @param {boolean} skipIntro If true, the intro import dialog will be skipped
+ * @param {number} delay The load delay for the story
  * @returns {void}
  */
-TimelineStoryteller.prototype.load = function (data) {
-  globals.source = data;
-  globals.source_format = "json_parsed";
-  logEvent("loading (" + globals.source_format + ")", "load");
+TimelineStoryteller.prototype.load = function (state, storyMode, skipIntro, delay) {
+  logEvent("loading " + (storyMode ? "(story)" : "(json_parsed)"), "load");
+
+  var that = this;
+  var hasScenes = !!(state.scenes && state.scenes.length);
+  function delayLoad() {
+    "use strict";
+    that._loadTimeline(state, skipIntro);
+  }
+
   setTimeout(function () {
     // Give it time for the UI to load
-    this._loadTimeline(true);
-  }.bind(this), 100);
+    that.setPlaybackMode(!!storyMode, false);
+
+    if (storyMode) {
+      logEvent("story load", "load");
+
+      selectWithParent("#timeline_metadata").style("display", "none");
+      selectAllWithParent(".gdocs_info_element").style("display", "none");
+      that.importPanel.hide();
+
+      selectWithParent("#gdocs_info").style("height", 0 + "px");
+      selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
+      selectWithParent("#gdoc_worksheet_title_input").property("value", "");
+    }
+
+    delay = typeof delay === "undefined" ? 500 : delay;
+    if (delay > 0 || hasScenes) {
+      setTimeout(function () {
+        delayLoad();
+      }, delay || 500);
+    } else {
+      delayLoad(true);
+    }
+  }, 100);
 };
 
 /**
- * Loads the given story
- * @param {string} story The story to load (json serialized)
- * @param {number} [delay=500] The default delay for loading timeline storyteller
- * @returns {void}
- */
-TimelineStoryteller.prototype.loadStory = function (story, delay) {
-  return this._loadStoryInternal(story, typeof delay === "undefined" ? 500 : delay);
-};
-
-/**
- * Saves the current state as a story
+ * Saves the current state as JSON
  * @returns {object} The story in JSON format
  */
-TimelineStoryteller.prototype.saveStoryJSON = function () {
+TimelineStoryteller.prototype.saveState = function () {
   return {
     "version": 2,
     "timeline_json_data": globals.timeline_json_data,
@@ -5392,6 +5396,8 @@ TimelineStoryteller.prototype.setCategoryColor = function (category, categoryInd
  * @returns {void}
  */
 TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
+  log("Setting playback mode", isPlayback);
+
   var importDiv = this.importPanel.element;
   var menuDiv = selectWithParent("#menu_div");
   var optionDiv = selectWithParent("#option_div");
@@ -5433,7 +5439,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
 
   selectWithParent().classed("playback_mode", isPlayback);
 
-  globals.playback_mode = isPlayback;
+  this.playback_mode = isPlayback;
 
   if (typeof addLog === "undefined" || addLog) {
     logEvent("playback mode " + (isPlayback ? "on" : "off"), "playback");
