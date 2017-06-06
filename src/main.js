@@ -54,7 +54,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._timeline_vis = timeline_vis;
   this._loaded = false;
   this.scale = 1;
-  this._dispatch = d3.dispatch("recordScene");
+  this._dispatch = d3.dispatch("stateChanged");
   this.on = this._dispatch.on.bind(this._dispatch);
   this.playback_mode = false;
 
@@ -2201,6 +2201,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         }
 
         updateNavigationStepper();
+
+        instance._dispatch.stateChanged();
 
         if (globals.current_scene_index === d.s_order) { // is current scene to be deleted?
           if (globals.current_scene_index === globals.scenes.length - 1) { // is it the final scene?
@@ -5049,8 +5051,8 @@ TimelineStoryteller.prototype._recordScene = function () {
       that._updateNavigationStepper();
       clearInterval(checkExist);
 
-      // Record scene after the gifs have been saved
-      that._dispatch.recordScene();
+      // Dispatch after state has changed
+      that._dispatch.stateChanged();
     }
   }, 100); // check every 100ms
   return true;
