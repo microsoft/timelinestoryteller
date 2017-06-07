@@ -3136,93 +3136,97 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   // assign a track to each event item to prevent event overlap
   function assignTracks(data, tracks, layout) {
     // reset tracks first
-    data.forEach(function (item) {
-      item.track = 0;
-    });
-
-    var i, track, min_width, effective_width;
-
-    if (globals.date_granularity !== "epochs") {
-      data.min_start_date = d3.min(data, function (d) {
-        return d.start_date;
-      });
-      data.max_start_date = d3.max(data, function (d) {
-        return d.start_date;
-      });
-      data.max_end_date = d3.max(data, function (d) {
-        return d.end_date;
-      });
-
-      if (globals.width > (instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth())) {
-        effective_width = instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
-      } else {
-        effective_width = globals.width;
-      }
-
-
-      var w = (effective_width - globals.padding.left - globals.padding.right - globals.unit_width),
-        d = (data.max_end_date.getTime() - data.min_start_date.getTime());
-
-      if (globals.segment_granularity === "days") {
-        min_width = 0;
-      } else if (layout === "Segmented") {
-        min_width = 0;
-      } else {
-        min_width = (d / w * globals.unit_width);
-      }
-    }
-
-    // older items end deeper
-    data.forEach(function (item) {
-      if (globals.date_granularity === "epochs") {
+    if (data && data.length) {
+      data.forEach(function (item) {
         item.track = 0;
-      } else {
-        for (i = 0, track = 0; i < tracks.length; i++, track++) {
-          if (globals.segment_granularity === "days") {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
+      });
+
+      var i, track, min_width, effective_width;
+
+      if (globals.date_granularity !== "epochs") {
+        data.min_start_date = d3.min(data, function (d) {
+          return d.start_date;
+        });
+        data.max_start_date = d3.max(data, function (d) {
+          return d.start_date;
+        });
+        data.max_end_date = d3.max(data, function (d) {
+          return d.end_date;
+        });
+
+        if (globals.width > (instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth())) {
+          effective_width = instance._render_width - globals.margin.right - globals.margin.left - getScrollbarWidth();
+        } else {
+          effective_width = globals.width;
+        }
+
+
+        var w = (effective_width - globals.padding.left - globals.padding.right - globals.unit_width),
+          d = (data.max_end_date.getTime() - data.min_start_date.getTime());
+
+        if (globals.segment_granularity === "days") {
+          min_width = 0;
+        } else if (layout === "Segmented") {
+          min_width = 0;
+        } else {
+          min_width = (d / w * globals.unit_width);
+        }
+      }
+
+      // older items end deeper
+      data.forEach(function (item) {
+        if (globals.date_granularity === "epochs") {
+          item.track = 0;
+        } else {
+          for (i = 0, track = 0; i < tracks.length; i++, track++) {
+            if (globals.segment_granularity === "days") {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "weeks") {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "months") {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "years") {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "decades" && globals.date_granularity === "days" && data.max_duration < 31) {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "centuries" && globals.date_granularity === "days" && data.max_duration < 31) {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (globals.segment_granularity === "millenia") {
+              if (item.start_date.getTime() > tracks[i].getTime()) {
+                break;
+              }
+            } else if (item.start_date.getTime() > tracks[i].getTime()) {
               break;
             }
-          } else if (globals.segment_granularity === "weeks") {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (globals.segment_granularity === "months") {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (globals.segment_granularity === "years") {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (globals.segment_granularity === "decades" && globals.date_granularity === "days" && data.max_duration < 31) {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (globals.segment_granularity === "centuries" && globals.date_granularity === "days" && data.max_duration < 31) {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (globals.segment_granularity === "millenia") {
-            if (item.start_date.getTime() > tracks[i].getTime()) {
-              break;
-            }
-          } else if (item.start_date.getTime() > tracks[i].getTime()) {
-            break;
+          }
+          item.track = track;
+
+          if (min_width > item.end_date.getTime() - item.start_date.getTime()) {
+            tracks[track] = moment(item.end_date.getTime() + min_width).toDate();
+          } else {
+            tracks[track] = item.end_date;
           }
         }
-        item.track = track;
+      });
 
-        if (min_width > item.end_date.getTime() - item.start_date.getTime()) {
-          tracks[track] = moment(item.end_date.getTime() + min_width).toDate();
-        } else {
-          tracks[track] = item.end_date;
-        }
-      }
-    });
-
-    globals.num_tracks = d3.max(data, function (d) { // eslint-disable-line no-shadow
-      return d.track;
-    });
+      globals.num_tracks = d3.max(data, function (d) { // eslint-disable-line no-shadow
+        return d.track;
+      });
+    } else {
+      globals.num_tracks = 0;
+    }
   }
 
   // assign a track to each event item to prevent event overlap
@@ -4197,7 +4201,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
+    main_svg
+      .datum(globals.active_data)
+      .call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
       .height(globals.height)
       .width(globals.width));
 

@@ -41,6 +41,10 @@ var globals = {
   num_facet_cols: u,
   segments: u, // scale for segments
   present_segments: u,
+
+  /**
+   * The selected date granularities used for filtering
+   */
   selected_segments: [],
   num_segments: u,
   num_segment_cols: u,
