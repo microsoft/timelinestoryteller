@@ -1701,7 +1701,9 @@ d3.configurableTL = function (unit_width) {
 
       // add event containers
       var timeline_event_g = timeline_container.selectAll(".timeline_event_g")
-        .data(data);
+        .data(data, function (d, idx) {
+          return d && d.hasOwnProperty("id") ? d.id : idx;
+        });
 
       timeline_event_g.exit().transition()
         .duration(duration)
