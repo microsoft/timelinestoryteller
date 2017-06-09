@@ -1706,6 +1706,7 @@ d3.configurableTL = function (unit_width) {
         });
 
       timeline_event_g.exit().transition()
+        .style("opacity", 0)
         .duration(duration)
         .remove();
 
