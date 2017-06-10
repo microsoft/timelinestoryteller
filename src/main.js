@@ -4947,7 +4947,7 @@ TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
     this._render_height = this._component_height;
 
     var vis = this._timeline_vis;
-    if (typeof updateVis === "undefined" && (updateVis !== false) && vis) {
+    if (typeof updateVis === "undefined" && (updateVis !== false) && vis && this._main_svg) {
       var scale = vis.tl_scale();
       this._determineSize(globals.active_data, scale, vis.tl_layout(), vis.tl_representation());
 
