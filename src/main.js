@@ -2279,14 +2279,18 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
 
-    if (instance.playback_mode) {
-      var total = (globals.scenes || []).length;
-      selectWithParent("#prev_scene_btn")
-        .attr("title", `Scene ${ globals.current_scene_index - 2 } of ${ total }`);
+    const total = (globals.scenes || []).length;
+    const sceneIdx = globals.current_scene_index;
+    selectWithParent("#prev_scene_btn")
+      // Always show 1 if at the beginning
+      .attr("title", total > 1 ? `Scene ${ sceneIdx === 0 ? total : sceneIdx } of ${ total }` : "Previous Scene")
+      .classed("img_btn_disabled", total < 2)
+      .classed("img_btn_enabled", total > 1);
 
-      selectWithParent("#next_scene_btn")
-        .attr("title", `Scene ${ globals.current_scene_index + 2 } of ${ total }`);
-    }
+    selectWithParent("#next_scene_btn")
+      .attr("title", total > 1 ? `Scene ${ sceneIdx === total - 1 ? 1 : sceneIdx + 2 } of ${ total }` : "Next Scene")
+      .classed("img_btn_disabled", total < 2)
+      .classed("img_btn_enabled", total > 1);
   }
 
   instance._updateNavigationStepper = updateNavigationStepper;
@@ -2711,7 +2715,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent("#navigation_div").style("bottom", (instance.options.showAbout === false || instance.playback_mode) ? "20px" : "50px");
     selectWithParent("#filter_type_picker").selectAll("input").property("disabled", false);
     selectWithParent("#filter_type_picker").selectAll("img").attr("class", "img_btn_enabled");
-    selectWithParent("#playback_bar").selectAll("img").attr("class", "img_btn_enabled");
+
+    selectAllWithParent("#record_scene_btn, #play_scene_btn").selectAll("img")
+      .attr("class", "img_btn_enabled");
 
     var hasScenes = globals.scenes && globals.scenes.length;
     if (hasScenes) {
