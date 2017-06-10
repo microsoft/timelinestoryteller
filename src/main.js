@@ -2278,6 +2278,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       });
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
+
+    if (instance.playback_mode) {
+      var total = (globals.scenes || []).length;
+      selectWithParent("#prev_scene_btn")
+        .attr("title", `Scene ${ globals.current_scene_index - 2 } of ${ total }`);
+
+      selectWithParent("#next_scene_btn")
+        .attr("title", `Scene ${ globals.current_scene_index + 2 } of ${ total }`);
+    }
   }
 
   instance._updateNavigationStepper = updateNavigationStepper;
@@ -5434,6 +5443,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
     menuDiv.attr("class", "control_div");
 
     d3.select(".introjs-hints").style("opacity", 1);
+    selectWithParent("#stepper_container").style("display", null);
   }
 
   toggleElement(optionDiv, "top", 10);
@@ -5443,6 +5453,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
   toggleElement(selectWithParent("#footer"), "bottom", 0);
   toggleElement(selectWithParent("#logo_div"), "top", 10);
 
+  // Toggle a playback-mode class
   selectWithParent().classed("playback_mode", isPlayback);
 
   this.playback_mode = isPlayback;

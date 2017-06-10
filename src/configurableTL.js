@@ -1170,8 +1170,6 @@ d3.configurableTL = function (unit_width) {
               converted_tick = (d / 12) + " years";
               break;
             case "centuries":
-              converted_tick = d + " years";
-              break;
             case "millenia":
               converted_tick = d + " years";
               break;
@@ -1198,14 +1196,8 @@ d3.configurableTL = function (unit_width) {
               converted_tick = moment(d).format("MMM D");
               break;
             case "years":
-              converted_tick = moment(d).format("YYYY");
-              break;
             case "decades":
-              converted_tick = moment(d).format("YYYY");
-              break;
             case "centuries":
-              converted_tick = moment(d).format("YYYY");
-              break;
             case "millenia":
               converted_tick = moment(d).format("YYYY");
               break;
