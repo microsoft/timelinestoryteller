@@ -5449,7 +5449,6 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
     menuDiv.attr("class", "control_div");
 
     d3.select(".introjs-hints").style("opacity", 1);
-    selectWithParent("#stepper_container").style("display", null);
   }
 
   toggleElement(optionDiv, "top", 10);
