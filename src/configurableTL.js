@@ -149,7 +149,7 @@ d3.configurableTL = function (unit_width) {
         .style("visibility", "hidden");
 
       var timeline_container_update = g.selectAll(".timeline")
-        .transition()
+        .transition("timeline_container_update")
         .duration(duration);
 
       timeline_container_update.select("#timecurve")
@@ -181,7 +181,7 @@ d3.configurableTL = function (unit_width) {
         var timeline_facet = timeline_container.selectAll(".timeline_facet")
           .data(globals.facets.domain());
 
-        var timeline_facet_exit = timeline_facet.exit().transition()
+        var timeline_facet_exit = timeline_facet.exit().transition("timeline_facet_exit")
           .duration(duration)
           .remove();
 
@@ -199,7 +199,7 @@ d3.configurableTL = function (unit_width) {
           });
 
         // update facet container dimensions
-        var timeline_facet_update = timeline_facet.transition()
+        var timeline_facet_update = timeline_facet.transition("timeline_facet_update")
           .duration(duration);
 
         timeline_facet_enter.append("rect")
@@ -332,7 +332,7 @@ d3.configurableTL = function (unit_width) {
 
         var segment_number = 0;
 
-        var timeline_segment_exit = timeline_segment.exit().transition()
+        var timeline_segment_exit = timeline_segment.exit().transition("timeline_segment_exit")
           .duration(duration)
           .remove();
 
@@ -347,7 +347,7 @@ d3.configurableTL = function (unit_width) {
             }
           });
 
-        var timeline_segment_update = timeline_segment.transition()
+        var timeline_segment_update = timeline_segment.transition("timeline_segment_update")
           .duration(duration);
 
         timeline_segment_enter.append("rect")
@@ -1235,7 +1235,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         var timeline_axis_update = timeline_container.select(".timeline_axis")
-          .transition()
+          .transition("timeline_axis_update")
           .delay(0)
           .duration(duration)
           .style("opacity", 1)
@@ -1254,7 +1254,7 @@ d3.configurableTL = function (unit_width) {
           .attr("y2", 0);
 
         var bottom_timeline_axis_update = timeline_container.select("#bottom_timeline_axis")
-          .transition()
+          .transition("bottom_timeline_axis_update")
           .delay(0)
           .duration(duration)
           .style("opacity", 1)
@@ -1281,7 +1281,7 @@ d3.configurableTL = function (unit_width) {
         logEvent("Linear axis updated", "axis_update");
       } else if (prev_tl_representation === "Linear" && tl_representation !== "Linear") { // remove axes for non-linear timelines
         var timeline_axis_hide = timeline_container.select(".timeline_axis")
-          .transition()
+          .transition("timeline_axis_hide")
           .duration(duration);
 
         timeline_axis_hide.selectAll(".tick line")
@@ -1289,7 +1289,7 @@ d3.configurableTL = function (unit_width) {
           .attr("y2", -6);
 
         var bottom_timeline_axis_hide = timeline_container.select("#bottom_timeline_axis")
-          .transition()
+          .transition("bottom_timeline_axis_hide")
           .duration(duration);
 
         bottom_timeline_axis_hide.select(".domain")
@@ -1305,7 +1305,7 @@ d3.configurableTL = function (unit_width) {
           .attr("y2", -6);
 
         timeline_container.selectAll(".timeline_axis")
-          .transition()
+          .transition("timeline_container_axis")
           .delay(duration)
           .duration(duration)
           .style("opacity", 0);
@@ -1347,7 +1347,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         timeline_container.selectAll(".interim_duration_axis")
-          .transition()
+          .transition("interim_duration_axis_linear_unified")
           .delay(0)
           .duration(duration)
           .attr("transform", "translate(" + globals.max_seq_index * 1.5 * unit_width + "," + (height - unit_width * 4) + ")")
@@ -1357,7 +1357,7 @@ d3.configurableTL = function (unit_width) {
         logEvent("Collapsed axis updated", "axis_update");
       } else if (prev_tl_scale === "Collapsed" && tl_scale !== "Collapsed") { // remove Collapsed axis for non-interim_duration-scale timelines
         timeline_container.selectAll(".interim_duration_axis")
-          .transition()
+          .transition("interim_duration_axis_collapsed")
           .duration(duration)
           .style("opacity", 0);
       }
@@ -1408,7 +1408,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         timeline_container.selectAll(".radial_axis_container")
-          .transition()
+          .transition("radial_axis_container_enter")
           .duration(duration)
           .style("opacity", 1)
           .call(radial_axis.radial_axis_scale(timeline_scale).x_pos(width / 2).y_pos(height / 2));
@@ -1416,12 +1416,12 @@ d3.configurableTL = function (unit_width) {
         logEvent("Unified Radial axis updated", "axis_update");
       } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Unified" && (tl_representation !== "Radial" || tl_layout !== "Unified")) {
         timeline_container.selectAll(".radial_axis_container")
-          .transition()
+          .transition("radial_axis_container_hide")
           .duration(duration * 3)
           .style("opacity", 0);
 
         timeline_container.selectAll(".radial_axis_container")
-          .transition()
+          .transition("radial_axis_container_remove")
           .delay(duration * 3)
           .remove();
       }
@@ -1489,7 +1489,7 @@ d3.configurableTL = function (unit_width) {
         facet_number = 0;
 
         timeline_facet.selectAll(".faceted_radial_axis")
-          .transition()
+          .transition("faceted_radial_axis_update")
           .duration(duration)
           .style("opacity", 1)
           .attr("transform", function () {
@@ -1522,12 +1522,12 @@ d3.configurableTL = function (unit_width) {
         logEvent("Faceted Radial axis updated", "axis_update");
       } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Faceted" && (tl_representation !== "Radial" || tl_layout !== "Faceted")) {
         timeline_container.selectAll(".faceted_radial_axis")
-          .transition()
+          .transition("faceted_radial_axis_hide")
           .duration(duration * 3)
           .style("opacity", 0);
 
         timeline_container.selectAll(".faceted_radial_axis")
-          .transition()
+          .transition("faceted_radial_axis_remove")
           .delay(duration * 3)
           .remove();
       }
@@ -1566,7 +1566,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         timeline_segment.selectAll(".segmented_radial_axis")
-          .transition()
+          .transition("segmented_radial_axis_update")
           .duration(0)
           .style("opacity", 1)
           .attr("transform", function () {
@@ -1599,12 +1599,12 @@ d3.configurableTL = function (unit_width) {
         logEvent("Segmented Radial axis updated", "axis_update");
       } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Segmented" && (tl_representation !== "Radial" || tl_layout !== "Segmented")) {
         timeline_container.selectAll(".segmented_radial_axis")
-          .transition()
+          .transition("segmented_radial_axis_hide")
           .duration(duration * 3)
           .style("opacity", 0);
 
         timeline_container.selectAll(".segmented_radial_axis")
-          .transition()
+          .transition("segmented_radial_axis_remove")
           .delay(duration * 3)
           .remove();
       }
@@ -1630,7 +1630,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         timeline_container.selectAll(".calendar_axis")
-          .transition()
+          .transition("calendar_axis_update")
           .delay(0)
           .duration(duration)
           .style("opacity", 1)
@@ -1639,12 +1639,12 @@ d3.configurableTL = function (unit_width) {
         logEvent("Calendar axis updated", "axis_update");
       } else if (prev_tl_representation === "Calendar" && tl_representation !== "Calendar") {
         timeline_container.selectAll(".calendar_axis")
-          .transition()
+          .transition("calendar_axis_hide")
           .duration(duration * 3)
           .style("opacity", 0);
 
         timeline_container.selectAll(".calendar_axis")
-          .transition()
+          .transition("calendar_axis_remove")
           .delay(duration * 3)
           .remove();
       }
@@ -1674,7 +1674,7 @@ d3.configurableTL = function (unit_width) {
           .style("opacity", 0);
 
         timeline_container.selectAll(".grid_axis")
-          .transition()
+          .transition("grid_axis_update")
           .delay(0)
           .duration(duration)
           .style("opacity", 1)
@@ -1683,12 +1683,12 @@ d3.configurableTL = function (unit_width) {
         logEvent("Grid axis updated", "axis_update");
       } else if (prev_tl_representation === "Grid" && tl_representation !== "Grid") {
         timeline_container.selectAll(".grid_axis")
-          .transition()
+          .transition("grid_axis_hide")
           .duration(duration * 3)
           .style("opacity", 0);
 
         timeline_container.selectAll(".grid_axis")
-          .transition()
+          .transition("grid_axis_remove")
           .delay(duration * 3)
           .remove();
       }
@@ -1705,7 +1705,7 @@ d3.configurableTL = function (unit_width) {
           return d && d.hasOwnProperty("id") ? d.id : idx;
         });
 
-      timeline_event_g.exit().transition()
+      timeline_event_g.exit().transition("timeline_event_remove")
         .style("opacity", 0)
         .duration(duration)
         .remove();
@@ -1782,7 +1782,7 @@ d3.configurableTL = function (unit_width) {
 
             annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, d.annotation_count);
 
-            selectWithParent("#event" + d.event_id + "_" + d.annotation_count).transition().duration(50).style("opacity", 1);
+            selectWithParent("#event" + d.event_id + "_" + d.annotation_count).transition("event_annotation_show").duration(50).style("opacity", 1);
 
             d.annotation_count++;
           } else {
@@ -1840,13 +1840,13 @@ d3.configurableTL = function (unit_width) {
 
             selectWithParent("#event" + d.event_id + "_-1 rect.annotation_frame").style("stroke", "#f00");
 
-            selectWithParent("#event" + d.event_id + "_-1").transition().duration(250).style("opacity", 1);
+            selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_show").duration(250).style("opacity", 1);
           }
         })
         .on("mouseout", function (d) {
-          selectWithParent("#event" + d.event_id + "_-1").transition().duration(100).style("opacity", 0);
+          selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_hide").duration(100).style("opacity", 0);
 
-          selectWithParent("#event" + d.event_id + "_-1").transition().delay(100).remove();
+          selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_remove").delay(100).remove();
 
           d3.select(this)
             .selectAll(".event_span")
@@ -1917,26 +1917,26 @@ d3.configurableTL = function (unit_width) {
       ---------------------------------------------------------------------------------------
       **/
 
-      timeline_event_g_early_update = timeline_event_g.transition()
+      timeline_event_g_early_update = timeline_event_g.transition("timeline_event_g_early_update")
         .delay(0)
         .duration(duration)
         .call(transitionLog);
 
-      timeline_event_g_update = timeline_event_g.transition()
+      timeline_event_g_update = timeline_event_g.transition("timeline_event_g_update")
         .delay(function (d, i) {  // eslint-disable-line no-shadow
           return duration + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
-      timeline_event_g_delayed_update = timeline_event_g.transition()
+      timeline_event_g_delayed_update = timeline_event_g.transition("timeline_event_g_delayed_update")
         .delay(function (d, i) { // eslint-disable-line no-shadow
           return duration * 2 + (data.length - i) / data.length * duration;
         })
         .duration(duration)
         .call(transitionLog);
 
-      timeline_event_g_final_update = timeline_event_g.transition()
+      timeline_event_g_final_update = timeline_event_g.transition("timeline_event_g_final_update")
         .delay(function (d, i) { // eslint-disable-line no-shadow
           return duration * 3 + (data.length - i) / data.length * duration;
         })
@@ -1945,7 +1945,7 @@ d3.configurableTL = function (unit_width) {
 
       configurableTL.currentTransition = timeline_event_g_final_update;
 
-      onTransitionComplete(timeline_event_g_final_update.transition(), () => {
+      onTransitionComplete(timeline_event_g_final_update.transition("render_complete"), () => {
         configurableTL.currentTransition = timeline_event_g_final_update = undefined;
       });
 
@@ -3767,12 +3767,12 @@ d3.configurableTL = function (unit_width) {
 
     if (tl_representation === "Curve" && fresh_canvas) {
       selectWithParent("#active_line")
-        .transition()
+        .transition("active_line_remove")
         .duration(duration)
         .remove();
 
       selectAllWithParent("rect.event_span")
-        .transition()
+        .transition("event_span_update")
         .duration(duration)
         .attr("transform", function (d) {
           return translateAlong(d, d.item_index, active_line.node());
@@ -3830,12 +3830,12 @@ d3.configurableTL = function (unit_width) {
       .attr("d", render_path);
 
     selectWithParent("#active_line")
-      .transition()
+      .transition("active_line_reproduce")
       .duration(duration)
       .remove();
 
     selectAllWithParent("rect.event_span")
-      .transition()
+      .transition("event_span_reproduce")
       .duration(duration)
       .attr("transform", function (d) {
         return translateAlong(d, d.item_index, active_line.node());
@@ -3872,7 +3872,7 @@ d3.configurableTL = function (unit_width) {
         .remove();
 
       selectAllWithParent("rect.event_span")
-        .transition()
+        .transition("event_span_reset")
         .duration(duration)
         .attr("transform", function (d) {
           d.curve_y = 0;
