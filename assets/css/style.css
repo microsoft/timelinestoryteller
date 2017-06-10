@@ -963,6 +963,14 @@ input[type="color"]::-moz-color-swatch {
   padding-top: 5px;
 }
 
+.playback_mode #navigation_div {
+  width: initial;
+  left: 10px;
+  margin-left: 0;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
 .nav_cb > input:enabled:checked + img {
   border: 1px solid #f00;
 }
@@ -973,9 +981,12 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .nav_bttn {
-  display: table-cell;
-  vertical-align: middle;
+  display: flex;
   width: 30px;
+}
+
+.nav_bttn .nav_cb {
+  display: inline-flex;
 }
 
 #stepper_container {
@@ -990,6 +1001,10 @@ input[type="color"]::-moz-color-swatch {
   overflow-y: hidden;
   overflow-x: overlay;
   flex: 1;
+}
+
+.playback_mode #stepper_container {
+  display: none;
 }
 
 #stepper_svg {
