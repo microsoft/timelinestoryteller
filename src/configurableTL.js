@@ -2550,12 +2550,13 @@ function markChangingElements(transition, tl_layout, prev_tl_layout, tl_represen
     .style("pointer-events", "none");
 }
 
-function positionElements(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, transition) {
-  transition.attr("id", function (d) {
-    return "event_g" + d.event_id;
-  });
+/**
+ * Positions all the elements
+ */
+function positionElements(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, selection) {
+  selection.attr("id", d => `event_g${d.event_id}`);
 
-  transition.select("rect.event_span")
+  selection.select("rect.event_span")
     .attr("transform", function (d) {
       var offset_y = 0,
         offset_x = 0;
@@ -2571,35 +2572,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
             break;
 
           case "Segmented":
-            var span_segment = 0;
-            switch (globals.segment_granularity) {
-              case "days":
-                span_segment = time.day.count(time.day.floor(data.min_start_date), d.start_date);
-                break;
-              case "weeks":
-                span_segment = time.week.count(time.week.floor(data.min_start_date), d.start_date);
-                break;
-              case "months":
-                span_segment = time.month.count(time.month.floor(data.min_start_date), d.start_date);
-                break;
-              case "years":
-                span_segment = d.start_date.getUTCFullYear() - data.min_start_date.getUTCFullYear();
-                break;
-              case "decades":
-                span_segment = Math.floor(d.start_date.getUTCFullYear() / 10) - Math.floor(data.min_start_date.getUTCFullYear() / 10);
-                break;
-              case "centuries":
-                span_segment = Math.floor(d.start_date.getUTCFullYear() / 100) - Math.floor(data.min_start_date.getUTCFullYear() / 100);
-                break;
-              case "millenia":
-                span_segment = Math.floor(d.start_date.getUTCFullYear() / 1000) - Math.floor(data.min_start_date.getUTCFullYear() / 1000);
-                break;
-              case "epochs":
-                span_segment = 0;
-                break;
-              default:
-                break;
-            }
+            var span_segment = calculateSpanSegment(data.min_start_date, d.start_date);
             offset_y = (height / globals.num_segments) * span_segment;
             break;
 
@@ -2630,52 +2603,17 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
     });
 
   // update rects for linear timelines
-  transition.select("rect.event_span")
-    .attr("height", function () {
-      var rect_height = unit_width;
-      if (tl_layout === "Segmented") {
-        rect_height = unit_width;
-      } else if (tl_representation === "Linear") {
-        rect_height = unit_width;
-      } else if ((tl_representation === "Spiral" || tl_representation === "Curve") && tl_scale === "Sequential") {
-        rect_height = unit_width;
-      } else if (tl_representation === "Radial" && prev_tl_representation !== "Radial") {
-        rect_height = unit_width;
-      }
-      return rect_height;
-    })
+  selection.select("rect.event_span")
+    .attr("height", () => unit_width)
     .attr("width", function (d) {
-      var rect_width = unit_width;
-      if (tl_layout === "Segmented") {
-        rect_width = unit_width;
-      } else if (tl_representation === "Linear") {
-        switch (tl_scale) {
-          case "Chronological":
-            if (d.start_date === d.end_date) {
-              rect_width = unit_width;
-            } else {
-              rect_width = d3.max([timeline_scale(d.end_date) - timeline_scale(d.start_date), unit_width]);
-            }
-            break;
-
-          case "Relative":
-            if (d.start_age === d.end_age) {
-              rect_width = unit_width;
-            } else {
-              rect_width = d3.max([timeline_scale(d.end_age) - timeline_scale(d.start_age), unit_width]);
-            }
-            break;
-
-          default:
-            rect_width = unit_width;
-            break;
+      if (tl_layout !== "Segmented" && tl_representation === "Linear") {
+        if (tl_scale === "Chronological" && d.start_date !== d.end_date) {
+          return d3.max([timeline_scale(d.end_date) - timeline_scale(d.start_date), unit_width]);
+        } else if (tl_scale === "Relative" && d.start_age !== d.end_age) {
+          return d3.max([timeline_scale(d.end_age) - timeline_scale(d.start_age), unit_width]);
         }
-      } else if ((tl_representation === "Spiral" || tl_representation === "Curve") && tl_scale === "Sequential") {
-        rect_width = unit_width;
-      } else if (tl_representation === "Radial" && prev_tl_representation !== "Radial") {
-        rect_width = unit_width;
       }
-      return rect_width;
+      return unit_width;
     })
     .attr("x", function (d) {
       var rect_x = 0;
@@ -2888,7 +2826,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
       return rect_y;
     });
 
-  transition.select(".time_elapsed")
+  selection.select(".time_elapsed")
     .attr("x", function (d) {
       if (tl_scale === "Chronological") {
         return d3.max([0, timeline_scale(d.start_date) * unit_width - unit_width]);
@@ -2911,7 +2849,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
     .text(function (d) {
       return d.time_elapsed_label;
     });
-  transition.select("path.event_span")
+  selection.select("path.event_span")
     .attr("transform", function (d) {
       var offset_y = 0;
       var offset_x = 0;
@@ -2930,35 +2868,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
           break;
 
         case "Segmented":
-          var span_segment = 0;
-          switch (globals.segment_granularity) {
-            case "days":
-              span_segment = time.day.count(time.day.floor(data.min_start_date), d.start_date);
-              break;
-            case "weeks":
-              span_segment = time.week.count(time.week.floor(data.min_start_date), d.start_date);
-              break;
-            case "months":
-              span_segment = time.month.count(time.month.floor(data.min_start_date), d.start_date);
-              break;
-            case "years":
-              span_segment = d.start_date.getUTCFullYear() - data.min_start_date.getUTCFullYear();
-              break;
-            case "decades":
-              span_segment = Math.floor(d.start_date.getUTCFullYear() / 10) - Math.floor(data.min_start_date.getUTCFullYear() / 10);
-              break;
-            case "centuries":
-              span_segment = Math.floor(d.start_date.getUTCFullYear() / 100) - Math.floor(data.min_start_date.getUTCFullYear() / 100);
-              break;
-            case "millenia":
-              span_segment = Math.floor(d.start_date.getUTCFullYear() / 1000) - Math.floor(data.min_start_date.getUTCFullYear() / 1000);
-              break;
-            case "epochs":
-              span_segment = 0;
-              break;
-            default:
-              break;
-          }
+          const span_segment = calculateSpanSegment(data.min_start_date, d.start_date);
           var segment_dim_x = width / globals.num_segment_cols;
           var segment_dim_y = height / globals.num_segment_rows;
           offset_x = span_segment % globals.num_segment_cols * segment_dim_x + segment_dim_x / 2;
@@ -2996,11 +2906,11 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
     });
 
   if (tl_representation !== "Radial") {
-    transition.selectAll("path.event_span")
+    selection.selectAll("path.event_span")
       .style("display", "none");
   }
 
-  transition.selectAll("rect.event_span_component")
+  selection.selectAll("rect.event_span_component")
     .attr("transform", function (dataItem) {
       const dateTime = dataItem.dateTime;
       var offset_y = 0,
@@ -3039,35 +2949,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
               break;
           }
         } else if (tl_representation === "Radial" && tl_scale === "Chronological") {
-          var span_segment = 0;
-          switch (globals.segment_granularity) {
-            case "days":
-              span_segment = d3.max([0, time.day.count(time.day.floor(data.min_start_date), dateTime)]);
-              break;
-            case "weeks":
-              span_segment = d3.max([0, time.week.count(time.week.floor(data.min_start_date), dateTime)]);
-              break;
-            case "months":
-              span_segment = d3.max([0, time.month.count(time.month.floor(data.min_start_date), dateTime)]);
-              break;
-            case "years":
-              span_segment = d3.max([0, dateTime.getUTCFullYear() - data.min_start_date.getUTCFullYear()]);
-              break;
-            case "decades":
-              span_segment = d3.max([0, Math.floor(dateTime.getUTCFullYear() / 10) - Math.floor(data.min_start_date.getUTCFullYear() / 10)]);
-              break;
-            case "centuries":
-              span_segment = d3.max([0, Math.floor(dateTime / 100) - Math.floor(data.min_start_date.getUTCFullYear() / 100)]);
-              break;
-            case "millenia":
-              span_segment = d3.max([0, Math.floor(dateTime / 1000) - Math.floor(data.min_start_date.getUTCFullYear() / 1000)]);
-              break;
-            case "epochs":
-              span_segment = 0;
-              break;
-            default:
-              break;
-          }
+          var span_segment = calculateSpanSegment(data.min_start_date, dateTime);
           var segment_dim_x = width / globals.num_segment_cols;
           var segment_dim_y = height / globals.num_segment_rows;
           offset_x = span_segment % globals.num_segment_cols * segment_dim_x + segment_dim_x / 2;
@@ -3077,7 +2959,7 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
       return "translate(" + unNaN(offset_x) + "," + unNaN(offset_y) + ")";
     });
 
-  transition.selectAll("rect.event_span_component")
+  selection.selectAll("rect.event_span_component")
     .attr("height", function () {
       var span_height = unit_width;
       if (tl_layout === "Segmented" && tl_representation === "Calendar" && tl_scale === "Chronological") {
@@ -3318,41 +3200,14 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
       return x_pos;
     });
 
-  transition.selectAll("path.event_span_component")
+  selection.selectAll("path.event_span_component")
     .attr("transform", function (dataItem) {
       const dateTime = dataItem.dateTime;
       var offset_x = 0,
         offset_y = 0,
         span_segment = 0;
       if (tl_layout === "Segmented" && tl_scale === "Chronological") {
-        switch (globals.segment_granularity) {
-          case "days":
-            span_segment = d3.max([0, time.day.count(time.day.floor(data.min_start_date), dateTime)]);
-            break;
-          case "weeks":
-            span_segment = d3.max([0, time.week.count(time.week.floor(data.min_start_date), dateTime)]);
-            break;
-          case "months":
-            span_segment = d3.max([0, time.month.count(time.month.floor(data.min_start_date), dateTime)]);
-            break;
-          case "years":
-            span_segment = d3.max([0, dateTime.getUTCFullYear() - data.min_start_date.getUTCFullYear()]);
-            break;
-          case "decades":
-            span_segment = d3.max([0, Math.floor(dateTime.getUTCFullYear() / 10) - Math.floor(data.min_start_date.getUTCFullYear() / 10)]);
-            break;
-          case "centuries":
-            span_segment = d3.max([0, Math.floor(dateTime / 100) - Math.floor(data.min_start_date.getUTCFullYear() / 100)]);
-            break;
-          case "millenia":
-            span_segment = d3.max([0, Math.floor(dateTime / 1000) - Math.floor(data.min_start_date.getUTCFullYear() / 1000)]);
-            break;
-          case "epochs":
-            span_segment = 0;
-            break;
-          default:
-            break;
-        }
+        span_segment = calculateSpanSegment(data.min_start_date, dateTime);
         var segment_dim_x = width / globals.num_segment_cols;
         var segment_dim_y = height / globals.num_segment_rows;
         offset_x = span_segment % globals.num_segment_cols * segment_dim_x + segment_dim_x / 2;
@@ -3370,12 +3225,12 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
     });
 
   if (tl_representation !== "Radial") {
-    transition.selectAll("path.event_span_component")
+    selection.selectAll("path.event_span_component")
       .style("display", "none");
   }
 
   // update terminal span indicators
-  transition.select(".path_end_indicator")
+  selection.select(".path_end_indicator")
     .attr("transform", function (d) {
       var x_pos = 0,
         y_pos = 0,
@@ -3442,21 +3297,18 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
           y_pos = (y_pos + 1) * (height / globals.num_segments) - (globals.track_height * d.track + globals.track_height) + unit_width * 0.5;
         } else if (tl_representation === "Radial") {
           var pos;
+          span_segment = calculateSpanSegment(data.min_start_date, d.start_date);
           switch (globals.segment_granularity) {
             case "days":
-              span_segment = d3.max([0, time.day.count(time.day.floor(data.min_start_date), d.start_date)]);
               pos = timeline_scale(moment(d.start_date).hour() + 0.5);
               break;
             case "weeks":
-              span_segment = d3.max([0, time.week.count(time.week.floor(data.min_start_date), d.start_date)]);
               pos = timeline_scale(moment(d.start_date).day() + 0.5);
               break;
             case "months":
-              span_segment = d3.max([0, time.month.count(time.month.floor(data.min_start_date), d.start_date)]);
               pos = timeline_scale(moment(d.start_date).date() + 0.5);
               break;
             case "years":
-              span_segment = d3.max([0, d.start_date.getUTCFullYear() - data.min_start_date.getUTCFullYear()]);
               if (moment(d.start_date).isoWeek() === 53) {
                 pos = timeline_scale(1);
               } else {
@@ -3469,7 +3321,6 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
               } else {
                 pos = timeline_scale(moment(d.start_date).month() + (d.start_date.getUTCFullYear() - Math.floor(d.start_date.getUTCFullYear() / 10) * 10) * 12 + 0.5);
               }
-              span_segment = d3.max([0, Math.floor(d.start_date.getUTCFullYear() / 10) - Math.floor(data.min_start_date.getUTCFullYear() / 10)]);
               break;
             case "centuries":
               if (d.start_date.getUTCFullYear() < 0) {
@@ -3477,7 +3328,6 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
               } else {
                 pos = timeline_scale(d.start_date.getUTCFullYear() % 100 + 0.5);
               }
-              span_segment = d3.max([0, Math.floor(d.start_date.getUTCFullYear() / 100) - Math.floor(data.min_start_date.getUTCFullYear() / 100)]);
               break;
             case "millenia":
               if (d.start_date.getUTCFullYear() < 0) {
@@ -3485,13 +3335,9 @@ function positionElements(tl_layout, tl_scale, tl_representation, width, height,
               } else {
                 pos = timeline_scale(d.start_date.getUTCFullYear() % 1000 + 0.5);
               }
-              span_segment = d3.max([0, Math.floor(d.start_date.getUTCFullYear() / 1000) - Math.floor(data.min_start_date.getUTCFullYear() / 1000)]);
               break;
             case "epochs":
-              span_segment = 0;
               pos = timeline_scale(d.start_date.valueOf() + 0.5);
-              break;
-            default:
               break;
           }
           var segment_dim_x = width / globals.num_segment_cols;
@@ -4074,4 +3920,32 @@ function getYGridPosition(year, min, unit_width) {
   }
 
   return decade_of_century * 1.25 * cell_size + century_offset * (century_height + cell_size) + y_offset;
+}
+
+function calculateSpanSegment(min_start_date, start_date) {
+    var span_segment = 0;
+    switch (globals.segment_granularity) {
+      case "days":
+        span_segment = d3.max([0, time.day.count(time.day.floor(min_start_date), start_date)]);
+        break;
+      case "weeks":
+        span_segment = d3.max([0, time.week.count(time.week.floor(min_start_date), start_date)]);
+        break;
+      case "months":
+        span_segment = d3.max([0, time.month.count(time.month.floor(min_start_date), start_date)]);
+        break;
+      case "years":
+        span_segment = d3.max([0, start_date.getUTCFullYear() - min_start_date.getUTCFullYear()]);
+        break;
+      case "decades":
+        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 10) - Math.floor(min_start_date.getUTCFullYear() / 10)]);
+        break;
+      case "centuries":
+        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 100) - Math.floor(min_start_date.getUTCFullYear() / 100)]);
+        break;
+      case "millenia":
+        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 1000) - Math.floor(min_start_date.getUTCFullYear() / 1000)]);
+        break;
+    }
+    return span_segment;
 }
