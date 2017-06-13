@@ -126,7 +126,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function adjustSvgSize() {
     main_svg.transition()
-      .duration(instance.options.animations ? 1200 : 0)
+      .duration(instance.options.animations ? 500 : 0)
       .attr("width", d3.max([globals.width, (instance._render_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
       .attr("height", d3.max([globals.height, (instance._component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
   }
@@ -247,7 +247,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       // recover legend
       selectWithParent(".legend")
         .transition()
-        .duration(instance.options.animations ? 1200 : 0)
+        .duration(instance.options.animations ? 500 : 0)
         .attr("x", 0)
         .attr("y", 0);
 
@@ -2009,7 +2009,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
+    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
       .tl_scale(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2032,7 +2032,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
+    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
       .tl_layout(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2065,7 +2065,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
+    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
       .tl_representation(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2445,7 +2445,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // where is the legend in the scene?
     selectWithParent(".legend")
       .transition()
-      .duration(instance.options.animations ? 1200 : 0)
+      .duration(instance.options.animations ? 500 : 0)
       .style("z-index", 1)
       .attr("x", scene.s_legend_x)
       .attr("y", scene.s_legend_y);
@@ -2741,7 +2741,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.global_max_end_date = data.max_end_date;
 
     main_svg.datum(data)
-      .call(timeline_vis.duration(instance.options.animations ? 1200 : 0).height(globals.height).width(globals.width));
+      .call(timeline_vis.duration(instance.options.animations ? 500 : 0).height(globals.height).width(globals.width));
 
     if (hasScenes) {
       globals.current_scene_index = 0;
@@ -2898,7 +2898,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             instance.setCategoryColor(d, i, value);
 
             if (main_svg && timeline_vis) {
-              main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0));
+              main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0));
             }
           });
         })
@@ -4106,7 +4106,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     });
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 1200 : 0));
+    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0));
 
     globals.prev_active_event_list = globals.active_event_list;
   });
@@ -4222,7 +4222,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     main_svg
       .datum(globals.active_data)
-      .call(timeline_vis.duration(instance.options.animations ? 1200 : 0)
+      .call(timeline_vis.duration(instance.options.animations ? 500 : 0)
       .height(globals.height)
       .width(globals.width));
 

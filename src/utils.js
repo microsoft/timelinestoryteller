@@ -171,14 +171,24 @@ var utils = {
    * @returns {void}
    */
   onTransitionComplete: function (transition, callback) {
-    if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
-    if (transition.size() === 0) {
-      callback();
-    }
-    var n = 0;
-    transition
-        .each(() => ++n)
-        .each("end", () => { if (!--n) callback.apply(this, arguments); });
+    // if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
+    return new Promise((resolve, reject) => {
+      if (transition.size() === 0) {
+        callback();
+        resolve();
+      }
+      var n = 0;
+      transition
+          .each(() => ++n)
+          .each("end", () => {
+            if (!--n) {
+              if (callback) {
+                callback.apply(this, arguments);
+              }
+              resolve();
+            }
+          });
+    });
   }
 };
 
