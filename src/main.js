@@ -126,7 +126,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function adjustSvgSize() {
     main_svg.transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("width", d3.max([globals.width, (instance._render_width - globals.margin.left - globals.margin.right - getScrollbarWidth())]))
       .attr("height", d3.max([globals.height, (instance._component_height - globals.margin.top - globals.margin.bottom - getScrollbarWidth())]));
   }
@@ -247,7 +247,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       // recover legend
       selectWithParent(".legend")
         .transition()
-        .duration(instance.options.animations ? 500 : 0)
+        .duration(instance._getAnimationStepDuration())
         .attr("x", 0)
         .attr("y", 0);
 
@@ -2009,7 +2009,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
+    main_svg.call(timeline_vis.duration(instance._getAnimationStepDuration())
       .tl_scale(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2032,7 +2032,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
+    main_svg.call(timeline_vis.duration(instance._getAnimationStepDuration())
       .tl_layout(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2065,7 +2065,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     adjustSvgSize();
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0)
+    main_svg.call(timeline_vis.duration(instance._getAnimationStepDuration())
       .tl_representation(this.value)
       .height(globals.height)
       .width(globals.width));
@@ -2445,7 +2445,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // where is the legend in the scene?
     selectWithParent(".legend")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .style("z-index", 1)
       .attr("x", scene.s_legend_x)
       .attr("y", scene.s_legend_y);
@@ -2601,9 +2601,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
 
     // delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
-    if (waitForTransitions && timeline_vis.currentTransition) {
+    if (waitForTransitions && timeline_vis.renderComplete) {
       log("Waiting for transitions");
-      onTransitionComplete(timeline_vis.currentTransition, loadAnnotations);
+      timeline_vis.renderComplete.then(loadAnnotations);
     } else {
       loadAnnotations();
     }
@@ -2741,7 +2741,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     globals.global_max_end_date = data.max_end_date;
 
     main_svg.datum(data)
-      .call(timeline_vis.duration(instance.options.animations ? 500 : 0).height(globals.height).width(globals.width));
+      .call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
     if (hasScenes) {
       globals.current_scene_index = 0;
@@ -2898,7 +2898,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             instance.setCategoryColor(d, i, value);
 
             if (main_svg && timeline_vis) {
-              main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0));
+              main_svg.call(timeline_vis.duration(instance._getAnimationStepDuration()));
             }
           });
         })
@@ -2930,69 +2930,69 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function expandLegend() {
     selectWithParent(".legend")
       .transition()
-      .duration(instance.options.animations ? 500 : 0);
+      .duration(instance._getAnimationStepDuration());
     selectWithParent(".legend").select(".legend_rect")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("height", globals.track_height * (globals.num_categories + 1))
       .attr("width", globals.max_legend_item_width + 5 + globals.unit_width + 10);
     selectWithParent(".legend").select("#legend_expand_btn")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("x", globals.max_legend_item_width + 5 + globals.unit_width - 10);
     selectWithParent(".legend").select(".legend_title")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("dx", "0em")
       .attr("transform", "translate(5,0)rotate(0)");
     selectWithParent(".legend").selectAll(".legend_element_g text")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .style("fill-opacity", "1")
       .style("display", "inline")
       .attr("transform", "translate(0,-35)");
     selectWithParent(".legend").selectAll(".legend_element_g rect")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("transform", "translate(0,-35)");
     selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("transform", "translate(" + globals.legend_spacing + ",-35)");
   }
 
   function collapseLegend() {
     selectWithParent(".legend")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .style("z-index", 1);
     selectWithParent(".legend").select(".legend_rect")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("height", 35 + globals.track_height * (globals.num_categories + 1))
       .attr("width", 25);
     selectWithParent(".legend").select("#legend_expand_btn")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("x", 25);
     selectWithParent(".legend").select(".legend_title")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("dx", "-4.3em")
       .attr("transform", "translate(0,0)rotate(270)");
     selectWithParent(".legend").selectAll(".legend_element_g text")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .style("fill-opacity", "0")
       .style("display", "none")
       .attr("transform", "translate(0,0)");
     selectWithParent(".legend").selectAll(".legend_element_g rect")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("transform", "translate(0,0)");
     selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
       .transition()
-      .duration(instance.options.animations ? 500 : 0)
+      .duration(instance._getAnimationStepDuration())
       .attr("transform", "translate(" + globals.legend_spacing + ",0)");
   }
 
@@ -4106,7 +4106,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     });
 
-    main_svg.call(timeline_vis.duration(instance.options.animations ? 500 : 0));
+    main_svg.call(timeline_vis.duration(instance._getAnimationStepDuration()));
 
     globals.prev_active_event_list = globals.active_event_list;
   });
@@ -4222,7 +4222,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     main_svg
       .datum(globals.active_data)
-      .call(timeline_vis.duration(instance.options.animations ? 500 : 0)
+      .call(timeline_vis.duration(instance._getAnimationStepDuration())
       .height(globals.height)
       .width(globals.width));
 
@@ -4584,6 +4584,12 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
    * If true, animations will be enabled
    */
   animations: true,
+
+  /**
+   * The duration between animations
+   */
+  animationsStepDuration: 1200,
+
   menu: {
     open: {
       label: "Open",
@@ -4943,6 +4949,17 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
   });
 
   selectAllWithParent("#menu_div").style("display", sectionNames.length > 0 ? "block" : "none");
+};
+
+/**
+ * Gets the animation duration for each of the steps in the animations
+ * @returns {number}
+ */
+TimelineStoryteller.prototype._getAnimationStepDuration = function() {
+  if (instance.options.animations) {
+    return instance.options.animationsStepDuration;
+  }
+  return 0;
 };
 
 /**
