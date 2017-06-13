@@ -1861,16 +1861,20 @@ function configureGridAxis(tl_representation, duration, data, grid_axis, timelin
 
     logEvent("Grid axis updated", "axis_update");
   } else if (prev_tl_representation === "Grid" && tl_representation !== "Grid") {
-    timeline_container.selectAll(".grid_axis")
-      .transition("grid_axis_hide")
-      .duration(duration * 3)
-      .style("opacity", 0);
-
-    timeline_container.selectAll(".grid_axis")
-      .transition("grid_axis_remove")
-      .delay(duration * 3)
-      .remove();
+    hideAxis(timeline_container, duration, "grid_axis");
   }
+}
+
+function hideAxis(timeline_container, duration, selector) {
+  timeline_container.selectAll(`.${selector}`)
+    .transition(`${selector}_hide`)
+    .duration(duration * 3)
+    .style("opacity", 0);
+
+  timeline_container.selectAll(".grid_axis")
+    .transition(`${selector}_remove`)
+    .delay(duration * 3)
+    .remove();
 }
 
 function configureCalendarAxis(tl_representation, duration, data, calendar_axis, timeline_container, prev_tl_representation) {
@@ -1896,15 +1900,7 @@ function configureCalendarAxis(tl_representation, duration, data, calendar_axis,
 
     logEvent("Calendar axis updated", "axis_update");
   } else if (prev_tl_representation === "Calendar" && tl_representation !== "Calendar") {
-    timeline_container.selectAll(".calendar_axis")
-      .transition("calendar_axis_hide")
-      .duration(duration * 3)
-      .style("opacity", 0);
-
-    timeline_container.selectAll(".calendar_axis")
-      .transition("calendar_axis_remove")
-      .delay(duration * 3)
-      .remove();
+    hideAxis(timeline_container, duration, "calendar_axis");
   }
 }
 
@@ -1969,15 +1965,7 @@ function configureSegmentedRadialAxis(tl_representation, tl_layout, tl_scale, du
 
     logEvent("Segmented Radial axis updated", "axis_update");
   } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Segmented" && (tl_representation !== "Radial" || tl_layout !== "Segmented")) {
-    timeline_container.selectAll(".segmented_radial_axis")
-      .transition("segmented_radial_axis_hide")
-      .duration(duration * 3)
-      .style("opacity", 0);
-
-    timeline_container.selectAll(".segmented_radial_axis")
-      .transition("segmented_radial_axis_remove")
-      .delay(duration * 3)
-      .remove();
+    hideAxis(timeline_container, duration, "segmented_radial_axis");
   }
 
   return { radial_axis_quantiles };
@@ -2073,15 +2061,7 @@ function configureFacetedRadialAxes(tl_layout, tl_representation, tl_scale, radi
 
     logEvent("Faceted Radial axis updated", "axis_update");
   } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Faceted" && (tl_representation !== "Radial" || tl_layout !== "Faceted")) {
-    timeline_container.selectAll(".faceted_radial_axis")
-      .transition("faceted_radial_axis_hide")
-      .duration(duration * 3)
-      .style("opacity", 0);
-
-    timeline_container.selectAll(".faceted_radial_axis")
-      .transition("faceted_radial_axis_remove")
-      .delay(duration * 3)
-      .remove();
+    hideAxis(timeline_container, duration, "faceted_radial_axis");
   }
   return { radial_axis_quantiles };
 }
@@ -2153,15 +2133,7 @@ function configureUnifiedRadialAxis(tl_representation, tl_layout, tl_scale, time
 
     logEvent("Unified Radial axis updated", "axis_update");
   } else if (prev_tl_representation === "Radial" && prev_tl_layout === "Unified" && (tl_representation !== "Radial" || tl_layout !== "Unified")) {
-    timeline_container.selectAll(".radial_axis_container")
-      .transition("radial_axis_container_hide")
-      .duration(duration * 3)
-      .style("opacity", 0);
-
-    timeline_container.selectAll(".radial_axis_container")
-      .transition("radial_axis_container_remove")
-      .delay(duration * 3)
-      .remove();
+    hideAxis(timeline_container, duration, "radial_axis_container");
   }
 
   return { radial_axis_quantiles };
@@ -3924,6 +3896,7 @@ function getYGridPosition(year, min, unit_width) {
 
 function calculateSpanSegment(min_start_date, start_date) {
     var span_segment = 0;
+    const year = start_date && start_date.getUTCFullYear ? start_date.getUTCFullYear() : start_date;
     switch (globals.segment_granularity) {
       case "days":
         span_segment = d3.max([0, time.day.count(time.day.floor(min_start_date), start_date)]);
@@ -3935,16 +3908,16 @@ function calculateSpanSegment(min_start_date, start_date) {
         span_segment = d3.max([0, time.month.count(time.month.floor(min_start_date), start_date)]);
         break;
       case "years":
-        span_segment = d3.max([0, start_date.getUTCFullYear() - min_start_date.getUTCFullYear()]);
+        span_segment = d3.max([0, year - min_start_date.getUTCFullYear()]);
         break;
       case "decades":
-        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 10) - Math.floor(min_start_date.getUTCFullYear() / 10)]);
+        span_segment = d3.max([0, Math.floor(year / 10) - Math.floor(min_start_date.getUTCFullYear() / 10)]);
         break;
       case "centuries":
-        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 100) - Math.floor(min_start_date.getUTCFullYear() / 100)]);
+        span_segment = d3.max([0, Math.floor(year / 100) - Math.floor(min_start_date.getUTCFullYear() / 100)]);
         break;
       case "millenia":
-        span_segment = d3.max([0, Math.floor(start_date.getUTCFullYear() / 1000) - Math.floor(min_start_date.getUTCFullYear() / 1000)]);
+        span_segment = d3.max([0, Math.floor(year / 1000) - Math.floor(min_start_date.getUTCFullYear() / 1000)]);
         break;
     }
     return span_segment;
