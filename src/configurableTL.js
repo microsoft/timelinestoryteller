@@ -40,7 +40,6 @@ d3.configurableTL = function (unit_width) {
     interim_duration_scale = d3.scale.linear().nice().range([0.25 * unit_width, 4 * unit_width]),
     interim_duration_axis = d3.svg.axis().orient("right").outerTickSize(0),
     tick_format,
-    timeline_axis = d3.svg.axis().orient("top"),
     radial_axis = radialAxis(unit_width),
     radial_axis_quantiles = [],
     calendar_axis = calendarAxis(),
@@ -210,7 +209,7 @@ d3.configurableTL = function (unit_width) {
       ---------------------------------------------------------------------------------------
       **/
 
-      configureLinearAxis(timeline_axis, timeline_scale, tl_layout, tl_representation, prev_tl_representation, tl_scale, data, tick_format, unit_width, timeline_container, duration, width, height);
+      configureLinearAxis(timeline_scale, tl_layout, tl_representation, prev_tl_representation, tl_scale, data, tick_format, unit_width, timeline_container, duration, width, height);
 
       /**
       ---------------------------------------------------------------------------------------
@@ -221,29 +220,10 @@ d3.configurableTL = function (unit_width) {
       configureCollapsedAxis(tl_representation, prev_tl_scale, tl_scale, tl_layout, interim_duration_axis, interim_duration_scale, duration, data, timeline_container, width, height, unit_width)
 
       /**
-      ---------------------------------------------------------------------------------------
-      AXES
-      Radial Axes
-      ---------------------------------------------------------------------------------------
-      Unified Radial Axis
-      ---------------------------------------------------------------------------------------
-      **/
-      radial_axis_quantiles = configureUnifiedRadialAxis(tl_representation, tl_layout, tl_scale, timeline_container, timeline_scale, prev_tl_layout, prev_tl_representation, width, height, radial_axis_quantiles, timeline_scale_segments, radial_axis, duration).radial_axis_quantiles;
-
-
-      /**
-      ---------------------------------------------------------------------------------------
-      Faceted Radial Axes
-      ---------------------------------------------------------------------------------------
-      **/
-      radial_axis_quantiles = configureFacetedRadialAxes(tl_layout, tl_representation, tl_scale, radial_axis, radial_axis_quantiles, duration, timeline_scale_segments, timeline_facet, width, height, timeline_scale, prev_tl_scale, prev_tl_layout, prev_tl_representation, timeline_container).radial_axis_quantiles;
-
-      /**
-      ---------------------------------------------------------------------------------------
-      Segmented Radial Axis
-      ---------------------------------------------------------------------------------------
-      **/
-      radial_axis_quantiles = configureSegmentedRadialAxis(tl_representation, tl_layout, tl_scale, duration, radial_axis_quantiles, timeline_scale_segments, radial_axis, timeline_segment, width, height, timeline_scale, timeline_container, prev_tl_representation, prev_tl_layout).radial_axis_quantiles;
+       * AXES
+       * Radial Axes
+       */
+      radial_axis_quantiles = configureRadialAxes(tl_representation, tl_layout, tl_scale, timeline_container, timeline_scale, prev_tl_layout, prev_tl_representation, width, height, radial_axis_quantiles, timeline_scale_segments, radial_axis, duration, timeline_facet, timeline_segment, prev_tl_scale);
 
       /**
       ---------------------------------------------------------------------------------------
@@ -251,12 +231,7 @@ d3.configurableTL = function (unit_width) {
       Calendar Axis
       ---------------------------------------------------------------------------------------
       **/
-      let caResult = configureCalendarAxis(tl_representation, duration, data, calendar_axis, timeline_container, prev_tl_representation);
-      let range_floor, range_ceil;
-      if (caResult) {
-        range_floor = caResult.range_floor;
-        range_ceil = caResult.range_ceil;
-      }
+      configureCalendarAxis(tl_representation, duration, data, calendar_axis, timeline_container, prev_tl_representation);
 
       /**
       ---------------------------------------------------------------------------------------
@@ -266,353 +241,26 @@ d3.configurableTL = function (unit_width) {
       **/
       configureGridAxis(tl_representation, duration, data, grid_axis, timeline_container, prev_tl_representation);
 
-      /**
-      ---------------------------------------------------------------------------------------
-      EVENTS
-      ---------------------------------------------------------------------------------------
-      **/
+      // It is important that these guys get set here, in case the transitions get interrupted
+      const old_scale = prev_tl_scale;
+      const old_rep = prev_tl_representation;
+      const old_layout = prev_tl_layout;
+      prev_tl_scale = tl_scale;
+      prev_tl_layout = tl_layout;
+      prev_tl_representation = tl_representation;
 
-      // add event containers
-      var timeline_event_g = timeline_container.selectAll(".timeline_event_g")
-        .data(data, function (d, idx) {
-          return d && d.hasOwnProperty("id") ? d.id : idx;
-        });
+      // Creates all the elements to be used
+      const timeline_event_g = initializeElements(timeline_container, data, duration, width, height, unit_width, tl_representation, configurableTL);
 
-      timeline_event_g.exit().transition("timeline_event_remove")
-        .style("opacity", 0)
-        .duration(duration)
-        .remove();
+      // Updates those elements to position/size/color them correctly
+      configurableTL.renderComplete = updateElements(interim_duration_scale, timeline_event_g, duration, configurableTL, tl_layout, tl_scale, tl_representation, width, height, data, unit_width, old_layout, old_rep, old_scale, timeline_scale).then(() => {
+        // Reset vars
+        // set previous timeline configuration
+        configurableTL.renderComplete = undefined;
+      });
 
-      /**
-      ---------------------------------------------------------------------------------------
-      EVENT ENTER
-      ---------------------------------------------------------------------------------------
-      **/
-
-      // define each event and its behaviour
-      var timeline_event_g_enter = timeline_event_g.enter()
-        .append("g")
-        .attr("class", "timeline_event_g")
-        .attr("id", d => `event_g${d.event_id}`);
-
-      // define event behaviour
-      timeline_event_g_enter
-        .on("click", function (d, i) {
-          return eventClickListener(tl_representation, unit_width, configurableTL, d, i);
-        })
-        .on("mouseover", function (d, i) {
-          return eventMouseOverListener(d, tl_representation, unit_width, configurableTL);
-        })
-        .on("mouseout", eventMouseOutListener);
-
-      // add rect events for linear timelines
-      timeline_event_g_enter.append("rect")
-        .attr("class", "event_span")
-        .attr("height", unit_width)
-        .attr("width", unit_width)
-        .attr("y", height / 2)
-        .attr("x", width / 2)
-        .style("stroke", "#fff")
-        .style("opacity", 0)
-        .style("fill", eventColorMapping);
-
-      // draw elapsed time as bar below the sequence, offset between events
-      timeline_event_g_enter.append("rect")
-        .attr("class", "time_elapsed")
-        .attr("height", 0)
-        .attr("width", unit_width * 1.5)
-        .attr("y", height / 2)
-        .attr("x", width / 2)
-        .append("title")
-        .style("opacity", 0)
-        .text("");
-
-      // add arc path events for radial timelines
-      timeline_event_g_enter.append("path")
-        .attr("class", "event_span")
-        .style("stroke", "#fff")
-        .style("opacity", 1)
-        .style("fill", eventColorMapping);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      EVENT UPDATE (TRANSITIONS)
-      ---------------------------------------------------------------------------------------
-      **/
-
-      const start = new Date();
-      timeline_event_g_early_update = timeline_event_g.transition("timeline_event_g_early_update")
-        .delay(0)
-        .duration(duration);
-
-      // configurableTL.currentTransition = timeline_event_g_final_update;
-      transitionLog(start, timeline_event_g_early_update);
-
-      onTransitionComplete(timeline_event_g_early_update)
-        .then(() => {
-          // First update
-          const transition = timeline_event_g.transition("timeline_event_g_update").duration(duration);
-          renderUpdate(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, getYGridPosition, getXGridPosition, transition);
-          transitionLog(start, transition);
-          return onTransitionComplete(transition);
-        })
-        .then(() => {
-          // Second update
-          const transition = timeline_event_g.transition("timeline_event_g_delayed_update").duration(duration);
-          renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_duration_scale, unit_width, timeline_scale, transition);
-          transitionLog(start, transition);
-          return onTransitionComplete(transition);
-        })
-        .then(() => {
-          // Final update
-          const transition = timeline_event_g.transition("timeline_event_g_final_update").duration(duration);
-          renderFinalUpdate(tl_layout, transition);
-          transitionLog(start, transition);
-          return onTransitionComplete(transition);
-        })
-        .then(() => {
-          // Reset vars
-          // set previous timeline configuration
-          configurableTL.currentTransition = undefined;
-          prev_tl_scale = tl_scale;
-          prev_tl_layout = tl_layout;
-          prev_tl_representation = tl_representation;
-        });
-
-      /**
-      ---------------------------------------------------------------------------------------
-      update rect elements for non-radial representations
-      ---------------------------------------------------------------------------------------
-      **/
-
-      timeline_event_g_early_update.select("rect.event_span")
-        .style("opacity", function (d) {
-          return initialOpacity(d, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale, true);
-        })
-        .style("pointer-events", function () {
-          return "none";
-        })
-        .style("fill", eventColorMapping);
-      /**
-      ---------------------------------------------------------------------------------------
-      update bar (rect) elements for interim_duration scale
-      ---------------------------------------------------------------------------------------
-      **/
-
-      // draw elapsed time as bar below the sequence, offset between events
-      timeline_event_g_early_update.select(".time_elapsed")
-        .attr("height", 0)
-        .style("opacity", 0);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      update path elements for radial representations
-      ---------------------------------------------------------------------------------------
-      **/
-
-      timeline_event_g_early_update.select("path.event_span")
-        .style("opacity", function (d) {
-          return initialOpacity(d, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale, false);
-        })
-        .style("pointer-events", function () {
-          return "none";
-        })
-        .style("fill", eventColorMapping);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      EVENT SPANS for SEGMENTED layouts
-      ---------------------------------------------------------------------------------------
-      span enter
-      ---------------------------------------------------------------------------------------
-      **/
-
-      var event_span = timeline_event_g_enter.selectAll(".event_span_component")
-        .data(function (d) {
-          var event_span_component;
-          switch (globals.segment_granularity) {
-            case "days":
-              event_span_component = time.utcHour.range(time.utcHour.floor(d.start_date), time.utcHour.ceil(d.end_date));
-              break;
-            case "weeks":
-              event_span_component = time.day.range(time.day.floor(d.start_date), time.day.ceil(d.end_date));
-              break;
-            case "months":
-              event_span_component = time.day.range(time.day.floor(d.start_date), time.day.ceil(d.end_date));
-              break;
-            case "years":
-              event_span_component = time.utcWeek.range(time.utcWeek.floor(d.start_date), time.utcWeek.ceil(d.end_date));
-              break;
-            case "decades":
-              event_span_component = time.month.range(time.month.floor(d.start_date), time.month.ceil(d.end_date));
-              break;
-            case "centuries":
-              event_span_component = d3.range(d.start_date.getUTCFullYear(), d.end_date.getUTCFullYear());
-              break;
-            case "millenia":
-              event_span_component = d3.range(d.start_date.getUTCFullYear(), d.end_date.getUTCFullYear() + 1, 10);
-              break;
-            case "epochs":
-              event_span_component = [d.start_date];
-              break;
-            default:
-              break;
-          }
-          return event_span_component;
-        })
-        .enter();
-
-      event_span.append("rect")
-        .attr("class", "event_span_component")
-        .style("opacity", 0)
-        .style("fill", eventSpanColorMapping)
-        .attr("height", unit_width)
-        .attr("width", unit_width)
-        .attr("y", height / 2)
-        .attr("x", width / 2);
-
-      event_span.append("path")
-        .attr("class", "event_span_component")
-        .style("opacity", 0)
-        .style("fill", eventSpanColorMapping);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      span updates: rect elements for non-radial timelines
-      ---------------------------------------------------------------------------------------
-      **/
-
-      timeline_event_g_early_update.selectAll("rect.event_span_component")
-        .style("opacity", function () {
-          if (tl_layout !== "Segmented" || prev_tl_layout !== "Segmented" || (tl_representation === "Radial" && prev_tl_representation === "Radial")) {
-            return 0;
-          } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
-            if (globals.filter_type === "Hide") {
-              return 0;
-            } else if (globals.filter_type === "Emphasize") {
-              if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
-                return 0.1;
-              }
-
-              return 1;
-            }
-          } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && d3.select(this.parentNode).datum().selected) {
-            return 1;
-          } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
-            if (tl_scale !== prev_tl_scale || tl_layout !== prev_tl_layout || tl_representation !== prev_tl_representation) {
-              return 0.5;
-            }
-
-            return 1;
-          } else {
-            return 0.1;
-          }
-        })
-        .style("pointer-events", function () {
-          return "none";
-        })
-        .style("fill", eventSpanColorMapping);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      span updates: path/arc elements for non-radial timelines
-      ---------------------------------------------------------------------------------------
-      **/
-
-      timeline_event_g_early_update.selectAll("path.event_span_component")
-        .style("opacity", function () {
-          if ((tl_layout !== "Segmented" || prev_tl_layout !== "Segmented") || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
-            return 0;
-          } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
-            if (globals.filter_type === "Hide") {
-              return 0;
-            } else if (globals.filter_type === "Emphasize") {
-              if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
-                return 0.1;
-              }
-
-              return 1;
-            }
-          } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && d3.select(this.parentNode).datum().selected) {
-            return 1;
-          } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
-            if (tl_scale !== prev_tl_scale || tl_layout !== prev_tl_layout || tl_representation !== prev_tl_representation) {
-              return 0.5;
-            }
-
-            return 1;
-          } else {
-            return 0.1;
-          }
-        })
-        .style("pointer-events", function () {
-          if (prev_tl_layout !== "Segmented" || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
-            return "none";
-          } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
-            return "inherit";
-          }
-
-          return "none";
-        })
-        .style("fill", eventSpanColorMapping);
-
-      /**
-      ---------------------------------------------------------------------------------------
-      terminal span indicators for segmented layouts
-      ---------------------------------------------------------------------------------------
-      **/
-
-      // add right-facing triangle path to indicate beginning of span
-      timeline_event_g_enter.append("path")
-        .attr("class", "path_end_indicator")
-        .style("opacity", 0)
-        .attr("d", d3.svg.symbol()
-          .type("triangle-up")
-          .size(unit_width * 1.5)
-        )
-        .style("display", "none");
-
-      timeline_event_g_early_update.select(".path_end_indicator")
-        .style("opacity", 0)
-        .style("pointer-events", "none");
     });
     d3.timer.flush();
-  }
-
-  // place an element in correct x position on grid axis
-  function getXGridPosition(year) {
-    var cell_size = 50;
-
-    if (year < 0 && year % 10 !== 0) {
-      return (year % 10 + 10) * cell_size; // negative decade year correction adds 10
-    }
-
-    return year % 10 * cell_size;
-  }
-
-  // place an element in correct y position on grid axis
-  function getYGridPosition(year, min) {
-    var cell_size = 50,
-      century_height = cell_size * unit_width,
-      y_offset = 0;
-
-    var decade_of_century = 0,
-      century_offset = Math.floor(year / 100) - Math.floor(min / 100);
-
-    if (year < 0) {
-      century_offset++; // handle BC dates
-      if (year % 100 === 0) {
-        decade_of_century = 0;
-        century_offset--;
-        y_offset = -unit_width;
-      } else {
-        decade_of_century = Math.floor(year % 100 / 10) - 1;
-      }
-    } else {
-      decade_of_century = Math.floor(year % 100 / 10);
-    }
-
-    return decade_of_century * 1.25 * cell_size + century_offset * (century_height + cell_size) + y_offset;
   }
 
   function dragStarted() {
@@ -682,10 +330,6 @@ d3.configurableTL = function (unit_width) {
     d.translated_x = p.x;
     d.translated_y = p.y;
     return "translate(" + p.x + "," + p.y + ")";
-  }
-
-  function transitionLog(start, transition) {
-    log((new Date().getTime() - start.getTime()) + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
   }
 
   configurableTL.reproduceCurve = function () {
@@ -909,6 +553,196 @@ function unNaN(num) {
 
 module.exports = d3.configurableTL;
 
+
+function initializeElements(timeline_container, data, duration, width, height, unit_width, tl_representation, configurableTL) {
+  const timeline_event_g = timeline_container.selectAll(".timeline_event_g")
+    .data(data, function (d, idx) {
+      return d && d.hasOwnProperty("id") ? d.id : idx;
+    });
+
+  /**
+  ---------------------------------------------------------------------------------------
+  EVENTS
+  ---------------------------------------------------------------------------------------
+  **/
+
+  // add event containers
+  timeline_event_g.exit().transition("timeline_event_remove")
+    .style("opacity", 0)
+    .duration(duration)
+    .remove();
+
+  /**
+  ---------------------------------------------------------------------------------------
+  EVENT ENTER
+  ---------------------------------------------------------------------------------------
+  **/
+
+  // define each event and its behaviour
+  var timeline_event_g_enter = timeline_event_g.enter()
+    .append("g")
+    .attr("class", "timeline_event_g")
+    .attr("id", d => `event_g${d.event_id}`);
+
+  // define event behaviour
+  timeline_event_g_enter
+    .on("click", function (d, i) {
+      return eventClickListener(tl_representation, unit_width, configurableTL, d, i);
+    })
+    .on("mouseover", function (d, i) {
+      return eventMouseOverListener(d, tl_representation, unit_width, configurableTL);
+    })
+    .on("mouseout", eventMouseOutListener);
+
+  // add rect events for linear timelines
+  timeline_event_g_enter.append("rect")
+    .attr("class", "event_span")
+    .attr("height", unit_width)
+    .attr("width", unit_width)
+    .attr("y", height / 2)
+    .attr("x", width / 2)
+    .style("stroke", "#fff")
+    .style("opacity", 0)
+    .style("fill", eventColorMapping);
+
+  // draw elapsed time as bar below the sequence, offset between events
+  timeline_event_g_enter.append("rect")
+    .attr("class", "time_elapsed")
+    .attr("height", 0)
+    .attr("width", unit_width * 1.5)
+    .attr("y", height / 2)
+    .attr("x", width / 2)
+    .append("title")
+    .style("opacity", 0)
+    .text("");
+
+  // add arc path events for radial timelines
+  timeline_event_g_enter.append("path")
+    .attr("class", "event_span")
+    .style("stroke", "#fff")
+    .style("opacity", 1)
+    .style("fill", eventColorMapping);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  EVENT SPANS for SEGMENTED layouts
+  ---------------------------------------------------------------------------------------
+  span enter
+  ---------------------------------------------------------------------------------------
+  **/
+
+  var event_span = timeline_event_g_enter.selectAll(".event_span_component")
+    .data(function (d) {
+      var event_span_component;
+      switch (globals.segment_granularity) {
+        case "days":
+          event_span_component = time.utcHour.range(time.utcHour.floor(d.start_date), time.utcHour.ceil(d.end_date));
+          break;
+        case "weeks":
+          event_span_component = time.day.range(time.day.floor(d.start_date), time.day.ceil(d.end_date));
+          break;
+        case "months":
+          event_span_component = time.day.range(time.day.floor(d.start_date), time.day.ceil(d.end_date));
+          break;
+        case "years":
+          event_span_component = time.utcWeek.range(time.utcWeek.floor(d.start_date), time.utcWeek.ceil(d.end_date));
+          break;
+        case "decades":
+          event_span_component = time.month.range(time.month.floor(d.start_date), time.month.ceil(d.end_date));
+          break;
+        case "centuries":
+          event_span_component = d3.range(d.start_date.getUTCFullYear(), d.end_date.getUTCFullYear());
+          break;
+        case "millenia":
+          event_span_component = d3.range(d.start_date.getUTCFullYear(), d.end_date.getUTCFullYear() + 1, 10);
+          break;
+        case "epochs":
+          event_span_component = [d.start_date];
+          break;
+        default:
+          break;
+      }
+      return {
+        event_span_component,
+        event_id: d.event_id
+      };
+    })
+    .enter();
+
+  event_span.append("rect")
+    .attr("class", "event_span_component")
+    .style("opacity", 0)
+    .style("fill", eventSpanColorMapping)
+    .attr("height", unit_width)
+    .attr("width", unit_width)
+    .attr("y", height / 2)
+    .attr("x", width / 2);
+
+  event_span.append("path")
+    .attr("class", "event_span_component")
+    .style("opacity", 0)
+    .style("fill", eventSpanColorMapping);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  terminal span indicators for segmented layouts
+  ---------------------------------------------------------------------------------------
+  **/
+
+  // add right-facing triangle path to indicate beginning of span
+  timeline_event_g_enter.append("path")
+    .attr("class", "path_end_indicator")
+    .style("opacity", 0)
+    .attr("d", d3.svg.symbol()
+      .type("triangle-up")
+      .size(unit_width * 1.5)
+    )
+    .style("display", "none");
+
+  return timeline_event_g;
+}
+
+function updateElements(interim_duration_scale, timeline_event_g, duration, configurableTL, tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale) {
+    /**
+    ---------------------------------------------------------------------------------------
+    EVENT UPDATE (TRANSITIONS)
+    ---------------------------------------------------------------------------------------
+    **/
+
+    const start = new Date();
+    const initialTransition = timeline_event_g.transition("timeline_event_g_early_update")
+      .delay(0)
+      .duration(duration);
+
+    markChangingElements(initialTransition, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale);
+
+    // configurableTL.currentTransition = timeline_event_g_final_update;
+    transitionLog(start, initialTransition);
+
+    // Render loop
+    return onTransitionComplete(initialTransition)
+      .then(() => {
+        // First update
+        const transition = timeline_event_g.transition("timeline_event_g_update").duration(duration);
+        positionElements(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, transition);
+        transitionLog(start, transition);
+        return onTransitionComplete(transition);
+      })
+      .then(() => {
+        // Second update
+        const transition = timeline_event_g.transition("timeline_event_g_delayed_update").duration(duration);
+        fadeInOutElements(tl_layout, tl_representation, tl_scale, interim_duration_scale, unit_width, timeline_scale, transition);
+        transitionLog(start, transition);
+        return onTransitionComplete(transition);
+      })
+      .then(() => {
+        // Final update
+        const transition = timeline_event_g.transition("timeline_event_g_final_update").duration(duration);
+        hideElements(tl_layout, transition);
+        transitionLog(start, transition);
+        return onTransitionComplete(transition);
+      });
+}
 
 function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, timeline_scale, tick_format, data, width, height, unit_width, log_bounds, interim_duration_scale) {
   let timeline_scale_segments = [];
@@ -2059,8 +1893,6 @@ function configureCalendarAxis(tl_representation, duration, data, calendar_axis,
       .call(calendar_axis);
 
     logEvent("Calendar axis updated", "axis_update");
-
-    return { range_floor, range_ceil };
   } else if (prev_tl_representation === "Calendar" && tl_representation !== "Calendar") {
     timeline_container.selectAll(".calendar_axis")
       .transition("calendar_axis_hide")
@@ -2252,6 +2084,33 @@ function configureFacetedRadialAxes(tl_layout, tl_representation, tl_scale, radi
   return { radial_axis_quantiles };
 }
 
+function configureRadialAxes(tl_representation, tl_layout, tl_scale, timeline_container, timeline_scale, prev_tl_layout, prev_tl_representation, width, height, radial_axis_quantiles, timeline_scale_segments, radial_axis, duration, timeline_facet, timeline_segment, prev_tl_scale) {
+
+    /**
+    ---------------------------------------------------------------------------------------
+    AXES
+    Radial Axes
+    ---------------------------------------------------------------------------------------
+    Unified Radial Axis
+    ---------------------------------------------------------------------------------------
+    **/
+    radial_axis_quantiles = configureUnifiedRadialAxis(tl_representation, tl_layout, tl_scale, timeline_container, timeline_scale, prev_tl_layout, prev_tl_representation, width, height, radial_axis_quantiles, timeline_scale_segments, radial_axis, duration).radial_axis_quantiles;
+
+    /**
+    ---------------------------------------------------------------------------------------
+    Faceted Radial Axes
+    ---------------------------------------------------------------------------------------
+    **/
+    radial_axis_quantiles = configureFacetedRadialAxes(tl_layout, tl_representation, tl_scale, radial_axis, radial_axis_quantiles, duration, timeline_scale_segments, timeline_facet, width, height, timeline_scale, prev_tl_scale, prev_tl_layout, prev_tl_representation, timeline_container).radial_axis_quantiles;
+
+    /**
+    ---------------------------------------------------------------------------------------
+    Segmented Radial Axis
+    ---------------------------------------------------------------------------------------
+    **/
+    return configureSegmentedRadialAxis(tl_representation, tl_layout, tl_scale, duration, radial_axis_quantiles, timeline_scale_segments, radial_axis, timeline_segment, width, height, timeline_scale, timeline_container, prev_tl_representation, prev_tl_layout).radial_axis_quantiles;
+}
+
 function configureUnifiedRadialAxis(tl_representation, tl_layout, tl_scale, timeline_container, timeline_scale, prev_tl_layout, prev_tl_representation, width, height, radial_axis_quantiles, timeline_scale_segments, radial_axis, duration) {
   if (tl_representation === "Radial" && tl_layout === "Unified") {
     if (radial_axis_quantiles !== timeline_scale_segments) {
@@ -2356,7 +2215,8 @@ function configureCollapsedAxis(tl_representation, prev_tl_scale, tl_scale, tl_l
   }
 }
 
-function configureLinearAxis(timeline_axis, timeline_scale, tl_layout, tl_representation, prev_tl_representation, tl_scale, data, tick_format, unit_width, timeline_container, duration, width, height) {
+function configureLinearAxis(timeline_scale, tl_layout, tl_representation, prev_tl_representation, tl_scale, data, tick_format, unit_width, timeline_container, duration, width, height) {
+  const timeline_axis = d3.svg.axis().orient("top");
   if (tl_representation === "Linear") {
     timeline_axis.scale(timeline_scale);
     timeline_axis.ticks(10);
@@ -2512,13 +2372,13 @@ function configureLinearAxis(timeline_axis, timeline_scale, tl_layout, tl_repres
       .transition("timeline_axis_hide")
       .duration(duration);
 
-    timeline_axis_hide.selectAll(".tick line")
-      .attr("y1", -6)
-      .attr("y2", -6);
-
     var bottom_timeline_axis_hide = timeline_container.select("#bottom_timeline_axis")
       .transition("bottom_timeline_axis_hide")
       .duration(duration);
+
+    timeline_axis_hide.selectAll(".tick line")
+      .attr("y1", -6)
+      .attr("y2", -6);
 
     bottom_timeline_axis_hide.select(".domain")
       .attr("transform", function () {
@@ -2534,7 +2394,6 @@ function configureLinearAxis(timeline_axis, timeline_scale, tl_layout, tl_repres
 
     timeline_container.selectAll(".timeline_axis")
       .transition("timeline_container_axis")
-      .delay(duration)
       .duration(duration)
       .style("opacity", 0);
   }
@@ -2561,7 +2420,135 @@ function getFacetTitleText(tl_layout, tl_representation, height, d) {
   return d;
 }
 
-function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, getYGridPosition, getXGridPosition, transition) {
+
+function markChangingElements(transition, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale) {
+  /**
+  ---------------------------------------------------------------------------------------
+  update rect elements for non-radial representations
+  ---------------------------------------------------------------------------------------
+  **/
+
+  transition.select("rect.event_span")
+    .style("opacity", function (d) {
+      return initialOpacity(d, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale, true);
+    })
+    .style("pointer-events", function () {
+      return "none";
+    })
+    .style("fill", eventColorMapping);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  update bar (rect) elements for interim_duration scale
+  ---------------------------------------------------------------------------------------
+  **/
+
+  // draw elapsed time as bar below the sequence, offset between events
+  transition.select(".time_elapsed")
+    .attr("height", 0)
+    .style("opacity", 0);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  update path elements for radial representations
+  ---------------------------------------------------------------------------------------
+  **/
+
+  transition.select("path.event_span")
+    .style("opacity", function (d) {
+      return initialOpacity(d, tl_layout, prev_tl_layout, tl_representation, prev_tl_representation, tl_scale, prev_tl_scale, false);
+    })
+    .style("pointer-events", function () {
+      return "none";
+    })
+    .style("fill", eventColorMapping);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  span updates: rect elements for non-radial timelines
+  ---------------------------------------------------------------------------------------
+  **/
+
+  transition.selectAll("rect.event_span_component")
+    .style("opacity", function () {
+      if (tl_layout !== "Segmented" || prev_tl_layout !== "Segmented" || (tl_representation === "Radial" && prev_tl_representation === "Radial")) {
+        return 0;
+      } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
+        if (globals.filter_type === "Hide") {
+          return 0;
+        } else if (globals.filter_type === "Emphasize") {
+          if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
+            return 0.1;
+          }
+
+          return 1;
+        }
+      } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && d3.select(this.parentNode).datum().selected) {
+        return 1;
+      } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
+        if (tl_scale !== prev_tl_scale || tl_layout !== prev_tl_layout || tl_representation !== prev_tl_representation) {
+          return 0.5;
+        }
+
+        return 1;
+      } else {
+        return 0.1;
+      }
+    })
+    .style("pointer-events", function () {
+      return "none";
+    })
+    .style("fill", eventSpanColorMapping);
+
+  /**
+  ---------------------------------------------------------------------------------------
+  span updates: path/arc elements for non-radial timelines
+  ---------------------------------------------------------------------------------------
+  **/
+
+  transition.selectAll("path.event_span_component")
+    .style("opacity", function () {
+      if ((tl_layout !== "Segmented" || prev_tl_layout !== "Segmented") || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
+        return 0;
+      } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1 || globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
+        if (globals.filter_type === "Hide") {
+          return 0;
+        } else if (globals.filter_type === "Emphasize") {
+          if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) === -1) {
+            return 0.1;
+          }
+
+          return 1;
+        }
+      } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && d3.select(this.parentNode).datum().selected) {
+        return 1;
+      } else if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
+        if (tl_scale !== prev_tl_scale || tl_layout !== prev_tl_layout || tl_representation !== prev_tl_representation) {
+          return 0.5;
+        }
+
+        return 1;
+      } else {
+        return 0.1;
+      }
+    })
+    .style("pointer-events", function () {
+      if (prev_tl_layout !== "Segmented" || (tl_representation !== "Radial" && prev_tl_representation !== "Radial")) {
+        return "none";
+      } else if (globals.prev_active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1 && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
+        return "inherit";
+      }
+
+      return "none";
+    })
+    .style("fill", eventSpanColorMapping);
+
+  transition.select(".path_end_indicator")
+    .style("opacity", 0)
+    .style("pointer-events", "none");
+}
+
+function positionElements(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, transition) {
   transition.attr("id", function (d) {
     return "event_g" + d.event_id;
   });
@@ -3012,7 +2999,8 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
   }
 
   transition.selectAll("rect.event_span_component")
-    .attr("transform", function (d) {
+    .attr("transform", function (dataItem) {
+      const d = dataItem.event_span_component;
       var offset_y = 0,
         offset_x = 0;
 
@@ -3137,7 +3125,8 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
       }
       return span_width;
     })
-    .attr("y", function (d) {
+    .attr("y", function (dataItem) {
+      const d = dataItem.event_span_component;
       var y_pos = 0;
       if (tl_layout === "Unified") {
         if (tl_representation === "Linear" && tl_scale === "Chronological") {
@@ -3195,7 +3184,7 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
               grid_year = d.getUTCFullYear();
             }
 
-            y_pos = getYGridPosition(grid_year, Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100);
+            y_pos = getYGridPosition(grid_year, Math.floor(data.min_start_date.getUTCFullYear() / 100) * 100, unit_width);
           } else if (globals.segment_granularity === "epochs") {
             y_pos = 0;
           } else {
@@ -3216,7 +3205,8 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
       }
       return y_pos;
     })
-    .attr("x", function (d) {
+    .attr("x", function (dataItem) {
+      const d = dataItem.event_span_component;
       var x_pos = 0;
       if (tl_layout === "Unified" || tl_layout === "Faceted") {
         if (tl_representation === "Linear" && tl_scale === "Chronological") {
@@ -3327,7 +3317,8 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
     });
 
   transition.selectAll("path.event_span_component")
-    .attr("transform", function (d) {
+    .attr("transform", function (dataItem) {
+      const d = dataItem.event_span_component;
       var offset_x = 0,
         offset_y = 0,
         span_segment = 0;
@@ -3513,7 +3504,7 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
         } else if (tl_representation === "Grid" && tl_scale === "Chronological" && globals.date_granularity !== "epochs") {
           rotation = 90;
           x_pos = d3.max([0, getXGridPosition(d.start_date.getUTCFullYear()) + unit_width * 0.33]);
-          y_pos = getYGridPosition(d.start_date.getUTCFullYear(), data.min_start_date.getUTCFullYear()) + unit_width * 0.5;
+          y_pos = getYGridPosition(d.start_date.getUTCFullYear(), data.min_start_date.getUTCFullYear(), unit_width) + unit_width * 0.5;
         } else if (tl_representation === "Calendar" && tl_scale === "Chronological") {
           var cell_size = 20,
             year_height = cell_size * 8;
@@ -3553,19 +3544,20 @@ function renderUpdate(tl_layout, tl_scale, tl_representation, width, height, dat
     });
 }
 
-function renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_duration_scale, unit_width, timeline_scale, transition) {
+function fadeInOutElements(tl_layout, tl_representation, tl_scale, interim_duration_scale, unit_width, timeline_scale, transition) {
+  function nonRadialEventOpacity(d) {
+    if (tl_layout !== "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d.event_id) !== -1) {
+      return 1;
+    }
+
+    if (tl_layout === "Segmented" || tl_representation === "Radial" || globals.filter_type === "Hide") {
+      return 0;
+    }
+
+    return 0.1;
+  }
   transition.select("rect.event_span")
-    .style("opacity", function (d) {
-      if (tl_layout !== "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d.event_id) !== -1) {
-        return 1;
-      }
-
-      if (tl_layout === "Segmented" || tl_representation === "Radial" || globals.filter_type === "Hide") {
-        return 0;
-      }
-
-      return 0.1;
-    })
+    .style("opacity", nonRadialEventOpacity)
     .style("pointer-events", function (d) {
       if (tl_layout !== "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d.event_id) !== -1) {
         return "inherit";
@@ -3805,17 +3797,7 @@ function renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_durat
       .style("display", "inline");
   }
   transition.selectAll("rect.event_span_component")
-    .style("opacity", function () {
-      if (tl_layout === "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
-        return 1;
-      }
-
-      if (tl_layout !== "Segmented" || globals.filter_type === "Hide" || tl_representation === "Radial") {
-        return 0;
-      }
-
-      return 0.1;
-    })
+    .style("opacity", nonRadialEventOpacity)
     .style("pointer-events", function () {
       if (tl_layout === "Segmented" && tl_representation !== "Radial" && globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
         return "inherit";
@@ -3840,7 +3822,8 @@ function renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_durat
           }
           return outer_radius;
         })
-        .startAngle(function (d) {
+        .startAngle(function (dataItem) {
+          const d = dataItem.event_span_component;
           var start_angle = 0;
           if (tl_layout === "Segmented" && tl_scale === "Chronological") {
             switch (globals.segment_granularity) {
@@ -3905,7 +3888,8 @@ function renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_durat
           }
           return start_angle;
         })
-        .endAngle(function (d) {
+        .endAngle(function (dataItem) {
+          const d = dataItem.event_span_component;
           var end_angle = 0,
             unit_arc = 0;
           if (tl_layout === "Segmented" && tl_scale === "Chronological") {
@@ -4011,7 +3995,8 @@ function renderDelayUpdate(tl_layout, tl_representation, tl_scale, interim_durat
   }
 }
 
-function renderFinalUpdate(tl_layout, transition) {
+
+function hideElements(tl_layout, transition) {
   transition.select(".path_end_indicator")
     .style("opacity", function () {
       if (globals.active_event_list.indexOf(d3.select(this.parentNode).datum().event_id) !== -1) {
@@ -4038,5 +4023,44 @@ function renderFinalUpdate(tl_layout, transition) {
   transition.selectAll("path.event_span").each(function () {
     this.parentNode.appendChild(this);
   });
+}
 
+function transitionLog(start, transition) {
+  log((new Date().getTime() - start.getTime()) + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
+}
+
+// place an element in correct x position on grid axis
+function getXGridPosition(year) {
+  var cell_size = 50;
+
+  if (year < 0 && year % 10 !== 0) {
+    return (year % 10 + 10) * cell_size; // negative decade year correction adds 10
+  }
+
+  return year % 10 * cell_size;
+}
+
+// place an element in correct y position on grid axis
+function getYGridPosition(year, min, unit_width) {
+  var cell_size = 50,
+    century_height = cell_size * unit_width,
+    y_offset = 0;
+
+  var decade_of_century = 0,
+    century_offset = Math.floor(year / 100) - Math.floor(min / 100);
+
+  if (year < 0) {
+    century_offset++; // handle BC dates
+    if (year % 100 === 0) {
+      decade_of_century = 0;
+      century_offset--;
+      y_offset = -unit_width;
+    } else {
+      decade_of_century = Math.floor(year % 100 / 10) - 1;
+    }
+  } else {
+    decade_of_century = Math.floor(year % 100 / 10);
+  }
+
+  return decade_of_century * 1.25 * cell_size + century_offset * (century_height + cell_size) + y_offset;
 }
