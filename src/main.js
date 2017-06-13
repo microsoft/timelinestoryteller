@@ -4588,7 +4588,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
   /**
    * The duration between animations
    */
-  animationsStepDuration: 1200,
+  animationStepDuration: 1200,
 
   menu: {
     open: {
@@ -4956,8 +4956,8 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
  * @returns {number}
  */
 TimelineStoryteller.prototype._getAnimationStepDuration = function() {
-  if (instance.options.animations) {
-    return instance.options.animationsStepDuration;
+  if (this.options.animations) {
+    return this.options.animationStepDuration;
   }
   return 0;
 };
