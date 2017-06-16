@@ -41,12 +41,14 @@
 <!-- Timeline Storyteller component -->
 <script>
   var teller = new TimelineStoryteller(false, true, document.getElementById("app"));
-  // teller.setOptions({
+  teller.setOptions({
   //   showAbout: false,
   //   showLogo: false,
   //   showImportOptions: false,
   //   showIntro: false,
-  // });
+  //   animations: false,
+  //   animationStepDuration: 500,
+  });
   // teller.load(timeline_story_demo_data.authors);
 </script>
 
