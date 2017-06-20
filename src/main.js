@@ -28,7 +28,6 @@ var setScaleValue = utils.setScaleValue;
 var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
-var onTransitionComplete = utils.onTransitionComplete;
 var globals = require("./globals");
 var gif = new GIF({
   workers: 2,
@@ -4953,9 +4952,9 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
 
 /**
  * Gets the animation duration for each of the steps in the animations
- * @returns {number}
+ * @return {number} The duration of a step in the animation
  */
-TimelineStoryteller.prototype._getAnimationStepDuration = function() {
+TimelineStoryteller.prototype._getAnimationStepDuration = function () {
   if (this.options.animations) {
     return this.options.animationStepDuration;
   }

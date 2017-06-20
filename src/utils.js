@@ -172,7 +172,7 @@ var utils = {
    */
   onTransitionComplete: function (transition, callback) {
     // if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (transition.size() === 0) {
         callback();
         resolve();
