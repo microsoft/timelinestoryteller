@@ -644,6 +644,8 @@ function initializeElements(timeline_container, data, duration, width, height, u
           event_id: d.event_id
         };
       }) : undefined;
+    }, function (d) {
+      return d && d[0] && d[0].event_id;
     })
     .enter();
 
@@ -697,25 +699,41 @@ function updateElements(interim_duration_scale, timeline_event_g, duration, conf
   // configurableTL.currentTransition = timeline_event_g_final_update;
   transitionLog(start, initialTransition);
 
+  /**
+   * Trickles in attribute tweening based on data items
+   * @param {*} d The data item
+   * @param {*} i The index of the data item
+   * @return {number} The delay that should be applied to the given item
+   */
+  function trickleDelayFn(d, i) {
+    return (data.length - i) / data.length * duration;
+  }
+
   // Render loop
   return onTransitionComplete(initialTransition)
     .then(() => {
       // First update
-      const transition = timeline_event_g.transition("timeline_event_g_update").duration(duration);
+      const transition = timeline_event_g.transition("timeline_event_g_update")
+        .delay(trickleDelayFn)
+        .duration(duration);
       update(tl_layout, tl_scale, tl_representation, width, height, data, unit_width, prev_tl_layout, prev_tl_representation, prev_tl_scale, timeline_scale, transition);
       transitionLog(start, transition);
       return onTransitionComplete(transition);
     })
     .then(() => {
       // Second update
-      const transition = timeline_event_g.transition("timeline_event_g_delayed_update").duration(duration);
+      const transition = timeline_event_g.transition("timeline_event_g_delayed_update")
+        .delay(trickleDelayFn)
+        .duration(duration);
       delayedUpdate(tl_layout, tl_representation, tl_scale, interim_duration_scale, unit_width, timeline_scale, transition);
       transitionLog(start, transition);
       return onTransitionComplete(transition);
     })
     .then(() => {
       // Final update
-      const transition = timeline_event_g.transition("timeline_event_g_final_update").duration(duration);
+      const transition = timeline_event_g.transition("timeline_event_g_final_update")
+        .delay(trickleDelayFn)
+        .duration(duration);
       finalUpdate(tl_layout, transition);
       transitionLog(start, transition);
       return onTransitionComplete(transition);
