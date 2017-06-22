@@ -816,9 +816,7 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
           timeline_scale = d3.scale.linear()
             .range([0, width - unit_width])
             .domain([data.min_start_date.valueOf(), data.max_end_date.valueOf()]);
-          tick_format = function (d) {
-            return globals.formatAbbreviation(d);
-          };
+          tick_format = format;
         } else {
           timeline_scale = d3.time.scale()
             .range([0, width - unit_width])
@@ -879,9 +877,7 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
         break;
       default:
         log_bounds = -1 * Math.abs(data.max_end_date.valueOf() - data.min_start_date.valueOf()) - 1;
-        tick_format = function (d) {
-          return globals.formatAbbreviation(d);
-        };
+        tick_format = format;
         break;
       }
       timeline_scale.domain([log_bounds, -1]);
@@ -948,9 +944,7 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
           timeline_scale = d3.scale.linear()
                   .range([0, width - unit_width])
                   .domain([0, globals.max_end_age]);
-          tick_format = function (d) {
-            return globals.formatAbbreviation(d);
-          };
+          tick_format = format;
         } else {
           timeline_scale = d3.scale.linear()
                   .range([0, width - unit_width])

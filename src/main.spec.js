@@ -55,5 +55,6 @@ describe("TimelineStoryteller", function () {
     it("should import and preprocess data from given story correctly");
     it("should show the frame popup in the correct position");
     it("should show the frame popup on the screen, it should not overflow off the screen when the component is small");
+    it("should properly parse dates from 270000 BC up to 270000 AD");
   });
 });
