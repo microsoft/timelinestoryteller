@@ -757,19 +757,11 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
         const endYear = data.max_end_date.getUTCFullYear();
         const startYear = data.min_start_date.getUTCFullYear();
 
-        function yearBasedScale(years_per_segment, mult1, mult2) {
+        function yearBasedScale(years_per_segment) {
           const start = Math.floor(startYear / years_per_segment) * years_per_segment;
           const end = (Math.ceil((endYear + 1) / years_per_segment) + 1) * years_per_segment;
-          if (start < 0 && end <= 0) {
-            timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * mult1), new Date(end, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), years_per_segment);
-            timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date((end + years_per_segment), 0, 1).setUTCFullYear(("0000" + end).slice(-4) * -1)]);
-          } else if (start <= 0) {
-            timeline_scale_segments = time.year.range(new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * mult2), new Date(end, 0, 1), years_per_segment);
-            timeline_scale.domain([new Date(start, 0, 1).setUTCFullYear(("0000" + start).slice(-4) * -1), new Date((end + years_per_segment), 0, 1)]);
-          } else {
-            timeline_scale_segments = time.year.range(new Date(start, 0, 1), new Date(end, 0, 1), years_per_segment);
-            timeline_scale.domain([new Date(start, 0, 1), new Date((end + years_per_segment), 0, 1)]);
-          }
+          timeline_scale_segments = time.year.range(moment([start, 0, 1]).toDate(), moment([end, 0, 1]).toDate(), years_per_segment);
+          timeline_scale.domain([moment([start, 0, 1]).toDate(), moment([(end + years_per_segment), 0, 1]).toDate()]);
         }
 
         switch (globals.segment_granularity) {
@@ -794,13 +786,13 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
           timeline_scale.domain([time.year.floor(data.min_start_date), time.year.offset(data.max_end_date, 1)]);
           break;
         case "decades":
-          yearBasedScale(endYear - startYear >= 50 ? 10 : 5, -1, -1);
+          yearBasedScale(endYear - startYear >= 50 ? 10 : 5);
           break;
         case "centuries":
-          yearBasedScale(endYear - startYear >= 500 ? 100 : 20, -1, 1);
+          yearBasedScale(endYear - startYear >= 500 ? 100 : 20);
           break;
         case "millenia":
-          yearBasedScale(endYear - startYear >= 5000 ? 1000 : 200, 1, 1);
+          yearBasedScale(endYear - startYear >= 5000 ? 1000 : 200);
           break;
         case "epochs":
           timeline_scale_segments = [data.min_start_date.valueOf(), data.min_start_date.valueOf() * 0.25, data.min_start_date.valueOf() * 0.5, data.min_start_date.valueOf() * 0.75];
