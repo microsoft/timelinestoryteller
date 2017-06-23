@@ -964,7 +964,7 @@ input[type="color"]::-moz-color-swatch {
 }
 
 .playback_mode #navigation_div {
-  width: initial;
+  width: auto;
   left: 10px;
   margin-left: 0;
   -webkit-transition: all 0.5s;
@@ -977,12 +977,8 @@ input[type="color"]::-moz-color-swatch {
 
 
 #playback_bar .nav_bttn {
-  flex: 0;
-}
-
-.nav_bttn {
   display: flex;
-  width: 30px;
+  flex: 0 1 26px;
 }
 
 .nav_bttn .nav_cb {

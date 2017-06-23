@@ -12,6 +12,7 @@
     "worker-loader": "^0.8.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.1",
     "babel-loader": "^7.0.0",
@@ -46,7 +47,7 @@
     "start": "node app.js",
     "lint": "eslint src",
     "karma": "karma start",
-    "package": "webpack && copyfiles -u 1 \"dist/*.js\" public/app/js && copyfiles -u 1 \"src/**/*\" lib",
+    "package": "webpack && copyfiles -u 1 \"dist/*.js\" public/app/js && babel src --out-dir lib --copy-files",
     "test": "npm run lint && npm run karma && npm run package"
   },
   "repository": {
