@@ -1186,248 +1186,254 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     instance.onIntro = false;
 
     // Give it some time to render the "load data" indicator
-    setTimeout(function () {
-      try {
-        selectWithParent("#disclaimer").style("display", "none");
-        selectWithParent("#timeline_metadata_contents").html("");
-        control_panel.selectAll("input").attr("class", "img_btn_disabled");
-        selectWithParent("#filter_type_picker").selectAll("input").property("disabled", true);
-        selectWithParent("#filter_type_picker").selectAll("img").attr("class", "img_btn_disabled");
-        selectWithParent("#playback_bar").selectAll("img").attr("class", "img_btn_disabled");
-        selectAllWithParent(".option_rb").select("input").property("disabled", "true");
-        selectAllWithParent(".option_rb").select("img").attr("class", "img_btn_disabled");
-        selectAllWithParent(".option_rb img").style("border", "2px solid transparent");
-        selectWithParent("#menu_div").style("left", -50 + "px");
-        selectWithParent("#navigation_div").style("bottom", -100 + "px");
-        globals.use_custom_palette = false;
+    return new Promise(resolve => {
+      setTimeout(function () {
+        try {
+          selectWithParent("#disclaimer").style("display", "none");
+          selectWithParent("#timeline_metadata_contents").html("");
+          control_panel.selectAll("input").attr("class", "img_btn_disabled");
+          selectWithParent("#filter_type_picker").selectAll("input").property("disabled", true);
+          selectWithParent("#filter_type_picker").selectAll("img").attr("class", "img_btn_disabled");
+          selectWithParent("#playback_bar").selectAll("img").attr("class", "img_btn_disabled");
+          selectAllWithParent(".option_rb").select("input").property("disabled", "true");
+          selectAllWithParent(".option_rb").select("img").attr("class", "img_btn_disabled");
+          selectAllWithParent(".option_rb img").style("border", "2px solid transparent");
+          selectWithParent("#menu_div").style("left", -50 + "px");
+          selectWithParent("#navigation_div").style("bottom", -100 + "px");
+          globals.use_custom_palette = false;
 
-        if (main_svg !== undefined) {
-          // console.clear();
-          main_svg.remove();
-          filter_div.remove();
-          navigation_div.remove();
-          timeline_vis.prev_tl_representation("None");
+          if (main_svg !== undefined) {
+            // console.clear();
+            main_svg.remove();
+            filter_div.remove();
+            navigation_div.remove();
+            timeline_vis.prev_tl_representation("None");
 
-          // If we have no scenes, reset everything to default
-          if (!(state.scenes && state.scenes.length)) {
-            globals.caption_index = 0;
-            globals.image_index = 0;
-            globals.current_scene_index = -1;
-            globals.gif_index = 0;
-            globals.scenes = [];
-            globals.caption_list = [];
-            globals.image_list = [];
-            globals.annotation_list = [];
-            timeline_vis.tl_scale("Chronological")
-              .tl_layout("Unified")
-              .tl_representation("Linear");
-            selectAllWithParent(".gif_frame").remove();
-            timeline_vis.resetCurve();
-          }
-        }
-
-        if (globals.legend_panel !== undefined) {
-          globals.legend_panel.remove();
-        }
-
-        filter_div = selectWithParent()
-          .append("div")
-          .attr("id", "filter_div")
-          .attr("class", "control_div")
-          .style("display", "none")
-          .style("transition", "all 0.05s ease")
-          .style("-webkit-transition", "all 0.05s ease");
-
-        // initialize global variables accessed by multiple visualziations
-        globals.date_granularity = "years";
-        globals.max_num_tracks = 0;
-        globals.max_end_age = 0;
-        globals.max_num_seq_tracks = 0;
-        globals.legend_rect_size = globals.unit_width;
-        globals.legend_spacing = 5;
-        globals.categories = undefined;
-        globals.categories = d3.scale.ordinal(); // scale for event types
-        if (globals.color_palette !== undefined) {
-          globals.categories.range(globals.color_palette);
-        }
-        globals.facets = d3.scale.ordinal(); // scale for facets (timelines)
-        globals.segments = d3.scale.ordinal(); // scale for segments
-        globals.present_segments = d3.scale.ordinal();
-        globals.num_categories = 0;
-        globals.num_facets = 0;
-        globals.timeline_facets = [];
-
-        instance._main_svg = main_svg = instance._container
-          .append("svg")
-          .attr("id", "main_svg");
-
-        navigation_div = selectWithParent()
-          .append("div")
-          .attr("id", "navigation_div")
-          .attr("class", "control_div");
-
-        var playback_bar = navigation_div.append("div")
-          .attr("id", "playback_bar");
-
-        playback_bar.append("div")
-          .attr("id", "record_scene_div")
-          .attr("class", "nav_bttn")
-          .append("img")
-          .attr({
-            id: "record_scene_btn",
-            class: "img_btn_disabled",
-            src: imageUrls("record.png"),
-            height: 20,
-            width: 20,
-            title: "Record Scene"
-          })
-          .on("click", function () {
-            if (!instance.playback_mode) {
-              instance._recordScene();
+            // If we have no scenes, reset everything to default
+            if (!(state.scenes && state.scenes.length)) {
+              globals.caption_index = 0;
+              globals.image_index = 0;
+              globals.current_scene_index = -1;
+              globals.gif_index = 0;
+              globals.scenes = [];
+              globals.caption_list = [];
+              globals.image_list = [];
+              globals.annotation_list = [];
+              timeline_vis.tl_scale("Chronological")
+                .tl_layout("Unified")
+                .tl_representation("Linear");
+              selectAllWithParent(".gif_frame").remove();
+              timeline_vis.resetCurve();
             }
+          }
+
+          if (globals.legend_panel !== undefined) {
+            globals.legend_panel.remove();
+          }
+
+          filter_div = selectWithParent()
+            .append("div")
+            .attr("id", "filter_div")
+            .attr("class", "control_div")
+            .style("display", "none")
+            .style("transition", "all 0.05s ease")
+            .style("-webkit-transition", "all 0.05s ease");
+
+          // initialize global variables accessed by multiple visualziations
+          globals.date_granularity = "years";
+          globals.max_num_tracks = 0;
+          globals.max_end_age = 0;
+          globals.max_num_seq_tracks = 0;
+          globals.legend_rect_size = globals.unit_width;
+          globals.legend_spacing = 5;
+          globals.categories = undefined;
+          globals.categories = d3.scale.ordinal(); // scale for event types
+          if (globals.color_palette !== undefined) {
+            globals.categories.range(globals.color_palette);
+          }
+          globals.facets = d3.scale.ordinal(); // scale for facets (timelines)
+          globals.segments = d3.scale.ordinal(); // scale for segments
+          globals.present_segments = d3.scale.ordinal();
+          globals.num_categories = 0;
+          globals.num_facets = 0;
+          globals.timeline_facets = [];
+
+          instance._main_svg = main_svg = instance._container
+            .append("svg")
+            .attr("id", "main_svg");
+
+          navigation_div = selectWithParent()
+            .append("div")
+            .attr("id", "navigation_div")
+            .attr("class", "control_div");
+
+          var playback_bar = navigation_div.append("div")
+            .attr("id", "playback_bar");
+
+          playback_bar.append("div")
+            .attr("id", "record_scene_div")
+            .attr("class", "nav_bttn")
+            .append("img")
+            .attr({
+              id: "record_scene_btn",
+              class: "img_btn_disabled",
+              src: imageUrls("record.png"),
+              height: 20,
+              width: 20,
+              title: "Record Scene"
+            })
+            .on("click", function () {
+              if (!instance.playback_mode) {
+                instance._recordScene();
+              }
+            });
+
+          playback_bar.append("div")
+            .attr("id", "prev_scene_div")
+            .attr("class", "nav_bttn")
+            .append("img")
+            .attr("id", "prev_scene_btn")
+            .attr("height", 20)
+            .attr("width", 20)
+            .attr("src", imageUrls("prev.png"))
+            .attr("class", "img_btn_disabled")
+            .attr("title", "Previous Scene")
+            .on("click", function () {
+              goPreviousScene();
+            });
+
+          playback_bar.append("div")
+            .attr("id", "next_scene_div")
+            .attr("class", "nav_bttn")
+            .append("img")
+            .attr("height", 20)
+            .attr("width", 20)
+            .attr("class", "img_btn_disabled")
+            .attr("id", "next_scene_btn")
+            .attr("src", imageUrls("next.png"))
+            .attr("title", "Next Scene")
+            .on("click", function () {
+              goNextScene();
+            });
+
+          var playback_cb = playback_bar.append("div")
+            .attr("id", "playback_div")
+            .attr("class", "nav_bttn");
+
+          var playback_cb_label = playback_cb.append("label")
+            .attr("class", "nav_cb");
+
+          playback_cb_label.append("input")
+            .attr({
+              type: "checkbox",
+              name: "playback_cb",
+              value: instance.playback_mode
+            })
+            .property("checked", false)
+            .on("change", function () {
+              instance.setPlaybackMode(!instance.playback_mode);
+            });
+
+          playback_cb_label.append("img")
+            .attr({
+              id: "play_scene_btn",
+              class: "img_btn_disabled",
+              src: imageUrls("play.png"),
+              height: 20,
+              width: 20,
+              title: "Toggle Playback Mode"
+            });
+
+          playback_bar.append("div")
+            .attr("id", "stepper_container")
+            // .style('width', function () {
+            //   return (globals.window_width * 0.9 - 120 - 12) + 'px';
+            // })
+            .append("svg")
+            .attr("id", "stepper_svg")
+            .append("text")
+            .attr("id", "stepper_svg_placeholder")
+            .attr("y", 25)
+            .attr("dy", "0.25em")
+            .text("Recorded timeline scenes will appear here.");
+
+          window.addEventListener("resize", function () {
+            selectWithParent("#stepper_container").style("width", function () {
+              return (instance._render_width * 0.9 - 120 - 12 - 5) + "px";
+            });
+            instance._onResized();
           });
 
-        playback_bar.append("div")
-          .attr("id", "prev_scene_div")
-          .attr("class", "nav_bttn")
-          .append("img")
-          .attr("id", "prev_scene_btn")
-          .attr("height", 20)
-          .attr("width", 20)
-          .attr("src", imageUrls("prev.png"))
-          .attr("class", "img_btn_disabled")
-          .attr("title", "Previous Scene")
-          .on("click", function () {
-            goPreviousScene();
-          });
+          var defs = main_svg.append("defs");
 
-        playback_bar.append("div")
-          .attr("id", "next_scene_div")
-          .attr("class", "nav_bttn")
-          .append("img")
-          .attr("height", 20)
-          .attr("width", 20)
-          .attr("class", "img_btn_disabled")
-          .attr("id", "next_scene_btn")
-          .attr("src", imageUrls("next.png"))
-          .attr("title", "Next Scene")
-          .on("click", function () {
-            goNextScene();
-          });
+          var filter = defs.append("filter")
+            .attr("id", "drop-shadow")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", "200%")
+            .attr("height", "200%");
 
-        var playback_cb = playback_bar.append("div")
-          .attr("id", "playback_div")
-          .attr("class", "nav_bttn");
+          // translate output of Gaussian blur to the right and downwards with 2px
+          // store result in offsetBlur
+          filter.append("feOffset")
+            .attr("in", "SourceAlpha")
+            .attr("dx", 2.5)
+            .attr("dy", 2.5)
+            .attr("result", "offOut");
 
-        var playback_cb_label = playback_cb.append("label")
-          .attr("class", "nav_cb");
+          filter.append("feGaussianBlur")
+            .attr("in", "offOut")
+            .attr("stdDeviation", 2.5)
+            .attr("result", "blurOut");
 
-        playback_cb_label.append("input")
-          .attr({
-            type: "checkbox",
-            name: "playback_cb",
-            value: instance.playback_mode
-          })
-          .property("checked", false)
-          .on("change", function () {
-            instance.setPlaybackMode(!instance.playback_mode);
-          });
+          filter.append("feBlend")
+            .attr("in", "SourceGraphic")
+            .attr("in2", "blurOut")
+            .attr("mode", "normal");
 
-        playback_cb_label.append("img")
-          .attr({
-            id: "play_scene_btn",
-            class: "img_btn_disabled",
-            src: imageUrls("play.png"),
-            height: 20,
-            width: 20,
-            title: "Toggle Playback Mode"
-          });
+          defs.append("filter")
+            .attr("id", "greyscale")
+            .append("feColorMatrix")
+            .attr("type", "matrix")
+            .attr("dur", "0.5s")
+            .attr("values", "0.4444 0.4444 0.4444 0 0 0.4444 0.4444 0.4444 0 0 0.4444 0.4444 0.4444 0 0 0 0 0 1 0");
 
-        playback_bar.append("div")
-          .attr("id", "stepper_container")
-          // .style('width', function () {
-          //   return (globals.window_width * 0.9 - 120 - 12) + 'px';
-          // })
-          .append("svg")
-          .attr("id", "stepper_svg")
-          .append("text")
-          .attr("id", "stepper_svg_placeholder")
-          .attr("y", 25)
-          .attr("dy", "0.25em")
-          .text("Recorded timeline scenes will appear here.");
+          /**
+          ---------------------------------------------------------------------------------------
+          LOAD DATA
+          ---------------------------------------------------------------------------------------
+          **/
+          if (state) {
+            instance._loadTimelineFromState(state, instance._render_height);
 
-        window.addEventListener("resize", function () {
-          selectWithParent("#stepper_container").style("width", function () {
-            return (instance._render_width * 0.9 - 120 - 12 - 5) + "px";
-          });
-          instance._onResized();
-        });
+            // if we have scenes to show, we don't need the tooltip
+            if (state.scenes && state.scenes.length) {
+              selectWithParent("#stepper_svg_placeholder").remove();
+            }
+          }
+        } finally {
+          // Reapply the UI scale to new elements
+          instance.setUIScale(instance.scale);
 
-        var defs = main_svg.append("defs");
+          loadDataIndicator.style("display", "none");
+          instance.applyOptions();
 
-        var filter = defs.append("filter")
-          .attr("id", "drop-shadow")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", "200%")
-          .attr("height", "200%");
+          if (skipConfig) {
+            drawTimeline(globals.active_data).then(resolve);
+          }
 
-        // translate output of Gaussian blur to the right and downwards with 2px
-        // store result in offsetBlur
-        filter.append("feOffset")
-          .attr("in", "SourceAlpha")
-          .attr("dx", 2.5)
-          .attr("dy", 2.5)
-          .attr("result", "offOut");
+          // call this again afterward, cause some elements are created in loadTimeline function
+          // and we need to ensure they are hidden/visible
+          instance.setPlaybackMode(instance.playback_mode, false);
 
-        filter.append("feGaussianBlur")
-          .attr("in", "offOut")
-          .attr("stdDeviation", 2.5)
-          .attr("result", "blurOut");
+          instance._loaded = true;
 
-        filter.append("feBlend")
-          .attr("in", "SourceGraphic")
-          .attr("in2", "blurOut")
-          .attr("mode", "normal");
-
-        defs.append("filter")
-          .attr("id", "greyscale")
-          .append("feColorMatrix")
-          .attr("type", "matrix")
-          .attr("dur", "0.5s")
-          .attr("values", "0.4444 0.4444 0.4444 0 0 0.4444 0.4444 0.4444 0 0 0.4444 0.4444 0.4444 0 0 0 0 0 1 0");
-
-        /**
-        ---------------------------------------------------------------------------------------
-        LOAD DATA
-        ---------------------------------------------------------------------------------------
-        **/
-        if (state) {
-          instance._loadTimelineFromState(state, instance._render_height);
-
-          // if we have scenes to show, we don't need the tooltip
-          if (state.scenes && state.scenes.length) {
-            selectWithParent("#stepper_svg_placeholder").remove();
+          if (!skipConfig) {
+            resolve();
           }
         }
-      } finally {
-        // Reapply the UI scale to new elements
-        instance.setUIScale(instance.scale);
-
-        loadDataIndicator.style("display", "none");
-        instance.applyOptions();
-
-        if (skipConfig) {
-          drawTimeline(globals.active_data);
-        }
-
-        // call this again afterward, cause some elements are created in loadTimeline function
-        // and we need to ensure they are hidden/visible
-        instance.setPlaybackMode(instance.playback_mode, false);
-
-        instance._loaded = true;
-      }
-    }, 10);
+      }, 10);
+    });
   }
 
   instance._loadTimeline = loadTimeline;
@@ -2922,6 +2928,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .attr("dx", "0em")
         .attr("transform", "translate(5,0)rotate(0)");
     }
+
+    return new Promise(resolve => {
+      if (timeline_vis.renderComplete) {
+        timeline_vis.renderComplete.then(resolve);
+      } else {
+        resolve();
+      }
+    });
   }
 
   instance._drawTimeline = drawTimeline;
@@ -5334,36 +5348,36 @@ TimelineStoryteller.prototype.load = function (state, storyMode, skipIntro, dela
 
   var that = this;
   var hasScenes = !!(state.scenes && state.scenes.length);
-  function delayLoad() {
+  function delayLoad(resolve) {
     "use strict";
-    that._loadTimeline(state, skipIntro);
+    that._loadTimeline(state, skipIntro).then(resolve);
   }
 
-  setTimeout(function () {
-    // Give it time for the UI to load
-    that.setPlaybackMode(!!storyMode, false);
-
-    if (storyMode) {
-      logEvent("story load", "load");
-
-      selectWithParent("#timeline_metadata").style("display", "none");
-      selectAllWithParent(".gdocs_info_element").style("display", "none");
-      that.importPanel.hide();
-
-      selectWithParent("#gdocs_info").style("height", 0 + "px");
-      selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
-      selectWithParent("#gdoc_worksheet_title_input").property("value", "");
-    }
-
+  return new Promise(resolve => {
     delay = typeof delay === "undefined" ? 500 : delay;
-    if (delay > 0 || hasScenes) {
-      setTimeout(function () {
-        delayLoad();
-      }, delay || 500);
-    } else {
-      delayLoad(true);
-    }
-  }, 100);
+    setTimeout(function () {
+      // Give it time for the UI to load
+      that.setPlaybackMode(!!storyMode, false);
+
+      if (storyMode) {
+        logEvent("story load", "load");
+
+        selectWithParent("#timeline_metadata").style("display", "none");
+        selectAllWithParent(".gdocs_info_element").style("display", "none");
+        that.importPanel.hide();
+
+        selectWithParent("#gdocs_info").style("height", 0 + "px");
+        selectWithParent("#gdoc_spreadsheet_key_input").property("value", "");
+        selectWithParent("#gdoc_worksheet_title_input").property("value", "");
+      }
+
+      if (delay > 0 || hasScenes) {
+        setTimeout(() => delayLoad(resolve), delay);
+      } else {
+        delayLoad(resolve);
+      }
+    }, delay ? 100 : 0);
+  });
 };
 
 /**
