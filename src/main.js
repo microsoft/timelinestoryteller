@@ -3034,25 +3034,15 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         return;
       }
 
-      var hasTZOffset = globals.has_tz_offset;
+      var dateFormat = "Y-MM-DD HH:mm Z";
 
       // is start date a numeric year?
       if (globals.isNumber(item.start_date)) {
         // convert start_date to date object
-        item.start_date = moment(item.start_date, "Y-MM-DD HH:mm Z").toDate();
-
-        if (hasTZOffset) {
-          item.start_date = moment(item.start_date).subtract(item.start_date.getTimezoneOffset(), "minutes")
-            .add(globals.story_tz_offset, "minutes").toDate();
-        }
+        item.start_date = moment(item.start_date, dateFormat).toDate();
 
         // convert end_date to date object
-        item.end_date = moment(item.end_date, "Y-MM-DD HH:mm Z").toDate();
-
-        if (hasTZOffset) {
-          item.end_date = moment(item.end_date).subtract(item.end_date.getTimezoneOffset(), "minutes")
-            .add(globals.story_tz_offset, "minutes").toDate();
-        }
+        item.end_date = moment(item.end_date, dateFormat).toDate();
 
         item.event_id = i;
         globals.active_event_list.push(i);
@@ -3065,11 +3055,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         // check for start_date string validity
         if (moment(item.start_date).isValid()) {
-          item.start_date = moment(item.start_date, "Y-MM-DD HH:mm Z").startOf("hour").toDate(); // account for UTC offset
-          if (hasTZOffset) {
-            item.start_date = moment(item.start_date).subtract(item.start_date.getTimezoneOffset(), "minutes")
-              .add(globals.story_tz_offset, "minutes").toDate();
-          }
+          item.start_date = moment(item.start_date, dateFormat).startOf("hour").toDate(); // account for UTC offset
           item.event_id = i;
           globals.active_event_list.push(i);
           i++;
@@ -3079,11 +3065,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
         // check for end_date string validity
         if (moment(item.end_date).isValid()) {
-          item.end_date = moment(item.end_date, "Y-MM-DD HH:mm Z").endOf("hour").toDate(); // account for UTC offset
-          if (hasTZOffset) {
-            item.end_date = moment(item.end_date).subtract(item.end_date.getTimezoneOffset(), "minutes")
-              .add(globals.story_tz_offset, "minutes").toDate();
-          }
+          item.end_date = moment(item.end_date, dateFormat).endOf("hour").toDate(); // account for UTC offset
         } else {
           item.end_date = undefined;
         }
