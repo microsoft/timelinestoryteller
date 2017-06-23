@@ -4431,14 +4431,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
      *    annotation_list: ...,
      *    caption_index: ...,
      *    image_index: ...,
-     *    tz_offset: ...,
      *    width: ...,
      *    height: ...
      * }
      */
 
     globals.timeline_json_data = timelineData;
-    globals.has_tz_offset = state.tz_offset !== undefined;
     if (hasScenes) {
       if (state.color_palette !== undefined) {
         globals.color_palette = state.color_palette;
@@ -4450,18 +4448,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.annotation_list = state.annotation_list;
       globals.caption_index = state.caption_list.length - 1;
       globals.image_index = state.image_list.length - 1;
-
-      if (state.tz_offset !== undefined) {
-        globals.story_tz_offset = new Date().getTimezoneOffset() - state.tz_offset;
-      } else {
-        globals.story_tz_offset = new Date().getTimezoneOffset() - 480;
-      }
-
-      if (new Date().dst() && !(new Date(state.timestamp).dst())) {
-        globals.story_tz_offset += 60;
-      } else if (!(new Date().dst()) && new Date(state.timestamp).dst()) {
-        globals.story_tz_offset -= 60;
-      }
 
       var min_story_width = instance._render_width,
         max_story_width = instance._render_width;
@@ -5380,7 +5366,6 @@ TimelineStoryteller.prototype.saveState = function () {
     "annotation_list": globals.annotation_list,
     "image_list": globals.image_list,
     "author": globals.email_address,
-    "tz_offset": new Date().getTimezoneOffset(),
     "timestamp": new Date().valueOf()
   };
 };

@@ -116,8 +116,6 @@ var globals = {
   color_palette: [],
   color_swap_target: 0,
   use_custom_palette: false,
-  has_tz_offset: false,
-  story_tz_offset: 0,
   serverless: false,
   socket: u
 }; // Defined in main.js
