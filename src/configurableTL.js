@@ -907,6 +907,45 @@ function configureTimelineScaleSegments(tl_layout, tl_representation, tl_scale, 
           .range([0, globals.max_seq_index * 1.5 * unit_width - unit_width])
           .domain([0, globals.max_seq_index * unit_width]);
 
+        if (scale === "Collapsed") {
+          let i = -1, last_start_date;
+
+                // valid Collapsed scale
+          data.forEach(function (item) {
+            i++;
+            if (i === 0) {
+              item.time_elapsed = 0;
+              last_start_date = item.start_date;
+            } else if ((item.start_date.valueOf() - last_start_date.valueOf()) > 0) {
+              item.time_elapsed = item.start_date.valueOf() - last_start_date.valueOf();
+              if (globals.date_granularity === "epochs") {
+                item.time_elapsed_label = format(item.start_date.valueOf() - last_start_date.valueOf()) + " years";
+              } else {
+                item.time_elapsed_label = moment(item.start_date).from(moment(last_start_date), true);
+              }
+              last_start_date = item.start_date;
+            } else {
+              item.time_elapsed = 0;
+              if (globals.date_granularity === "epochs") {
+                item.time_elapsed_label = format(item.start_date.valueOf() - last_start_date.valueOf()) + " years";
+              } else {
+                item.time_elapsed_label = moment(item.start_date).from(moment(last_start_date), true);
+              }
+            }
+          });
+
+          var max_time_elapsed = d3.max(data, function (d) { return d.time_elapsed; });
+
+                // initialize the time scale
+          if (globals.date_granularity === "epochs") {
+            interim_duration_scale = d3.scale.log().range([0.25 * unit_width, 4 * unit_width])
+                    .domain([1, max_time_elapsed]);
+          } else {
+            interim_duration_scale = d3.scale.linear().range([0.25 * unit_width, 4 * unit_width])
+                    .domain([0, max_time_elapsed]);
+          }
+        }
+
         logEvent(scale + " scale updated with range: 0 - " + globals.max_seq_index, "scale_update");
       }
     }
