@@ -51,6 +51,7 @@ d3.configurableTL = function (unit_width) {
     timeline_segment;
 
   function configurableTL(selection) {
+    const promises = [];
     selection.each(function (data) {
       if (data.min_start_date === undefined || data.max_end_date === undefined) {
         data.min_start_date = globals.global_min_start_date;
@@ -246,12 +247,19 @@ d3.configurableTL = function (unit_width) {
 
       // Updates those elements to position/size/color them correctly
       const renderComplete = updateElements(interim_duration_scale, timeline_event_g, duration, configurableTL, tl_layout, tl_scale, tl_representation, width, height, data, unit_width, old_layout, old_rep, old_scale, timeline_scale);
-      configurableTL.renderComplete = renderComplete;
-      renderComplete.then(() => {
-        configurableTL.renderComplete = undefined;
-      });
+      promises.push(renderComplete);
     });
     d3.timer.flush();
+
+    promises.push(new Promise(resolve => {
+      // HACK: A way to ensure that we always at least delay the full animation length
+      setTimeout(resolve, duration * 3);
+    }));
+
+    configurableTL.renderComplete = Promise.all(promises);
+    configurableTL.renderComplete.then(() => {
+      configurableTL.renderComplete = undefined;
+    });
   }
 
   function dragStarted() {
@@ -3312,7 +3320,9 @@ function finalUpdate(tl_layout, transition) {
 }
 
 function transitionLog(start, transition) {
-  log((new Date().getTime() - start.getTime()) + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
+  if (transition.size() > 0) {
+    log((new Date().getTime() - start.getTime()) + "ms: transition with " + transition.size() + " elements lasting " + transition.duration() + "ms.");
+  }
 }
 
 function calculateSegmentArcAngle(tl_layout, tl_scale, timeline_scale, dateTime, start_date, start_age, seq_index, unit_arc, end_date, end_age) {

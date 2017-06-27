@@ -170,11 +170,10 @@ var utils = {
    * @param {Function} callback The callback for when the transition is complete
    * @returns {void}
    */
-  onTransitionComplete: function (transition, callback) {
+  onTransitionComplete: function (transition) {
     // if (typeof callback !== "function") throw new Error("Wrong callback in onTransitionComplete");
     return new Promise((resolve) => {
       if (transition.size() === 0) {
-        callback();
         resolve();
       }
       var n = 0;
@@ -182,9 +181,6 @@ var utils = {
           .each(() => ++n)
           .each("end", () => {
             if (!--n) {
-              if (callback) {
-                callback.apply(this, arguments);
-              }
               resolve();
             }
           });
