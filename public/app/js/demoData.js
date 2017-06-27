@@ -1772,1604 +1772,1604 @@ window.timeline_story_demo_data = {
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 00:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 00:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "creative work",
-				"start_date": "2015-07-10 01:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 01:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Wearing monkish robe and Moroccan slippers for his 'priest-like' work"
 			},
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "sleep",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Napping"
 			},
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "creative work",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Having a cup of black coffee before starting work"
 			},
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Receiving friends, taking a bath, going out for dinner"
 			},
 			{
 				"facet": "Balzac, Honoré de",
 				"category": "sleep",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 03:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 03:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "other",
-				"start_date": "2015-07-10 04:00Z",
-				"end_date": "2015-07-10 04:59Z",
+				"start_date": "2015-07-10 04:00",
+				"end_date": "2015-07-10 04:59",
 				"content_text": "Meditating"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 05:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 05:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Listening to aide reading bible"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "creative work",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Dictating to aide"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "creative work",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Listening to aide read back"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "exercise",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Walking up and down his garden"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Having guests over, supper, smoking a pipe"
 			},
 			{
 				"facet": "Milton, John",
 				"category": "sleep",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Murakami, Haruki",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 03:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 03:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Murakami, Haruki",
 				"category": "creative work",
-				"start_date": "2015-07-10 04:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 04:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Murakami, Haruki",
 				"category": "exercise",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Walking and swimming"
 			},
 			{
 				"facet": "Murakami, Haruki",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Doing housework, admin and spending time with family"
 			},
 			{
 				"facet": "Murakami, Haruki",
 				"category": "sleep",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 03:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 03:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "creative work",
-				"start_date": "2015-07-10 04:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 04:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Working in bed, dictating his thoughts to a secretary"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "other",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Getting dressed"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "creative work",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Surveying the estate with secretary"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "creative work",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Having dinner with family"
 			},
 			{
 				"facet": "Voltaire",
 				"category": "creative work",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 04:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 04:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 05:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 05:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Washing, making a resolution for the day, having breakfast"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "creative work",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Reading, doing life admin, having lunch"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "creative work",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Having supper, listening to music, putting things in order, socializing"
 			},
 			{
 				"facet": "Franklin, Benjamin",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 04:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 04:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 05:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 05:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Having tea and smoking a pipe"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "creative work",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Lecturing at the university"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Having meat and wine at the pub for lunch, his main meal of the day"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "exercise",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Walking"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Meeting with Joseph Green"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Reading"
 			},
 			{
 				"facet": "Kant, Immanuel",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "creative work",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Having breakfast"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "exercise",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Walking, swimming"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Teaching at school"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Drinking scotch, making supper, reading, and listening to jazz"
 			},
 			{
 				"facet": "Vonnegut, Kurt",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "other",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Getting dressed"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Coffee with husband"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "other",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Commuting to the hotel room she rented for work"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Writing in hotel room, the more anonymous the better"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Showering, cooking, having dinner with husband"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "creative work",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Reading work to husband"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Time with husband"
 			},
 			{
 				"facet": "Angelou, Maya",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Having coffee with a crossword"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "creative work",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Working with a dose of Benzedrine, a daily routine he kept up for 20 years"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "creative work",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Having strong vodka martinis"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Having dinner with friends"
 			},
 			{
 				"facet": "Auden, Wystan Hugh",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping after taking a sedative"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Having coffee, exactly 60 beans per cup "
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "creative work",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Working on compositions at his desk, taking the occasional break to walk outdoors, which aided his creativity"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Having dinner with wine"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "exercise",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Going for a long walk"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "At the tavern: eating, and reading a newspaper"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Having supper"
 			},
 			{
 				"facet": "Beethoven, Ludwig Van",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Praying, having coffee"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Going to church"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Hobbies, guests, painting, taking care of birds"
 			},
 			{
 				"facet": "O'Connor, Mary Flannery",
 				"category": "sleep",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "exercise",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Preparing mind and body for the day ahead"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Having breakfast with wife"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Painting, drawing, writing"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Office hours (getting others to work on his ideas)"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Spending time at home"
 			},
 			{
 				"facet": "Le Corbusier",
 				"category": "sleep",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+        "end_date": "2015-07-10 06:59",
 				"content_text": "Having coffee and two raw eggs for breakfast"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "creative work",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "other",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Taking an ice bath on the roof"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having lunch and receiving guests"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "exercise",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Engaging in long, strenuous exercise"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "other",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Visiting the barber"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Dating his mistress"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "creative work",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Having dinner, playing cards, going out"
 			},
 			{
 				"facet": "Hugo, Victor",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "creative work",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 00:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 00:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "sleep",
-				"start_date": "2015-07-10 01:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 01:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "other",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Getting dressed"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "creative work",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Giving music lessons"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Having lunch with friends"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "creative work",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Composing or giving concerts"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Time with friends"
 			},
 			{
 				"facet": "Mozart, Wolfgang Amadeus",
 				"category": "creative work",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "exercise",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Having breakfast"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "creative work",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Working in a very focused manner"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Reading mail"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "creative work",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Work"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "exercise",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Walking the dog"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Reading newspapers"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Writing letters"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "sleep",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Nap"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "exercise",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Doing admin 'bits and bobs'"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Idleness"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Reading for pleasure"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Having tea with egg"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Playing backgammon"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Reading science books"
 			},
 			{
 				"facet": "Darwin, Charles",
 				"category": "creative work",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Lying in bed, solving problems"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "other",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Waking up"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Having breakfast"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Writing in absolute quiet"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "exercise",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Walking around London"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Gap time"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Having dinner"
 			},
 			{
 				"facet": "Dickens, Charles",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Spending time with friends and family"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "creative work",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 00:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 00:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "sleep",
-				"start_date": "2015-07-10 01:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 01:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Having breakfast and trimming beard"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Treating patients"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Gap time"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "exercise",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Going for a fast walk"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "creative work",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Consulting and treating patients"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Having supper and playing card games"
 			},
 			{
 				"facet": "Freud, Sigmund",
 				"category": "creative work",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Reading and writing"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 00:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 00:59",
 				"content_text": "Trying to fall sleep"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "sleep",
-				"start_date": "2015-07-10 01:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 01:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Thinking in bed"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Shaving, having breakfast, meditating, taking a bath"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "creative work",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "exercise",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "creative work",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "creative work",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "exercise",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Spending time with family"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Reading"
 			},
 			{
 				"facet": "Nabokov, Vladimir",
 				"category": "sleep",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Trying to fall sleep"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 00:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 00:59",
 				"content_text": "Drinking"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "sleep",
-				"start_date": "2015-07-10 01:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 01:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Having breakfast (grapefruit, cereal, banana, tea)"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Picking up from where he left off the previous evening"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Having lunch at the pub with a drink before and a coffee after"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "sleep",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Napping in his favorite armchair"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "creative work",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Working"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Having dinner with family, drinking scotch and water whilst settling down to his favorite television programs"
 			},
 			{
 				"facet": "Amis, Kingsley",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Having his final scotch with water"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "other",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Taking a bath"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "creative work",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "creative work",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Reading"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "sleep",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Napping"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Tea with family"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Reading newspapers and mail"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "exercise",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Mann, Thomas",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Spending time with family, receiving guests, listening to music"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Having breakfast of 3 eggs, tea, and jam; bath"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "exercise",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "creative work",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Having lunch with friends"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Reading or playing games"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "creative work",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 15:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 15:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 16:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 16:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Having dinner and tea"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "exercise",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 17:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 17:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 18:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 18:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Writing letters"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Having dinner and socializing"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Reading for pleasure"
 			},
 			{
 				"facet": "Strauss, Richard",
 				"category": "sleep",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "sleep",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 06:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 06:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 07:00Z",
-				"end_date": "2015-07-10 07:59Z",
+				"start_date": "2015-07-10 07:00",
+				"end_date": "2015-07-10 07:59",
 				"content_text": "Having tea, smoking, reading bible and philosophy"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "exercise",
-				"start_date": "2015-07-10 08:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 08:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Going for a walk"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Dealing with mail and doing chores"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "creative work",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Breaking for lunch"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "exercise",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Going for a long walk"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 16:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 16:59",
 				"content_text": "Having tea, reading newspapers"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "creative work",
-				"start_date": "2015-07-10 17:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 17:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Composing"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "other",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Gap time"
 			},
 			{
 				"facet": "Tchaikovsky, Pyotr Ilyich",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Having dinner, receiving guests, socializing"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "creative work",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 05:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 05:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "sleep",
-				"start_date": "2015-07-10 06:00Z",
-				"end_date": "2015-07-10 08:59Z",
+				"start_date": "2015-07-10 06:00",
+				"end_date": "2015-07-10 08:59",
 				"content_text": "Sleeping after struggling to fall asleep"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 09:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 09:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Working at the Worker's Accident Insurance Institute"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Having lunch"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "sleep",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Catching up on sleep"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "exercise",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 20:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 20:59",
 				"content_text": "Doing exercises next to the window, then going for a walk"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 21:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 21:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Having dinner with family"
 			},
 			{
 				"facet": "Kafka, Franz",
 				"category": "creative work",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "creative work",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 02:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 02:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "sleep",
-				"start_date": "2015-07-10 03:00Z",
-				"end_date": "2015-07-10 09:59Z",
+				"start_date": "2015-07-10 03:00",
+				"end_date": "2015-07-10 09:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 10:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 10:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Reading newspapers and mail"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "other",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 11:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 11:59",
 				"content_text": "Taking a bath"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 12:00Z",
-				"end_date": "2015-07-10 12:59Z",
+				"start_date": "2015-07-10 12:00",
+				"end_date": "2015-07-10 12:59",
 				"content_text": "Having a light breakfast, typically eggs, vegetables, cheese or fruit and a cup of cold chocolate"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "exercise",
-				"start_date": "2015-07-10 13:00Z",
-				"end_date": "2015-07-10 13:59Z",
+				"start_date": "2015-07-10 13:00",
+				"end_date": "2015-07-10 13:59",
 				"content_text": "Outdoor stroll with family"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "day job / admin",
-				"start_date": "2015-07-10 14:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 14:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Teaching history"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "creative work",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 18:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 18:59",
 				"content_text": "Writing and reading"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 19:00Z",
-				"end_date": "2015-07-10 19:59Z",
+				"start_date": "2015-07-10 19:00",
+				"end_date": "2015-07-10 19:59",
 				"content_text": "Having dinner with family"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 20:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 20:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Time with family, talking to mother"
 			},
 			{
 				"facet": "Flaubert, Gustave",
 				"category": "creative work",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Writing"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "creative work",
-				"start_date": "2015-07-10 00:00Z",
-				"end_date": "2015-07-10 01:59Z",
+				"start_date": "2015-07-10 00:00",
+				"end_date": "2015-07-10 01:59",
 				"content_text": "Painting"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "sleep",
-				"start_date": "2015-07-10 02:00Z",
-				"end_date": "2015-07-10 10:59Z",
+				"start_date": "2015-07-10 02:00",
+				"end_date": "2015-07-10 10:59",
 				"content_text": "Sleeping"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 11:00Z",
-				"end_date": "2015-07-10 14:59Z",
+				"start_date": "2015-07-10 11:00",
+				"end_date": "2015-07-10 14:59",
 				"content_text": "Having breakfast, seeing friends"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "creative work",
-				"start_date": "2015-07-10 15:00Z",
-				"end_date": "2015-07-10 21:59Z",
+				"start_date": "2015-07-10 15:00",
+				"end_date": "2015-07-10 21:59",
 				"content_text": "Painting"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "food / leisure",
-				"start_date": "2015-07-10 22:00Z",
-				"end_date": "2015-07-10 22:59Z",
+				"start_date": "2015-07-10 22:00",
+				"end_date": "2015-07-10 22:59",
 				"content_text": "Having dinner"
 			},
 			{
 				"facet": "Picasso, Pablo",
 				"category": "creative work",
-				"start_date": "2015-07-10 23:00Z",
-				"end_date": "2015-07-10 23:59Z",
+				"start_date": "2015-07-10 23:00",
+				"end_date": "2015-07-10 23:59",
 				"content_text": "Painting"
 			}
 		]
