@@ -21,7 +21,8 @@ function AddImageDialog() {
   this._addImageButton.on("click", this._addImageButtonClicked.bind(this));
   this._addImageDropZone
     .on("dragover", this._addImageDropZoneDragOver.bind(this))
-    .on("drop", this._addImageDropZoneDrop.bind(this));
+    .on("drop", this._addImageDropZoneDrop.bind(this))
+    .on("dragleave", this._addImageDropZoneDragLeave.bind(this));
   this._addImageFileChooser.on("change", this._addImageFileChooserChange.bind(this));
 }
 
@@ -137,6 +138,19 @@ AddImageDialog.prototype._addImageDropZoneDragOver = function () {
   e.stopPropagation();
   e.preventDefault();
   e.dataTransfer.dropEffect = "copy";
+  this._addImageDropZone.classed("dragging", true);
+};
+
+/**
+ * Drag over listener for the drag/drop zone for files
+ * @returns {void}
+ */
+AddImageDialog.prototype._addImageDropZoneDragLeave = function () {
+  const e = d3.event;
+  e.stopPropagation();
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "copy";
+  this._addImageDropZone.classed("dragging", false);
 };
 
 /**

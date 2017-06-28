@@ -1471,6 +1471,11 @@ html, body {
   box-sizing: border-box;
 }
 
+.image_local_add_drop_zone.dragging {
+  border-color: #333;
+  color: #333;
+}
+
 
 
 .add_image_btn {
