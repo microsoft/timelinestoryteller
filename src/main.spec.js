@@ -20,13 +20,10 @@ describe("TimelineStoryteller", function () {
     expect(TimelineStoryteller).to.not.be.undefined;
   });
   describe("playback", function () {
-    it("should draw annotations with the z-index in which they were created", function (done) {
-      this.timeout(5000);
-
-      var teller = createInstance();
-      teller.load(sceneWithAnnotations, true, true, 0);
-
-      setTimeout(function () {
+    it("should draw annotations with the z-index in which they were created", function () {
+      const teller = createInstance();
+      const promise = teller.load(sceneWithAnnotations, true, true, 0);
+      return promise.then(function () {
         var labels = [];
         d3.selectAll(".event_annotation .event_label").each(function () { labels.push(d3.select(this).text()); });
 
@@ -37,9 +34,7 @@ describe("TimelineStoryteller", function () {
 
         // The order in which we pull these from the DOM indicates their "z-index"
         expect(labels).to.be.deep.equal(["AritomoYamagata", "KinmochiSaionji", "TaroKatsura"]);
-
-        done();
-      }, 1000);
+      });
     });
     it("should draw annotations with the correct position if scenes are switched quickly");
     it("should not draw annotations on the wrong scene");
@@ -55,5 +50,6 @@ describe("TimelineStoryteller", function () {
     it("should import and preprocess data from given story correctly");
     it("should show the frame popup in the correct position");
     it("should show the frame popup on the screen, it should not overflow off the screen when the component is small");
+    it("should properly parse dates from 270000 BC up to 270000 AD");
   });
 });

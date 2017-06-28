@@ -19,6 +19,7 @@
     },
     "globals": {
         "ArrayBuffer": true,
-        "Uint8Array": true
+        "Uint8Array": true,
+        "Promise": true
     }
 }

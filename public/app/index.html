@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html xmnls="http://www.w3.org/1999/xhtml">
 <head>
 
@@ -22,7 +22,7 @@
 
 <!-- external dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js" charset="UTF-8"></script>
 
@@ -41,12 +41,14 @@
 <!-- Timeline Storyteller component -->
 <script>
   var teller = new TimelineStoryteller(false, true, document.getElementById("app"));
-  // teller.setOptions({
+  teller.setOptions({
   //   showAbout: false,
   //   showLogo: false,
   //   showImportOptions: false,
   //   showIntro: false,
-  // });
+  //   animations: false,
+  //   animationStepDuration: 500,
+  });
   // teller.load(timeline_story_demo_data.authors);
 </script>
 
