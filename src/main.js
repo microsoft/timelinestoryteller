@@ -29,6 +29,7 @@ var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
 var globals = require("./globals");
+var addImagePopup = require("./dialogs/addImageDialog");
 var gif = new GIF({
   workers: 2,
   quality: 10,
@@ -56,7 +57,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._dispatch = d3.dispatch("stateChanged");
   this.on = this._dispatch.on.bind(this._dispatch);
   this.playback_mode = false;
-
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -264,7 +264,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       goPreviousScene();
     } else if (d3.event.keyCode === 80 && d3.event.altKey) {
       instance.setPlaybackMode(!instance.playback_mode);
-    } else if (d3.event.keyCode === 46 && selectWithParent("#caption_div").style("display") === "none" && selectWithParent("#image_div").style("display") === "none" && !instance.importPanel.visible) {
+    } else if (d3.event.keyCode === 46 && selectWithParent("#caption_div").style("display") === "none" && instance._addImagePopup.hidden() && !instance.importPanel.visible) {
       globals.deleteScene();
     }
   });
@@ -628,11 +628,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   ---------------------------------------------------------------------------------------
   **/
 
-  selectWithParent()
-    .append("div")
-    .attr("id", "image_div")
-    .attr("class", "annotation_div control_div")
-    .style("display", "none");
+  instance._addImagePopup = addImagePopup();
+  selectWithParent().node().appendChild(instance._addImagePopup.element.node());
+  instance._addImagePopup.on("imageSelected", instance._onAddImageSelected.bind(this));
 
   /**
   --------------------------------------------------------------------------------------
@@ -1088,78 +1086,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       selectWithParent("#add_caption_text_input").property("value", "");
     });
 
-  selectWithParent("#image_div").append("input")
-    .attr({
-      type: "text",
-      placeholder: "Image URL",
-      class: "text_input",
-      id: "add_image_link"
-    });
-
-  selectWithParent("#image_div").append("input")
-    .attr({
-      type: "image",
-      name: "Add Image",
-      id: "add_image_btn",
-      class: "img_btn_enabled",
-      src: imageUrls("check.png"),
-      height: 20,
-      width: 20,
-      title: "Add Image"
-    })
-    .on("click", function () {
-      selectWithParent("#image_div").style("display", "none");
-      var image_url = selectWithParent("#add_image_link").property("value");
-      logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
-
-      var new_image = new Image();
-      new_image.name = image_url;
-      new_image.onload = getWidthAndHeight;
-      new_image.onerror = loadFailure;
-      new_image.src = image_url;
-
-      function loadFailure() {
-        logEvent("'" + this.name + "' failed to load.", "annotation");
-
-        return true;
-      }
-
-      function getWidthAndHeight() {
-        logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
-
-        var image_width = this.width,
-          image_height = this.height,
-          scaling_ratio = 1;
-
-        // reduce size of large images
-        if (image_width >= globals.width * 0.5) {
-          image_width = globals.width * 0.5;
-          scaling_ratio = image_width / this.width;
-          image_height = this.height * scaling_ratio;
-        }
-        if (image_height >= globals.height * 0.5) {
-          image_height = globals.height * 0.5;
-          scaling_ratio = image_height / this.height;
-          image_width = this.width * scaling_ratio;
-        }
-
-        var image_list_item = {
-          id: "image" + globals.image_index,
-          i_index: globals.image_index,
-          i_url: image_url,
-          i_width: image_width,
-          i_height: image_height,
-          x_rel_pos: 0.5,
-          y_rel_pos: 0.25,
-          z_index: getNextZIndex()
-        };
-
-        globals.image_list.push(image_list_item);
-        addImage(timeline_vis, image_url, 0.5, 0.25, image_width, image_height, globals.image_index);
-        globals.image_index++;
-      }
-      selectWithParent("#add_image_link").property("value", "");
-    });
 
   /**
   --------------------------------------------------------------------------------------
@@ -4551,7 +4477,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
         click: function (instance) {
           selectWithParent("#filter_div").style("display", "none");
           selectWithParent("#caption_div").style("display", "none");
-          selectWithParent("#image_div").style("display", "none");
+          instance._addImagePopup.reset();
           selectWithParent("#export_div").style("top", -185 + "px");
 
           logEvent("open import panel", "load");
@@ -4571,11 +4497,11 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       items: [{
         name: "Add caption",
         image: imageUrls("caption.png"),
-        click: function () {
+        click: function (instance) {
           logEvent("open caption dialog", "annotation");
 
           selectWithParent("#filter_div").style("display", "none");
-          selectWithParent("#image_div").style("display", "none");
+          instance._addImagePopup.reset();
           if (selectWithParent("#caption_div").style("display") !== "none") {
             selectWithParent("#caption_div").style("display", "none");
           } else {
@@ -4585,15 +4511,15 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
       }, {
         name: "Add image",
         image: imageUrls("image.png"),
-        click: function () {
+        click: function (instance) {
           logEvent("open image dialog", "annotation");
 
           selectWithParent("#filter_div").style("display", "none");
           selectWithParent("#caption_div").style("display", "none");
-          if (selectWithParent("#image_div").style("display") !== "none") {
-            selectWithParent("#image_div").style("display", "none");
+          if (!instance._addImagePopup.hidden()) {
+            instance._addImagePopup.reset();
           } else {
-            selectWithParent("#image_div").style("display", "inline");
+            instance._addImagePopup.show();
           }
         }
       }, {
@@ -4614,7 +4540,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
 
           if (d3.select(this).attr("class") === "img_btn_enabled") {
             selectWithParent("#caption_div").style("display", "none");
-            selectWithParent("#image_div").style("display", "none");
+            instance._addImagePopup.reset();
             if (selectWithParent("#filter_div").style("display") === "none") {
               selectWithParent("#filter_div").style("display", "inline");
               globals.effective_filter_width = instance._component_width - parseInt(selectWithParent("#filter_div").style("width"), 10) - getScrollbarWidth() - 10;
@@ -4634,7 +4560,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
         click: function (instance) {
           selectWithParent("#filter_div").style("display", "none");
           selectWithParent("#caption_div").style("display", "none");
-          selectWithParent("#image_div").style("display", "none");
+          instance._addImagePopup.reset();
 
           instance.importPanel.hide();
 
@@ -5166,6 +5092,63 @@ TimelineStoryteller.prototype._createImportPanelButton = function (button) {
 };
 
 /**
+ * Listener for when an image is selected through the addImageDialog
+ * @param {string} image_url The image url that was selected
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
+  logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
+
+  var new_image = new Image();
+  new_image.name = image_url;
+  new_image.onload = getWidthAndHeight;
+  new_image.onerror = loadFailure;
+  new_image.src = image_url;
+
+  function loadFailure() {
+    logEvent("'" + this.name + "' failed to load.", "annotation");
+
+    return true;
+  }
+
+  const that = this;
+  function getWidthAndHeight() {
+    logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
+
+    var image_width = this.width,
+      image_height = this.height,
+      scaling_ratio = 1;
+
+    // reduce size of large images
+    if (image_width >= globals.width * 0.5) {
+      image_width = globals.width * 0.5;
+      scaling_ratio = image_width / this.width;
+      image_height = this.height * scaling_ratio;
+    }
+    if (image_height >= globals.height * 0.5) {
+      image_height = globals.height * 0.5;
+      scaling_ratio = image_height / this.height;
+      image_width = this.width * scaling_ratio;
+    }
+
+    var image_list_item = {
+      id: "image" + globals.image_index,
+      i_index: globals.image_index,
+      i_url: image_url,
+      i_width: image_width,
+      i_height: image_height,
+      x_rel_pos: 0.5,
+      y_rel_pos: 0.25,
+      z_index: getNextZIndex()
+    };
+
+    globals.image_list.push(image_list_item);
+    addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, globals.image_index);
+    globals.image_index++;
+  }
+};
+
+/**
  * Scales the UI
  * @param {number} [scale=1] The scale of the UI
  * @returns {void}
@@ -5403,7 +5386,7 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
   if (isPlayback) {
     selectWithParent("#record_scene_btn").attr("class", "img_btn_disabled");
     selectWithParent("#caption_div").style("display", "none");
-    selectWithParent("#image_div").style("display", "none");
+    this._addImagePopup.hide();
     selectWithParent("#filter_div").style("display", "none");
 
     menuDiv.attr("class", "control_div onhover");

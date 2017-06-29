@@ -124,12 +124,22 @@ a:hover {
   border: 0;
 }
 
+/* This css rule is TOO broad, it makes it difficult to add new elements */
 input {
   display: block;
   float: left;
 }
 
-label > input{ /* HIDE RADIO */
+/* Undo global input changes */
+.offline_image_cb,
+.add_image_popup input {
+  display: inline;
+  float: none;
+}
+
+label.option_rb > input,
+label.menu_rb > input,
+label.nav_cb > input  { /* HIDE RADIO */
   visibility: hidden; /* Makes input not-clickable */
   position: absolute; /* Remove input from document flow */
   height: 0px;
@@ -933,7 +943,7 @@ input[type="color"]::-moz-color-swatch {
   padding: 10px;
 }
 
-#image_div {
+.add_image_popup {
   margin-top: -55px;
 }
 
@@ -1353,6 +1363,10 @@ input[type="color"]::-moz-color-swatch {
   z-index:-1;
 }
 
+.image_div_error {
+  color: red;
+}
+
 .path_end_indicator {
   fill: none;
   stroke: #fff;
@@ -1411,4 +1425,77 @@ html, body {
 .loading_data_indicator {
   font-weight: bold;
   margin-bottom: 10px;
+}
+
+
+/* Add Image Popup */
+.add_image_popup h4 {
+  margin: 3px;
+}
+.add_image_popup h5 {
+  margin: 3px;
+}
+
+.resize_width, .resize_height {
+  width: 55px;
+}
+
+.resize_options {
+  margin-bottom: 5px;
+}
+
+.add_image_selected_file {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add_image_file_chooser {
+  margin-bottom: 5px;
+}
+
+.selected_file_remove_btn {
+  width: 18px;
+  height: 18px;
+  float: right;
+}
+
+.selected_files_container {
+  vertical-align: middle;
+  margin: 5px;
+}
+
+.image_div_container {
+   position: relative;
+}
+
+.image_div_container .add_image_link {
+  width: 100%;
+  box-sizing: border-box;
+}
+.image_local_add_drop_zone {
+  border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  color: #bbb;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.image_local_add_drop_zone.dragging {
+  border-color: #333;
+  color: #333;
+}
+
+.add_image_btn {
+  float: right;
+}
+
+.add_image_popup {
+  font-size: 14px;
+}
+
+.add_image_popup input[type="checkbox"] {
+  vertical-align: middle;
 }
