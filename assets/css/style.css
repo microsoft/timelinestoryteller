@@ -132,7 +132,7 @@ input {
 
 /* Undo global input changes */
 .offline_image_cb,
-#image_div input {
+.add_image_popup input {
   display: inline;
   float: none;
 }
@@ -943,7 +943,7 @@ input[type="color"]::-moz-color-swatch {
   padding: 10px;
 }
 
-#image_div {
+.add_image_popup {
   margin-top: -55px;
 }
 
@@ -1425,11 +1425,19 @@ html, body {
 
 
 /* Add Image Popup */
-#image_div h5 {
+.add_image_popup h4 {
   margin: 3px;
 }
-#image_div h6 {
+.add_image_popup h5 {
   margin: 3px;
+}
+
+.resize_width, .resize_height {
+  width: 55px;
+}
+
+.resize_options {
+  margin-bottom: 5px;
 }
 
 .add_image_selected_file {
@@ -1476,8 +1484,10 @@ html, body {
   color: #333;
 }
 
-
-
 .add_image_btn {
   float: right;
+}
+
+.add_image_popup {
+  font-size: 14px;
 }

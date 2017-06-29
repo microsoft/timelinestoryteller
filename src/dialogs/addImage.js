@@ -1,6 +1,7 @@
 const template = require("../templates/addImagePopup.html");
 const d3 = require("d3");
 const imageUrls = require("../imageUrls");
+const utils = require("../utils");
 
 /**
  * An add image dialog
@@ -16,6 +17,9 @@ function AddImageDialog() {
   this._addImageFileChooser = this.element.select(".add_image_file_chooser");
   this._addFilesContainer = this.element.select(".file_selection_container");
   this._selectedFilesContainer = this.element.select(".selected_files_container");
+  this._resizeEnabled = this.element.select(".resize_enabled_cb");
+  this._resizeWidth = this.element.select(".resize_width");
+  this._resizeHeight = this.element.select(".resize_height");
   this._selectedFiles = [];
 
   this._addImageButton.on("click", this._addImageButtonClicked.bind(this));
@@ -57,8 +61,8 @@ AddImageDialog.prototype.hidden = function () {
  */
 AddImageDialog.prototype.reset = function (hide) {
   this._selectedFiles.length = 0;
-  this._addImageUrl.attr("value", "");
-  this._addImageFileChooser.node().value = "";
+  this._addImageUrl.property("value", "");
+  this._addImageFileChooser.property("value", "");
   this._addFilesContainer.style("display", "");
   this._selectedFilesContainer
     .style("display", "none")
@@ -100,31 +104,28 @@ AddImageDialog.prototype._addSelectedFile = function (file) {
  * @returns {void}
  */
 AddImageDialog.prototype._addImageButtonClicked = function () {
-  const imageUrl = this._addImageUrl.attr("value");
+  const imageUrl = this._addImageUrl.property("value");
+  const finalizeImage = (url) => {
+    // If we are resizing it
+    if (this._resizeEnabled.node().checked) {
+      const width = this._resizeWidth.property("value");
+      const height = this._resizeHeight.property("value");
+      utils.resizeImage(url, width, height, true).then((dataURL) => {
+        this._dispatcher.imageSelected(dataURL);
+      });
+    } else {
+      this._dispatcher.imageSelected(url);
+    }
+  };
+
   if (this._selectedFiles.length) {
     const fileReader = new FileReader();
-    const that = this;
     fileReader.onloadend = function (fileEvent) {
-      const dataURI = fileEvent.target.result;
-      // convert base64/URLEncoded data component to raw binary data held in a string
-      const dataURIParts = dataURI.split(",");
-      const byteString = dataURIParts[0].indexOf("base64") >= 0 ? atob(dataURIParts[1]) : decodeURIComponent(dataURIParts[1]);
-
-      // separate out the mime component
-      const type = dataURIParts[0].split(":")[1].split(";")[0];
-
-      // write the bytes of the string to a typed array
-      const ia = new Uint8Array(byteString.length);
-      for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-
-      const blob = new Blob([ia], { type });
-      that._dispatcher.imageSelected(URL.createObjectURL(blob));
+      finalizeImage(fileEvent.target.result);
     };
     fileReader.readAsDataURL(this._selectedFiles[0]);
   } else if (imageUrl) {
-    this._dispatcher.imageSelected(imageUrl);
+    finalizeImage(imageUrl);
   }
   this.reset();
 };

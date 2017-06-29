@@ -185,6 +185,86 @@ var utils = {
             }
           });
     });
+  },
+
+  /**
+   * Converts a data url into a object url
+   * @param {string} dataURL The data url to convert
+   * @returns {string} The object url
+   */
+  dataURLtoObjectURL: function (dataURL) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    const dataURLParts = dataURL.split(",");
+    const byteString = dataURLParts[0].indexOf("base64") >= 0 ? atob(dataURLParts[1]) : decodeURIComponent(dataURLParts[1]);
+
+    // separate out the mime component
+    const type = dataURLParts[0].split(":")[1].split(";")[0];
+
+    // write the bytes of the string to a typed array
+    const ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    const blob = new Blob([ia], { type });
+    return URL.createObjectURL(blob);
+  },
+
+  /**
+   * Resizes the given image to the given size
+   * @param {string} url The url of the image
+   * @param {number} width The final width of the image
+   * @param {number} height The final height of the image
+   * @param {boolean} [preserve=true] True if the aspect ratio should be preserved
+   * @returns {string} A dataurl containing the image
+   */
+  resizeImage: function (url, width, height, preserve) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    preserve = preserve === undefined ? true : preserve;
+
+    return new Promise((resolve, reject) => {
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // https://stackoverflow.com/questions/19262141/resize-image-with-javascript-canvas-smoothly
+        // Perform the resize in two steps to produce a higher quality resized image
+
+        // set size proportional to image if there is no height passed to it, otherwise just use the height
+        if (preserve) {
+          if (width >= height) {
+            height = width * (img.height / img.width);
+          } else {
+            width = height * (img.width / img.height);
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // step 1 - resize to 50%
+        const oc = document.createElement("canvas");
+        const octx = oc.getContext("2d");
+
+        oc.width = img.width * 0.5;
+        oc.height = img.height * 0.5;
+        octx.drawImage(img, 0, 0, oc.width, oc.height);
+
+        // step 2 - resize 50% of step 1
+        octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+
+        // step 3, resize to final size
+        ctx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5, 0, 0, width, height);
+
+        try {
+          resolve(canvas.toDataURL());
+        } catch (e) {
+          reject(e);
+        }
+      };
+      img.src = url;
+    });
   }
 };
 
