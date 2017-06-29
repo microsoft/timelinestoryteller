@@ -211,12 +211,44 @@ var utils = {
   },
 
   /**
+   * Converts an image url to a data URL
+   * @param {string} url The url of the image
+   * @returns {Promise<string>} A dataurl containing the image
+   */
+  imageUrlToDataURL: function (url) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    return new Promise((resolve, reject) => {
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = this.width;
+        canvas.height = this.height;
+
+        // step 3, resize to final size
+        ctx.drawImage(img, 0, 0);
+
+        try {
+          resolve(canvas.toDataURL());
+        } catch (e) {
+          reject(e);
+        }
+      };
+      img.onerror = function () {
+        reject();
+      };
+      img.src = url;
+    });
+  },
+
+  /**
    * Resizes the given image to the given size
    * @param {string} url The url of the image
    * @param {number} width The final width of the image
    * @param {number} height The final height of the image
    * @param {boolean} [preserve=true] True if the aspect ratio should be preserved
-   * @returns {string} A dataurl containing the image
+   * @returns {Promise<string>} A dataurl containing the image
    */
   resizeImage: function (url, width, height, preserve) {
     const img = new Image();
@@ -262,6 +294,9 @@ var utils = {
         } catch (e) {
           reject(e);
         }
+      };
+      img.onerror = function () {
+        reject();
       };
       img.src = url;
     });

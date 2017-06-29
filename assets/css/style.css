@@ -1363,6 +1363,10 @@ input[type="color"]::-moz-color-swatch {
   z-index:-1;
 }
 
+.image_div_error {
+  color: red;
+}
+
 .path_end_indicator {
   fill: none;
   stroke: #fff;
@@ -1490,4 +1494,8 @@ html, body {
 
 .add_image_popup {
   font-size: 14px;
+}
+
+.add_image_popup input[type="checkbox"] {
+  vertical-align: middle;
 }

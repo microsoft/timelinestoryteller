@@ -7,9 +7,16 @@ const toElement = require("./toElement");
 module.exports = () => toElement(`
   <div id="image_div" class="add_image_popup annotation_div control_div" style="display:none">
     <div class="image_div_container">
+      <div class="image_div_error" style="display:none"></div>
       <div class="image_url_add_container">
         <h4>Add from image URL</h4>
         <input type="text" placeholder="Image URL" class="text_input add_image_link">
+        <div>
+          <label title="If true, this will allow for offline playback.">
+            Keep Offline?
+            <input type="checkbox" class="offline_enabled_cb" checked>
+          </label>
+        </div>
       </div>
       <div class="image_local_add_container">
         <hr/>
@@ -17,7 +24,7 @@ module.exports = () => toElement(`
         <div class="file_selection_container">
           <div class="image_local_add_drop_zone">Drop files here</div>
           <h5>OR</h5>
-          <input type="file" class="add_image_file_chooser" accept=".jpg,.jpeg,.png,.gif,.tiff">
+          <input type="file" class="add_image_file_chooser" accept=".jpg,.jpeg,.png,.gif">
         </div>
         <div class="selected_files_container" style="display:none">
           No files selected

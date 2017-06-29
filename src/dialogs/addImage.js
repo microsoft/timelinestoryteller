@@ -20,6 +20,8 @@ function AddImageDialog() {
   this._resizeEnabled = this.element.select(".resize_enabled_cb");
   this._resizeWidth = this.element.select(".resize_width");
   this._resizeHeight = this.element.select(".resize_height");
+  this._errorElement = this.element.select(".image_div_error");
+  this._offlineEnabled = this.element.select(".offline_enabled_cb");
   this._selectedFiles = [];
 
   this._addImageButton.on("click", this._addImageButtonClicked.bind(this));
@@ -64,6 +66,7 @@ AddImageDialog.prototype.reset = function (hide) {
   this._addImageUrl.property("value", "");
   this._addImageFileChooser.property("value", "");
   this._addFilesContainer.style("display", "");
+  this._errorElement.style("display", "none");
   this._selectedFilesContainer
     .style("display", "none")
     .html("No files selected");
@@ -106,15 +109,35 @@ AddImageDialog.prototype._addSelectedFile = function (file) {
 AddImageDialog.prototype._addImageButtonClicked = function () {
   const imageUrl = this._addImageUrl.property("value");
   const finalizeImage = (url) => {
+    const waitForImagePromise = (p) => {
+      p.then((dataURL) => {
+        this._dispatcher.imageSelected(dataURL);
+        this.reset();
+      }, (e) => {
+        let error = "Could not save image. ";
+        let message = (e && e.message ? e.message : e) || "";
+
+         // This occurs if the server does not have CORS set up properly, or does not allow canvas saving
+        if (message.indexOf("tainted") >= 0) {
+          error += "The image server is not set up correctly.";
+        } else if (message.indexOf("CORS") >= 0) {
+          error += "The image server does not allow for the saving of images.";
+        }
+        this._errorElement.text(error);
+        this._errorElement.style("display", "");
+      });
+    };
+
     // If we are resizing it
-    if (this._resizeEnabled.node().checked) {
+    if (this._resizeEnabled.property("checked")) {
       const width = this._resizeWidth.property("value");
       const height = this._resizeHeight.property("value");
-      utils.resizeImage(url, width, height, true).then((dataURL) => {
-        this._dispatcher.imageSelected(dataURL);
-      });
+      waitForImagePromise(utils.resizeImage(url, width, height, true));
+    } else if (this._offlineEnabled.property("checked")) {
+      waitForImagePromise(utils.imageUrlToDataURL(url));
     } else {
       this._dispatcher.imageSelected(url);
+      this.reset();
     }
   };
 
@@ -127,7 +150,6 @@ AddImageDialog.prototype._addImageButtonClicked = function () {
   } else if (imageUrl) {
     finalizeImage(imageUrl);
   }
-  this.reset();
 };
 
 /**
