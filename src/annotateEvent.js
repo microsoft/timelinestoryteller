@@ -31,6 +31,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       if (timeline_vis.tl_representation() !== "Radial") {
         target = selectWithParent("#event_g" + item_index + " rect.event_span_component")[0][0];
 
+        // TODO consolidate the duplicate code (7 lines x 4 places below)
         if (target.transform.baseVal.length > 0) {
           x_offset = target.transform.baseVal[0].matrix.e;
           y_offset = target.transform.baseVal[0].matrix.f;
