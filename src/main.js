@@ -5251,12 +5251,8 @@ TimelineStoryteller.prototype.clearCanvas = function () {
   this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
     event.__data__.selected = false;
     selectWithParent("#event_g" + event.__data__.event_id)
-      .selectAll(".event_span")
+      .selectAll(".event_span, .event_span_component")
       .attr("filter", "none")
-      .style("stroke", "#fff")
-      .style("stroke-width", "0.25px");
-    selectWithParent("#event_g" + event.__data__.event_id)
-      .selectAll(".event_span_component")
       .style("stroke", "#fff")
       .style("stroke-width", "0.25px");
   });
