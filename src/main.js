@@ -29,7 +29,7 @@ var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
 var globals = require("./globals");
-var addImagePopup = require("./dialogs/addImage");
+var addImagePopup = require("./dialogs/addImageDialog");
 var gif = new GIF({
   workers: 2,
   quality: 10,
