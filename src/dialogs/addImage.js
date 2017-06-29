@@ -157,9 +157,9 @@ AddImageDialog.prototype._addImageButtonClicked = function () {
  * @returns {void}
  */
 AddImageDialog.prototype._addImageDropZoneDragOver = function () {
+  stopEvent();
+
   const e = d3.event;
-  e.stopPropagation();
-  e.preventDefault();
   e.dataTransfer.dropEffect = "copy";
   this._addImageDropZone.classed("dragging", true);
 };
@@ -169,10 +169,8 @@ AddImageDialog.prototype._addImageDropZoneDragOver = function () {
  * @returns {void}
  */
 AddImageDialog.prototype._addImageDropZoneDragLeave = function () {
-  const e = d3.event;
-  e.stopPropagation();
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "copy";
+  stopEvent();
+
   this._addImageDropZone.classed("dragging", false);
 };
 
@@ -181,10 +179,9 @@ AddImageDialog.prototype._addImageDropZoneDragLeave = function () {
  * @returns {void}
  */
 AddImageDialog.prototype._addImageDropZoneDrop = function () {
-  const e = d3.event;
-  e.stopPropagation();
-  e.preventDefault();
+  stopEvent();
 
+  const e = d3.event;
   const files = e.dataTransfer.files;
   this._addSelectedFile(files[0]);
 };
@@ -200,3 +197,13 @@ AddImageDialog.prototype._addImageFileChooserChange = function () {
 module.exports = function () {
   return new AddImageDialog();
 };
+
+/**
+ * Quick helper to completely stop an d3 event
+ * @returns {void}
+ */
+function stopEvent() {
+  const e = d3.event;
+  e.stopPropagation();
+  e.preventDefault();
+}
