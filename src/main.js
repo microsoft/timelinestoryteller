@@ -5248,7 +5248,20 @@ TimelineStoryteller.prototype.setOptions = function (options) {
 TimelineStoryteller.prototype.clearCanvas = function () {
   logEvent("clear annotations", "annotation");
 
-  this._main_svg.selectAll(".timeline_caption, .timeline_caption, .event_annotation").remove();
+  this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
+    event.__data__.selected = false;
+    selectWithParent("#event_g" + event.__data__.event_id)
+      .selectAll(".event_span")
+      .attr("filter", "none")
+      .style("stroke", "#fff")
+      .style("stroke-width", "0.25px");
+    selectWithParent("#event_g" + event.__data__.event_id)
+      .selectAll(".event_span_component")
+      .style("stroke", "#fff")
+      .style("stroke-width", "0.25px");
+  });
+
+  this._main_svg.selectAll(".timeline_caption, .timeline_image, .event_annotation").remove();
 };
 
 /**
