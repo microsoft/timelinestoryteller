@@ -2479,8 +2479,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
               item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
             }
 
-            annotateEvent(timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.count);
-            selectWithParent("#event" + item.item_index + "_" + item.count)
+            const { element } = annotateEvent(timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.id);
+            element
               .transition()
               .duration(instance.options.animations ? 50 : 0)
                 .style("opacity", 1)

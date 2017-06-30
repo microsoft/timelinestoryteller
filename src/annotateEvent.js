@@ -13,7 +13,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
 
-module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotation_index) {
+module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotation_id) {
   var target;
   // var LINE_OCTO = 0;
   // var LINE_RECT = 1;
@@ -100,9 +100,10 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
     drawLeaderLine.interpolate("linear");
   }
 
+  // TODO: ID HERE
+  const id = "event" + item_index + "_" + annotation_id;
   var event_annotation = selectWithParent("#main_svg").append("g")
-    .attr("id", "event" + item_index + "_" + annotation_index)
-    .attr("class", "event_annotation")
+    .attr("class", `event_annotation event_${item_index}_annotation`)
     .style("opacity", 0);
 
   event_annotation.on("mouseover", function () {
@@ -180,10 +181,9 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
           return drawLeaderLine(d);
         });
 
-      const myId = d3.select(this.parentNode).attr("id");
       const annoList = globals.annotation_list || [];
       for (var i = 0; i < annoList.length; i++) {
-        if (myId === annoList[i].id) {
+        if (id === annoList[i].id) {
           annoList[i].x_anno_offset = x_anno_offset;
           annoList[i].y_anno_offset = y_anno_offset;
           break;
@@ -210,7 +210,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       var i = 0;
 
-      while (globals.annotation_list[i].id !== d3.select(this.parentNode).attr("id")) {
+      while (globals.annotation_list[i].id !== id) {
         i++;
       }
       globals.annotation_list[i].label_width = label_width;
@@ -406,5 +406,8 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
     }
   }
 
-  return true;
+  return {
+    id,
+    element: event_annotation
+  };
 };

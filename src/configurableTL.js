@@ -1399,9 +1399,8 @@ function eventColorMapping(d) {
 }
 
 function eventMouseOutListener(d) {
-  selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_hide").duration(100).style("opacity", 0);
-
-  selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_remove").delay(100).remove();
+  selectAllWithParent(".temporary_annotation").transition("event_hover_hide").duration(100).style("opacity", 0);
+  selectAllWithParent(".temporary_annotation").transition("event_hover_remove").delay(100).remove();
 
   d3.select(this)
     .selectAll(".event_span")
@@ -1438,7 +1437,8 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
     .style("stroke-width", "0.5px")
     .style("cursor", "url(\"" + imageUrls("pin.png") + "\"),auto");
 
-  if ((selectWithParent("#event" + d.event_id + "_" + (d.annotation_count - 1) + ".event_annotation")[0][0] === null) && (selectWithParent("#event" + d.event_id + "_0.event_annotation")[0][0] === null)) {
+  const eventHasAnnotations = selectAllWithParent(`.event_${d.event_id}_annotation`).size() > 0;
+  if (!eventHasAnnotations) {
     var x_pos = d3.event.x,
       y_pos = d3.event.y;
 
@@ -1453,11 +1453,12 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
       item_y_pos = d.path_y_pos + d.path_offset_y + globals.padding.top;
     }
 
-    annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, -1);
+    const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, -1);
+    element.classed("temporary_annotation", true);
 
-    selectWithParent("#event" + d.event_id + "_-1 rect.annotation_frame").style("stroke", "#f00");
+    element.select("rect.annotation_frame").style("stroke", "#f00");
 
-    selectWithParent("#event" + d.event_id + "_-1").transition("event_hover_show").duration(250).style("opacity", 1);
+    element.transition("event_hover_show").duration(250).style("opacity", 1);
   }
 }
 
@@ -1495,8 +1496,14 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d, i)
         item_y_pos = d.path_y_pos + d.path_offset_y + globals.padding.top;
       }
 
+      let highestId = 0;
+      globals.annotation_list.forEach(n => {
+        if (n.id > highestId) {
+          highestId = n.id;
+        }
+      });
       var annotation = {
-        id: "event" + d.event_id + "_" + d.annotation_count,
+        id: highestId + 1,
         item_index: d.event_id,
         count: d.annotation_count,
         content_text: d.content_text,
@@ -1514,11 +1521,11 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d, i)
 
       logEvent("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
 
-      selectWithParent("#event" + d.event_id + "_-1").remove();
+      selectAllWithParent(".temporary_annotation").remove();
 
-      annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, d.annotation_count);
+      const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, annotation.id);
 
-      selectWithParent("#event" + d.event_id + "_" + d.annotation_count).transition("event_annotation_show").duration(50).style("opacity", 1);
+      element.transition("event_annotation_show").duration(50).style("opacity", 1);
 
       d.annotation_count++;
     } else {
@@ -1538,10 +1545,8 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d, i)
 
     logEvent("event " + d.event_id + " annotation removed");
 
-    // remove annotations for the event
-    for (i = 0; i <= d.annotation_count; i++) {
-      selectWithParent("#event" + d.event_id + "_" + i).remove();
-    }
+    // Remove all annotations for this event
+    selectAllWithParent(`.event_${d.event_id}_annotation`).remove();
   }
 }
 
