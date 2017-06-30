@@ -2230,10 +2230,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   instance._updateNavigationStepper = updateNavigationStepper;
 
-  var prevTransitioning = false;
+  instance._prevTransitioning = false;
   function changeScene(scene_index) {
     // Assume we are waiting for transitions if there is already one going.
-    var waitForTransitions = prevTransitioning;
+    var waitForTransitions = instance._prevTransitioning;
 
     updateNavigationStepper();
 
@@ -2271,7 +2271,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // set a delay for annotations and captions based on whether the scale, layout, or representation changes
     if (timeline_vis.tl_scale() !== scene.s_scale || timeline_vis.tl_layout() !== scene.s_layout || timeline_vis.tl_representation() !== scene.s_representation) {
       waitForTransitions = true;
-      prevTransitioning = true;
+      instance._prevTransitioning = true;
 
       // how big is the new scene?
       determineSize(globals.active_data, scene.s_scale, scene.s_layout, scene.s_representation);
@@ -2342,7 +2342,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (scene_filter_set_length !== globals.filter_set_length) {
       globals.filter_set_length = scene_filter_set_length;
       waitForTransitions = true;
-      prevTransitioning = true;
+      instance._prevTransitioning = true;
     }
 
     globals.selected_categories = scene.s_categories;
@@ -2403,140 +2403,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("stroke", "#fff")
       .style("stroke-width", "0.25px");
 
-    function loadAnnotations() {
-      prevTransitioning = false;
-
-      log("Loading Annotations");
-      if (globals.current_scene_index !== scene_index) {
-        return;
-      }
-
-      // is the legend expanded in this scene?
-      globals.legend_expanded = scene.s_legend_expanded;
-      if (scene.s_legend_expanded) {
-        expandLegend();
-      } else {
-        collapseLegend();
-      }
-
-      /**
-       * Creates a mapper, that adds a type property
-       * @param {string} type The type of the item
-       * @returns {object} An object with the type and item properties
-       */
-      function mapWithType(type) {
-        return function (item) {
-          return {
-            type: type,
-            item: item
-          };
-        };
-      }
-
-      var captionAnnos = globals.caption_list.map(mapWithType("caption"));
-      var imageAnnos = globals.image_list.map(mapWithType("image"));
-      var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
-
-      // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
-      // annotations that had a "type" property
-
-      // These are are technically annotations, just different types, so concat them all together
-      captionAnnos.concat(imageAnnos).concat(textAnnos)
-        .filter(function (anno) { // Filter out annotations not on this scene
-          // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
-          var sceneList = scene["s_" + anno.type + "s"];
-
-          for (var i = 0; i < sceneList.length; i++) { // eslint-disable-line no-shadow
-            // Basically the id property in the scene, so image_id or caption_id or annotation_id
-            if (sceneList[i][anno.type + "_id"] === anno.item.id) {
-              return true;
-            }
-          }
-        })
-
-        // We sort the annotations by z-order, and add the annotations in that order
-        // this is important cause with svgs, the order in which elements are added dictates their z-index
-        .sort(function (a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
-
-        // Iterate through all of our annotations
-        .forEach(function (anno) {
-          var item = anno.item;
-          if (anno.type === "caption") {
-            addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.c_index);
-          } else if (anno.type === "image") {
-            addImage(timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
-          } else {
-            var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
-            var itemEle = itemSel[0][0].__data__,
-              item_x_pos = 0,
-              item_y_pos = 0;
-
-            if (scene.s_representation !== "Radial") {
-              item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
-              item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
-            } else {
-              item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
-              item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
-            }
-
-            const { element } = annotateEvent(timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.id);
-            element
-              .transition()
-              .duration(instance.options.animations ? 50 : 0)
-                .style("opacity", 1)
-                .each(function () {
-                  // If after running the transition, the scene has changed, then hide this annotation.
-                  if (globals.current_scene_index !== scene_index) {
-                    this.style.opacity = 0;
-                  }
-                });
-          }
-        });
-
-      // toggle selected events in the scene
-      main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
-        if (scene.s_selections.indexOf(event.__data__.event_id) !== -1) {
-          event.__data__.selected = true;
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span")
-            .attr("filter", "url(#drop-shadow)")
-            .style("z-index", 1)
-            .style("stroke", "#f00")
-            .style("stroke-width", "1.25px");
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span_component")
-            .style("z-index", 1)
-            .style("stroke", "#f00")
-            .style("stroke-width", "1px");
-        } else {
-          event.__data__.selected = false;
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span")
-            .attr("filter", "none")
-            .style("stroke", "#fff")
-            .style("stroke-width", "0.25px");
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span_component")
-            .style("stroke", "#fff")
-            .style("stroke-width", "0.25px");
-        }
-      });
-
-      if (timeline_vis.tl_representation() !== "Curve") {
-        selectWithParent("#timecurve").style("visibility", "hidden");
-      } else {
-        selectWithParent("#timecurve").style("visibility", "visible");
-      }
-
-      main_svg.style("visibility", "visible");
-    }
-
     // delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
     if (waitForTransitions && timeline_vis.renderComplete) {
       log("Waiting for transitions");
-      timeline_vis.renderComplete.then(loadAnnotations);
+      timeline_vis.renderComplete.then(() => instance._loadAnnotations(scene, scene_index));
     } else {
-      loadAnnotations();
+      instance._loadAnnotations(scene, scene_index);
     }
   }
 
@@ -2723,15 +2595,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .style("opacity", 0.1)
         .on("click", function () {
           if (globals.legend_expanded) {
-            logEvent("legend minimized", "legend");
-
-            globals.legend_expanded = false;
-            collapseLegend();
+            instance.collapseLegend();
           } else {
-            logEvent("legend expanded", "legend");
-
-            globals.legend_expanded = true;
-            expandLegend();
+            instance.expandLegend();
           }
         })
         .append("title")
@@ -2865,75 +2731,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   instance._drawTimeline = drawTimeline;
-
-  function expandLegend() {
-    selectWithParent(".legend")
-      .transition()
-      .duration(instance._getAnimationStepDuration());
-    selectWithParent(".legend").select(".legend_rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("height", globals.track_height * (globals.num_categories + 1))
-      .attr("width", globals.max_legend_item_width + 5 + globals.unit_width + 10);
-    selectWithParent(".legend").select("#legend_expand_btn")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("x", globals.max_legend_item_width + 5 + globals.unit_width - 10);
-    selectWithParent(".legend").select(".legend_title")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("dx", "0em")
-      .attr("transform", "translate(5,0)rotate(0)");
-    selectWithParent(".legend").selectAll(".legend_element_g text")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("fill-opacity", "1")
-      .style("display", "inline")
-      .attr("transform", "translate(0,-35)");
-    selectWithParent(".legend").selectAll(".legend_element_g rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(0,-35)");
-    selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(" + globals.legend_spacing + ",-35)");
-  }
-
-  function collapseLegend() {
-    selectWithParent(".legend")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("z-index", 1);
-    selectWithParent(".legend").select(".legend_rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("height", 35 + globals.track_height * (globals.num_categories + 1))
-      .attr("width", 25);
-    selectWithParent(".legend").select("#legend_expand_btn")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("x", 25);
-    selectWithParent(".legend").select(".legend_title")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("dx", "-4.3em")
-      .attr("transform", "translate(0,0)rotate(270)");
-    selectWithParent(".legend").selectAll(".legend_element_g text")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("fill-opacity", "0")
-      .style("display", "none")
-      .attr("transform", "translate(0,0)");
-    selectWithParent(".legend").selectAll(".legend_element_g rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(0,0)");
-    selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(" + globals.legend_spacing + ",0)");
-  }
 
   /**
 
@@ -4829,6 +4626,141 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
 };
 
 /**
+ * Loads annotations for the current scene
+ * @param {Scene} scene The scene to load annotations for
+ * @param {number} scene_index The index of the scene
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
+  this.clearCanvas();
+
+  this._prevTransitioning = false;
+  const that = this;
+
+  log("Loading Annotations");
+  if (globals.current_scene_index !== scene_index) {
+    return;
+  }
+
+  // is the legend expanded in this scene?
+  globals.legend_expanded = scene.s_legend_expanded;
+  if (scene.s_legend_expanded) {
+    this.expandLegend();
+  } else {
+    this.collapseLegend();
+  }
+
+  /**
+   * Creates a mapper, that adds a type property
+   * @param {string} type The type of the item
+   * @returns {object} An object with the type and item properties
+   */
+  function mapWithType(type) {
+    return function (item) {
+      return {
+        type: type,
+        item: item
+      };
+    };
+  }
+
+  var captionAnnos = globals.caption_list.map(mapWithType("caption"));
+  var imageAnnos = globals.image_list.map(mapWithType("image"));
+  var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
+
+  // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
+  // annotations that had a "type" property
+
+  // These are are technically annotations, just different types, so concat them all together
+  captionAnnos.concat(imageAnnos).concat(textAnnos)
+    .filter(function (anno) { // Filter out annotations not on this scene
+      // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
+      var sceneList = scene["s_" + anno.type + "s"];
+
+      for (var i = 0; i < sceneList.length; i++) { // eslint-disable-line no-shadow
+        // Basically the id property in the scene, so image_id or caption_id or annotation_id
+        if (sceneList[i][anno.type + "_id"] === anno.item.id) {
+          return true;
+        }
+      }
+    })
+
+    // We sort the annotations by z-order, and add the annotations in that order
+    // this is important cause with svgs, the order in which elements are added dictates their z-index
+    .sort(function (a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
+
+    // Iterate through all of our annotations
+    .forEach(function (anno) {
+      var item = anno.item;
+      if (anno.type === "caption") {
+        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.c_index);
+      } else if (anno.type === "image") {
+        addImage(that._timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
+      } else {
+        var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
+        var itemEle = itemSel[0][0].__data__,
+          item_x_pos = 0,
+          item_y_pos = 0;
+
+        if (scene.s_representation !== "Radial") {
+          item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
+          item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+        } else {
+          item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
+          item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
+        }
+
+        const { element } = annotateEvent(that._timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.id);
+        element
+          .transition()
+          .duration(that.options.animations ? 50 : 0)
+            .style("opacity", 1)
+            .each(function () {
+              // If after running the transition, the scene has changed, then hide this annotation.
+              if (globals.current_scene_index !== scene_index) {
+                this.style.opacity = 0;
+              }
+            });
+      }
+    });
+
+  // toggle selected events in the scene
+  this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
+    if (scene.s_selections.indexOf(event.__data__.event_id) !== -1) {
+      event.__data__.selected = true;
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span")
+        .attr("filter", "url(#drop-shadow)")
+        .style("z-index", 1)
+        .style("stroke", "#f00")
+        .style("stroke-width", "1.25px");
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span_component")
+        .style("z-index", 1)
+        .style("stroke", "#f00")
+        .style("stroke-width", "1px");
+    } else {
+      event.__data__.selected = false;
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span")
+        .attr("filter", "none")
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.25px");
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span_component")
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.25px");
+    }
+  });
+  if (this._timeline_vis.tl_representation() !== "Curve") {
+    selectWithParent("#timecurve").style("visibility", "hidden");
+  } else {
+    selectWithParent("#timecurve").style("visibility", "visible");
+  }
+  this._main_svg.style("visibility", "visible");
+};
+
+/**
  * Gets the animation duration for each of the steps in the animations
  * @return {number} The duration of a step in the animation
  */
@@ -4905,9 +4837,9 @@ TimelineStoryteller.prototype._recordScene = function () {
     scene_images.push(scene_image);
   });
 
-  this._main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
+  this._main_svg.selectAll(".event_annotation").each(function () {
     var scene_annotation = {
-      annotation_id: annotation.id
+      annotation_id: parseInt(this.getAttribute("data-annotation-id"), 10)
     };
     scene_annotations.push(scene_annotation);
   });
@@ -4946,6 +4878,22 @@ TimelineStoryteller.prototype._recordScene = function () {
   };
   globals.scenes.push(scene);
 
+  // Make a copy of the annotation, so future changes will not affect this one
+  let highestAnnoId = 0;
+  globals.annotation_list.forEach(n => {
+    if (n.id > highestAnnoId) {
+      highestAnnoId = n.id;
+    }
+  });
+  globals.annotation_list = globals.annotation_list.concat(scene_annotations.map(sceneAnno => {
+    const existingAnnotation = globals.annotation_list.filter(anno => anno.id === sceneAnno.annotation_id)[0];
+    const newAnnotation = Object.assign({}, existingAnnotation);
+
+    // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
+    existingAnnotation.id = ++highestAnnoId;
+    return newAnnotation;
+  }));
+
   globals.current_scene_index++;
 
   var compressed = !(this.options.export && this.options.export.images);
@@ -4969,6 +4917,8 @@ TimelineStoryteller.prototype._recordScene = function () {
       globals.gif_index++;
       that._updateNavigationStepper();
       clearInterval(checkExist);
+
+      that._loadAnnotations();
 
       // Dispatch after state has changed
       that._dispatch.stateChanged();
@@ -5146,6 +5096,92 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
     addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, globals.image_index);
     globals.image_index++;
   }
+};
+
+/**
+ * Expands the legend
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.expandLegend = function () {
+  logEvent("legend expanded", "legend");
+
+  globals.legend_expanded = true;
+  const animationLength = this._getAnimationStepDuration();
+  selectWithParent(".legend")
+    .transition()
+    .duration(animationLength);
+  selectWithParent(".legend").select(".legend_rect")
+    .transition()
+    .duration(animationLength)
+    .attr("height", globals.track_height * (globals.num_categories + 1))
+    .attr("width", globals.max_legend_item_width + 5 + globals.unit_width + 10);
+  selectWithParent(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(animationLength)
+    .attr("x", globals.max_legend_item_width + 5 + globals.unit_width - 10);
+  selectWithParent(".legend").select(".legend_title")
+    .transition()
+    .duration(animationLength)
+    .attr("dx", "0em")
+    .attr("transform", "translate(5,0)rotate(0)");
+  selectWithParent(".legend").selectAll(".legend_element_g text")
+    .transition()
+    .duration(animationLength)
+    .style("fill-opacity", "1")
+    .style("display", "inline")
+    .attr("transform", "translate(0,-35)");
+  selectWithParent(".legend").selectAll(".legend_element_g rect")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(0,-35)");
+  selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(" + globals.legend_spacing + ",-35)");
+};
+
+/**
+ * Collapses the legend
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.collapseLegend = function () {
+  logEvent("legend minified", "legend");
+
+  globals.legend_expanded = false;
+
+  const animationLength = this._getAnimationStepDuration();
+  selectWithParent(".legend")
+    .transition()
+    .duration(animationLength)
+    .style("z-index", 1);
+  selectWithParent(".legend").select(".legend_rect")
+    .transition()
+    .duration(animationLength)
+    .attr("height", 35 + globals.track_height * (globals.num_categories + 1))
+    .attr("width", 25);
+  selectWithParent(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(animationLength)
+    .attr("x", 25);
+  selectWithParent(".legend").select(".legend_title")
+    .transition()
+    .duration(animationLength)
+    .attr("dx", "-4.3em")
+    .attr("transform", "translate(0,0)rotate(270)");
+  selectWithParent(".legend").selectAll(".legend_element_g text")
+    .transition()
+    .duration(animationLength)
+    .style("fill-opacity", "0")
+    .style("display", "none")
+    .attr("transform", "translate(0,0)");
+  selectWithParent(".legend").selectAll(".legend_element_g rect")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(0,0)");
+  selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(" + globals.legend_spacing + ",0)");
 };
 
 /**

@@ -101,9 +101,9 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
   }
 
   // TODO: ID HERE
-  const id = "event" + item_index + "_" + annotation_id;
   var event_annotation = selectWithParent("#main_svg").append("g")
     .attr("class", `event_annotation event_${item_index}_annotation`)
+    .attr("data-annotation-id", annotation_id)
     .style("opacity", 0);
 
   event_annotation.on("mouseover", function () {
@@ -183,7 +183,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       const annoList = globals.annotation_list || [];
       for (var i = 0; i < annoList.length; i++) {
-        if (id === annoList[i].id) {
+        if (annotation_id === annoList[i].id) {
           annoList[i].x_anno_offset = x_anno_offset;
           annoList[i].y_anno_offset = y_anno_offset;
           break;
@@ -210,7 +210,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       var i = 0;
 
-      while (globals.annotation_list[i].id !== id) {
+      while (globals.annotation_list[i].id !== annotation_id) {
         i++;
       }
       globals.annotation_list[i].label_width = label_width;
@@ -407,7 +407,6 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
   }
 
   return {
-    id,
     element: event_annotation
   };
 };
