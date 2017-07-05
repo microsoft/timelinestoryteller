@@ -104,8 +104,6 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
 
       caption_width = d3.max([min_caption_width, d3.event.x - x_pos]);
 
-      var i = 0;
-
       captionObj.caption_width = caption_width;
 
       d3.select(this.parentNode).selectAll(".frame_resizer")
