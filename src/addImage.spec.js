@@ -1,10 +1,15 @@
 var addImage = require("./addImage");
 var expect = require("chai").expect;
 var d3 = require("d3");
+var globals = require("./globals");
 
 describe("addImage", function () {
   beforeEach(function () {
     document.body.innerHTML = "<div class=\"timeline_storyteller\"><svg id=\"main_svg\"></svg></div>";
+    globals.reset();
+  });
+  afterEach(() => {
+    globals.reset();
   });
 
   it("should generate a unique clip path for each image it draws", function () {
