@@ -86,7 +86,6 @@ function reset() {
     centre_radius: 50,
     max_item_index: 0,
     filter_type: "Emphasize",
-    caption_index: 0,
     image_index: 0,
     active_data: [],
     all_data: [],

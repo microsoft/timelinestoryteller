@@ -25,6 +25,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var setScaleValue = utils.setScaleValue;
+var getHighestId = utils.getHighestId;
 var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
@@ -1069,9 +1070,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var caption = selectWithParent("#add_caption_text_input").property("value");
       logEvent("caption added: \"" + caption + "\"", "annotation");
 
+      let highestCaptionId = getHighestId(globals.caption_list);
+
       var caption_list_item = {
-        id: "caption" + globals.caption_index,
-        c_index: globals.caption_index,
+        id: highestCaptionId + 1,
         caption_text: caption,
         x_rel_pos: 0.5,
         y_rel_pos: 0.25,
@@ -1081,8 +1083,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       globals.caption_list.push(caption_list_item);
 
-      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, globals.caption_index);
-      globals.caption_index++;
+      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, caption_list_item.id);
       selectWithParent("#add_caption_text_input").property("value", "");
     });
 
@@ -1137,7 +1138,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
             // If we have no scenes, reset everything to default
             if (!(state.scenes && state.scenes.length)) {
-              globals.caption_index = 0;
               globals.image_index = 0;
               globals.current_scene_index = -1;
               globals.gif_index = 0;
@@ -4152,7 +4152,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
      *    caption_list: ...,
      *    image_list: ...,
      *    annotation_list: ...,
-     *    caption_index: ...,
      *    image_index: ...,
      *    width: ...,
      *    height: ...
@@ -4169,7 +4168,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.caption_list = state.caption_list;
       globals.image_list = state.image_list;
       globals.annotation_list = state.annotation_list;
-      globals.caption_index = state.caption_list.length - 1;
       globals.image_index = state.image_list.length - 1;
 
       var min_story_width = instance._render_width,
@@ -4697,7 +4695,7 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
     .forEach(function (anno) {
       var item = anno.item;
       if (anno.type === "caption") {
-        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.c_index);
+        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.id);
       } else if (anno.type === "image") {
         addImage(that._timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
       } else {
@@ -4827,9 +4825,9 @@ TimelineStoryteller.prototype._recordScene = function () {
   var scene_annotations = [];
   var scene_selections = [];
 
-  this._main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
+  this._main_svg.selectAll(".timeline_caption").each(function () {
     var scene_caption = {
-      caption_id: caption.id
+      caption_id: parseInt(this.getAttribute("data-caption-id"), 10)
     };
     scene_captions.push(scene_caption);
   });
@@ -4882,13 +4880,22 @@ TimelineStoryteller.prototype._recordScene = function () {
   };
   globals.scenes.push(scene);
 
+  function copyAnnotations(list, refList, propName) {
+    let highestAnnoId = getHighestId(list);
+    list = list.concat(refList.map((sceneAnno, j) => {
+      const existingAnnotation = list.filter(anno => anno.id === sceneAnno[propName])[0];
+      const newAnnotation = Object.assign({}, existingAnnotation);
+
+      // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
+      existingAnnotation.id = ++highestAnnoId;
+      refList[j] = { [propName]: existingAnnotation.id };
+      return newAnnotation;
+    }));
+  }
+
+  // copyAnnotations(globals.annotation_list, scene_annotations, "annotation_id");
   // Make a copy of the annotation, so future changes will not affect this one
-  let highestAnnoId = 0;
-  globals.annotation_list.forEach(n => {
-    if (n.id > highestAnnoId) {
-      highestAnnoId = n.id;
-    }
-  });
+  let highestAnnoId = getHighestId(globals.annotation_list);
   globals.annotation_list = globals.annotation_list.concat(scene_annotations.map((sceneAnno, j) => {
     const existingAnnotation = globals.annotation_list.filter(anno => anno.id === sceneAnno.annotation_id)[0];
     const newAnnotation = Object.assign({}, existingAnnotation);
@@ -4897,6 +4904,18 @@ TimelineStoryteller.prototype._recordScene = function () {
     existingAnnotation.id = ++highestAnnoId;
     scene_annotations[j] = { annotation_id: existingAnnotation.id };
     return newAnnotation;
+  }));
+
+  // Make a copy of the annotation, so future changes will not affect this one
+  let highestCaptionId = getHighestId(globals.caption_list);
+  globals.caption_list = globals.caption_list.concat(scene_captions.map((sceneCaption, j) => {
+    const existingCaption = globals.caption_list.filter(caption => caption.id === sceneCaption.caption_id)[0];
+    const newCaption = Object.assign({}, existingCaption);
+
+    // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
+    existingCaption.id = ++highestCaptionId;
+    scene_captions[j] = { caption_id: existingCaption.id };
+    return newCaption;
   }));
 
   globals.current_scene_index++;
@@ -4922,6 +4941,9 @@ TimelineStoryteller.prototype._recordScene = function () {
       globals.gif_index++;
       that._updateNavigationStepper();
       clearInterval(checkExist);
+
+      //
+      // that._loadAnnotations(scene, globals.current_scene_index);
 
       // Dispatch after state has changed
       that._dispatch.stateChanged();

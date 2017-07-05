@@ -12,7 +12,7 @@ var utils = require("./utils");
 var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 
-module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption_index) {
+module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption_id) {
   "use strict";
 
   var x_pos = x_rel_pos * globals.width,
@@ -21,7 +21,8 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
   var min_caption_width = caption_width;
 
   var timeline_caption = selectWithParent("#main_svg").append("g")
-    .attr("id", "caption" + caption_index)
+    .attr("id", "caption" + caption_id)
+    .attr("data-caption-id", caption_id)
     .attr("class", "timeline_caption");
 
   timeline_caption.on("mouseover", function () {
@@ -62,7 +63,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
 
       var i = 0;
 
-      while (globals.caption_list[i].id !== d3.select(this.parentNode).attr("id")) {
+      while (globals.caption_list[i].id !== caption_id) {
         i++;
       }
       globals.caption_list[i].x_rel_pos = x_pos / globals.width;
@@ -89,7 +90,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
         .attr("y", y_pos);
     })
     .on("dragend", function () {
-      logEvent("caption " + caption_index + " moved to [" + x_pos + "," + y_pos + "]");
+      logEvent("caption " + caption_id + " moved to [" + x_pos + "," + y_pos + "]");
     });
 
   var resize = d3.behavior.drag()
@@ -109,7 +110,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
 
       var i = 0;
 
-      while (globals.caption_list[i].id !== d3.select(this.parentNode).attr("id")) {
+      while (globals.caption_list[i].id !== caption_id) {
         i++;
       }
       globals.caption_list[i].caption_width = caption_width;
@@ -135,7 +136,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
         .call(wrap, caption_width - 7.5);
     })
     .on("dragend", function () {
-      logEvent("caption " + caption_index + " resized to " + caption_width + "px");
+      logEvent("caption " + caption_id + " resized to " + caption_width + "px");
     });
 
   var caption_frame = timeline_caption.append("rect")
@@ -198,7 +199,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
       d3.select(this).style("stroke", "#ccc");
     })
     .on("click", function () {
-      logEvent("caption " + caption_index + " removed");
+      logEvent("caption " + caption_id + " removed");
 
       d3.select(this.parentNode).remove();
     })
