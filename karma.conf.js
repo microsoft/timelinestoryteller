@@ -2,7 +2,7 @@ var webpackConfig = require("./webpack.config");
 
 // Karma configuration
 module.exports = function(config) {
-  var configuration = {
+  config.set({
     frameworks: ['mocha'],
     // ... normal karma configuration
     files: [
@@ -23,26 +23,17 @@ module.exports = function(config) {
       '{test,src}/**/*.spec.js': ['webpack']
     },
 
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
     singleRun: true,
     browserConsoleLogOptions: {
       terminal: true,
       level: ""
     },
-    customLaunchers: {
-        Chrome_travis_ci: {
-            base: 'ChromeHeadless'
-        }
-    },
+
     webpack: webpackConfig,
     webpackMiddleware: {
       stats: 'errors-only'
     }
-  };
 
-  if (process.env.TRAVIS) {
-    configuration.browsers = ['Chrome_travis_ci'];
-  }
-
-  config.set(configuration);
+  });
 };
