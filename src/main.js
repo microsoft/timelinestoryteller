@@ -4481,15 +4481,19 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                 style: "display:none;",
                 accept: ".json"
               })
-              .on("change", (e) => {
-                var contents = e.target.result;
-                var blob = new Blob([contents], { type: "application/json" });
-                setTimeout(() => {
-                  logEvent("loading (json)", "load");
-                  d3.json(URL.createObjectURL(blob), function (error, data) {
-                    inst._loadTimeline({ timeline_json_data: data });
-                  });
-                }, 500);
+              .on("change", function () {
+                var file = this.files[0];
+                globals.reader.readAsText(file);
+                globals.reader.onload = function (e) {
+                  var contents = e.target.result;
+                  var blob = new Blob([contents], { type: "application/json" });
+                  setTimeout(() => {
+                    logEvent("loading (json)", "load");
+                    d3.json(URL.createObjectURL(blob), function (error, data) {
+                      inst._loadTimeline(data.timeline_json_data ? data : { timeline_json_data: data });
+                    });
+                  }, 500);
+                };
               });
           },
           click: (inst, element) => {
@@ -4885,12 +4889,13 @@ TimelineStoryteller.prototype._recordScene = function () {
       highestAnnoId = n.id;
     }
   });
-  globals.annotation_list = globals.annotation_list.concat(scene_annotations.map(sceneAnno => {
+  globals.annotation_list = globals.annotation_list.concat(scene_annotations.map((sceneAnno, j) => {
     const existingAnnotation = globals.annotation_list.filter(anno => anno.id === sceneAnno.annotation_id)[0];
     const newAnnotation = Object.assign({}, existingAnnotation);
 
     // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
     existingAnnotation.id = ++highestAnnoId;
+    scene_annotations[j] = { annotation_id: existingAnnotation.id };
     return newAnnotation;
   }));
 
@@ -4917,8 +4922,6 @@ TimelineStoryteller.prototype._recordScene = function () {
       globals.gif_index++;
       that._updateNavigationStepper();
       clearInterval(checkExist);
-
-      that._loadAnnotations();
 
       // Dispatch after state has changed
       that._dispatch.stateChanged();

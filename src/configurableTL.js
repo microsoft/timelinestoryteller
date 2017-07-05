@@ -1462,7 +1462,7 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
   }
 }
 
-function eventClickListener(tl_representation, unit_width, configurableTL, d, i) {
+function eventClickListener(tl_representation, unit_width, configurableTL, d) {
   logEvent("event " + d.event_id + " clicked", "event_click");
 
   if (!d.selected || d.selected === undefined) {

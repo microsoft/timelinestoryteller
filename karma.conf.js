@@ -23,7 +23,7 @@ module.exports = function(config) {
       '{test,src}/**/*.spec.js': ['webpack']
     },
 
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
     singleRun: true,
     browserConsoleLogOptions: {
       terminal: true,
