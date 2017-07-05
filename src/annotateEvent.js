@@ -13,7 +13,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
 
-module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotation_id) {
+module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
   var target;
   // var LINE_OCTO = 0;
   // var LINE_RECT = 1;
@@ -103,7 +103,8 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
   // TODO: ID HERE
   var event_annotation = selectWithParent("#main_svg").append("g")
     .attr("class", `event_annotation event_${item_index}_annotation`)
-    .attr("data-annotation-id", annotation_id)
+    .attr("data-id", annotationObj.id)
+    .attr("data-type", "annotation")
     .style("opacity", 0);
 
   event_annotation.on("mouseover", function () {
@@ -181,14 +182,8 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
           return drawLeaderLine(d);
         });
 
-      const annoList = globals.annotation_list || [];
-      for (var i = 0; i < annoList.length; i++) {
-        if (annotation_id === annoList[i].id) {
-          annoList[i].x_anno_offset = x_anno_offset;
-          annoList[i].y_anno_offset = y_anno_offset;
-          break;
-        }
-      }
+      annotationObj.x_anno_offset = x_anno_offset;
+      annotationObj.y_anno_offset = y_anno_offset;
     })
     .on("dragend", function () {
       logEvent("event " + item_index + " annotation moved to [" + (x_pos + x_anno_offset) + "," + (y_pos + y_anno_offset) + "]");
@@ -208,12 +203,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
       label_width = d3.max([min_label_width, d3.event.x - (x_pos + x_anno_offset)]);
 
-      var i = 0;
-
-      while (globals.annotation_list[i].id !== annotation_id) {
-        i++;
-      }
-      globals.annotation_list[i].label_width = label_width;
+      annotationObj.label_width = label_width;
 
       d3.select(this.parentNode).select(".annotation_frame")
         .attr("width", label_width + 7.5);

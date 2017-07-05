@@ -58,6 +58,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._dispatch = d3.dispatch("stateChanged");
   this.on = this._dispatch.on.bind(this._dispatch);
   this.playback_mode = false;
+  this._currentSceneIndex = -1;
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -273,28 +274,28 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function goNextScene() {
     if (globals.scenes.length < 2) {
       return;
-    } else if (globals.current_scene_index < globals.scenes.length - 1) {
-      globals.current_scene_index++;
+    } else if (instance._currentSceneIndex < globals.scenes.length - 1) {
+      instance._currentSceneIndex++;
     } else {
-      globals.current_scene_index = 0;
+      instance._currentSceneIndex = 0;
     }
-    logEvent("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length, "playback");
+    logEvent("scene: " + (instance._currentSceneIndex + 1) + " of " + globals.scenes.length, "playback");
 
-    changeScene(globals.current_scene_index);
+    changeScene(instance._currentSceneIndex);
   }
 
   function goPreviousScene() {
     if (globals.scenes.length < 2) {
       return;
     }
-    if (globals.current_scene_index > 0) {
-      globals.current_scene_index--;
+    if (instance._currentSceneIndex > 0) {
+      instance._currentSceneIndex--;
     } else {
-      globals.current_scene_index = globals.scenes.length - 1;
+      instance._currentSceneIndex = globals.scenes.length - 1;
     }
-    logEvent("scene: " + globals.current_scene_index + " of " + globals.scenes.length, "playback");
+    logEvent("scene: " + instance._currentSceneIndex + " of " + globals.scenes.length, "playback");
 
-    changeScene(globals.current_scene_index);
+    changeScene(instance._currentSceneIndex);
   }
 
   // initialize main visualization containers
@@ -1083,7 +1084,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       globals.caption_list.push(caption_list_item);
 
-      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, caption_list_item.id);
+      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, caption_list_item);
       selectWithParent("#add_caption_text_input").property("value", "");
     });
 
@@ -1138,8 +1139,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
             // If we have no scenes, reset everything to default
             if (!(state.scenes && state.scenes.length)) {
-              globals.image_index = 0;
-              globals.current_scene_index = -1;
+              instance._currentSceneIndex = -1;
               globals.gif_index = 0;
               globals.scenes = [];
               globals.caption_list = [];
@@ -2064,13 +2064,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr("width", STEPPER_STEP_WIDTH)
       .attr("height", STEPPER_STEP_WIDTH)
       .style("stroke", function (d) {
-        return d.s_order === globals.current_scene_index ? "#f00" : "#ccc";
+        return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       })
       .style("stroke-width", "3px");
 
     navigation_step_update.select("rect")
       .style("stroke", function (d) {
-        return d.s_order === globals.current_scene_index ? "#f00" : "#ccc";
+        return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       });
 
     navigation_step_enter.append("svg:image")
@@ -2082,8 +2082,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr("width", STEPPER_STEP_WIDTH - 4)
       .attr("height", STEPPER_STEP_WIDTH - 4)
       .on("click", function () {
-        globals.current_scene_index = +d3.select(this.parentNode).attr("id").substr(5);
-        changeScene(globals.current_scene_index);
+        instance._currentSceneIndex = +d3.select(this.parentNode).attr("id").substr(5);
+        changeScene(instance._currentSceneIndex);
       });
 
     var navigation_step_delete = navigation_step_enter.append("g")
@@ -2131,28 +2131,28 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           }
         }
 
-        if (globals.current_scene_index > d.s_order) {
-          globals.current_scene_index--;
+        if (instance._currentSceneIndex > d.s_order) {
+          instance._currentSceneIndex--;
         }
 
         updateNavigationStepper();
 
         instance._dispatch.stateChanged();
 
-        if (globals.current_scene_index === d.s_order) { // is current scene to be deleted?
-          if (globals.current_scene_index === globals.scenes.length - 1) { // is it the final scene?
-            globals.current_scene_index = 0; // set current scene to first scene
+        if (instance._currentSceneIndex === d.s_order) { // is current scene to be deleted?
+          if (instance._currentSceneIndex === globals.scenes.length - 1) { // is it the final scene?
+            instance._currentSceneIndex = 0; // set current scene to first scene
           } else { // current scene is not the last scene
-            globals.current_scene_index--; // set current scene to previous scene
-            if (globals.current_scene_index < 0) { // did you delete the first scene?
-              globals.current_scene_index = globals.scenes.length - 1; // set current to last scene
+            instance._currentSceneIndex--; // set current scene to previous scene
+            if (instance._currentSceneIndex < 0) { // did you delete the first scene?
+              instance._currentSceneIndex = globals.scenes.length - 1; // set current to last scene
             }
           }
 
           if (globals.scenes.length === 0) { // are there no more scenes left?
-            globals.current_scene_index = -1; // set current scene to -1
+            instance._currentSceneIndex = -1; // set current scene to -1
           } else {
-            changeScene(globals.current_scene_index);
+            changeScene(instance._currentSceneIndex);
           }
         }
       })
@@ -2197,7 +2197,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select(".scene_delete")
           .style("opacity", 0);
 
-        if (d.s_order === globals.current_scene_index) {
+        if (d.s_order === instance._currentSceneIndex) {
           d3.select(this).select("rect")
             .style("stroke", function () {
               return "#f00";
@@ -2215,7 +2215,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
 
     const total = (globals.scenes || []).length;
-    const sceneIdx = globals.current_scene_index;
+    const sceneIdx = instance._currentSceneIndex;
     selectWithParent("#prev_scene_btn")
       // Always show 1 if at the beginning
       .attr("title", total > 1 ? `Scene ${ sceneIdx === 0 ? total : sceneIdx } of ${ total }` : "Previous Scene")
@@ -2547,7 +2547,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
     if (hasScenes) {
-      globals.current_scene_index = 0;
+      instance._currentSceneIndex = 0;
       changeScene(0);
     }
 
@@ -4152,7 +4152,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
      *    caption_list: ...,
      *    image_list: ...,
      *    annotation_list: ...,
-     *    image_index: ...,
      *    width: ...,
      *    height: ...
      * }
@@ -4168,7 +4167,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.caption_list = state.caption_list;
       globals.image_list = state.image_list;
       globals.annotation_list = state.annotation_list;
-      globals.image_index = state.image_list.length - 1;
 
       var min_story_width = instance._render_width,
         max_story_width = instance._render_width;
@@ -4640,7 +4638,7 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
   const that = this;
 
   log("Loading Annotations");
-  if (globals.current_scene_index !== scene_index) {
+  if (this._currentSceneIndex !== scene_index) {
     return;
   }
 
@@ -4695,9 +4693,9 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
     .forEach(function (anno) {
       var item = anno.item;
       if (anno.type === "caption") {
-        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.id);
+        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item);
       } else if (anno.type === "image") {
-        addImage(that._timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
+        addImage(that._timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item);
       } else {
         var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
         var itemEle = itemSel[0][0].__data__,
@@ -4712,14 +4710,14 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
           item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
         }
 
-        const { element } = annotateEvent(that._timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.id);
+        const { element } = annotateEvent(that._timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item);
         element
           .transition()
           .duration(that.options.animations ? 50 : 0)
             .style("opacity", 1)
             .each(function () {
               // If after running the transition, the scene has changed, then hide this annotation.
-              if (globals.current_scene_index !== scene_index) {
+              if (that._currentSceneIndex !== scene_index) {
                 this.style.opacity = 0;
               }
             });
@@ -4818,7 +4816,7 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   var timeline_vis = this._timeline_vis;
 
-  logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
+  logEvent("scene " + (this._currentSceneIndex + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
 
   var scene_captions = [];
   var scene_images = [];
@@ -4827,21 +4825,21 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   this._main_svg.selectAll(".timeline_caption").each(function () {
     var scene_caption = {
-      caption_id: parseInt(this.getAttribute("data-caption-id"), 10)
+      caption_id: parseInt(this.getAttribute("data-id"), 10)
     };
     scene_captions.push(scene_caption);
   });
 
-  this._main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
+  this._main_svg.selectAll(".timeline_image").each(function () {
     var scene_image = {
-      image_id: image.id
+      image_id: parseInt(this.getAttribute("data-id"), 10)
     };
     scene_images.push(scene_image);
   });
 
   this._main_svg.selectAll(".event_annotation").each(function () {
     var scene_annotation = {
-      annotation_id: parseInt(this.getAttribute("data-annotation-id"), 10)
+      annotation_id: parseInt(this.getAttribute("data-id"), 10)
     };
     scene_annotations.push(scene_annotation);
   });
@@ -4853,7 +4851,7 @@ TimelineStoryteller.prototype._recordScene = function () {
   });
 
   for (var i = 0; i < globals.scenes.length; i++) {
-    if (globals.scenes[i].s_order > globals.current_scene_index) {
+    if (globals.scenes[i].s_order > this._currentSceneIndex) {
       globals.scenes[i].s_order++;
     }
   }
@@ -4876,49 +4874,38 @@ TimelineStoryteller.prototype._recordScene = function () {
     s_annotations: scene_annotations,
     s_selections: scene_selections,
     s_timecurve: selectWithParent("#timecurve").attr("d"),
-    s_order: globals.current_scene_index + 1
+    s_order: this._currentSceneIndex + 1
   };
   globals.scenes.push(scene);
 
-  function copyAnnotations(list, refList, propName) {
+  function copyAnnotations(list, refList, type) {
     let highestAnnoId = getHighestId(list);
-    list = list.concat(refList.map((sceneAnno, j) => {
-      const existingAnnotation = list.filter(anno => anno.id === sceneAnno[propName])[0];
+    const idProp = type + "_id";
+    return list.concat(refList.map((sceneAnno) => {
+      const existingAnnotation = list.filter(anno => anno.id === sceneAnno[idProp])[0];
       const newAnnotation = Object.assign({}, existingAnnotation);
+      const newId = ++highestAnnoId;
+
+      // TODO: Dirty, update the element id to be the right one
+      selectAllWithParent(`[data-type="${type}"][data-id="${existingAnnotation.id}"]`)
+        .attr("data-id", newId);
 
       // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
-      existingAnnotation.id = ++highestAnnoId;
-      refList[j] = { [propName]: existingAnnotation.id };
+      existingAnnotation.id = newId;
       return newAnnotation;
     }));
   }
 
-  // copyAnnotations(globals.annotation_list, scene_annotations, "annotation_id");
-  // Make a copy of the annotation, so future changes will not affect this one
-  let highestAnnoId = getHighestId(globals.annotation_list);
-  globals.annotation_list = globals.annotation_list.concat(scene_annotations.map((sceneAnno, j) => {
-    const existingAnnotation = globals.annotation_list.filter(anno => anno.id === sceneAnno.annotation_id)[0];
-    const newAnnotation = Object.assign({}, existingAnnotation);
+  // Create copies of the annotations so modifications do not change the source scene
+  globals.image_list = copyAnnotations(globals.image_list, scene_images, "image");
 
-    // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
-    existingAnnotation.id = ++highestAnnoId;
-    scene_annotations[j] = { annotation_id: existingAnnotation.id };
-    return newAnnotation;
-  }));
+  // Create copies of the annotations so modifications do not change the source scene
+  globals.annotation_list = copyAnnotations(globals.annotation_list, scene_annotations, "annotation");
 
-  // Make a copy of the annotation, so future changes will not affect this one
-  let highestCaptionId = getHighestId(globals.caption_list);
-  globals.caption_list = globals.caption_list.concat(scene_captions.map((sceneCaption, j) => {
-    const existingCaption = globals.caption_list.filter(caption => caption.id === sceneCaption.caption_id)[0];
-    const newCaption = Object.assign({}, existingCaption);
+  // Create copies of the captions so modifications do not change the source scene
+  globals.caption_list = copyAnnotations(globals.caption_list, scene_captions, "caption");
 
-    // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
-    existingCaption.id = ++highestCaptionId;
-    scene_captions[j] = { caption_id: existingCaption.id };
-    return newCaption;
-  }));
-
-  globals.current_scene_index++;
+  this._currentSceneIndex++;
 
   var compressed = !(this.options.export && this.options.export.images);
   var renderOptions = {
@@ -4943,7 +4930,7 @@ TimelineStoryteller.prototype._recordScene = function () {
       clearInterval(checkExist);
 
       //
-      // that._loadAnnotations(scene, globals.current_scene_index);
+      // that._loadAnnotations(scene, that._currentSceneIndex);
 
       // Dispatch after state has changed
       that._dispatch.stateChanged();
@@ -5072,7 +5059,10 @@ TimelineStoryteller.prototype._createImportPanelButton = function (button) {
  * @returns {void}
  */
 TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
-  logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
+  const highestImageId = getHighestId(globals.image_list);
+  const imageId = highestImageId + 1;
+
+  logEvent("image " + imageId + " added: <<" + image_url + ">>", "annotation");
 
   var new_image = new Image();
   new_image.name = image_url;
@@ -5088,7 +5078,7 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
 
   const that = this;
   function getWidthAndHeight() {
-    logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
+    logEvent("image " + imageId + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
 
     var image_width = this.width,
       image_height = this.height,
@@ -5107,8 +5097,7 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
     }
 
     var image_list_item = {
-      id: "image" + globals.image_index,
-      i_index: globals.image_index,
+      id: imageId,
       i_url: image_url,
       i_width: image_width,
       i_height: image_height,
@@ -5118,8 +5107,7 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
     };
 
     globals.image_list.push(image_list_item);
-    addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, globals.image_index);
-    globals.image_index++;
+    addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, image_list_item);
   }
 };
 

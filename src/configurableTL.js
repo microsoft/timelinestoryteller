@@ -1453,7 +1453,7 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
       item_y_pos = d.path_y_pos + d.path_offset_y + globals.padding.top;
     }
 
-    const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, -1);
+    const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, { id: -1 });
     element.classed("temporary_annotation", true);
 
     element.select("rect.annotation_frame").style("stroke", "#f00");
@@ -1523,7 +1523,7 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d) {
 
       selectAllWithParent(".temporary_annotation").remove();
 
-      const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, annotation.id);
+      const { element } = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, annotation);
 
       element.transition("event_annotation_show").duration(50).style("opacity", 1);
 
