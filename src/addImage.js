@@ -137,13 +137,8 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
 
       scaling_ratio = image_width / orig_image_weight;
 
-      var i = 0;
-
-      while (globals.image_list[i].id !== imageObj.id) {
-        i++;
-      }
-      globals.image_list[i].i_width = image_width;
-      globals.image_list[i].i_height = image_height * scaling_ratio;
+      imageObj.i_width = image_width;
+      imageObj.i_height = image_height * scaling_ratio;
 
       d3.select(this.parentNode).select("clipPath").select("circle")
         .attr("cx", x_pos + image_width / 2)
