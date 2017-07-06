@@ -25,6 +25,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var selectAllWithParent = utils.selectAllWithParent;
 var setScaleValue = utils.setScaleValue;
+var getHighestId = utils.getHighestId;
 var clone = utils.clone;
 var debounce = utils.debounce;
 var logEvent = utils.logEvent;
@@ -57,6 +58,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   this._dispatch = d3.dispatch("stateChanged");
   this.on = this._dispatch.on.bind(this._dispatch);
   this.playback_mode = false;
+  this._currentSceneIndex = -1;
 
   var timelineElement = document.createElement("div");
   timelineElement.className = "timeline_storyteller";
@@ -272,28 +274,28 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function goNextScene() {
     if (globals.scenes.length < 2) {
       return;
-    } else if (globals.current_scene_index < globals.scenes.length - 1) {
-      globals.current_scene_index++;
+    } else if (instance._currentSceneIndex < globals.scenes.length - 1) {
+      instance._currentSceneIndex++;
     } else {
-      globals.current_scene_index = 0;
+      instance._currentSceneIndex = 0;
     }
-    logEvent("scene: " + (globals.current_scene_index + 1) + " of " + globals.scenes.length, "playback");
+    logEvent("scene: " + (instance._currentSceneIndex + 1) + " of " + globals.scenes.length, "playback");
 
-    changeScene(globals.current_scene_index);
+    changeScene(instance._currentSceneIndex);
   }
 
   function goPreviousScene() {
     if (globals.scenes.length < 2) {
       return;
     }
-    if (globals.current_scene_index > 0) {
-      globals.current_scene_index--;
+    if (instance._currentSceneIndex > 0) {
+      instance._currentSceneIndex--;
     } else {
-      globals.current_scene_index = globals.scenes.length - 1;
+      instance._currentSceneIndex = globals.scenes.length - 1;
     }
-    logEvent("scene: " + globals.current_scene_index + " of " + globals.scenes.length, "playback");
+    logEvent("scene: " + instance._currentSceneIndex + " of " + globals.scenes.length, "playback");
 
-    changeScene(globals.current_scene_index);
+    changeScene(instance._currentSceneIndex);
   }
 
   // initialize main visualization containers
@@ -1069,9 +1071,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       var caption = selectWithParent("#add_caption_text_input").property("value");
       logEvent("caption added: \"" + caption + "\"", "annotation");
 
+      let highestCaptionId = getHighestId(globals.caption_list);
+
       var caption_list_item = {
-        id: "caption" + globals.caption_index,
-        c_index: globals.caption_index,
+        id: highestCaptionId + 1,
         caption_text: caption,
         x_rel_pos: 0.5,
         y_rel_pos: 0.25,
@@ -1081,8 +1084,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
       globals.caption_list.push(caption_list_item);
 
-      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, globals.caption_index);
-      globals.caption_index++;
+      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, caption_list_item);
       selectWithParent("#add_caption_text_input").property("value", "");
     });
 
@@ -1137,9 +1139,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
             // If we have no scenes, reset everything to default
             if (!(state.scenes && state.scenes.length)) {
-              globals.caption_index = 0;
-              globals.image_index = 0;
-              globals.current_scene_index = -1;
+              instance._currentSceneIndex = -1;
               globals.gif_index = 0;
               globals.scenes = [];
               globals.caption_list = [];
@@ -2064,13 +2064,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr("width", STEPPER_STEP_WIDTH)
       .attr("height", STEPPER_STEP_WIDTH)
       .style("stroke", function (d) {
-        return d.s_order === globals.current_scene_index ? "#f00" : "#ccc";
+        return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       })
       .style("stroke-width", "3px");
 
     navigation_step_update.select("rect")
       .style("stroke", function (d) {
-        return d.s_order === globals.current_scene_index ? "#f00" : "#ccc";
+        return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       });
 
     navigation_step_enter.append("svg:image")
@@ -2082,8 +2082,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .attr("width", STEPPER_STEP_WIDTH - 4)
       .attr("height", STEPPER_STEP_WIDTH - 4)
       .on("click", function () {
-        globals.current_scene_index = +d3.select(this.parentNode).attr("id").substr(5);
-        changeScene(globals.current_scene_index);
+        instance._currentSceneIndex = +d3.select(this.parentNode).attr("id").substr(5);
+        changeScene(instance._currentSceneIndex);
       });
 
     var navigation_step_delete = navigation_step_enter.append("g")
@@ -2131,28 +2131,28 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           }
         }
 
-        if (globals.current_scene_index > d.s_order) {
-          globals.current_scene_index--;
+        if (instance._currentSceneIndex > d.s_order) {
+          instance._currentSceneIndex--;
         }
 
         updateNavigationStepper();
 
         instance._dispatch.stateChanged();
 
-        if (globals.current_scene_index === d.s_order) { // is current scene to be deleted?
-          if (globals.current_scene_index === globals.scenes.length - 1) { // is it the final scene?
-            globals.current_scene_index = 0; // set current scene to first scene
+        if (instance._currentSceneIndex === d.s_order) { // is current scene to be deleted?
+          if (instance._currentSceneIndex === globals.scenes.length - 1) { // is it the final scene?
+            instance._currentSceneIndex = 0; // set current scene to first scene
           } else { // current scene is not the last scene
-            globals.current_scene_index--; // set current scene to previous scene
-            if (globals.current_scene_index < 0) { // did you delete the first scene?
-              globals.current_scene_index = globals.scenes.length - 1; // set current to last scene
+            instance._currentSceneIndex--; // set current scene to previous scene
+            if (instance._currentSceneIndex < 0) { // did you delete the first scene?
+              instance._currentSceneIndex = globals.scenes.length - 1; // set current to last scene
             }
           }
 
           if (globals.scenes.length === 0) { // are there no more scenes left?
-            globals.current_scene_index = -1; // set current scene to -1
+            instance._currentSceneIndex = -1; // set current scene to -1
           } else {
-            changeScene(globals.current_scene_index);
+            changeScene(instance._currentSceneIndex);
           }
         }
       })
@@ -2197,7 +2197,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         d3.select(this).select(".scene_delete")
           .style("opacity", 0);
 
-        if (d.s_order === globals.current_scene_index) {
+        if (d.s_order === instance._currentSceneIndex) {
           d3.select(this).select("rect")
             .style("stroke", function () {
               return "#f00";
@@ -2215,7 +2215,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
 
     const total = (globals.scenes || []).length;
-    const sceneIdx = globals.current_scene_index;
+    const sceneIdx = instance._currentSceneIndex;
     selectWithParent("#prev_scene_btn")
       // Always show 1 if at the beginning
       .attr("title", total > 1 ? `Scene ${ sceneIdx === 0 ? total : sceneIdx } of ${ total }` : "Previous Scene")
@@ -2230,10 +2230,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   instance._updateNavigationStepper = updateNavigationStepper;
 
-  var prevTransitioning = false;
+  instance._prevTransitioning = false;
   function changeScene(scene_index) {
     // Assume we are waiting for transitions if there is already one going.
-    var waitForTransitions = prevTransitioning;
+    var waitForTransitions = instance._prevTransitioning;
 
     updateNavigationStepper();
 
@@ -2271,7 +2271,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // set a delay for annotations and captions based on whether the scale, layout, or representation changes
     if (timeline_vis.tl_scale() !== scene.s_scale || timeline_vis.tl_layout() !== scene.s_layout || timeline_vis.tl_representation() !== scene.s_representation) {
       waitForTransitions = true;
-      prevTransitioning = true;
+      instance._prevTransitioning = true;
 
       // how big is the new scene?
       determineSize(globals.active_data, scene.s_scale, scene.s_layout, scene.s_representation);
@@ -2342,7 +2342,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     if (scene_filter_set_length !== globals.filter_set_length) {
       globals.filter_set_length = scene_filter_set_length;
       waitForTransitions = true;
-      prevTransitioning = true;
+      instance._prevTransitioning = true;
     }
 
     globals.selected_categories = scene.s_categories;
@@ -2403,140 +2403,12 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("stroke", "#fff")
       .style("stroke-width", "0.25px");
 
-    function loadAnnotations() {
-      prevTransitioning = false;
-
-      log("Loading Annotations");
-      if (globals.current_scene_index !== scene_index) {
-        return;
-      }
-
-      // is the legend expanded in this scene?
-      globals.legend_expanded = scene.s_legend_expanded;
-      if (scene.s_legend_expanded) {
-        expandLegend();
-      } else {
-        collapseLegend();
-      }
-
-      /**
-       * Creates a mapper, that adds a type property
-       * @param {string} type The type of the item
-       * @returns {object} An object with the type and item properties
-       */
-      function mapWithType(type) {
-        return function (item) {
-          return {
-            type: type,
-            item: item
-          };
-        };
-      }
-
-      var captionAnnos = globals.caption_list.map(mapWithType("caption"));
-      var imageAnnos = globals.image_list.map(mapWithType("image"));
-      var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
-
-      // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
-      // annotations that had a "type" property
-
-      // These are are technically annotations, just different types, so concat them all together
-      captionAnnos.concat(imageAnnos).concat(textAnnos)
-        .filter(function (anno) { // Filter out annotations not on this scene
-          // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
-          var sceneList = scene["s_" + anno.type + "s"];
-
-          for (var i = 0; i < sceneList.length; i++) { // eslint-disable-line no-shadow
-            // Basically the id property in the scene, so image_id or caption_id or annotation_id
-            if (sceneList[i][anno.type + "_id"] === anno.item.id) {
-              return true;
-            }
-          }
-        })
-
-        // We sort the annotations by z-order, and add the annotations in that order
-        // this is important cause with svgs, the order in which elements are added dictates their z-index
-        .sort(function (a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
-
-        // Iterate through all of our annotations
-        .forEach(function (anno) {
-          var item = anno.item;
-          if (anno.type === "caption") {
-            addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item.c_index);
-          } else if (anno.type === "image") {
-            addImage(timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item.i_index);
-          } else {
-            var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
-            var itemEle = itemSel[0][0].__data__,
-              item_x_pos = 0,
-              item_y_pos = 0;
-
-            if (scene.s_representation !== "Radial") {
-              item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
-              item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
-            } else {
-              item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
-              item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
-            }
-
-            annotateEvent(timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item.count);
-            selectWithParent("#event" + item.item_index + "_" + item.count)
-              .transition()
-              .duration(instance.options.animations ? 50 : 0)
-                .style("opacity", 1)
-                .each(function () {
-                  // If after running the transition, the scene has changed, then hide this annotation.
-                  if (globals.current_scene_index !== scene_index) {
-                    this.style.opacity = 0;
-                  }
-                });
-          }
-        });
-
-      // toggle selected events in the scene
-      main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
-        if (scene.s_selections.indexOf(event.__data__.event_id) !== -1) {
-          event.__data__.selected = true;
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span")
-            .attr("filter", "url(#drop-shadow)")
-            .style("z-index", 1)
-            .style("stroke", "#f00")
-            .style("stroke-width", "1.25px");
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span_component")
-            .style("z-index", 1)
-            .style("stroke", "#f00")
-            .style("stroke-width", "1px");
-        } else {
-          event.__data__.selected = false;
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span")
-            .attr("filter", "none")
-            .style("stroke", "#fff")
-            .style("stroke-width", "0.25px");
-          selectWithParent("#event_g" + event.__data__.event_id)
-            .selectAll(".event_span_component")
-            .style("stroke", "#fff")
-            .style("stroke-width", "0.25px");
-        }
-      });
-
-      if (timeline_vis.tl_representation() !== "Curve") {
-        selectWithParent("#timecurve").style("visibility", "hidden");
-      } else {
-        selectWithParent("#timecurve").style("visibility", "visible");
-      }
-
-      main_svg.style("visibility", "visible");
-    }
-
     // delay the appearance of captions and annotations if the scale, layout, or representation changes relative to the previous scene
     if (waitForTransitions && timeline_vis.renderComplete) {
       log("Waiting for transitions");
-      timeline_vis.renderComplete.then(loadAnnotations);
+      timeline_vis.renderComplete.then(() => instance._loadAnnotations(scene, scene_index));
     } else {
-      loadAnnotations();
+      instance._loadAnnotations(scene, scene_index);
     }
   }
 
@@ -2675,7 +2547,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
     if (hasScenes) {
-      globals.current_scene_index = 0;
+      instance._currentSceneIndex = 0;
       changeScene(0);
     }
 
@@ -2723,15 +2595,9 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         .style("opacity", 0.1)
         .on("click", function () {
           if (globals.legend_expanded) {
-            logEvent("legend minimized", "legend");
-
-            globals.legend_expanded = false;
-            collapseLegend();
+            instance.collapseLegend();
           } else {
-            logEvent("legend expanded", "legend");
-
-            globals.legend_expanded = true;
-            expandLegend();
+            instance.expandLegend();
           }
         })
         .append("title")
@@ -2865,75 +2731,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   }
 
   instance._drawTimeline = drawTimeline;
-
-  function expandLegend() {
-    selectWithParent(".legend")
-      .transition()
-      .duration(instance._getAnimationStepDuration());
-    selectWithParent(".legend").select(".legend_rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("height", globals.track_height * (globals.num_categories + 1))
-      .attr("width", globals.max_legend_item_width + 5 + globals.unit_width + 10);
-    selectWithParent(".legend").select("#legend_expand_btn")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("x", globals.max_legend_item_width + 5 + globals.unit_width - 10);
-    selectWithParent(".legend").select(".legend_title")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("dx", "0em")
-      .attr("transform", "translate(5,0)rotate(0)");
-    selectWithParent(".legend").selectAll(".legend_element_g text")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("fill-opacity", "1")
-      .style("display", "inline")
-      .attr("transform", "translate(0,-35)");
-    selectWithParent(".legend").selectAll(".legend_element_g rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(0,-35)");
-    selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(" + globals.legend_spacing + ",-35)");
-  }
-
-  function collapseLegend() {
-    selectWithParent(".legend")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("z-index", 1);
-    selectWithParent(".legend").select(".legend_rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("height", 35 + globals.track_height * (globals.num_categories + 1))
-      .attr("width", 25);
-    selectWithParent(".legend").select("#legend_expand_btn")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("x", 25);
-    selectWithParent(".legend").select(".legend_title")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("dx", "-4.3em")
-      .attr("transform", "translate(0,0)rotate(270)");
-    selectWithParent(".legend").selectAll(".legend_element_g text")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .style("fill-opacity", "0")
-      .style("display", "none")
-      .attr("transform", "translate(0,0)");
-    selectWithParent(".legend").selectAll(".legend_element_g rect")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(0,0)");
-    selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
-      .transition()
-      .duration(instance._getAnimationStepDuration())
-      .attr("transform", "translate(" + globals.legend_spacing + ",0)");
-  }
 
   /**
 
@@ -4355,8 +4152,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
      *    caption_list: ...,
      *    image_list: ...,
      *    annotation_list: ...,
-     *    caption_index: ...,
-     *    image_index: ...,
      *    width: ...,
      *    height: ...
      * }
@@ -4372,8 +4167,6 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       globals.caption_list = state.caption_list;
       globals.image_list = state.image_list;
       globals.annotation_list = state.annotation_list;
-      globals.caption_index = state.caption_list.length - 1;
-      globals.image_index = state.image_list.length - 1;
 
       var min_story_width = instance._render_width,
         max_story_width = instance._render_width;
@@ -4684,15 +4477,19 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                 style: "display:none;",
                 accept: ".json"
               })
-              .on("change", (e) => {
-                var contents = e.target.result;
-                var blob = new Blob([contents], { type: "application/json" });
-                setTimeout(() => {
-                  logEvent("loading (json)", "load");
-                  d3.json(URL.createObjectURL(blob), function (error, data) {
-                    inst._loadTimeline({ timeline_json_data: data });
-                  });
-                }, 500);
+              .on("change", function () {
+                var file = this.files[0];
+                globals.reader.readAsText(file);
+                globals.reader.onload = function (e) {
+                  var contents = e.target.result;
+                  var blob = new Blob([contents], { type: "application/json" });
+                  setTimeout(() => {
+                    logEvent("loading (json)", "load");
+                    d3.json(URL.createObjectURL(blob), function (error, data) {
+                      inst._loadTimeline(data.timeline_json_data ? data : { timeline_json_data: data });
+                    });
+                  }, 500);
+                };
               });
           },
           click: (inst, element) => {
@@ -4829,6 +4626,181 @@ TimelineStoryteller.prototype._initializeMenu = function (menu) {
 };
 
 /**
+ * Loads annotations for the current scene
+ * @param {Scene} scene The scene to load annotations for
+ * @param {number} scene_index The index of the scene
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
+  this.clearCanvas();
+
+  this._prevTransitioning = false;
+  const that = this;
+
+  log("Loading Annotations");
+  if (this._currentSceneIndex !== scene_index) {
+    return;
+  }
+
+  // is the legend expanded in this scene?
+  globals.legend_expanded = scene.s_legend_expanded;
+  if (scene.s_legend_expanded) {
+    this.expandLegend();
+  } else {
+    this.collapseLegend();
+  }
+
+  /**
+   * Creates a mapper, that adds a type property
+   * @param {string} type The type of the item
+   * @returns {object} An object with the type and item properties
+   */
+  function mapWithType(type) {
+    return function (item) {
+      return {
+        id: item.id,
+        type,
+        item
+      };
+    };
+  }
+
+  this._pruneAnnotations();
+
+  var captionAnnos = globals.caption_list.map(mapWithType("caption"));
+  var imageAnnos = globals.image_list.map(mapWithType("image"));
+  var textAnnos = globals.annotation_list.map(mapWithType("annotation"));
+
+  // TODO: this would be better if the scenes had a more generic property called "annotations", that have a list of all the
+  // annotations that had a "type" property
+
+  // These are are technically annotations, just different types, so concat them all together
+  const allAnnos = captionAnnos.concat(imageAnnos).concat(textAnnos);
+
+  let nextId = getHighestId(allAnnos);
+  allAnnos
+    .filter(function (anno) { // Filter out annotations not on this scene
+      // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
+      var sceneList = scene["s_" + anno.type + "s"];
+
+      for (var i = 0; i < sceneList.length; i++) { // eslint-disable-line no-shadow
+        // Basically the id property in the scene, so image_id or caption_id or annotation_id
+        if (sceneList[i][anno.type + "_id"] === anno.item.id) {
+          return true;
+        }
+      }
+    })
+
+    // We sort the annotations by z-order, and add the annotations in that order
+    // this is important cause with svgs, the order in which elements are added dictates their z-index
+    .sort(function (a, b) { return (a.item.z_index || 0) - (b.item.z_index || 0); })
+
+    // Iterate through all of our annotations
+    .forEach(function (anno) {
+      // Make a copy so existing scenes do not get modified
+      const item = Object.assign({}, anno.item);
+      item.id = ++nextId;
+
+      if (anno.type === "caption") {
+        addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item);
+      } else if (anno.type === "image") {
+        addImage(that._timeline_vis, item.i_url, item.x_rel_pos, item.y_rel_pos, item.i_width, item.i_height, item);
+      } else {
+        var itemSel = selectWithParent("#event_g" + item.item_index).select("rect.event_span");
+        var itemEle = itemSel[0][0].__data__,
+          item_x_pos = 0,
+          item_y_pos = 0;
+
+        if (scene.s_representation !== "Radial") {
+          item_x_pos = itemEle.rect_x_pos + itemEle.rect_offset_x + globals.padding.left + globals.unit_width * 0.5;
+          item_y_pos = itemEle.rect_y_pos + itemEle.rect_offset_y + globals.padding.top + globals.unit_width * 0.5;
+        } else {
+          item_x_pos = itemEle.path_x_pos + itemEle.path_offset_x + globals.padding.left;
+          item_y_pos = itemEle.path_y_pos + itemEle.path_offset_y + globals.padding.top;
+        }
+
+        const { element } = annotateEvent(that._timeline_vis, item.content_text, item_x_pos, item_y_pos, item.x_offset, item.y_offset, item.x_anno_offset, item.y_anno_offset, item.label_width, item.item_index, item);
+        element
+          .transition()
+          .duration(that.options.animations ? 50 : 0)
+            .style("opacity", 1)
+            .each(function () {
+              // If after running the transition, the scene has changed, then hide this annotation.
+              if (that._currentSceneIndex !== scene_index) {
+                this.style.opacity = 0;
+              }
+            });
+
+        if (anno.type === "caption") {
+          globals.caption_list.push(item);
+        } else if (anno.type === "image") {
+          globals.image_list.push(item);
+        } else {
+          globals.annotation_list.push(item);
+        }
+      }
+    });
+
+  // toggle selected events in the scene
+  this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
+    if (scene.s_selections.indexOf(event.__data__.event_id) !== -1) {
+      event.__data__.selected = true;
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span")
+        .attr("filter", "url(#drop-shadow)")
+        .style("z-index", 1)
+        .style("stroke", "#f00")
+        .style("stroke-width", "1.25px");
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span_component")
+        .style("z-index", 1)
+        .style("stroke", "#f00")
+        .style("stroke-width", "1px");
+    } else {
+      event.__data__.selected = false;
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span")
+        .attr("filter", "none")
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.25px");
+      selectWithParent("#event_g" + event.__data__.event_id)
+        .selectAll(".event_span_component")
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.25px");
+    }
+  });
+  if (this._timeline_vis.tl_representation() !== "Curve") {
+    selectWithParent("#timecurve").style("visibility", "hidden");
+  } else {
+    selectWithParent("#timecurve").style("visibility", "visible");
+  }
+  this._main_svg.style("visibility", "visible");
+};
+
+/**
+ * Prunes annotations which were left in the global scene list, but never referenced anymore
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._pruneAnnotations = function () {
+  function prune(type) {
+    if (globals[`${type}_list`]) {
+      const usedAnnotations = {};
+      (globals.scenes || []).forEach(s => {
+        (s[`s_${type}s`] || []).forEach(annoRef => {
+          usedAnnotations[annoRef[`${type}_id`]] = true;
+        });
+      });
+
+      // Filter the annotation list to used annotations
+      globals[`${type}_list`] = globals[`${type}_list`].filter(n => usedAnnotations[n.id]);
+    }
+  }
+  prune("annotation");
+  prune("image");
+  prune("caption");
+};
+
+/**
  * Gets the animation duration for each of the steps in the animations
  * @return {number} The duration of a step in the animation
  */
@@ -4884,30 +4856,30 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   var timeline_vis = this._timeline_vis;
 
-  logEvent("scene " + (globals.current_scene_index + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
+  logEvent("scene " + (this._currentSceneIndex + 2) + " recorded: " + timeline_vis.tl_representation() + " / " + timeline_vis.tl_scale() + " / " + timeline_vis.tl_layout(), "record");
 
   var scene_captions = [];
   var scene_images = [];
   var scene_annotations = [];
   var scene_selections = [];
 
-  this._main_svg.selectAll(".timeline_caption")[0].forEach(function (caption) {
+  this._main_svg.selectAll(".timeline_caption").each(function () {
     var scene_caption = {
-      caption_id: caption.id
+      caption_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_captions.push(scene_caption);
   });
 
-  this._main_svg.selectAll(".timeline_image")[0].forEach(function (image) {
+  this._main_svg.selectAll(".timeline_image").each(function () {
     var scene_image = {
-      image_id: image.id
+      image_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_images.push(scene_image);
   });
 
-  this._main_svg.selectAll(".event_annotation")[0].forEach(function (annotation) {
+  this._main_svg.selectAll(".event_annotation").each(function () {
     var scene_annotation = {
-      annotation_id: annotation.id
+      annotation_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_annotations.push(scene_annotation);
   });
@@ -4919,7 +4891,7 @@ TimelineStoryteller.prototype._recordScene = function () {
   });
 
   for (var i = 0; i < globals.scenes.length; i++) {
-    if (globals.scenes[i].s_order > globals.current_scene_index) {
+    if (globals.scenes[i].s_order > this._currentSceneIndex) {
       globals.scenes[i].s_order++;
     }
   }
@@ -4942,11 +4914,38 @@ TimelineStoryteller.prototype._recordScene = function () {
     s_annotations: scene_annotations,
     s_selections: scene_selections,
     s_timecurve: selectWithParent("#timecurve").attr("d"),
-    s_order: globals.current_scene_index + 1
+    s_order: this._currentSceneIndex + 1
   };
   globals.scenes.push(scene);
 
-  globals.current_scene_index++;
+  function copyAnnotations(list, refList, type) {
+    let highestAnnoId = getHighestId(list);
+    const idProp = type + "_id";
+    return list.concat(refList.map((sceneAnno) => {
+      const existingAnnotation = list.filter(anno => anno.id === sceneAnno[idProp])[0];
+      const newAnnotation = Object.assign({}, existingAnnotation);
+      const newId = ++highestAnnoId;
+
+      // TODO: Dirty, update the element id to be the right one
+      selectAllWithParent(`[data-type="${type}"][data-id="${existingAnnotation.id}"]`)
+        .attr("data-id", newId);
+
+      // Update the existing annotation to be a "new" annotation, so any future changes will only affect this one.
+      existingAnnotation.id = newId;
+      return newAnnotation;
+    }));
+  }
+
+  // Create copies of the annotations so modifications do not change the source scene
+  globals.image_list = copyAnnotations(globals.image_list, scene_images, "image");
+
+  // Create copies of the annotations so modifications do not change the source scene
+  globals.annotation_list = copyAnnotations(globals.annotation_list, scene_annotations, "annotation");
+
+  // Create copies of the captions so modifications do not change the source scene
+  globals.caption_list = copyAnnotations(globals.caption_list, scene_captions, "caption");
+
+  this._currentSceneIndex++;
 
   var compressed = !(this.options.export && this.options.export.images);
   var renderOptions = {
@@ -5097,7 +5096,10 @@ TimelineStoryteller.prototype._createImportPanelButton = function (button) {
  * @returns {void}
  */
 TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
-  logEvent("image " + globals.image_index + " added: <<" + image_url + ">>", "annotation");
+  const highestImageId = getHighestId(globals.image_list);
+  const imageId = highestImageId + 1;
+
+  logEvent("image " + imageId + " added: <<" + image_url + ">>", "annotation");
 
   var new_image = new Image();
   new_image.name = image_url;
@@ -5113,7 +5115,7 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
 
   const that = this;
   function getWidthAndHeight() {
-    logEvent("image " + globals.image_index + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
+    logEvent("image " + imageId + " is " + this.width + " by " + this.height + " pixels in size.", "annotation");
 
     var image_width = this.width,
       image_height = this.height,
@@ -5132,8 +5134,7 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
     }
 
     var image_list_item = {
-      id: "image" + globals.image_index,
-      i_index: globals.image_index,
+      id: imageId,
       i_url: image_url,
       i_width: image_width,
       i_height: image_height,
@@ -5143,9 +5144,94 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
     };
 
     globals.image_list.push(image_list_item);
-    addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, globals.image_index);
-    globals.image_index++;
+    addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, image_list_item);
   }
+};
+
+/**
+ * Expands the legend
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.expandLegend = function () {
+  logEvent("legend expanded", "legend");
+
+  globals.legend_expanded = true;
+  const animationLength = this._getAnimationStepDuration();
+  selectWithParent(".legend")
+    .transition()
+    .duration(animationLength);
+  selectWithParent(".legend").select(".legend_rect")
+    .transition()
+    .duration(animationLength)
+    .attr("height", globals.track_height * (globals.num_categories + 1))
+    .attr("width", globals.max_legend_item_width + 5 + globals.unit_width + 10);
+  selectWithParent(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(animationLength)
+    .attr("x", globals.max_legend_item_width + 5 + globals.unit_width - 10);
+  selectWithParent(".legend").select(".legend_title")
+    .transition()
+    .duration(animationLength)
+    .attr("dx", "0em")
+    .attr("transform", "translate(5,0)rotate(0)");
+  selectWithParent(".legend").selectAll(".legend_element_g text")
+    .transition()
+    .duration(animationLength)
+    .style("fill-opacity", "1")
+    .style("display", "inline")
+    .attr("transform", "translate(0,-35)");
+  selectWithParent(".legend").selectAll(".legend_element_g rect")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(0,-35)");
+  selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(" + globals.legend_spacing + ",-35)");
+};
+
+/**
+ * Collapses the legend
+ * @returns {void}
+ */
+TimelineStoryteller.prototype.collapseLegend = function () {
+  logEvent("legend minified", "legend");
+
+  globals.legend_expanded = false;
+
+  const animationLength = this._getAnimationStepDuration();
+  selectWithParent(".legend")
+    .transition()
+    .duration(animationLength)
+    .style("z-index", 1);
+  selectWithParent(".legend").select(".legend_rect")
+    .transition()
+    .duration(animationLength)
+    .attr("height", 35 + globals.track_height * (globals.num_categories + 1))
+    .attr("width", 25);
+  selectWithParent(".legend").select("#legend_expand_btn")
+    .transition()
+    .duration(animationLength)
+    .attr("x", 25);
+  selectWithParent(".legend").select(".legend_title")
+    .transition()
+    .duration(animationLength)
+    .attr("dx", "-4.3em")
+    .attr("transform", "translate(0,0)rotate(270)");
+  selectWithParent(".legend").selectAll(".legend_element_g text")
+    .transition()
+    .duration(animationLength)
+    .style("fill-opacity", "0")
+    .style("display", "none")
+    .attr("transform", "translate(0,0)");
+  selectWithParent(".legend").selectAll(".legend_element_g rect")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(0,0)");
+  selectWithParent(".legend").selectAll(".legend_element_g foreignObject")
+    .transition()
+    .duration(animationLength)
+    .attr("transform", "translate(" + globals.legend_spacing + ",0)");
 };
 
 /**

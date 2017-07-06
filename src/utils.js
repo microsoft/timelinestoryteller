@@ -35,6 +35,21 @@ var utils = {
   },
 
   /**
+   * Gets the highest id being used in the list of items
+   * @param {{ id: number }[]} list The list of items to look through
+   * @returns {number} The highest id
+   */
+  getHighestId: function (list) {
+    let highestId = 0;
+    (list || []).forEach(n => {
+      if (n.id > highestId) {
+        highestId = n.id;
+      }
+    });
+    return highestId;
+  },
+
+  /**
    * Logs an event that occurred
    * @param {string} detail The detailed information for the event
    * @param {string} [category=annotation] The category of the event
@@ -49,6 +64,7 @@ var utils = {
     };
     globals.usage_log.push(log_event);
   },
+
   /**
    * Creates a tweening function for an arc
    * @param {d3.svg.arc} arc The arc to create the tweening function for

@@ -12,7 +12,7 @@ var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
 var nextId = utils.nextId;
 
-module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_width, image_height, image_index) {
+module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_width, image_height, imageObj) {
   "use strict";
 
   var x_pos = x_rel_pos * globals.width,
@@ -24,7 +24,9 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
   var scaling_ratio = 1;
 
   var timeline_image = selectWithParent("#main_svg").append("g")
-    .attr("id", "image" + image_index)
+    .attr("id", "image" + imageObj.id)
+    .attr("data-id", imageObj.id)
+    .attr("data-type", "image")
     .attr("class", "timeline_image");
 
   d3.selection.prototype.moveToBack = function () {
@@ -90,13 +92,8 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
       x_pos = d3.event.x;
       y_pos = d3.event.y;
 
-      var i = 0;
-
-      while (globals.image_list[i].id !== d3.select(this.parentNode).attr("id")) {
-        i++;
-      }
-      globals.image_list[i].x_rel_pos = x_pos / globals.width;
-      globals.image_list[i].y_rel_pos = y_pos / globals.height;
+      imageObj.x_rel_pos = x_pos / globals.width;
+      imageObj.y_rel_pos = y_pos / globals.height;
 
       d3.select(this)
         .attr("x", x_pos)
@@ -120,7 +117,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
         .attr("y", y_pos);
     })
     .on("dragend", function () {
-      logEvent("image " + image_index + " moved to [" + x_pos + "," + y_pos + "]");
+      logEvent("image " + imageObj.id + " moved to [" + x_pos + "," + y_pos + "]");
     });
 
   var resize = d3.behavior.drag()
@@ -140,13 +137,8 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
 
       scaling_ratio = image_width / orig_image_weight;
 
-      var i = 0;
-
-      while (globals.image_list[i].id !== d3.select(this.parentNode).attr("id")) {
-        i++;
-      }
-      globals.image_list[i].i_width = image_width;
-      globals.image_list[i].i_height = image_height * scaling_ratio;
+      imageObj.i_width = image_width;
+      imageObj.i_height = image_height * scaling_ratio;
 
       d3.select(this.parentNode).select("clipPath").select("circle")
         .attr("cx", x_pos + image_width / 2)
@@ -170,7 +162,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
         .attr("height", image_height * scaling_ratio);
     })
     .on("dragend", function () {
-      logEvent("image " + image_index + " resized to " + image_width + "px");
+      logEvent("image " + imageObj.id + " resized to " + image_width + "px");
     });
 
   var image_defs = timeline_image.append("defs");
@@ -267,7 +259,7 @@ module.exports = function (timeline_vis, image_url, x_rel_pos, y_rel_pos, image_
       d3.select(this).style("stroke", "#ccc");
     })
     .on("click", function () {
-      logEvent("image " + image_index + " removed");
+      logEvent("image " + imageObj.id + " removed");
 
       d3.select(this.parentNode).remove();
     })
