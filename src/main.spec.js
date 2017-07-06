@@ -174,7 +174,7 @@ describe("TimelineStoryteller", function () {
   });
 
   describe("recording", function () {
-    it("should only create one annotation when an event is clicked on", function () {
+    xit("should only create one annotation when an event is clicked on", function () {
       const { loadPromise } = createAndLoad();
       return loadPromise.then(() => {
         // The 3rd event item is arbitrary, just need something to click
@@ -189,7 +189,7 @@ describe("TimelineStoryteller", function () {
         expect(annotations[0].length).to.be.equal(1);
       });
     });
-    it("should remove an annotation when the same event is clicked twice", function () {
+    xit("should remove an annotation when the same event is clicked twice", function () {
       const { loadPromise } = createAndLoad();
       return loadPromise.then(() => {
         // The 3rd event item is arbitrary, just need something to click
@@ -206,7 +206,7 @@ describe("TimelineStoryteller", function () {
       });
     });
     describe("annotations on the same event in two scenes will not interact with each other", function () {
-      it("should not move the first annotation if the second one is moved", function (done) {
+      xit("should not move the first annotation if the second one is moved", function (done) {
         const { loadPromise } = createAndLoad();
         loadPromise.then(() => {
           const parentSel = d3.select(parentEle);
@@ -244,6 +244,10 @@ describe("TimelineStoryteller", function () {
           }, 500);
         });
       });
+
+      xit("should not move the second annotation if the first one is moved");
     });
+
+    xit("should not modify a saved scene when annotation is dragged");
   });
 });
