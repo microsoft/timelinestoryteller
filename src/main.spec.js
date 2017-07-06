@@ -54,7 +54,6 @@ const performDrag = (node, finalX, finalY) => {
 
 function getAnnotationPosition(parentEle, annotationIdx) {
   const annotationsSel = d3.select(parentEle).selectAll(".annotation_drag_area");
-  console.log(annotationsSel[0].length);
   const annotationEle = annotationsSel[0][annotationIdx];
   return [annotationEle.getAttribute("x"), annotationEle.getAttribute("y")];
 }
@@ -175,7 +174,7 @@ describe("TimelineStoryteller", function () {
   });
 
   describe("recording", function () {
-    xit("should only create one annotation when an event is clicked on", function () {
+    it("should only create one annotation when an event is clicked on", function () {
       const { loadPromise } = createAndLoad();
       return loadPromise.then(() => {
         // The 3rd event item is arbitrary, just need something to click
@@ -190,7 +189,7 @@ describe("TimelineStoryteller", function () {
         expect(annotations[0].length).to.be.equal(1);
       });
     });
-    xit("should remove an annotation when the same event is clicked twice", function () {
+    it("should remove an annotation when the same event is clicked twice", function () {
       const { loadPromise } = createAndLoad();
       return loadPromise.then(() => {
         // The 3rd event item is arbitrary, just need something to click
@@ -207,7 +206,7 @@ describe("TimelineStoryteller", function () {
       });
     });
     describe("annotations on the same event in two scenes will not interact with each other", function () {
-      xit("should not move the first annotation if the second one is moved", function (done) {
+      it("should not move the first annotation if the second one is moved", function (done) {
         const { loadPromise } = createAndLoad();
         loadPromise.then(() => {
           const parentSel = d3.select(parentEle);
