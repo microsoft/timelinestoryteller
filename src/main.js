@@ -2787,14 +2787,14 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
           globals.active_event_list.push(i);
           i++;
         } else {
-          item.start_date = undefined;
+          item.start_date = new Date();
         }
 
         // check for end_date string validity
         if (moment(item.end_date).isValid()) {
           item.end_date = moment(item.end_date, dateFormat).endOf("hour").toDate(); // account for UTC offset
         } else {
-          item.end_date = undefined;
+          item.end_date = new Date();
         }
       }
 
