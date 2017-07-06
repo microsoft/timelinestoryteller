@@ -64,6 +64,7 @@ var utils = {
     };
     globals.usage_log.push(log_event);
   },
+
   /**
    * Creates a tweening function for an arc
    * @param {d3.svg.arc} arc The arc to create the tweening function for

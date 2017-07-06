@@ -4658,11 +4658,14 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
   function mapWithType(type) {
     return function (item) {
       return {
-        type: type,
-        item: item
+        id: item.id,
+        type,
+        item
       };
     };
   }
+
+  this._pruneAnnotations();
 
   var captionAnnos = globals.caption_list.map(mapWithType("caption"));
   var imageAnnos = globals.image_list.map(mapWithType("image"));
@@ -4672,7 +4675,10 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
   // annotations that had a "type" property
 
   // These are are technically annotations, just different types, so concat them all together
-  captionAnnos.concat(imageAnnos).concat(textAnnos)
+  const allAnnos = captionAnnos.concat(imageAnnos).concat(textAnnos);
+
+  let nextId = getHighestId(allAnnos);
+  allAnnos
     .filter(function (anno) { // Filter out annotations not on this scene
       // Basically maps the type to scene.s_images or scene.s_annotations or scene.s_captions
       var sceneList = scene["s_" + anno.type + "s"];
@@ -4691,7 +4697,10 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
 
     // Iterate through all of our annotations
     .forEach(function (anno) {
-      var item = anno.item;
+      // Make a copy so existing scenes do not get modified
+      const item = Object.assign({}, anno.item);
+      item.id = ++nextId;
+
       if (anno.type === "caption") {
         addCaption(item.caption_text, item.caption_width * 1.1, item.x_rel_pos, item.y_rel_pos, item);
       } else if (anno.type === "image") {
@@ -4721,6 +4730,14 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
                 this.style.opacity = 0;
               }
             });
+
+        if (anno.type === "caption") {
+          globals.caption_list.push(item);
+        } else if (anno.type === "image") {
+          globals.image_list.push(item);
+        } else {
+          globals.annotation_list.push(item);
+        }
       }
     });
 
@@ -4758,6 +4775,29 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
     selectWithParent("#timecurve").style("visibility", "visible");
   }
   this._main_svg.style("visibility", "visible");
+};
+
+/**
+ * Prunes annotations which were left in the global scene list, but never referenced anymore
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._pruneAnnotations = function () {
+  function prune(type) {
+    if (globals[`${type}_list`]) {
+      const usedAnnotations = {};
+      (globals.scenes || []).forEach(s => {
+        (s[`s_${type}s`] || []).forEach(annoRef => {
+          usedAnnotations[annoRef[`${type}_id`]] = true;
+        });
+      });
+
+      // Filter the annotation list to used annotations
+      globals[`${type}_list`] = globals[`${type}_list`].filter(n => usedAnnotations[n.id]);
+    }
+  }
+  prune("annotation");
+  prune("image");
+  prune("caption");
 };
 
 /**
@@ -4825,21 +4865,21 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   this._main_svg.selectAll(".timeline_caption").each(function () {
     var scene_caption = {
-      caption_id: parseInt(this.getAttribute("data-id"), 10)
+      caption_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_captions.push(scene_caption);
   });
 
   this._main_svg.selectAll(".timeline_image").each(function () {
     var scene_image = {
-      image_id: parseInt(this.getAttribute("data-id"), 10)
+      image_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_images.push(scene_image);
   });
 
   this._main_svg.selectAll(".event_annotation").each(function () {
     var scene_annotation = {
-      annotation_id: parseInt(this.getAttribute("data-id"), 10)
+      annotation_id: Math.abs(parseInt(this.getAttribute("data-id"), 10))
     };
     scene_annotations.push(scene_annotation);
   });
@@ -4928,9 +4968,6 @@ TimelineStoryteller.prototype._recordScene = function () {
       globals.gif_index++;
       that._updateNavigationStepper();
       clearInterval(checkExist);
-
-      //
-      // that._loadAnnotations(scene, that._currentSceneIndex);
 
       // Dispatch after state has changed
       that._dispatch.stateChanged();
