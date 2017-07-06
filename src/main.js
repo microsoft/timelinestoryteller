@@ -2745,7 +2745,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // parse the event dates
     // assign an end date if none is provided
     data.forEach(function (item) {
-      if (item.end_date === "" || item.end_date === null) { // if end_date is empty, set it to equal start_date
+      if (item.start_date === "" || item.start_date === null || item.start_date === undefined) {
+        item.start_date = new Date();
+      }
+
+      if (item.end_date === "" || item.end_date === null || item.end_date === undefined) { // if end_date is empty, set it to equal start_date
         item.end_date = item.start_date;
       }
 
