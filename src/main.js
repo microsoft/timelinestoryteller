@@ -2745,62 +2745,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // parse the event dates
     // assign an end date if none is provided
     data.forEach(function (item) {
-      if (item.start_date === "" || item.start_date === null || item.start_date === undefined) {
-        item.start_date = new Date();
-      }
-
-      if (item.end_date === "" || item.end_date === null || item.end_date === undefined) { // if end_date is empty, set it to equal start_date
-        item.end_date = item.start_date;
-      }
-
-      // if there are numerical dates before -9999 or after 10000, don't attempt to parse them
-      if (globals.date_granularity === "epochs") {
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
-        return;
-      }
-
-      let startMoment;
-      let endMoment;
-      let dateFormat = "Y-MM-DD HH:mm Z";
-
-      // Try to parse the start date from the original
-      // If that fails, try to estimate from the end date
-      // Otherwise fall back to todays day
-      if (moment(item.start_date).isValid()) {
-        startMoment = moment(item.start_date, dateFormat); // account for UTC offset
-
-      // Use the end date if the start date is not valid
-      } else if (moment(item.end_date).isValid()) {
-        startMoment = moment(item.end_date, dateFormat);
-      } else {
-        startMoment = moment(new Date());
-      }
-
-      // Try to parse the end date from the original
-      // If that fails, try to estimate from the start date
-      if (moment(item.end_date).isValid()) {
-        endMoment = moment(item.end_date, dateFormat); // account for UTC offset
-      } else {
-        // Use the start_date to approximate end date
-        endMoment = moment(startMoment);
-      }
-
-      // is start date a numeric year?
-      if (globals.isNumber(item.start_date)) {
-        // set end_date to end of that year as date object
-        item.start_date = startMoment.toDate();
-        item.end_date = endMoment.endOf("year").toDate();
-      } else { // start date is not a numeric year
-        globals.date_granularity = "days";
-        item.start_date = startMoment.startOf("hour").toDate();
-        item.end_date = endMoment.endOf("hour").toDate();
-      }
-
       item.event_id = i;
       globals.active_event_list.push(i);
       i++;
+
+      // if there are numerical dates before -9999 or after 10000, don't attempt to parse them
+      if (globals.date_granularity === "epochs") {
+        return;
+      }
+
+      instance._parseStartAndEndDates(item);
 
       globals.active_event_list.push(item.event_id);
       globals.prev_active_event_list.push(item.event_id);
@@ -4982,6 +4936,51 @@ TimelineStoryteller.prototype._recordScene = function () {
     }
   }, 100); // check every 100ms
   return true;
+};
+
+/**
+ * Parses the start_date and end_date properties of the given item
+ * @param {object} item The item to parse start & end dates for
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._parseStartAndEndDates = function (item) {
+  let startMoment;
+  let endMoment;
+  let dateFormat = "Y-MM-DD HH:mm Z";
+
+  // Try to parse the start date from the original
+  // If that fails, try to estimate from the end date
+  // Otherwise fall back to todays day
+  // NOTE: isValid returns true EVEN IF start_date is empty/null/undefined
+  if (item.start_date && moment(item.start_date).isValid()) {
+    startMoment = moment(item.start_date, dateFormat); // account for UTC offset
+
+  // Use the end date if the start date is not valid
+  } else if (item.end_date && moment(item.end_date).isValid()) {
+    startMoment = moment(item.end_date, dateFormat);
+  } else {
+    startMoment = moment(new Date());
+  }
+
+  // Try to parse the end date from the original
+  // If that fails, try to estimate from the start date
+  if (item.end_date && moment(item.end_date).isValid()) {
+    endMoment = moment(item.end_date, dateFormat); // account for UTC offset
+  } else {
+    // Use the start_date to approximate end date
+    endMoment = moment(startMoment);
+  }
+
+  // is start date a numeric year?
+  if (item.start_date && globals.isNumber(item.start_date)) {
+    // set end_date to end of that year as date object
+    item.start_date = startMoment.toDate();
+    item.end_date = endMoment.endOf("year").toDate();
+  } else { // start date is not a numeric year
+    globals.date_granularity = "days";
+    item.start_date = startMoment.startOf("hour").toDate();
+    item.end_date = endMoment.endOf("hour").toDate();
+  }
 };
 
 /**
