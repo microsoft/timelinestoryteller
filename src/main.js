@@ -2761,42 +2761,46 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         return;
       }
 
-      var dateFormat = "Y-MM-DD HH:mm Z";
+      let startMoment;
+      let endMoment;
+      let dateFormat = "Y-MM-DD HH:mm Z";
+
+      // Try to parse the start date from the original
+      // If that fails, try to estimate from the end date
+      // Otherwise fall back to todays day
+      if (moment(item.start_date).isValid()) {
+        startMoment = moment(item.start_date, dateFormat); // account for UTC offset
+
+      // Use the end date if the start date is not valid
+      } else if (moment(item.end_date).isValid()) {
+        startMoment = moment(item.end_date, dateFormat);
+      } else {
+        startMoment = moment(new Date());
+      }
+
+      // Try to parse the end date from the original
+      // If that fails, try to estimate from the start date
+      if (moment(item.end_date).isValid()) {
+        endMoment = moment(item.end_date, dateFormat); // account for UTC offset
+      } else {
+        // Use the start_date to approximate end date
+        endMoment = moment(startMoment);
+      }
 
       // is start date a numeric year?
       if (globals.isNumber(item.start_date)) {
-        // convert start_date to date object
-        item.start_date = moment(item.start_date, dateFormat).toDate();
-
-        // convert end_date to date object
-        item.end_date = moment(item.end_date, dateFormat).toDate();
-
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
-
         // set end_date to end of that year as date object
-        item.end_date = moment(item.end_date).endOf("year").toDate();
+        item.start_date = startMoment.toDate();
+        item.end_date = endMoment.endOf("year").toDate();
       } else { // start date is not a numeric year
         globals.date_granularity = "days";
-
-        // check for start_date string validity
-        if (moment(item.start_date).isValid()) {
-          item.start_date = moment(item.start_date, dateFormat).startOf("hour").toDate(); // account for UTC offset
-          item.event_id = i;
-          globals.active_event_list.push(i);
-          i++;
-        } else {
-          item.start_date = new Date();
-        }
-
-        // check for end_date string validity
-        if (moment(item.end_date).isValid()) {
-          item.end_date = moment(item.end_date, dateFormat).endOf("hour").toDate(); // account for UTC offset
-        } else {
-          item.end_date = new Date();
-        }
+        item.start_date = startMoment.startOf("hour").toDate();
+        item.end_date = endMoment.endOf("hour").toDate();
       }
+
+      item.event_id = i;
+      globals.active_event_list.push(i);
+      i++;
 
       globals.active_event_list.push(item.event_id);
       globals.prev_active_event_list.push(item.event_id);

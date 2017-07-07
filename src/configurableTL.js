@@ -1453,7 +1453,7 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
       item_y_pos = d.path_y_pos + d.path_offset_y + globals.padding.top;
     }
 
-    const annoText = d.content_text || d.facet;
+    const annoText = d.content_text || d.facet || d.category || d.start_date || d.end_date || "";
     const { element } = annotateEvent(configurableTL, annoText, item_x_pos, item_y_pos, (x_pos - item_x_pos), (y_pos - item_y_pos), 50, 50, d3.min([annoText.length * 10, 100]), d.event_id, { id: -1 });
     element.classed("temporary_annotation", true);
 
@@ -1503,7 +1503,7 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d) {
           highestId = n.id;
         }
       });
-      var annoText = d.content_text || d.facet;
+      const annoText = d.content_text || d.facet || d.category || d.start_date || d.end_date || "";
       var annotation = {
         id: highestId + 1,
         item_index: d.event_id,
