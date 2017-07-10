@@ -2,7 +2,7 @@
 
 /**
 
-anotateEvent: //on-demand persistent content_text label for an event
+anotateEvent: //on-demand persistent annotationText label for an event
 
 **/
 var imageUrls = require("./imageUrls");
@@ -13,7 +13,7 @@ var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
 
-module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
+module.exports = function (timeline_vis, annotationText, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
   var target;
   // var LINE_OCTO = 0;
   // var LINE_RECT = 1;
@@ -214,7 +214,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       d3.select(this.parentNode).select(".event_label")
         .attr("x", x_pos + x_anno_offset + 7.5)
         .attr("y", y_pos + y_anno_offset + annotation_buffer)
-        .text(content_text)
+        .text(annotationText)
         .call(wrap, label_width - 7.5);
 
       d3.select(this.parentNode).selectAll(".frame_resizer")
@@ -350,7 +350,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
     .attr("x", x_pos + x_anno_offset + 7.5)
     .attr("y", y_pos + y_anno_offset + annotation_buffer)
     .attr("dy", 0)
-    .text(content_text)
+    .text(annotationText)
     .call(wrap, label_width - 7.5);
 
   var annotation_drag_area = event_annotation.append("rect")
@@ -364,7 +364,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
     .call(drag);
 
   event_label_text.attr("dy", 1 + "em")
-    .text(content_text)
+    .text(annotationText)
     .call(wrap, label_width - 7.5);
 
   function wrap(text, width) {

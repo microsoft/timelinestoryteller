@@ -9,7 +9,7 @@ module.exports = function(config) {
 
       // The externals
       "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js",
 
