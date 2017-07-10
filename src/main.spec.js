@@ -244,11 +244,20 @@ describe("TimelineStoryteller", function () {
     });
 
     describe("string input", function () {
-      it("should parse a start_date of \"2012\" correctly", () => {
+      it("should parse a start_date of \"2012\" and an end_date of undefined correctly", () => {
         const item = {
           start_date: "2012"
         };
         dateTest(item, "start_date", 2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59); // 59 for the end of the hour
+      });
+
+      it("should parse a end_date of \"2012\" and an end_date of undefined correctly", () => {
+        const item = {
+          end_date: "2012"
+        };
+        dateTest(item, "start_date", 2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59); // 59 for the end of the hour
       });
 
       it("should parse a start_date of \"2012-09\" correctly", () => {
