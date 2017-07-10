@@ -1575,38 +1575,31 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       });
 
     selectAllWithParent("#filter_type_picker input[name=filter_type_rb]").on("change", function () {
+      const newCategories = selectWithParent("#category_picker").select("option");
+      const newFacets = selectWithParent("#facet_picker").select("option");
+      const newSegments = selectWithParent("#segment_picker").select("option");
+
+      globals.filter_type = this.value;
+
       selectWithParent("#filter_div").style("display", "inline");
 
       logEvent("filter type changed: " + this.value, "filter");
 
-      var trigger_remove_filter = false;
-      globals.filter_type = this.value;
-      if (globals.filter_type === "Hide") {
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-
-        if (trigger_remove_filter) {
-          globals.dispatch.Emphasize(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
-      } else if (globals.filter_type === "Emphasize") {
+      const isHide = globals.filter_type === "Hide";
+      if (!isHide) {
         globals.active_data = globals.all_data;
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-        if (trigger_remove_filter) {
-          globals.dispatch.remove(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+      }
+
+      const trigger_remove_filter =
+        globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )" ||
+        globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )" ||
+        globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )";
+
+      if (trigger_remove_filter) {
+        const remove = globals.dispatch.remove;
+        const emphasize = globals.dispatch.Emphasize;
+        (isHide ? emphasize : remove).call(globals.dispatch, newCategories, newFacets, newSegments);
+        (isHide ? remove : emphasize).call(globals.dispatch, globals.selected_categories, globals.selected_facets, globals.selected_segments);
       }
     });
 
@@ -1645,16 +1638,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_categories = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_categories");
       })
       .selectAll("option")
       .data(all_categories.concat(globals.categories.domain().sort()))
@@ -1726,16 +1710,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_facets = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_facets");
       })
       .selectAll("option")
       .data(all_facets.concat(globals.facets.domain().sort()))
@@ -1826,16 +1801,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_segments = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_segments");
       })
       .selectAll("option")
       .data(all_segments.concat(globals.present_segments.domain().sort()))
@@ -4830,11 +4796,20 @@ TimelineStoryteller.prototype._getAnimationStepDuration = function () {
   return 0;
 };
 
+/**
+ * Shows an error on the display area
+ * @param {string} text The text to display
+ * @returns {void}
+ */
 TimelineStoryteller.prototype._showError = function (text) {
   this._errorArea.html(text);
   this._errorArea.style("display", "");
 };
 
+/**
+ * Hides the errors on the display area
+ * @returns {void}
+ */
 TimelineStoryteller.prototype._hideError = function () {
   this._errorArea.html("");
   this._errorArea.style("display", "none");
@@ -5174,6 +5149,37 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
 
     globals.image_list.push(image_list_item);
     addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, image_list_item);
+  }
+};
+
+/**
+ * Updates the selected filters from the given filter container
+ * @param {d3.Selection} filterContainer The filter container to grab the new filters from
+ * @param {string} type The type of filter "selected_categories", "selected_facets", "selected_segments"
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._updateSelectedFilters = function (filterContainer, type) {
+  const newOptions = filterContainer
+    .selectAll("option")
+    .filter(function () {
+      return this.selected;
+    });
+  if (newOptions.size() === 0) {
+    filterContainer
+      .selectAll("option")
+      .attr("selected", false);
+    if (globals[type]) {
+      globals[type].each(function () {
+        this.selected = true;
+      });
+    }
+  } else {
+    globals[type] = newOptions;
+    if (globals.filter_type === "Hide") {
+      globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    } else if (globals.filter_type === "Emphasize") {
+      globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    }
   }
 };
 
