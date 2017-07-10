@@ -173,7 +173,7 @@ describe("TimelineStoryteller", function () {
     it("should properly parse dates from 270000 BC up to 270000 AD");
   });
 
-  describe.only("_parseStartAndEndDates", function () {
+  describe("_parseStartAndEndDates", function () {
     function dateTest(item, dateProp, year, month, day, hours, minutes) {
       const instance = createInstance();
       instance._parseStartAndEndDates(item);

@@ -4972,6 +4972,7 @@ TimelineStoryteller.prototype._parseStartAndEndDates = function (item) {
   }
 
   // We use year based when the data is numeric
+  // TODO: Think about what happens if there is a mix between year only dates and full dates in the same dataset.
   const isYearBased =
     (item.start_date !== undefined && globals.isNumber(item.start_date)) ||
     (item.end_date !== undefined && globals.isNumber(item.end_date));
