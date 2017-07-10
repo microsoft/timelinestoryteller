@@ -116,7 +116,8 @@ function reset() {
     color_swap_target: 0,
     use_custom_palette: false,
     serverless: false,
-    socket: u
+    socket: u,
+    playback_mode: u
   }); // Defined in main.js
 }
 
