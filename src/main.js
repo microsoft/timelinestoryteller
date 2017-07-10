@@ -5491,9 +5491,6 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
     optionDiv.attr("class", "control_div onhover");
 
     d3.select(".introjs-hints").style("opacity", 0);
-    // Set read-only mode for annotation elements in playback mode
-    d3.selectAll(".annotation_control, .annotation_drag_area, .image_drag_area, .caption_drag_area")
-      .style("display", "none");
   } else {
     selectWithParent("#record_scene_btn").attr("class", "img_btn_enabled");
     optionDiv.attr("class", "control_div");
@@ -5501,10 +5498,10 @@ TimelineStoryteller.prototype.setPlaybackMode = function (isPlayback, addLog) {
     menuDiv.attr("class", "control_div");
 
     d3.select(".introjs-hints").style("opacity", 1);
-    // Remove read-only mode for annotations
-    d3.selectAll(".annotation_control, .annotation_drag_area, .image_drag_area, .caption_drag_area")
-      .style("display", "inline");
   }
+  // Set read-only mode for annotation elements in playback mode
+  d3.selectAll(".annotation_control, .annotation_drag_area, .image_drag_area, .caption_drag_area")
+    .style("display", isPlayback ? "none" : "");
 
   toggleElement(optionDiv, "top", 10);
   toggleElement(menuDiv, "left", 10);

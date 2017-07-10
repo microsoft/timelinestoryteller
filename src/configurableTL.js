@@ -572,7 +572,7 @@ function initializeElements(timeline_container, data, duration, width, height, u
   // define event behaviour
   timeline_event_g_enter
     .on("click", function (d, i) {
-      if (globals.playback_mode === false) {
+      if (!globals.playback_mode) {
         return eventClickListener(tl_representation, unit_width, configurableTL, d, i);
       }
     })
