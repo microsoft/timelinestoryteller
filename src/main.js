@@ -4971,8 +4971,13 @@ TimelineStoryteller.prototype._parseStartAndEndDates = function (item) {
     endMoment = moment(startMoment);
   }
 
+  // We use year based when the data is numeric
+  const isYearBased =
+    (item.start_date !== undefined && globals.isNumber(item.start_date)) ||
+    (item.end_date !== undefined && globals.isNumber(item.end_date));
+
   // is start date a numeric year?
-  if (item.start_date && globals.isNumber(item.start_date)) {
+  if (isYearBased) {
     // set end_date to end of that year as date object
     item.start_date = startMoment.toDate();
     item.end_date = endMoment.endOf("year").toDate();
