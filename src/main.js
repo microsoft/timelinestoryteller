@@ -69,6 +69,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent()
       .append("div")
       .attr("class", "timeline_storyteller-container");
+  this._errorArea = this._container.append("div")
+    .attr("class", "timeline_storyteller-error");
 
   this._component_width = parentElement.clientWidth;
   this._component_height = parentElement.clientHeight;
@@ -1097,6 +1099,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   function loadTimeline(state, skipConfig) {
     instance._loaded = false;
+
+    instance._hideError();
 
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
     loadDataIndicator.style("display", "block");
@@ -2546,6 +2550,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     main_svg.datum(data)
       .call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
+    // TODO: This should move into each of the chart renderers when we have some time
+    instance._hideError();
+    instance._main_svg.style("opacity", 1);
+
     if (hasScenes) {
       instance._currentSceneIndex = 0;
       changeScene(0);
@@ -3803,8 +3811,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   globals.dispatch.on("remove", function (selected_categories, selected_facets, selected_segments) {
     instance.clearCanvas();
 
-    globals.prev_active_event_list = globals.active_event_list;
-    globals.active_event_list = [];
+    const active_event_list = [];
 
     var matches, mismatches,
       selected_category_values = [],
@@ -3828,103 +3835,115 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       if ((selected_category_values.indexOf("( All )") !== -1 || selected_category_values.indexOf(item.category) !== -1) &&
         (selected_facet_values.indexOf("( All )") !== -1 || selected_facet_values.indexOf(item.facet) !== -1) &&
         (selected_segment_values.indexOf("( All )") !== -1 || selected_segment_values.indexOf(item.segment) !== -1)) {
-        globals.active_event_list.push(item.event_id);
+        active_event_list.push(item.event_id);
       }
     });
 
     mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) === -1;
+      return active_event_list.indexOf(d.event_id) === -1;
     });
 
     matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    globals.active_data = globals.all_data.filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+    const active_data = globals.all_data.filter(function (d) {
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    if (mismatches[0].length !== 0) {
-      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
-    } else {
-      logEvent(matches[0].length + " events", "remove");
-    }
+    // We only support having at least on item.
+    if (active_data.length > 0) {
+      globals.prev_active_event_list = globals.active_event_list;
+      globals.active_event_list = active_event_list;
+      globals.active_data = active_data;
 
-    measureTimeline(globals.active_data);
-
-    globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
-      return time.minute.floor(d.end_date);
-    });
-
-    globals.all_data.min_start_date = globals.active_data.min_start_date;
-    globals.all_data.max_end_date = globals.active_data.max_end_date;
-
-    globals.max_end_age = 0;
-
-    // determine facets (separate timelines) from data
-    globals.facets.domain(globals.active_data.map(function (d) {
-      return d.facet;
-    }));
-
-    globals.facets.domain().sort();
-
-    globals.num_facets = globals.facets.domain().length;
-    globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
-    globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
-
-    logEvent("num facets: " + globals.num_facet_cols, "remove");
-
-    if (timeline_vis.tl_layout() === "Segmented") {
-      if (timeline_vis.tl_representation() === "Grid") {
-        globals.segment_granularity = "centuries";
-      } else if (timeline_vis.tl_representation() === "Calendar") {
-        globals.segment_granularity = "weeks";
+      if (mismatches[0].length !== 0) {
+        logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
       } else {
-        globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        logEvent(matches[0].length + " events", "remove");
       }
-    }
 
-    var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+      measureTimeline(globals.active_data);
 
-    globals.segments.domain(segment_list.map(function (d) {
-      return d;
-    }));
-
-    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
-
-    globals.num_segments = globals.segments.domain().length;
-    globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
-    globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
-
-    determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
-
-    logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
-
-    adjustSvgSize();
-
-    main_svg
-      .datum(globals.active_data)
-      .call(timeline_vis.duration(instance._getAnimationStepDuration())
-      .height(globals.height)
-      .width(globals.width));
-
-    if (reset_segmented_layout) {
-      mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) === -1;
+      globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
+        return time.minute.floor(d.end_date);
       });
 
-      matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) !== -1;
-      });
-    }
+      globals.all_data.min_start_date = globals.active_data.min_start_date;
+      globals.all_data.max_end_date = globals.active_data.max_end_date;
 
-    globals.prev_active_event_list = globals.active_event_list;
+      globals.max_end_age = 0;
+
+      // determine facets (separate timelines) from data
+      globals.facets.domain(globals.active_data.map(function (d) {
+        return d.facet;
+      }));
+
+      globals.facets.domain().sort();
+
+      globals.num_facets = globals.facets.domain().length;
+      globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
+      globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
+
+      logEvent("num facets: " + globals.num_facet_cols, "remove");
+
+      if (timeline_vis.tl_layout() === "Segmented") {
+        if (timeline_vis.tl_representation() === "Grid") {
+          globals.segment_granularity = "centuries";
+        } else if (timeline_vis.tl_representation() === "Calendar") {
+          globals.segment_granularity = "weeks";
+        } else {
+          globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        }
+      }
+
+      var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+
+      globals.segments.domain(segment_list.map(function (d) {
+        return d;
+      }));
+
+      logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
+
+      globals.num_segments = globals.segments.domain().length;
+      globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
+      globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
+
+      determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
+
+      logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
+
+      adjustSvgSize();
+
+      main_svg.datum(globals.active_data)
+        .call(timeline_vis.duration(instance._getAnimationStepDuration())
+        .height(globals.height)
+        .width(globals.width));
+
+      instance._hideError();
+      instance._main_svg.style("opacity", 1);
+
+      if (reset_segmented_layout) {
+        mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) === -1;
+        });
+
+        matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) !== -1;
+        });
+      }
+
+      globals.prev_active_event_list = globals.active_event_list;
+    } else {
+      instance._main_svg.style("opacity", 0);
+      instance._showError("No data available for the selected set of filters.");
+    }
   });
 
   function importIntro() {
@@ -4809,6 +4828,16 @@ TimelineStoryteller.prototype._getAnimationStepDuration = function () {
     return this.options.animationStepDuration;
   }
   return 0;
+};
+
+TimelineStoryteller.prototype._showError = function (text) {
+  this._errorArea.html(text);
+  this._errorArea.style("display", "");
+};
+
+TimelineStoryteller.prototype._hideError = function () {
+  this._errorArea.html("");
+  this._errorArea.style("display", "none");
 };
 
 /**
