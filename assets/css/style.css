@@ -1499,3 +1499,10 @@ html, body {
 .add_image_popup input[type="checkbox"] {
   vertical-align: middle;
 }
+
+.timeline_storyteller-error {
+  position: absolute;
+  top: 150px;
+  width: 100%;
+  margin: 0 auto;
+}

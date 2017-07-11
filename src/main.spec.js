@@ -174,6 +174,161 @@ describe("TimelineStoryteller", function () {
     it("should properly parse dates from 270000 BC up to 270000 AD");
   });
 
+  describe("_parseStartAndEndDates", function () {
+    function dateTest(item, dateProp, year, month, day, hours, minutes) {
+      const instance = createInstance();
+      instance._parseStartAndEndDates(item);
+
+      expect(item[dateProp].getFullYear()).to.be.equal(year === undefined ? (new Date()).getFullYear() : year, "Year is incorrect");
+      expect(item[dateProp].getMonth()).to.be.equal(month === undefined ? 0 : month - 1, "Month is incorrect");
+      expect(item[dateProp].getDate()).to.be.equal(day === undefined ? 1 : day, "Day is incorrect");
+      expect(item[dateProp].getHours()).to.be.equal(hours === undefined ? 0 : hours, "Hour is incorrect");
+      expect(item[dateProp].getMinutes()).to.be.equal(minutes === undefined ? 0 : minutes, "Minute is incorrect");
+    }
+
+    function getNowComponents() {
+      const now = (new Date());
+      return {
+        y: now.getFullYear(),
+        mo: now.getMonth() + 1,
+        d: now.getDate(),
+        h: now.getHours(),
+        m: now.getMinutes()
+      };
+    }
+
+    describe("numeric input", function () {
+      it("should parse a start_date of 2012 correctly", () => {
+        const item = {
+          start_date: 2012
+        };
+        dateTest(item, "start_date", 2012, 1, 1, 0, 0);
+      });
+
+      it("should parse a end_date as the end of 2012 if end_date is blank, but start_date is 2012", () => {
+        const item = {
+          start_date: 2012
+        };
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59);
+      });
+
+      it("should parse a end_date as 2014 if end_date is 2014, but start_date is 2012", () => {
+        const item = {
+          start_date: 2012,
+          end_date: 2014
+        };
+        dateTest(item, "end_date", 2014, 12, 31, 23, 59);
+      });
+
+      it("should parse a start_date as 2014 if end_date is 2014, but start_date is blank", () => {
+        const item = {
+          end_date: 2014
+        };
+        dateTest(item, "start_date", 2014, 1, 1, 0, 0);
+      });
+
+      it("should parse a BC start_date of -2012 and an end_date of undefined correctly", () => {
+        const item = {
+          start_date: -2012
+        };
+        dateTest(item, "start_date", -2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", -2012, 12, 31, 23, 59); // 59 for the end of the hour
+      });
+
+      it("should parse a BC end_date of -2012 and a start_date of undefined correctly", () => {
+        const item = {
+          end_date: -2012
+        };
+        dateTest(item, "start_date", -2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", -2012, 12, 31, 23, 59); // 59 for the end of the hour
+      });
+    });
+
+    describe("string input", function () {
+      it("should parse a start_date of \"2012\" and an end_date of undefined correctly", () => {
+        const item = {
+          start_date: "2012"
+        };
+        dateTest(item, "start_date", 2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59); // 59 for the end of the hour
+      });
+
+      it("should parse a end_date of \"2012\" and an end_date of undefined correctly", () => {
+        const item = {
+          end_date: "2012"
+        };
+        dateTest(item, "start_date", 2012, 1, 1, 0, 0);
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59); // 59 for the end of the hour
+      });
+
+      it("should parse a start_date of \"2012-09\" correctly", () => {
+        const item = {
+          start_date: "2012-09"
+        };
+        dateTest(item, "start_date", 2012, 9, 1, 0, 0);
+      });
+
+      it("should parse a start_date of \"2012-09-30\" correctly", () => {
+        const item = {
+          start_date: "2012-09-30"
+        };
+        dateTest(item, "start_date", 2012, 9, 30, 0, 0);
+      });
+
+      it("should parse a start_date of \"12-09-15\" correctly", () => {
+        const item = {
+          start_date: "12-09-15"
+        };
+        dateTest(item, "start_date", 12, 9, 15, 0, 0); // 12 AD
+      });
+
+      it("should parse a end_date as the end of \"2012\" if end_date is blank, but start_date is \"2012\"", () => {
+        const item = {
+          start_date: "2012"
+        };
+        dateTest(item, "end_date", 2012, 12, 31, 23, 59);
+      });
+
+      it("should parse a end_date as 2014 if end_date is \"2014\", but start_date is \"2012\"", () => {
+        const item = {
+          start_date: "2012",
+          end_date: "2014"
+        };
+        dateTest(item, "end_date", 2014, 12, 31, 23, 59);
+      });
+
+      it("should parse a start_date as \"2014\" if end_date is \"2014\", but start_date is blank", () => {
+        const item = {
+          end_date: "2014"
+        };
+        dateTest(item, "start_date", 2014, 1, 1, 0, 0);
+      });
+
+      it("should parse a start_date of \"2012-12-01 10:30\" correctly", () => {
+        const item = {
+          start_date: "2012-12-01 10:30"
+        };
+        dateTest(item, "start_date", 2012, 12, 1, 10, 0); // The seconds are 0 because we round to the nearest hour when parsing
+      });
+
+      it("should parse a start_date of \"2012-12-01 10:30Z\" correctly", () => {
+        const item = {
+          start_date: "2012-12-01 10:30Z"
+        };
+        const expectedDate = new Date(2012, 11, 1, 10, 0); // 11 for months here cause months are 0 based in Date
+        dateTest(item, "start_date", 2012, 12, 1, 10 - (expectedDate.getTimezoneOffset() / 60), 0); // The seconds are 0 because we round to the nearest hour when parsing
+      });
+    });
+
+
+    it("should parse a start_date & end_date as the current date/hour if start_date and end_date is blank", () => {
+      const item = { };
+      const now = getNowComponents();
+      dateTest(item, "start_date", now.y, now.mo, now.d, now.h, 0); // As the beginning of the hour
+      dateTest(item, "end_date", now.y, now.mo, now.d, now.h, 59); // As the end of the hour
+    });
+  });
+
   describe("recording", function () {
     xit("should only create one annotation when an event is clicked on", function () {
       const { loadPromise } = createAndLoad();

@@ -69,6 +69,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     selectWithParent()
       .append("div")
       .attr("class", "timeline_storyteller-container");
+  this._errorArea = this._container.append("div")
+    .attr("class", "timeline_storyteller-error");
 
   this._component_width = parentElement.clientWidth;
   this._component_height = parentElement.clientHeight;
@@ -1098,6 +1100,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function loadTimeline(state, skipConfig) {
     instance._loaded = false;
 
+    instance._hideError();
+
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
     loadDataIndicator.style("display", "block");
 
@@ -1571,38 +1575,31 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       });
 
     selectAllWithParent("#filter_type_picker input[name=filter_type_rb]").on("change", function () {
+      const newCategories = selectWithParent("#category_picker").select("option");
+      const newFacets = selectWithParent("#facet_picker").select("option");
+      const newSegments = selectWithParent("#segment_picker").select("option");
+
+      globals.filter_type = this.value;
+
       selectWithParent("#filter_div").style("display", "inline");
 
       logEvent("filter type changed: " + this.value, "filter");
 
-      var trigger_remove_filter = false;
-      globals.filter_type = this.value;
-      if (globals.filter_type === "Hide") {
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-
-        if (trigger_remove_filter) {
-          globals.dispatch.Emphasize(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
-      } else if (globals.filter_type === "Emphasize") {
+      const isHide = globals.filter_type === "Hide";
+      if (!isHide) {
         globals.active_data = globals.all_data;
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-        if (trigger_remove_filter) {
-          globals.dispatch.remove(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+      }
+
+      const trigger_remove_filter =
+        globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )" ||
+        globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )" ||
+        globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )";
+
+      if (trigger_remove_filter) {
+        const remove = globals.dispatch.remove;
+        const emphasize = globals.dispatch.Emphasize;
+        (isHide ? emphasize : remove).call(globals.dispatch, newCategories, newFacets, newSegments);
+        (isHide ? remove : emphasize).call(globals.dispatch, globals.selected_categories, globals.selected_facets, globals.selected_segments);
       }
     });
 
@@ -1641,16 +1638,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_categories = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_categories");
       })
       .selectAll("option")
       .data(all_categories.concat(globals.categories.domain().sort()))
@@ -1722,16 +1710,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_facets = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_facets");
       })
       .selectAll("option")
       .data(all_facets.concat(globals.facets.domain().sort()))
@@ -1822,16 +1801,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         multiple: true
       })
       .on("change", function () {
-        globals.selected_segments = d3.select(this)
-          .selectAll("option")
-          .filter(function () {
-            return this.selected;
-          });
-        if (globals.filter_type === "Hide") {
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        } else if (globals.filter_type === "Emphasize") {
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+        instance._updateSelectedFilters(d3.select(this), "selected_segments");
       })
       .selectAll("option")
       .data(all_segments.concat(globals.present_segments.domain().sort()))
@@ -2546,6 +2516,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     main_svg.datum(data)
       .call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
+    // TODO: This should move into each of the chart renderers when we have some time
+    instance._hideError();
+    instance._main_svg.style("opacity", 1);
+
     if (hasScenes) {
       instance._currentSceneIndex = 0;
       changeScene(0);
@@ -2745,54 +2719,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // parse the event dates
     // assign an end date if none is provided
     data.forEach(function (item) {
-      if (item.end_date === "" || item.end_date === null) { // if end_date is empty, set it to equal start_date
-        item.end_date = item.start_date;
-      }
+      item.event_id = i;
+      globals.active_event_list.push(i);
+      i++;
 
       // if there are numerical dates before -9999 or after 10000, don't attempt to parse them
       if (globals.date_granularity === "epochs") {
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
         return;
       }
 
-      var dateFormat = "Y-MM-DD HH:mm Z";
-
-      // is start date a numeric year?
-      if (globals.isNumber(item.start_date)) {
-        // convert start_date to date object
-        item.start_date = moment(item.start_date, dateFormat).toDate();
-
-        // convert end_date to date object
-        item.end_date = moment(item.end_date, dateFormat).toDate();
-
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
-
-        // set end_date to end of that year as date object
-        item.end_date = moment(item.end_date).endOf("year").toDate();
-      } else { // start date is not a numeric year
-        globals.date_granularity = "days";
-
-        // check for start_date string validity
-        if (moment(item.start_date).isValid()) {
-          item.start_date = moment(item.start_date, dateFormat).startOf("hour").toDate(); // account for UTC offset
-          item.event_id = i;
-          globals.active_event_list.push(i);
-          i++;
-        } else {
-          item.start_date = undefined;
-        }
-
-        // check for end_date string validity
-        if (moment(item.end_date).isValid()) {
-          item.end_date = moment(item.end_date, dateFormat).endOf("hour").toDate(); // account for UTC offset
-        } else {
-          item.end_date = undefined;
-        }
-      }
+      instance._parseStartAndEndDates(item);
 
       globals.active_event_list.push(item.event_id);
       globals.prev_active_event_list.push(item.event_id);
@@ -3803,8 +3739,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   globals.dispatch.on("remove", function (selected_categories, selected_facets, selected_segments) {
     instance.clearCanvas();
 
-    globals.prev_active_event_list = globals.active_event_list;
-    globals.active_event_list = [];
+    const active_event_list = [];
 
     var matches, mismatches,
       selected_category_values = [],
@@ -3828,103 +3763,115 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       if ((selected_category_values.indexOf("( All )") !== -1 || selected_category_values.indexOf(item.category) !== -1) &&
         (selected_facet_values.indexOf("( All )") !== -1 || selected_facet_values.indexOf(item.facet) !== -1) &&
         (selected_segment_values.indexOf("( All )") !== -1 || selected_segment_values.indexOf(item.segment) !== -1)) {
-        globals.active_event_list.push(item.event_id);
+        active_event_list.push(item.event_id);
       }
     });
 
     mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) === -1;
+      return active_event_list.indexOf(d.event_id) === -1;
     });
 
     matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    globals.active_data = globals.all_data.filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+    const active_data = globals.all_data.filter(function (d) {
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    if (mismatches[0].length !== 0) {
-      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
-    } else {
-      logEvent(matches[0].length + " events", "remove");
-    }
+    // We only support having at least on item.
+    if (active_data.length > 0) {
+      globals.prev_active_event_list = globals.active_event_list;
+      globals.active_event_list = active_event_list;
+      globals.active_data = active_data;
 
-    measureTimeline(globals.active_data);
-
-    globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
-      return time.minute.floor(d.end_date);
-    });
-
-    globals.all_data.min_start_date = globals.active_data.min_start_date;
-    globals.all_data.max_end_date = globals.active_data.max_end_date;
-
-    globals.max_end_age = 0;
-
-    // determine facets (separate timelines) from data
-    globals.facets.domain(globals.active_data.map(function (d) {
-      return d.facet;
-    }));
-
-    globals.facets.domain().sort();
-
-    globals.num_facets = globals.facets.domain().length;
-    globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
-    globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
-
-    logEvent("num facets: " + globals.num_facet_cols, "remove");
-
-    if (timeline_vis.tl_layout() === "Segmented") {
-      if (timeline_vis.tl_representation() === "Grid") {
-        globals.segment_granularity = "centuries";
-      } else if (timeline_vis.tl_representation() === "Calendar") {
-        globals.segment_granularity = "weeks";
+      if (mismatches[0].length !== 0) {
+        logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
       } else {
-        globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        logEvent(matches[0].length + " events", "remove");
       }
-    }
 
-    var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+      measureTimeline(globals.active_data);
 
-    globals.segments.domain(segment_list.map(function (d) {
-      return d;
-    }));
-
-    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
-
-    globals.num_segments = globals.segments.domain().length;
-    globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
-    globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
-
-    determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
-
-    logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
-
-    adjustSvgSize();
-
-    main_svg
-      .datum(globals.active_data)
-      .call(timeline_vis.duration(instance._getAnimationStepDuration())
-      .height(globals.height)
-      .width(globals.width));
-
-    if (reset_segmented_layout) {
-      mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) === -1;
+      globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
+        return time.minute.floor(d.end_date);
       });
 
-      matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) !== -1;
-      });
-    }
+      globals.all_data.min_start_date = globals.active_data.min_start_date;
+      globals.all_data.max_end_date = globals.active_data.max_end_date;
 
-    globals.prev_active_event_list = globals.active_event_list;
+      globals.max_end_age = 0;
+
+      // determine facets (separate timelines) from data
+      globals.facets.domain(globals.active_data.map(function (d) {
+        return d.facet;
+      }));
+
+      globals.facets.domain().sort();
+
+      globals.num_facets = globals.facets.domain().length;
+      globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
+      globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
+
+      logEvent("num facets: " + globals.num_facet_cols, "remove");
+
+      if (timeline_vis.tl_layout() === "Segmented") {
+        if (timeline_vis.tl_representation() === "Grid") {
+          globals.segment_granularity = "centuries";
+        } else if (timeline_vis.tl_representation() === "Calendar") {
+          globals.segment_granularity = "weeks";
+        } else {
+          globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        }
+      }
+
+      var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+
+      globals.segments.domain(segment_list.map(function (d) {
+        return d;
+      }));
+
+      logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
+
+      globals.num_segments = globals.segments.domain().length;
+      globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
+      globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
+
+      determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
+
+      logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
+
+      adjustSvgSize();
+
+      main_svg.datum(globals.active_data)
+        .call(timeline_vis.duration(instance._getAnimationStepDuration())
+        .height(globals.height)
+        .width(globals.width));
+
+      instance._hideError();
+      instance._main_svg.style("opacity", 1);
+
+      if (reset_segmented_layout) {
+        mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) === -1;
+        });
+
+        matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) !== -1;
+        });
+      }
+
+      globals.prev_active_event_list = globals.active_event_list;
+    } else {
+      instance._main_svg.style("opacity", 0);
+      instance._showError("No data available for the selected set of filters.");
+    }
   });
 
   function importIntro() {
@@ -4815,6 +4762,25 @@ TimelineStoryteller.prototype._getAnimationStepDuration = function () {
 };
 
 /**
+ * Shows an error on the display area
+ * @param {string} text The text to display
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._showError = function (text) {
+  this._errorArea.html(text);
+  this._errorArea.style("display", "");
+};
+
+/**
+ * Hides the errors on the display area
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._hideError = function () {
+  this._errorArea.html("");
+  this._errorArea.style("display", "none");
+};
+
+/**
  * Event listener for when the TimelineStoryteller is resized
  */
 TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
@@ -4977,6 +4943,57 @@ TimelineStoryteller.prototype._recordScene = function () {
     }
   }, 100); // check every 100ms
   return true;
+};
+
+/**
+ * Parses the start_date and end_date properties of the given item
+ * @param {object} item The item to parse start & end dates for
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._parseStartAndEndDates = function (item) {
+  let startMoment;
+  let endMoment;
+  let dateFormat = "Y-MM-DD HH:mm Z";
+
+  // Try to parse the start date from the original
+  // If that fails, try to estimate from the end date
+  // Otherwise fall back to todays day
+  // NOTE: isValid returns true EVEN IF start_date is empty/null/undefined
+  if (item.start_date && moment(item.start_date).isValid()) {
+    startMoment = moment(item.start_date, dateFormat); // account for UTC offset
+
+  // Use the end date if the start date is not valid
+  } else if (item.end_date && moment(item.end_date).isValid()) {
+    startMoment = moment(item.end_date, dateFormat);
+  } else {
+    startMoment = moment(new Date());
+  }
+
+  // Try to parse the end date from the original
+  // If that fails, try to estimate from the start date
+  if (item.end_date && moment(item.end_date).isValid()) {
+    endMoment = moment(item.end_date, dateFormat); // account for UTC offset
+  } else {
+    // Use the start_date to approximate end date
+    endMoment = moment(startMoment);
+  }
+
+  // We use year based when the data is numeric
+  // TODO: Think about what happens if there is a mix between year only dates and full dates in the same dataset.
+  const isYearBased =
+    (item.start_date !== undefined && globals.isNumber(item.start_date)) ||
+    (item.end_date !== undefined && globals.isNumber(item.end_date));
+
+  // is start date a numeric year?
+  if (isYearBased) {
+    // set end_date to end of that year as date object
+    item.start_date = startMoment.toDate();
+    item.end_date = endMoment.endOf("year").toDate();
+  } else { // start date is not a numeric year
+    globals.date_granularity = "days";
+    item.start_date = startMoment.startOf("hour").toDate();
+    item.end_date = endMoment.endOf("hour").toDate();
+  }
 };
 
 /**
@@ -5148,6 +5165,37 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
 
     globals.image_list.push(image_list_item);
     addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, image_list_item);
+  }
+};
+
+/**
+ * Updates the selected filters from the given filter container
+ * @param {d3.Selection} filterContainer The filter container to grab the new filters from
+ * @param {string} type The type of filter "selected_categories", "selected_facets", "selected_segments"
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._updateSelectedFilters = function (filterContainer, type) {
+  const newOptions = filterContainer
+    .selectAll("option")
+    .filter(function () {
+      return this.selected;
+    });
+  if (newOptions.size() === 0) {
+    filterContainer
+      .selectAll("option")
+      .attr("selected", false);
+    if (globals[type]) {
+      globals[type].each(function () {
+        this.selected = true;
+      });
+    }
+  } else {
+    globals[type] = newOptions;
+    if (globals.filter_type === "Hide") {
+      globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    } else if (globals.filter_type === "Emphasize") {
+      globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    }
   }
 };
 
