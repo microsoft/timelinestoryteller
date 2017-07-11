@@ -4677,14 +4677,14 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
                 this.style.opacity = 0;
               }
             });
+      }
 
-        if (anno.type === "caption") {
-          globals.caption_list.push(item);
-        } else if (anno.type === "image") {
-          globals.image_list.push(item);
-        } else {
-          globals.annotation_list.push(item);
-        }
+      if (anno.type === "caption") {
+        globals.caption_list.push(item);
+      } else if (anno.type === "image") {
+        globals.image_list.push(item);
+      } else {
+        globals.annotation_list.push(item);
       }
     });
 
