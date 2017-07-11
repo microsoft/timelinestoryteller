@@ -158,6 +158,7 @@ describe("TimelineStoryteller", function () {
     });
     it("should draw annotations with the correct position if scenes are switched quickly");
     it("should not draw annotations on the wrong scene");
+    it("should not allow to resize, remove, add and drag annotations in playback mode");
     it("should import and preprocess demo_json correctly");
     it("should import and preprocess json correctly");
     it("should import and preprocess json_parsed correctly");
