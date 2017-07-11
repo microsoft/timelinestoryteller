@@ -736,7 +736,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
             return true;
           }
           setTimeout(function () {
-            instance._loadTimeline({ timeline_json_data: sheet.data });
+            instance.load({ timeline_json_data: sheet.data }, false);
           }, 500);
         });
       } else {
@@ -760,7 +760,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
               globals.timeline_json_data = sheetWithData.data;
               setTimeout(function () {
-                instance._loadTimeline({ timeline_json_data: sheetWithData.data });
+                instance.load({ timeline_json_data: sheetWithData.data }, false);
               }, 500);
             });
           }, 500);
@@ -4395,7 +4395,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
             selectWithParent("#gdoc_worksheet_title_input").property("value", "");
 
             setTimeout(function () {
-              instance._loadTimeline(window.timeline_story_demo_story);
+              instance.load(window.timeline_story_demo_story, true);
             }, 500);
           }
         },
@@ -4451,7 +4451,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                 if (source !== "") {
                   setTimeout(() => {
                     logEvent("loading (demo_story)", "load");
-                    that._loadTimeline({ timeline_json_data: demoData[source].data });
+                    that.load({ timeline_json_data: demoData[source].data }, false);
                   }, 500);
                 } else {
                   globals.source = source;
@@ -4486,7 +4486,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                   setTimeout(() => {
                     logEvent("loading (json)", "load");
                     d3.json(URL.createObjectURL(blob), function (error, data) {
-                      inst._loadTimeline(data.timeline_json_data ? data : { timeline_json_data: data });
+                      inst.load(data.timeline_json_data ? data : { timeline_json_data: data }, false);
                     });
                   }, 500);
                 };
@@ -4517,7 +4517,7 @@ TimelineStoryteller.DEFAULT_OPTIONS = Object.freeze({
                   setTimeout(() => {
                     logEvent("loading (csv)", "load");
                     d3.csv(URL.createObjectURL(blob), function (error, data) {
-                      inst._loadTimeline({ timeline_json_data: data });
+                      inst.load({ timeline_json_data: data }, false);
                     });
                   }, 500);
                 };
@@ -4723,23 +4723,26 @@ TimelineStoryteller.prototype._loadAnnotations = function (scene, scene_index) {
         element
           .transition()
           .duration(that.options.animations ? 50 : 0)
-            .style("opacity", 1)
-            .each(function () {
-              // If after running the transition, the scene has changed, then hide this annotation.
-              if (that._currentSceneIndex !== scene_index) {
-                this.style.opacity = 0;
-              }
-            });
-
-        if (anno.type === "caption") {
-          globals.caption_list.push(item);
-        } else if (anno.type === "image") {
-          globals.image_list.push(item);
-        } else {
-          globals.annotation_list.push(item);
-        }
+          .style("opacity", 1)
+          .each(function () {
+            // If after running the transition, the scene has changed, then hide this annotation.
+            if (that._currentSceneIndex !== scene_index) {
+              this.style.opacity = 0;
+            }
+          });
+      }
+      if (anno.type === "caption") {
+        globals.caption_list.push(item);
+      } else if (anno.type === "image") {
+        globals.image_list.push(item);
+      } else {
+        globals.annotation_list.push(item);
       }
     });
+
+  // Set read-only state for annotations in playback mode
+  d3.selectAll(".annotation_control, .annotation_drag_area, .image_drag_area, .caption_drag_area")
+    .style("display", globals.playback_mode ? "none" : "");
 
   // toggle selected events in the scene
   this._main_svg.selectAll(".timeline_event_g")[0].forEach(function (event) {
