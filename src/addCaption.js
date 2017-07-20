@@ -11,6 +11,7 @@ var globals = require("./globals");
 var utils = require("./utils");
 var logEvent = utils.logEvent;
 var selectWithParent = utils.selectWithParent;
+var ellipsize = require("ellipsize");
 
 module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, captionObj) {
   "use strict";
@@ -221,12 +222,15 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
       word,
       line = [],
       line_number = 0,
+      letter_width = 8,
+      max_letters = Math.floor(width / letter_width) - 2,
       dy = parseFloat(text.attr("dy")),
       tspan = text.text(null).append("tspan")
         .attr("dy", dy + "em")
         .attr("x", x_pos + 7.5)
         .attr("y", y_pos + globals.unit_width);
     while (word = words.pop()) { // eslint-disable-line no-cond-assign
+      word = ellipsize(word, max_letters);
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {

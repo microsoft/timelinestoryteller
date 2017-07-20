@@ -12,6 +12,7 @@ var globals = require("./globals");
 var utils = require("./utils");
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
+var ellipsize = require("ellipsize");
 
 module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
   var target;
@@ -372,12 +373,15 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
       word,
       line = [],
       line_number = 0,
+      letter_width = 4.5,
+      max_letters = Math.floor(width / letter_width) - 2,
       dy = parseFloat(text.attr("dy")),
       tspan = text.text(null).append("tspan")
         .attr("dy", dy + "em")
         .attr("x", x_pos + x_anno_offset + 7.5)
         .attr("y", y_pos + y_anno_offset + annotation_buffer);
     while (word = words.pop()) { // eslint-disable-line no-cond-assign
+      word = ellipsize(word, max_letters);
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {

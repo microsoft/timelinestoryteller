@@ -1078,13 +1078,13 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         caption_text: caption,
         x_rel_pos: 0.5,
         y_rel_pos: 0.25,
-        caption_width: d3.min([caption.length * 10, 100]),
+        caption_width: d3.min([caption.length * 10, 200]),
         z_index: getNextZIndex()
       };
 
       globals.caption_list.push(caption_list_item);
 
-      addCaption(caption, d3.min([caption.length * 10, 100]), 0.5, 0.25, caption_list_item);
+      addCaption(caption, d3.min([caption.length * 10, 200]), 0.5, 0.25, caption_list_item);
       selectWithParent("#add_caption_text_input").property("value", "");
     });
 
