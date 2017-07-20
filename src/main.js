@@ -5261,6 +5261,7 @@ TimelineStoryteller.prototype.applyOptions = function (updateMenu) {
   selectWithParent("#footer").style("display", options.showAbout === false ? "none" : null);
   selectWithParent("#logo_div").style("display", options.showLogo === false ? "none" : null);
   selectWithParent("#option_div").style("display", options.showViewOptions === false ? "none" : null);
+  selectWithParent().classed("show-about-bar", options.showAbout);
   this.importPanel.element.style("display", this.onIntro && options.showIntro === false ? "none" : null);
 
   // showImportOptions
