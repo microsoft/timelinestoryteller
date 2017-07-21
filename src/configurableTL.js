@@ -1978,7 +1978,7 @@ function configureLinearAxis(timeline_scale, tl_layout, tl_representation, prev_
         case "days":
           converted_tick = moment(d).format("MMM D hA");
           break;
-        case "weeks":d
+        case "weeks":
           converted_tick = moment(d).format("MMM D");
           break;
         case "months":

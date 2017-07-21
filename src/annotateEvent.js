@@ -88,7 +88,7 @@ module.exports = function (timeline_vis, annotationText, x_pos, y_pos, x_offset,
   }
 
 
-  var min_label_width = label_width;
+  var min_label_width = d3.min([annotationText.length * 10, 100]);
 
   var leader_line_path = [];
   var drawLeaderLine = d3.svg.line()

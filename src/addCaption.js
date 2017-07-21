@@ -19,7 +19,7 @@ module.exports = function (caption, caption_width, x_rel_pos, y_rel_pos, caption
   var x_pos = x_rel_pos * globals.width,
     y_pos = y_rel_pos * globals.height;
 
-  var min_caption_width = caption_width;
+  var min_caption_width = d3.min([caption.length * 10, 200]);
 
   var timeline_caption = selectWithParent("#main_svg").append("g")
     .attr("id", "caption" + captionObj.id)
