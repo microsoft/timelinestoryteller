@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 body, input, textarea, select, text {
   font-family: "Segoe UI Web Regular","wf_segoe-ui_normal","Segoe UI","Segoe UI Symbol","Myriad","Calibri","UnDotum","Optima","Tahoma","Century Gothic","Helvetica Neue","BBAlpha Sans","S60 Sans","Arial",sans-serif;
@@ -1403,6 +1403,10 @@ input[type="color"]::-moz-color-swatch {
   padding-left: 50px;
   padding-right: 50px;
   text-align: center;
+}
+
+.show-about-bar .timeline_storyteller-container {
+    height: calc(100% - 25px);
 }
 
 .playback_mode .timeline_storyteller-container {
