@@ -12,6 +12,7 @@ module.exports = function(config) {
       "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/ellipsize/0.0.3/ellipsize.min.js",
 
       // all files ending in ".spec"
       {pattern: '{test,src}/**/*.spec.js', watched: false}

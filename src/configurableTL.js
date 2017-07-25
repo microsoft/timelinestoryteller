@@ -1976,7 +1976,7 @@ function configureLinearAxis(timeline_scale, tl_layout, tl_representation, prev_
         var converted_tick = d;
         switch (globals.segment_granularity) {
         case "days":
-          converted_tick = moment(d).format("hA");
+          converted_tick = moment(d).format("MMM D hA");
           break;
         case "weeks":
           converted_tick = moment(d).format("MMM D");

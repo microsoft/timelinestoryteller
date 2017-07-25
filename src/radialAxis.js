@@ -232,13 +232,13 @@ d3.radialAxis = function (unit_width) {
         if (i === num_ticks - 1) {
           radial_axis_tick_label = "";
         } else if (longer_than_a_day) {
-          radial_axis_tick_label = moment(d).format("ddd hA");
+          radial_axis_tick_label = moment(d).format("MMM D hA");
         } else {
           radial_axis_tick_label = moment(d).format("hA");
         }
         break;
       case "weeks":
-        radial_axis_tick_label = moment(d).format("ddd MMM D");
+        radial_axis_tick_label = moment(d).format("MMM D");
         break;
       case "months":
         radial_axis_tick_label = moment(d).format("MMM 'YY");
