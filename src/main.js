@@ -2030,7 +2030,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         return "Scene " + (d.s_order + 1);
       });
 
-    function changeSceneClickHandler (d) {
+    function changeSceneClickHandler(d) {
       instance._currentSceneIndex = d.s_order;
       changeScene(instance._currentSceneIndex);
     }
