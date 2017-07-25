@@ -39,6 +39,7 @@ var gif = new GIF({
 });
 var getNextZIndex = require("./annotations").getNextZIndex;
 var log = require("debug")("TimelineStoryteller:main");
+const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
 /**
  * Creates a new TimelineStoryteller component
@@ -2029,6 +2030,11 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
         return "Scene " + (d.s_order + 1);
       });
 
+    function changeSceneClickHandler(d) {
+      instance._currentSceneIndex = d.s_order;
+      changeScene(instance._currentSceneIndex);
+    }
+
     navigation_step_enter.append("rect")
       .attr("fill", "white")
       .attr("width", STEPPER_STEP_WIDTH)
@@ -2036,25 +2042,42 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .style("stroke", function (d) {
         return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       })
-      .style("stroke-width", "3px");
+      .style("stroke-width", "3px")
+      .on("click", changeSceneClickHandler);
 
     navigation_step_update.select("rect")
       .style("stroke", function (d) {
         return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
       });
 
-    navigation_step_enter.append("svg:image")
-      .attr("xlink:href", function (d) {
-        return d.s_src;
-      })
-      .attr("x", 2)
-      .attr("y", 2)
-      .attr("width", STEPPER_STEP_WIDTH - 4)
-      .attr("height", STEPPER_STEP_WIDTH - 4)
-      .on("click", function () {
-        instance._currentSceneIndex = +d3.select(this.parentNode).attr("id").substr(5);
-        changeScene(instance._currentSceneIndex);
-      });
+    if (isIE11) {
+      navigation_step_enter.append("svg:text")
+        .attr("x", 25)
+        .attr("y", 25)
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "central")
+        .attr("style", "cursor:pointer")
+        .text(function (d) {
+          return (d.s_order + 1);
+        })
+        .on("click", changeSceneClickHandler);
+
+      navigation_step_update.select("text")
+        .text(function (d) {
+          return (d.s_order + 1);
+        });
+    } else {
+      navigation_step_enter.append("svg:image")
+        .attr("xlink:href", function (d) {
+          return d.s_src;
+        })
+        .attr("x", 2)
+        .attr("y", 2)
+        .attr("width", STEPPER_STEP_WIDTH - 4)
+        .attr("height", STEPPER_STEP_WIDTH - 4)
+        .on("click", changeSceneClickHandler);
+    }
 
     var navigation_step_delete = navigation_step_enter.append("g")
       .attr("class", "scene_delete")
@@ -4916,32 +4939,39 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   this._currentSceneIndex++;
 
-  var compressed = !(this.options.export && this.options.export.images);
-  var renderOptions = {
-    backgroundColor: "white"
-  };
+  if (isIE11) {
+    this._updateNavigationStepper();
 
-  if (compressed) {
-    renderOptions.encoderType = "image/jpeg";
-    renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
-  }
+    // Dispatch after state has changed
+    this._dispatch.stateChanged();
+  } else {
+    var compressed = !(this.options.export && this.options.export.images);
+    var renderOptions = {
+      backgroundColor: "white"
+    };
 
-  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
-
-  var that = this;
-  var checkExist = setInterval(function () {
-    if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
-      log("gif_frame" + globals.gif_index + " Exists!");
-      globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
-      document.getElementById("gif_frame" + globals.gif_index).remove();
-      globals.gif_index++;
-      that._updateNavigationStepper();
-      clearInterval(checkExist);
-
-      // Dispatch after state has changed
-      that._dispatch.stateChanged();
+    if (compressed) {
+      renderOptions.encoderType = "image/jpeg";
+      renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
     }
-  }, 100); // check every 100ms
+
+    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
+
+    var that = this;
+    var checkExist = setInterval(function () {
+      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
+        log("gif_frame" + globals.gif_index + " Exists!");
+        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
+        document.getElementById("gif_frame" + globals.gif_index).remove();
+        globals.gif_index++;
+        that._updateNavigationStepper();
+        clearInterval(checkExist);
+
+        // Dispatch after state has changed
+        that._dispatch.stateChanged();
+      }
+    }, 100); // check every 100ms
+  }
   return true;
 };
 
