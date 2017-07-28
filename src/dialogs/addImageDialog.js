@@ -119,11 +119,13 @@ AddImageDialog.prototype._addImageButtonClicked = function () {
 
          // This occurs if the server does not have CORS set up properly, or does not allow canvas saving
         if (message.indexOf("tainted") >= 0) {
-          error += "The image server is not set up correctly.";
-        } else if (message.indexOf("CORS") >= 0) {
-          error += "The image server does not allow for the saving of images.";
+          error += "<br/>The image server is not set up correctly.<br/>Try disabling \"Keep Offline\" and \"Resize To\" options.";
+        } else if (message.indexOf("CORS") >= 0 || message.indexOf("Cross")) {
+          error += "<br/>The image server does not allow for the saving of images.<br/>Try disabling \"Keep Offline\" and \"Resize To\" options.";
+        } else {
+          error += "<br/>" + message;
         }
-        this._errorElement.text(error);
+        this._errorElement.node().innerHTML = error;
         this._errorElement.style("display", "");
       });
     };

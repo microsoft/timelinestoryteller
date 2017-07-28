@@ -658,7 +658,7 @@ module.exports = utils;
  * Expose `debug()` as the module.
  */
 
-exports = module.exports = __webpack_require__(85);
+exports = module.exports = __webpack_require__(86);
 exports.log = log;
 exports.formatArgs = formatArgs;
 exports.save = save;
@@ -986,7 +986,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /**
 
-anotateEvent: //on-demand persistent content_text label for an event
+anotateEvent: //on-demand persistent annotationText label for an event
 
 **/
 
@@ -998,7 +998,7 @@ var utils = __webpack_require__(3);
 var selectWithParent = utils.selectWithParent;
 var logEvent = utils.logEvent;
 
-module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
+module.exports = function (timeline_vis, annotationText, x_pos, y_pos, x_offset, y_offset, x_anno_offset, y_anno_offset, label_width, item_index, annotationObj) {
   var target;
   // var LINE_OCTO = 0;
   // var LINE_RECT = 1;
@@ -1158,7 +1158,7 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
     d3.select(this.parentNode).select(".annotation_drag_area").attr("width", label_width + 7.5);
 
-    d3.select(this.parentNode).select(".event_label").attr("x", x_pos + x_anno_offset + 7.5).attr("y", y_pos + y_anno_offset + annotation_buffer).text(content_text).call(wrap, label_width - 7.5);
+    d3.select(this.parentNode).select(".event_label").attr("x", x_pos + x_anno_offset + 7.5).attr("y", y_pos + y_anno_offset + annotation_buffer).text(annotationText).call(wrap, label_width - 7.5);
 
     d3.select(this.parentNode).selectAll(".frame_resizer").attr("x", x_pos + x_anno_offset + label_width + 7.5).attr("y", y_pos + y_anno_offset);
 
@@ -1222,11 +1222,11 @@ module.exports = function (timeline_vis, content_text, x_pos, y_pos, x_offset, y
 
   event_annotation.append("circle").attr("class", "annotation_circle").attr("cx", x_pos).attr("cy", y_pos).attr("r", 2.5);
 
-  var event_label_text = event_annotation.append("text").attr("class", "event_label").attr("x", x_pos + x_anno_offset + 7.5).attr("y", y_pos + y_anno_offset + annotation_buffer).attr("dy", 0).text(content_text).call(wrap, label_width - 7.5);
+  var event_label_text = event_annotation.append("text").attr("class", "event_label").attr("x", x_pos + x_anno_offset + 7.5).attr("y", y_pos + y_anno_offset + annotation_buffer).attr("dy", 0).text(annotationText).call(wrap, label_width - 7.5);
 
   var annotation_drag_area = event_annotation.append("rect").attr("class", "annotation_drag_area").attr("x", x_pos + x_anno_offset).attr("y", y_pos + y_anno_offset).attr("width", label_width + 7.5).on("click", function () {}).call(drag);
 
-  event_label_text.attr("dy", 1 + "em").text(content_text).call(wrap, label_width - 7.5);
+  event_label_text.attr("dy", 1 + "em").text(annotationText).call(wrap, label_width - 7.5);
 
   function wrap(text, width) {
     var words = text.text().split(/\s+/).reverse(),
@@ -1705,6 +1705,7 @@ var gif = new GIF({
 });
 var getNextZIndex = __webpack_require__(8).getNextZIndex;
 var log = __webpack_require__(4)("TimelineStoryteller:main");
+var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
 /**
  * Creates a new TimelineStoryteller component
@@ -1732,6 +1733,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   this._colorPicker = __webpack_require__(16)(timelineElement);
   this._container = selectWithParent().append("div").attr("class", "timeline_storyteller-container");
+  this._errorArea = this._container.append("div").attr("class", "timeline_storyteller-error");
 
   this._component_width = parentElement.clientWidth;
   this._component_height = parentElement.clientHeight;
@@ -2575,6 +2577,8 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   function loadTimeline(state, skipConfig) {
     instance._loaded = false;
 
+    instance._hideError();
+
     var loadDataIndicator = selectWithParent(".loading_data_indicator");
     loadDataIndicator.style("display", "block");
 
@@ -2947,38 +2951,28 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     });
 
     selectAllWithParent("#filter_type_picker input[name=filter_type_rb]").on("change", function () {
+      var newCategories = selectWithParent("#category_picker").select("option");
+      var newFacets = selectWithParent("#facet_picker").select("option");
+      var newSegments = selectWithParent("#segment_picker").select("option");
+
+      globals.filter_type = this.value;
+
       selectWithParent("#filter_div").style("display", "inline");
 
       logEvent("filter type changed: " + this.value, "filter");
 
-      var trigger_remove_filter = false;
-      globals.filter_type = this.value;
-      if (globals.filter_type === "Hide") {
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-
-        if (trigger_remove_filter) {
-          globals.dispatch.Emphasize(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
-      } else if (globals.filter_type === "Emphasize") {
+      var isHide = globals.filter_type === "Hide";
+      if (!isHide) {
         globals.active_data = globals.all_data;
-        if (globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        } else if (globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )") {
-          trigger_remove_filter = true;
-        }
-        if (trigger_remove_filter) {
-          globals.dispatch.remove(selectWithParent("#category_picker").select("option"), selectWithParent("#facet_picker").select("option"), selectWithParent("#segment_picker").select("option"));
-          globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-        }
+      }
+
+      var trigger_remove_filter = globals.selected_categories[0].length !== 1 || globals.selected_categories[0][0].value !== "( All )" || globals.selected_facets[0].length !== 1 || globals.selected_facets[0][0].value !== "( All )" || globals.selected_segments[0].length !== 1 || globals.selected_segments[0][0].value !== "( All )";
+
+      if (trigger_remove_filter) {
+        var remove = globals.dispatch.remove;
+        var emphasize = globals.dispatch.Emphasize;
+        (isHide ? emphasize : remove).call(globals.dispatch, newCategories, newFacets, newSegments);
+        (isHide ? remove : emphasize).call(globals.dispatch, globals.selected_categories, globals.selected_facets, globals.selected_segments);
       }
     });
 
@@ -3002,14 +2996,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     category_filter.append("select").attr("class", "filter_select").attr("size", 8).attr("id", "category_picker").attr({
       multiple: true
     }).on("change", function () {
-      globals.selected_categories = d3.select(this).selectAll("option").filter(function () {
-        return this.selected;
-      });
-      if (globals.filter_type === "Hide") {
-        globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      } else if (globals.filter_type === "Emphasize") {
-        globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      }
+      instance._updateSelectedFilters(d3.select(this), "selected_categories");
     }).selectAll("option").data(all_categories.concat(globals.categories.domain().sort())).enter().append("option").text(function (d) {
       return d;
     }).property("selected", function (d) {
@@ -3060,14 +3047,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     facet_filter.append("select").attr("class", "filter_select").attr("size", 8).attr("id", "facet_picker").attr({
       multiple: true
     }).on("change", function () {
-      globals.selected_facets = d3.select(this).selectAll("option").filter(function () {
-        return this.selected;
-      });
-      if (globals.filter_type === "Hide") {
-        globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      } else if (globals.filter_type === "Emphasize") {
-        globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      }
+      instance._updateSelectedFilters(d3.select(this), "selected_facets");
     }).selectAll("option").data(all_facets.concat(globals.facets.domain().sort())).enter().append("option").text(function (d) {
       return d;
     }).property("selected", function (d) {
@@ -3137,14 +3117,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     segment_filter.append("select").attr("id", "segment_picker").attr("class", "filter_select").attr("size", 8).attr({
       multiple: true
     }).on("change", function () {
-      globals.selected_segments = d3.select(this).selectAll("option").filter(function () {
-        return this.selected;
-      });
-      if (globals.filter_type === "Hide") {
-        globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      } else if (globals.filter_type === "Emphasize") {
-        globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
-      }
+      instance._updateSelectedFilters(d3.select(this), "selected_segments");
     }).selectAll("option").data(all_segments.concat(globals.present_segments.domain().sort())).enter().append("option").text(function (d) {
       return d;
     }).property("selected", function (d) {
@@ -3313,20 +3286,32 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       return "Scene " + (d.s_order + 1);
     });
 
+    function changeSceneClickHandler(d) {
+      instance._currentSceneIndex = d.s_order;
+      changeScene(instance._currentSceneIndex);
+    }
+
     navigation_step_enter.append("rect").attr("fill", "white").attr("width", STEPPER_STEP_WIDTH).attr("height", STEPPER_STEP_WIDTH).style("stroke", function (d) {
       return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
-    }).style("stroke-width", "3px");
+    }).style("stroke-width", "3px").on("click", changeSceneClickHandler);
 
     navigation_step_update.select("rect").style("stroke", function (d) {
       return d.s_order === instance._currentSceneIndex ? "#f00" : "#ccc";
     });
 
-    navigation_step_enter.append("svg:image").attr("xlink:href", function (d) {
-      return d.s_src;
-    }).attr("x", 2).attr("y", 2).attr("width", STEPPER_STEP_WIDTH - 4).attr("height", STEPPER_STEP_WIDTH - 4).on("click", function () {
-      instance._currentSceneIndex = +d3.select(this.parentNode).attr("id").substr(5);
-      changeScene(instance._currentSceneIndex);
-    });
+    if (isIE11) {
+      navigation_step_enter.append("svg:text").attr("x", 25).attr("y", 25).attr("font-size", "20px").attr("text-anchor", "middle").attr("alignment-baseline", "central").attr("style", "cursor:pointer").text(function (d) {
+        return d.s_order + 1;
+      }).on("click", changeSceneClickHandler);
+
+      navigation_step_update.select("text").text(function (d) {
+        return d.s_order + 1;
+      });
+    } else {
+      navigation_step_enter.append("svg:image").attr("xlink:href", function (d) {
+        return d.s_src;
+      }).attr("x", 2).attr("y", 2).attr("width", STEPPER_STEP_WIDTH - 4).attr("height", STEPPER_STEP_WIDTH - 4).on("click", changeSceneClickHandler);
+    }
 
     var navigation_step_delete = navigation_step_enter.append("g").attr("class", "scene_delete").style("opacity", 0);
 
@@ -3720,6 +3705,10 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     main_svg.datum(data).call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
 
+    // TODO: This should move into each of the chart renderers when we have some time
+    instance._hideError();
+    instance._main_svg.style("opacity", 1);
+
     if (hasScenes) {
       instance._currentSceneIndex = 0;
       changeScene(0);
@@ -3836,7 +3825,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   instance._drawTimeline = drawTimeline;
 
   /**
-    --------------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------------
   TIMELINE DATA PROCESSING UTILITY FUNCTIONS
   --------------------------------------------------------------------------------------
   **/
@@ -3847,56 +3836,16 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     // parse the event dates
     // assign an end date if none is provided
     data.forEach(function (item) {
-      if (item.end_date === "" || item.end_date === null) {
-        // if end_date is empty, set it to equal start_date
-        item.end_date = item.start_date;
-      }
+      item.event_id = i;
+      globals.active_event_list.push(i);
+      i++;
 
       // if there are numerical dates before -9999 or after 10000, don't attempt to parse them
       if (globals.date_granularity === "epochs") {
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
         return;
       }
 
-      var dateFormat = "Y-MM-DD HH:mm Z";
-
-      // is start date a numeric year?
-      if (globals.isNumber(item.start_date)) {
-        // convert start_date to date object
-        item.start_date = moment(item.start_date, dateFormat).toDate();
-
-        // convert end_date to date object
-        item.end_date = moment(item.end_date, dateFormat).toDate();
-
-        item.event_id = i;
-        globals.active_event_list.push(i);
-        i++;
-
-        // set end_date to end of that year as date object
-        item.end_date = moment(item.end_date).endOf("year").toDate();
-      } else {
-        // start date is not a numeric year
-        globals.date_granularity = "days";
-
-        // check for start_date string validity
-        if (moment(item.start_date).isValid()) {
-          item.start_date = moment(item.start_date, dateFormat).startOf("hour").toDate(); // account for UTC offset
-          item.event_id = i;
-          globals.active_event_list.push(i);
-          i++;
-        } else {
-          item.start_date = undefined;
-        }
-
-        // check for end_date string validity
-        if (moment(item.end_date).isValid()) {
-          item.end_date = moment(item.end_date, dateFormat).endOf("hour").toDate(); // account for UTC offset
-        } else {
-          item.end_date = undefined;
-        }
-      }
+      instance._parseStartAndEndDates(item);
 
       globals.active_event_list.push(item.event_id);
       globals.prev_active_event_list.push(item.event_id);
@@ -4932,8 +4881,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
   globals.dispatch.on("remove", function (selected_categories, selected_facets, selected_segments) {
     instance.clearCanvas();
 
-    globals.prev_active_event_list = globals.active_event_list;
-    globals.active_event_list = [];
+    var active_event_list = [];
 
     var matches,
         mismatches,
@@ -4956,99 +4904,112 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
     globals.all_data.forEach(function (item) {
       if ((selected_category_values.indexOf("( All )") !== -1 || selected_category_values.indexOf(item.category) !== -1) && (selected_facet_values.indexOf("( All )") !== -1 || selected_facet_values.indexOf(item.facet) !== -1) && (selected_segment_values.indexOf("( All )") !== -1 || selected_segment_values.indexOf(item.segment) !== -1)) {
-        globals.active_event_list.push(item.event_id);
+        active_event_list.push(item.event_id);
       }
     });
 
     mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) === -1;
+      return active_event_list.indexOf(d.event_id) === -1;
     });
 
     matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    globals.active_data = globals.all_data.filter(function (d) {
-      return globals.active_event_list.indexOf(d.event_id) !== -1;
+    var active_data = globals.all_data.filter(function (d) {
+      return active_event_list.indexOf(d.event_id) !== -1;
     });
 
-    if (mismatches[0].length !== 0) {
-      logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
-    } else {
-      logEvent(matches[0].length + " events", "remove");
-    }
+    // We only support having at least on item.
+    if (active_data.length > 0) {
+      globals.prev_active_event_list = globals.active_event_list;
+      globals.active_event_list = active_event_list;
+      globals.active_data = active_data;
 
-    measureTimeline(globals.active_data);
-
-    globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
-      return d.start_date;
-    });
-    globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
-      return time.minute.floor(d.end_date);
-    });
-
-    globals.all_data.min_start_date = globals.active_data.min_start_date;
-    globals.all_data.max_end_date = globals.active_data.max_end_date;
-
-    globals.max_end_age = 0;
-
-    // determine facets (separate timelines) from data
-    globals.facets.domain(globals.active_data.map(function (d) {
-      return d.facet;
-    }));
-
-    globals.facets.domain().sort();
-
-    globals.num_facets = globals.facets.domain().length;
-    globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
-    globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
-
-    logEvent("num facets: " + globals.num_facet_cols, "remove");
-
-    if (timeline_vis.tl_layout() === "Segmented") {
-      if (timeline_vis.tl_representation() === "Grid") {
-        globals.segment_granularity = "centuries";
-      } else if (timeline_vis.tl_representation() === "Calendar") {
-        globals.segment_granularity = "weeks";
+      if (mismatches[0].length !== 0) {
+        logEvent(matches[0].length + " out of " + (matches[0].length + mismatches[0].length) + " events", "remove");
       } else {
-        globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        logEvent(matches[0].length + " events", "remove");
       }
-    }
 
-    var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+      measureTimeline(globals.active_data);
 
-    globals.segments.domain(segment_list.map(function (d) {
-      return d;
-    }));
-
-    logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
-
-    globals.num_segments = globals.segments.domain().length;
-    globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
-    globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
-
-    determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
-
-    logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
-
-    adjustSvgSize();
-
-    main_svg.datum(globals.active_data).call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
-
-    if (reset_segmented_layout) {
-      mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) === -1;
+      globals.active_data.min_start_date = d3.min(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_start_date = d3.max(globals.active_data, function (d) {
+        return d.start_date;
+      });
+      globals.active_data.max_end_date = d3.max(globals.active_data, function (d) {
+        return time.minute.floor(d.end_date);
       });
 
-      matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
-        return globals.active_event_list.indexOf(d.event_id) !== -1;
-      });
-    }
+      globals.all_data.min_start_date = globals.active_data.min_start_date;
+      globals.all_data.max_end_date = globals.active_data.max_end_date;
 
-    globals.prev_active_event_list = globals.active_event_list;
+      globals.max_end_age = 0;
+
+      // determine facets (separate timelines) from data
+      globals.facets.domain(globals.active_data.map(function (d) {
+        return d.facet;
+      }));
+
+      globals.facets.domain().sort();
+
+      globals.num_facets = globals.facets.domain().length;
+      globals.num_facet_cols = Math.ceil(Math.sqrt(globals.num_facets));
+      globals.num_facet_rows = Math.ceil(globals.num_facets / globals.num_facet_cols);
+
+      logEvent("num facets: " + globals.num_facet_cols, "remove");
+
+      if (timeline_vis.tl_layout() === "Segmented") {
+        if (timeline_vis.tl_representation() === "Grid") {
+          globals.segment_granularity = "centuries";
+        } else if (timeline_vis.tl_representation() === "Calendar") {
+          globals.segment_granularity = "weeks";
+        } else {
+          globals.segment_granularity = getSegmentGranularity(globals.global_min_start_date, globals.global_max_end_date);
+        }
+      }
+
+      var segment_list = getSegmentList(globals.active_data.min_start_date, globals.active_data.max_end_date);
+
+      globals.segments.domain(segment_list.map(function (d) {
+        return d;
+      }));
+
+      logEvent("segments (" + globals.segments.domain().length + "): " + globals.segments.domain(), "preprocessing");
+
+      globals.num_segments = globals.segments.domain().length;
+      globals.num_segment_cols = Math.ceil(Math.sqrt(globals.num_segments));
+      globals.num_segment_rows = Math.ceil(globals.num_segments / globals.num_segment_cols);
+
+      determineSize(globals.active_data, timeline_vis.tl_scale(), timeline_vis.tl_layout(), timeline_vis.tl_representation());
+
+      logEvent("num facets after sizing: " + globals.num_facet_cols, "remove");
+
+      adjustSvgSize();
+
+      main_svg.datum(globals.active_data).call(timeline_vis.duration(instance._getAnimationStepDuration()).height(globals.height).width(globals.width));
+
+      instance._hideError();
+      instance._main_svg.style("opacity", 1);
+
+      if (reset_segmented_layout) {
+        mismatches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) === -1;
+        });
+
+        matches = selectAllWithParent(".timeline_event_g").filter(function (d) {
+          return globals.active_event_list.indexOf(d.event_id) !== -1;
+        });
+      }
+
+      globals.prev_active_event_list = globals.active_event_list;
+    } else {
+      instance._main_svg.style("opacity", 0);
+      instance._showError("No data available for the selected set of filters.");
+    }
   });
 
   function importIntro() {
@@ -5867,6 +5828,25 @@ TimelineStoryteller.prototype._getAnimationStepDuration = function () {
 };
 
 /**
+ * Shows an error on the display area
+ * @param {string} text The text to display
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._showError = function (text) {
+  this._errorArea.html(text);
+  this._errorArea.style("display", "");
+};
+
+/**
+ * Hides the errors on the display area
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._hideError = function () {
+  this._errorArea.html("");
+  this._errorArea.style("display", "none");
+};
+
+/**
  * Event listener for when the TimelineStoryteller is resized
  */
 TimelineStoryteller.prototype._onResized = debounce(function (updateVis) {
@@ -6000,33 +5980,90 @@ TimelineStoryteller.prototype._recordScene = function () {
 
   this._currentSceneIndex++;
 
-  var compressed = !(this.options.export && this.options.export.images);
-  var renderOptions = {
-    backgroundColor: "white"
-  };
+  if (isIE11) {
+    this._updateNavigationStepper();
 
-  if (compressed) {
-    renderOptions.encoderType = "image/jpeg";
-    renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
+    // Dispatch after state has changed
+    this._dispatch.stateChanged();
+  } else {
+    var compressed = !(this.options.export && this.options.export.images);
+    var renderOptions = {
+      backgroundColor: "white"
+    };
+
+    if (compressed) {
+      renderOptions.encoderType = "image/jpeg";
+      renderOptions.scale = 300 / Math.max(this._render_width, this._render_height);
+    }
+
+    svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
+
+    var that = this;
+    var checkExist = setInterval(function () {
+      if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
+        log("gif_frame" + globals.gif_index + " Exists!");
+        globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
+        document.getElementById("gif_frame" + globals.gif_index).remove();
+        globals.gif_index++;
+        that._updateNavigationStepper();
+        clearInterval(checkExist);
+
+        // Dispatch after state has changed
+        that._dispatch.stateChanged();
+      }
+    }, 100); // check every 100ms
+  }
+  return true;
+};
+
+/**
+ * Parses the start_date and end_date properties of the given item
+ * @param {object} item The item to parse start & end dates for
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._parseStartAndEndDates = function (item) {
+  var startMoment = void 0;
+  var endMoment = void 0;
+  var dateFormat = "Y-MM-DD HH:mm Z";
+
+  // Try to parse the start date from the original
+  // If that fails, try to estimate from the end date
+  // Otherwise fall back to todays day
+  // NOTE: isValid returns true EVEN IF start_date is empty/null/undefined
+  if (item.start_date && moment(item.start_date).isValid()) {
+    startMoment = moment(item.start_date, dateFormat); // account for UTC offset
+
+    // Use the end date if the start date is not valid
+  } else if (item.end_date && moment(item.end_date).isValid()) {
+    startMoment = moment(item.end_date, dateFormat);
+  } else {
+    startMoment = moment(new Date());
   }
 
-  svgImageUtils.svgAsPNG(document.querySelector(".timeline_storyteller #main_svg"), globals.gif_index, renderOptions);
+  // Try to parse the end date from the original
+  // If that fails, try to estimate from the start date
+  if (item.end_date && moment(item.end_date).isValid()) {
+    endMoment = moment(item.end_date, dateFormat); // account for UTC offset
+  } else {
+    // Use the start_date to approximate end date
+    endMoment = moment(startMoment);
+  }
 
-  var that = this;
-  var checkExist = setInterval(function () {
-    if (document.getElementById("gif_frame" + globals.gif_index) !== null) {
-      log("gif_frame" + globals.gif_index + " Exists!");
-      globals.scenes[globals.scenes.length - 1].s_src = document.getElementById("gif_frame" + globals.gif_index).src;
-      document.getElementById("gif_frame" + globals.gif_index).remove();
-      globals.gif_index++;
-      that._updateNavigationStepper();
-      clearInterval(checkExist);
+  // We use year based when the data is numeric
+  // TODO: Think about what happens if there is a mix between year only dates and full dates in the same dataset.
+  var isYearBased = item.start_date !== undefined && globals.isNumber(item.start_date) || item.end_date !== undefined && globals.isNumber(item.end_date);
 
-      // Dispatch after state has changed
-      that._dispatch.stateChanged();
-    }
-  }, 100); // check every 100ms
-  return true;
+  // is start date a numeric year?
+  if (isYearBased) {
+    // set end_date to end of that year as date object
+    item.start_date = startMoment.toDate();
+    item.end_date = endMoment.endOf("year").toDate();
+  } else {
+    // start date is not a numeric year
+    globals.date_granularity = "days";
+    item.start_date = startMoment.startOf("hour").toDate();
+    item.end_date = endMoment.endOf("hour").toDate();
+  }
 };
 
 /**
@@ -6190,6 +6227,33 @@ TimelineStoryteller.prototype._onAddImageSelected = function (image_url) {
 
     globals.image_list.push(image_list_item);
     addImage(that._timeline_vis, image_url, 0.5, 0.25, image_width, image_height, image_list_item);
+  }
+};
+
+/**
+ * Updates the selected filters from the given filter container
+ * @param {d3.Selection} filterContainer The filter container to grab the new filters from
+ * @param {string} type The type of filter "selected_categories", "selected_facets", "selected_segments"
+ * @returns {void}
+ */
+TimelineStoryteller.prototype._updateSelectedFilters = function (filterContainer, type) {
+  var newOptions = filterContainer.selectAll("option").filter(function () {
+    return this.selected;
+  });
+  if (newOptions.size() === 0) {
+    filterContainer.selectAll("option").attr("selected", false);
+    if (globals[type]) {
+      globals[type].each(function () {
+        this.selected = true;
+      });
+    }
+  } else {
+    globals[type] = newOptions;
+    if (globals.filter_type === "Hide") {
+      globals.dispatch.remove(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    } else if (globals.filter_type === "Emphasize") {
+      globals.dispatch.Emphasize(globals.selected_categories, globals.selected_facets, globals.selected_segments);
+    }
   }
 };
 
@@ -8467,7 +8531,9 @@ function eventMouseOverListener(d, tl_representation, unit_width, configurableTL
       item_y_pos = d.path_y_pos + d.path_offset_y + globals.padding.top;
     }
 
-    var _annotateEvent = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, x_pos - item_x_pos, y_pos - item_y_pos, 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, { id: -1 }),
+    var annoText = d.content_text || d.facet || d.category || d.start_date || d.end_date || "";
+
+    var _annotateEvent = annotateEvent(configurableTL, annoText, item_x_pos, item_y_pos, x_pos - item_x_pos, y_pos - item_y_pos, 50, 50, d3.min([annoText.length * 10, 100]), d.event_id, { id: -1 }),
         element = _annotateEvent.element;
 
     element.classed("temporary_annotation", true);
@@ -8511,28 +8577,29 @@ function eventClickListener(tl_representation, unit_width, configurableTL, d) {
           highestId = n.id;
         }
       });
+      var annoText = d.content_text || d.facet || d.category || d.start_date || d.end_date || "";
       var annotation = {
         id: highestId + 1,
         item_index: d.event_id,
         count: d.annotation_count,
-        content_text: d.content_text,
+        content_text: annoText,
         x_pos: item_x_pos,
         y_pos: item_y_pos,
         x_offset: x_pos - item_x_pos,
         y_offset: y_pos - item_y_pos,
         x_anno_offset: 50,
         y_anno_offset: 50,
-        label_width: d3.min([d.content_text.length * 10, 100]),
+        label_width: d3.min([annoText.length * 10, 100]),
         z_index: getNextZIndex()
       };
 
       globals.annotation_list.push(annotation);
 
-      logEvent("event " + d.event_id + " annotation: <<" + d.content_text + ">>");
+      logEvent("event " + d.event_id + " annotation: <<" + annoText + ">>");
 
       selectAllWithParent(".temporary_annotation").remove();
 
-      var _annotateEvent2 = annotateEvent(configurableTL, d.content_text, item_x_pos, item_y_pos, x_pos - item_x_pos, y_pos - item_y_pos, 50, 50, d3.min([d.content_text.length * 10, 100]), d.event_id, annotation),
+      var _annotateEvent2 = annotateEvent(configurableTL, annoText, item_x_pos, item_y_pos, x_pos - item_x_pos, y_pos - item_y_pos, 50, 50, d3.min([annoText.length * 10, 100]), d.event_id, annotation),
           element = _annotateEvent2.element;
 
       element.transition("event_annotation_show").duration(50).style("opacity", 1);
@@ -11935,8 +12002,8 @@ END Timeline Storyteller Modification
     }
 
     /*
-      BEGIN Timeline Storyteller Modification - Dec 2016
-      */
+     BEGIN Timeline Storyteller Modification - Dec 2016
+     */
     var research_copy = {};
     if (!globals.opt_out) {
       research_copy = {
@@ -11964,8 +12031,8 @@ END Timeline Storyteller Modification
     }
 
     /*
-      END Timeline Storyteller Modification
-      */
+     END Timeline Storyteller Modification
+     */
   };
 
   function uriToBlob(uri) {
@@ -11998,8 +12065,8 @@ END Timeline Storyteller Modification
   };
 
   /*
-    BEGIN Timeline Storyteller Modification - Nov 2016
-    */
+   BEGIN Timeline Storyteller Modification - Nov 2016
+   */
 
   out$.svgAsPNG = function (el, id, options) {
     requireDomNode(el);
@@ -12016,8 +12083,8 @@ END Timeline Storyteller Modification
   };
 
   /*
-    END Timeline Storyteller Modification
-    */
+   END Timeline Storyteller Modification
+   */
 
   // if define is defined create as an AMD module
   if (true) {
@@ -12449,22 +12516,22 @@ function placeHoldersCount (b64) {
 
 function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
-  return (b64.length * 3 / 4) - placeHoldersCount(b64)
+  return b64.length * 3 / 4 - placeHoldersCount(b64)
 }
 
 function toByteArray (b64) {
-  var i, l, tmp, placeHolders, arr
+  var i, j, l, tmp, placeHolders, arr
   var len = b64.length
   placeHolders = placeHoldersCount(b64)
 
-  arr = new Arr((len * 3 / 4) - placeHolders)
+  arr = new Arr(len * 3 / 4 - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
   l = placeHolders > 0 ? len - 4 : len
 
   var L = 0
 
-  for (i = 0; i < l; i += 4) {
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
     arr[L++] = (tmp >> 16) & 0xFF
     arr[L++] = (tmp >> 8) & 0xFF
@@ -12852,7 +12919,7 @@ module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000Z\u
 
 
 var base64 = __webpack_require__(29)
-var ieee754 = __webpack_require__(86)
+var ieee754 = __webpack_require__(87)
 var isArray = __webpack_require__(82)
 
 exports.Buffer = Buffer
@@ -14667,13 +14734,171 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\r\n\r\nbody, input, textarea, select, text {\r\n  font-family: \"Segoe UI Web Regular\",\"wf_segoe-ui_normal\",\"Segoe UI\",\"Segoe UI Symbol\",\"Myriad\",\"Calibri\",\"UnDotum\",\"Optima\",\"Tahoma\",\"Century Gothic\",\"Helvetica Neue\",\"BBAlpha Sans\",\"S60 Sans\",\"Arial\",sans-serif;\r\n  margin: 0px;\r\n}\r\n\r\na {\r\n  text-decoration: none;\r\n  color: #626262;\r\n}\r\n\r\na:hover {\r\n  text-decoration: underline;\r\n}\r\n\r\n.img_btn_enabled {\r\n  filter: grayscale(0%);\r\n  cursor: pointer;\r\n  opacity: 1;\r\n  transition: all 0.3s ease;\r\n  border: 1px solid #CCCCCC;\r\n  margin: 2px;\r\n  border-radius: 5px;\r\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px;\r\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\r\n  box-shadow: #FEFFFF 0px 1px 1px ;\r\n  -webkit-border-radius: 5px;\r\n  -moz-border-radius: 5px;\r\n  display:inline-block;\r\n  background-color: #f4f5f5;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\r\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\r\n  user-select: none;\r\n}\r\n\r\n.img_btn_enabled:hover {\r\n  border: 1px solid #ff0000;\r\n  background-color: #d9dddd;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\r\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\r\n}\r\n\r\n.import-button-container {\r\n  position:absolute;\r\n  left:0;\r\n  top:0;\r\n  width:100%;\r\n  height:100%;\r\n  margin:2px;\r\n}\r\n\r\n.import-button {\r\n  margin-top:20px;\r\n  margin-bottom:10px;\r\n  margin-right:6px;\r\n  position:relative;\r\n}\r\n\r\n.import-button:hover {\r\n  cursor: pointer;\r\n}\r\n\r\n.import-button:hover img {\r\n  border: 1px solid #f00;\r\n  background-color: #d9dddd;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\r\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\r\n}\r\n\r\n.img_btn_disabled {\r\n  filter: grayscale(100%);\r\n  cursor: default;\r\n  border: 1px solid #cccccc;\r\n  border-radius: 5px;\r\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\r\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\r\n  box-shadow: #FEFFFF 0px 1px 1px ;\r\n  -webkit-border-radius: 5px;\r\n  -moz-border-radius: 5px5px;\r\n  margin: 2px;\r\n  user-select: none;\r\n}\r\n\r\n.filter_header_icon {\r\n  cursor: default;\r\n  border: 1px solid transparent;\r\n  user-select: none;\r\n  border-radius: 5px;\r\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\r\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\r\n  box-shadow: #FEFFFF 0px 1px 1px ;\r\n  -webkit-border-radius: 5px;\r\n  -moz-border-radius: 5px5px;\r\n  margin: 2px;\r\n}\r\n\r\n.intro_btn {\r\n  width: 36px;\r\n  height: 36px;\r\n  float: left;\r\n}\r\n\r\n.text_input {\r\n  margin: 0px ;\r\n  line-height: 18px;\r\n  font-size: 14px;\r\n  padding: 9px;\r\n  border: 0;\r\n}\r\n\r\n/* This css rule is TOO broad, it makes it difficult to add new elements */\r\ninput {\r\n  display: block;\r\n  float: left;\r\n}\r\n\r\n/* Undo global input changes */\r\n.offline_image_cb,\r\n.add_image_popup input {\r\n  display: inline;\r\n  float: none;\r\n}\r\n\r\nlabel.option_rb > input,\r\nlabel.menu_rb > input,\r\nlabel.nav_cb > input  { /* HIDE RADIO */\r\n  visibility: hidden; /* Makes input not-clickable */\r\n  position: absolute; /* Remove input from document flow */\r\n  height: 0px;\r\n  width: 0px;\r\n}\r\n\r\ntext {\r\n  color: #666;\r\n  -webkit-user-select: none;\r\n  -moz-user-select: none;\r\n  user-select: none;\r\n  -ms-user-select: none;\r\n  cursor: default;\r\n}\r\n\r\n#footer {\r\n  bottom: 0px;\r\n  left: 0px;\r\n  position: absolute;\r\n  z-index: 1;\r\n  background: #F2F2F2;\r\n  border: 1px solid #999;\r\n  text-align: right;\r\n  vertical-align: middle;\r\n  width: 100%;\r\n  height: 25px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  user-select:none;\r\n}\r\n\r\n#footer_left {\r\n  bottom: 0px;\r\n  left: 0px;\r\n  z-index: 1;\r\n  text-align: left;\r\n  vertical-align: middle;\r\n  margin-right: 0px;\r\n  height: 25px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  float: left;\r\n}\r\n\r\n#footer_right {\r\n  bottom: 0px;\r\n  right: 0px;\r\n  z-index: 1;\r\n  text-align: right;\r\n  vertical-align: middle;\r\n  margin-left: 0px;\r\n  height: 25px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  float: right;\r\n}\r\n\r\n.control_div {\r\n  background: #F2F2F2;\r\n  border: 1px solid #999;\r\n  z-index: 1;\r\n  box-shadow: 2px 2px 2px #888888;\r\n  border-radius: 10px;\r\n  text-align: center;\r\n  vertical-align: middle;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n}\r\n\r\n.ui_label {\r\n  margin-left: auto;\r\n  margin-right: auto;\r\n  position: absolute;\r\n  text-align: center;\r\n  vertical-align: top;\r\n  font-size: 12px;\r\n}\r\n\r\n#menu_div {\r\n  left: -50px;\r\n  top: 50%;\r\n  width: 34px;\r\n  margin-top: -166px;\r\n  position: absolute;\r\n  padding: 5px;\r\n}\r\n\r\n.menu_label {\r\n  font-weight: normal;\r\n  font-size: 10px;\r\n}\r\n\r\n.menu_hr {\r\n  margin-bottom: 0px;\r\n  margin-top: 5px\r\n}\r\n\r\n.menu_rb {\r\n  float: left;\r\n}\r\n\r\n.menu_rb > input:disabled + img{ /* IMAGE STYLES */\r\n  cursor:default;\r\n  opacity: 0.3;\r\n}\r\n\r\n.menu_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border: 2px solid #ccc;\r\n  cursor:pointer;\r\n  opacity: 1;\r\n}\r\n\r\n.menu_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #666;\r\n  border-right: 2px solid #666;\r\n}\r\n\r\n.menu_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #f00;\r\n  border-right: 2px solid #f00;\r\n}\r\n.menu_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #f00;\r\n  border-right: 2px solid #f00;\r\n}\r\n\r\n#menu_div input {\r\n  margin-top: 5px;\r\n  margin-bottom: 5px;\r\n}\r\n\r\n\r\n#export_formats .img_btn_disabled, #control_panel .img_btn_disabled{\r\n  opacity: 0.3;\r\n}\r\n\r\n#filter_div {\r\n  left: 56px;\r\n  top: 50%;\r\n  margin-top: -166px;\r\n  padding: 5px;\r\n  position: absolute;\r\n  min-width: 280px;\r\n}\r\n\r\n.filter_div_section {\r\n  position: relative;\r\n  clear: both;\r\n}\r\n\r\n.filter_div_header {\r\n  float: left;\r\n  width: 44px;\r\n  margin: 5px;\r\n  top: 50%;\r\n  transform: translate(0%,50%);\r\n}\r\n\r\n.filter_div_header text {\r\n  margin-left: -5px;\r\n}\r\n\r\n\r\n.filter_label {\r\n  display: block;\r\n}\r\n\r\n.filter_select {\r\n  margin-top: 5px;\r\n  width: 225px;\r\n  font-size: 10px;\r\n  border: solid #999 1px;\r\n  cursor:pointer;\r\n}\r\n\r\n.filter_select option:focus {\r\n  background-color: #000;\r\n}\r\n\r\nselect > option:focus:active {\r\n  background-color: #000;\r\n}\r\n\r\nselect > option {\r\n  background-color: #fff;\r\n  color: black;\r\n}\r\n\r\nselect > option:hover {\r\n  background-color: #999;\r\n  color: white;\r\n}\r\n\r\n#option_div {\r\n  top: 10px;\r\n  left: 50%;\r\n  width:712px;\r\n  margin-left: -356px;\r\n  position: absolute;\r\n  padding-bottom: 5px;\r\n  padding-left: 0px;\r\n  padding-right: 0px;\r\n  padding-top: 5px;\r\n  user-select:none;\r\n}\r\n\r\n.option_rb {\r\n  margin-top: 20px;\r\n  vertical-align: top;\r\n  display: inline-block;\r\n  text-align: center;\r\n}\r\n\r\n.option_rb > input + img{ /* IMAGE STYLES */\r\n  cursor:pointer;\r\n  border: 2px solid transparent;\r\n}\r\n\r\n.option_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #f00;\r\n  border-right: 2px solid #f00;\r\n}\r\n.option_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #f00;\r\n  border-right: 2px solid #f00;\r\n}\r\n.option_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 2px solid #666;\r\n  border-right: 2px solid #666;\r\n}\r\n\r\n.option_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border: 2px solid #eee;\r\n  background-color: #fff;\r\n}\r\n\r\n.option_rb > .img_btn_enabled {\r\n  background-color: #fff;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));\r\n  background-image: -webkit-linear-gradient(top, #fff, #fff);\r\n  background-image: -moz-linear-gradient(top, #fff, #fff);\r\n  background-image: -ms-linear-gradient(top, #fff, #fff);\r\n  background-image: -o-linear-gradient(top, #fff, #fff);\r\n  background-image: linear-gradient(to bottom, #fff, #fff);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#fff);\r\n}\r\n\r\n.option_rb > .img_btn_enabled:hover {\r\n  background-color: #fff;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));\r\n  background-image: -webkit-linear-gradient(top, #fff, #eee);\r\n  background-image: -moz-linear-gradient(top, #fff, #eee);\r\n  background-image: -ms-linear-gradient(top, #fff, #eee);\r\n  background-image: -o-linear-gradient(top, #fff, #eee);\r\n  background-image: linear-gradient(to bottom, #fff, #eee);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#eee);\r\n}\r\n\r\n.option_rb > input:disabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  filter: grayscale(100%);\r\n}\r\n\r\n.option_rb_label {\r\n  font-weight: normal;\r\n  font-size: 9px;\r\n  display: block;\r\n  color: #777;\r\n  user-select:none;\r\n}\r\n\r\n#rb_hint {\r\n  position: absolute;\r\n  border: 1px solid #444;\r\n  -webkit-border-radius: 10px;\r\n  -moz-border-radius: 10px;\r\n  border-radius: 10px;\r\n  max-width: 220px;\r\n  z-index: 1;\r\n  font-size: 12px;\r\n  padding: 5px;\r\n  font-style: italic;\r\n  background-color: #444;\r\n  color: #fff;\r\n  -webkit-box-shadow: 2px 2px 4px #888;\r\n  -moz-box-shadow: 2px 2px 4px #888;\r\n  box-shadow: 2px 2px 4px #888;\r\n}\r\n\r\n.rb_hint_left:before {\r\n  content: ' ';\r\n  position: absolute;\r\n  width: 0;\r\n  height: 0;\r\n  left: -15px;\r\n  top: 10px;\r\n  border-width: 10px 15px 10px 0;\r\n  border-style: solid;\r\n  border-color: transparent #444;\r\n}\r\n\r\n.rb_hint_right:before {\r\n  content: ' ';\r\n  position: absolute;\r\n  width: 0;\r\n  height: 0;\r\n  right: -15px;\r\n  top: 10px;\r\n  border-width: 10px 0px 10px 15px;\r\n  border-style: solid;\r\n  border-color: transparent #444;\r\n}\r\n\r\n.rb_hint_rep_highlight {\r\n  font-weight: bolder;\r\n  color: #2DAAE1;\r\n}\r\n\r\n.rb_hint_scale_highlight {\r\n  font-weight: bolder;\r\n  color: #E94E1B;\r\n}\r\n\r\n.rb_hint_layout_highlight {\r\n  font-weight: bolder;\r\n  color: #94C11F;\r\n}\r\n\r\n#hint_div {\r\n  right: 15px;\r\n  top: 20px;\r\n  height: 34px;\r\n  position: absolute;\r\n  padding: 5px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n}\r\n\r\n.introjs-hints a {\r\n    margin-left: -15px;\r\n    margin-top: -30px;\r\n}\r\n\r\n.introjs-hint-dot {\r\n  border: 10px solid rgba(255,165,0,0.7);\r\n}\r\n\r\n#export_div {\r\n  text-align: center;\r\n  position: absolute;\r\n  padding: 5px 5px 5px 5px;\r\n  vertical-align: middle;\r\n  top: -70px;\r\n  left: 50%;\r\n  width: 650px;\r\n  margin-left: -325px;\r\n  user-select:none;\r\n}\r\n\r\n#export_formats {\r\n  text-align: center;\r\n  display: inline-flex;\r\n}\r\n\r\n#opt_out_div {\r\n  margin-top: 10px;\r\n}\r\n\r\n#import_div {\r\n  text-align: center;\r\n  position: absolute;\r\n  top: -70px;\r\n  left: 50%;\r\n  width: 650px;\r\n  margin-left: -325px;\r\n  user-select:none;\r\n}\r\n\r\n#boilerplate {\r\n  justify-content: center;\r\n  height: 25px;\r\n}\r\n\r\n#disclaimer {\r\n  justify-content: center;\r\n  border-top: 1px solid #999;\r\n  border-bottom: 1px solid #999;\r\n  padding: 5px;\r\n  clear: both;\r\n}\r\n\r\n.boilerplate_title {\r\n  text-align: center;\r\n  font-weight: 600;\r\n  font-stretch: ultra-expanded;\r\n  font-size: 16px;\r\n  color: #000;\r\n  bottom: 0px;\r\n  margin-left: -17px\r\n}\r\n\r\n.disclaimer_title {\r\n  text-align: center;\r\n  font-size: 12px;\r\n  color: #333;\r\n  margin-left: -17px\r\n}\r\n\r\n.metadata_title {\r\n  font-weight: bold;\r\n  font-size: 12px;\r\n  color: #333;\r\n  vertical-align: sub;\r\n}\r\n\r\n.boilerplate_text {\r\n  text-align: center;\r\n  font-size: 12px;\r\n  font-weight: bold;\r\n  color: #777;\r\n  bottom: 0px;\r\n  text-decoration: none;\r\n}\r\n\r\n.disclaimer_text {\r\n  font-weight: normal;\r\n  font-size: 10px;\r\n  text-align: center;\r\n  color: #333;\r\n}\r\n\r\n.metadata_content {\r\n  font-weight: normal;\r\n  font-size: 12px;\r\n  text-align: left;\r\n  color: #333;\r\n  margin-right: 10px;\r\n}\r\n\r\n.category_element {\r\n  width: auto;\r\n}\r\n\r\ninput[type=\"color\"]::-webkit-color-swatch-wrapper {\r\n\tpadding: 0;\r\n}\r\ninput[type=\"color\"]::-webkit-color-swatch {\r\n\tborder: none;\r\n}\r\n\r\ninput[type=\"color\"]::-moz-color-swatch-wrapper {\r\n\tpadding: 0;\r\n}\r\ninput[type=\"color\"]::-moz-color-swatch {\r\n\tborder: none;\r\n}\r\n\r\n.colorpicker_wrapper {\r\n  float: left;\r\n  width: 12px;\r\n  height: 12px;\r\n  margin-right: 5px;\r\n  margin-top: 2px;\r\n  cursor: pointer;\r\n  border: 1px solid #999;\r\n  padding: 0;\r\n  box-shadow: #999 0px 1px 1px;\r\n  -webkit-box-shadow: #999 0px 1px 1px;\r\n  -moz-box-shadow: #999 0px 1px 1px ;\r\n}\r\n\r\n.colorpicker {\r\n  /*width: 10px;\r\n  height: 10px;*/\r\n  width: 100%;\r\n  height: 100%;\r\n  cursor: pointer;\r\n  /*margin-right: 5px;\r\n  margin-top: 2px;*/\r\n  padding: 0;\r\n  /*opacity: 0;*/\r\n}\r\n\r\n.colorpicker:hover {\r\n  border: 1px solid #f00;\r\n}\r\n\r\n.colorpicker_wrapper:hover {\r\n  border: 1px solid #f00;\r\n}\r\n\r\n.footer_text_left {\r\n  text-align: left;\r\n  font-size: .8em;\r\n  margin-left: 24px;\r\n  color: #626262;\r\n  bottom: 0px;\r\n  text-decoration: none;\r\n}\r\n\r\n.footer_text {\r\n  text-align: right;\r\n  font-size: .8em;\r\n  margin-right: 24px;\r\n  color: #626262;\r\n  bottom: 0px;\r\n  text-decoration: none;\r\n}\r\n\r\n#logo_div {\r\n  left: 10px;\r\n  top: 10px;\r\n  position: absolute;\r\n  width: 34px;\r\n  height: 34px;\r\n  padding: 5px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  user-select: none;\r\n}\r\n\r\n.ms-logo {\r\n  height: 23px;\r\n  max-height: 23px;\r\n  display: block;\r\n  vertical-align: baseline;\r\n}\r\n\r\n#data_picker {\r\n  width: 650px;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  border-top: 1px solid #999;\r\n  padding-left: 0px;\r\n  padding-right: 0px;\r\n  padding-top: 0px;\r\n  padding-bottom: 0px;\r\n  margin-top: 0px;\r\n  margin-right: 0px;\r\n  margin-left: 0px;\r\n  margin-bottom: 0px;\r\n  display: flex;\r\n}\r\n\r\n.data_story_picker {\r\n  /*float: left;*/\r\n  flex: 1;\r\n  display: flex;\r\n  justify-content: center;\r\n  margin-top: 0px;\r\n  margin-right: 0px;\r\n  margin-left: 0px;\r\n  margin-bottom: 0px;\r\n  width: 320px;\r\n  border-right: 1px solid #999;\r\n}\r\n\r\n#timeline_metadata {\r\n  width: 650px;\r\n  transition: all 0.5s ease;\r\n  border-top: 1px solid #999;\r\n  -webkit-transition: all 0.5s ease;\r\n  padding-left: 0px;\r\n  padding-right: 0px;\r\n  padding-top: 0px;\r\n  padding-bottom: 0px;\r\n  float: left;\r\n  font-size: 12px;\r\n}\r\n\r\n#timeline_metadata_contents{\r\n  width: 630px;\r\n  float: left;\r\n  padding-left: 10px;\r\n  padding-right: 10px;\r\n  padding-bottom: 0px;\r\n}\r\n\r\n.timeline_metadata_contents_div{\r\n  width: 630px;\r\n  clear: both;\r\n}\r\n\r\n#draw_timeline {\r\n  margin-left: 5px;\r\n  margin-left: 5px;\r\n  margin-bottom: 5px;\r\n  margin-top: 0px;\r\n  width: 320px;\r\n  padding-top: 15px;\r\n  padding-bottom: 15px;\r\n  height: 25px;\r\n  bottom: 0px;\r\n  right: 0px;\r\n  border-radius: 10px;\r\n  background-color: #ff7f0e;\r\n  border-color: #da6600;\r\n  background: #ff7f0e;\r\n  background-image: -webkit-linear-gradient(top, #ff7f0e, #da6600);\r\n  background-image: -moz-linear-gradient(top, #ff7f0e, #da6600);\r\n  background-image: -ms-linear-gradient(top, #ff7f0e, #da6600);\r\n  background-image: -o-linear-gradient(top, #ff7f0e, #da6600);\r\n  background-image: linear-gradient(to bottom, #ff7f0e, #da6600);\r\n}\r\n\r\n#draw_timeline:hover {\r\n  background-color: #da6600;\r\n  border-color: #ff7f0e;\r\n  background: #da6600;\r\n  background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);\r\n  background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);\r\n  background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);\r\n  background-image: -o-linear-gradient(top, #da6600, #ff7f0e);\r\n  background-image: linear-gradient(to bottom, #da6600, #ff7f0e);\r\n}\r\n\r\n#gdocs_info {\r\n  width: 650px;\r\n  height: 0px;\r\n  justify-content: center;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  padding-left: 0px;\r\n  padding-right: 0px;\r\n  padding-top: 0px;\r\n  padding-bottom: 0px;\r\n  float: left;\r\n}\r\n\r\n.gdocs_info_element {\r\n  display: none;\r\n  vertical-align: middle;\r\n  text-align: center;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n  margin: 0px;\r\n  float: left;\r\n  height: 27px;\r\n}\r\n\r\n.gdocs_info_element .text_input {\r\n  padding: 0;\r\n  padding-left: 5px;\r\n  margin-bottom: 5px;\r\n  border-top: 1px solid #999;\r\n  border-bottom: 1px solid #999;\r\n  border-right: 1px solid #999;\r\n  border-left: none;\r\n}\r\n\r\n#gdoc_spreadsheet_key_input {\r\n  margin-left: 0px;\r\n  width: 319px;\r\n}\r\n\r\n#gdoc_worksheet_title_input {\r\n  margin-left: 0px;\r\n  width: 295px;\r\n}\r\n\r\n.gdocs_info_element .img_btn_enabled {\r\n  margin-left: 2px;\r\n  margin-top: 0px;\r\n}\r\n\r\n.inputfile {\r\n  width: 0px;\r\n  height: 0px;\r\n  opacity: 0;\r\n  overflow: hidden;\r\n  position: absolute;\r\n  z-index: -1;\r\n  margin: auto;\r\n}\r\n\r\n#demo_dataset_picker {\r\n  width: 40px;\r\n  height: 40px;\r\n  opacity: 0;\r\n  border: 0px solid transparent;\r\n  cursor: pointer;\r\n  position: absolute;\r\n  z-index: 1;\r\n  font-size: 10px;\r\n  background: transparent;\r\n}\r\n\r\n.import_label > select + img {\r\n  border:1px solid #cccccc;\r\n}\r\n\r\n.import_label > select:hover + img:hover{ /* (RADIO CHECKED) IMAGE STYLES */\r\n  border-bottom: 1px solid #f00;\r\n}\r\n.import_label {\r\n  margin-top: 10px;\r\n}\r\n\r\n.demo_dataset_label {\r\n  border: 1px solid #cccccc;\r\n  width: 40px;\r\n  height: 40px;\r\n  margin-right: 2px;\r\n  margin-top: 20px;\r\n  border-radius: 5px;\r\n  background-color: #f4f5f5;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\r\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\r\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\r\n}\r\n\r\n.demo_dataset_label:hover {\r\n  border: 1px solid #ff0000;\r\n  background-color: #d9dddd;\r\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\r\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\r\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\r\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\r\n}\r\n\r\n.annotation_div {\r\n  position: absolute;\r\n  text-align: center;\r\n  position: absolute;\r\n  padding: 5px 5px 5px 5px;\r\n  vertical-align: middle;\r\n  left: 56px;\r\n  top: 50%;\r\n}\r\n\r\n.annotation_circle {\r\n  fill: #fff;\r\n  stroke: #f00;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.annotation_line {\r\n  fill: none;\r\n  stroke: #f00;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.event_annotation_line {\r\n  stroke: dashed .5px #aaa;\r\n}\r\n\r\n.annotation_frame {\r\n  fill:#fff;\r\n  stroke-width: 1px;\r\n  stroke:transparent;\r\n}\r\n\r\n.annotation_control {\r\n  border: 1px solid #ccc;\r\n  stroke-width: 1px;\r\n  stroke: #ccc;\r\n  cursor: pointer;\r\n  fill: transparent;\r\n}\r\n\r\n#caption_div {\r\n  margin-top: -95px;\r\n}\r\n\r\n.caption_frame, .image_frame {\r\n  fill:#fff;\r\n  stroke-width: 1px;\r\n  stroke:transparent;\r\n}\r\n\r\n.caption_drag_area, .annotation_drag_area, .image_drag_area {\r\n  fill: transparent;\r\n  fill-opacity: 0;\r\n  stroke-width: 1px;\r\n  stroke: transparent;\r\n  cursor: move;\r\n  box-shadow: 2px 2px 2px #888888;\r\n  -webkit-box-shadow: 2px 2px 2px #888888;\r\n  -moz-box-shadow: 2px 2px 2px #888888;\r\n}\r\n\r\n.caption_label {\r\n  font-size: 18px;\r\n  position: absolute;\r\n  display: inline-block;\r\n  top: 0;\r\n  left: 0;\r\n  font-weight: normal;\r\n}\r\n\r\n#add_caption_text_input {\r\n  resize: vertical;\r\n  display: block;\r\n  float: left;\r\n  padding: 10px;\r\n}\r\n\r\n.add_image_popup {\r\n  margin-top: -55px;\r\n}\r\n\r\n.onhover {\r\n  opacity: 0.33;\r\n}\r\n\r\n.onhover:hover {\r\n  opacity: 1;\r\n}\r\n\r\n#playback_bar {\r\n  display: flex;\r\n  align-items: center;\r\n  width: 100%;\r\n}\r\n\r\n#navigation_div {\r\n  left: 50%;\r\n  width: 70%;\r\n  margin-left: -35%;\r\n  bottom: -100px;\r\n  position: absolute;\r\n  padding-bottom: 5px;\r\n  padding-left: 0px;\r\n  padding-right: 0px;\r\n  padding-top: 5px;\r\n}\r\n\r\n.playback_mode #navigation_div {\r\n  width: auto;\r\n  left: 10px;\r\n  margin-left: 0;\r\n  -webkit-transition: all 0.5s;\r\n  transition: all 0.5s;\r\n}\r\n\r\n.nav_cb > input:enabled:checked + img {\r\n  border: 1px solid #f00;\r\n}\r\n\r\n\r\n#playback_bar .nav_bttn {\r\n  display: flex;\r\n  flex: 0 1 26px;\r\n}\r\n\r\n.nav_bttn .nav_cb {\r\n  display: inline-flex;\r\n}\r\n\r\n#stepper_container {\r\n  height: 50px;\r\n  padding: 0px;\r\n  margin-right: 5px;\r\n  background-color: white;\r\n  border: 1px solid #999;\r\n  padding: 5px;\r\n  border-radius: 5px;\r\n  vertical-align: middle;\r\n  overflow-y: hidden;\r\n  overflow-x: overlay;\r\n  flex: 1;\r\n}\r\n\r\n.playback_mode #stepper_container {\r\n  display: none;\r\n}\r\n\r\n#stepper_svg {\r\n  height: 50px;\r\n  padding: 0px;\r\n  float: left;\r\n}\r\n\r\n#stepper_svg_placeholder {\r\n  fill: #ccc;\r\n  font-size: 0.8em;\r\n}\r\n\r\n.scene_delete rect {\r\n  fill: transparent;\r\n  stroke: #ccc;\r\n  stroke-width: '1px';\r\n}\r\n\r\n.frame_hover {\r\n  height: 300px;\r\n  width: 300px;\r\n  background: #fff;\r\n  border: 1px solid #999;\r\n  z-index: 1;\r\n  box-shadow: 2px 2px 2px #888888;\r\n  -webkit-box-shadow: 2px 2px 2px #888888;\r\n  -moz-box-shadow: 2px 2px 2px #888888;\r\n  border-radius: 10px;\r\n  text-align: center;\r\n  position: absolute;\r\n  vertical-align: middle;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n}\r\n\r\n.option_picker {\r\n  float: left;\r\n  display: flex;\r\n  justify-content: center;\r\n  border-right: 1px solid #999;\r\n  padding-bottom: 0px;\r\n  padding-top: 0px;\r\n  padding-left: 5px;\r\n  padding-right: 5px;\r\n  margin: 0px;\r\n}\r\n\r\n#main_svg {\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n}\r\n\r\n.legend {\r\n  margin: 0px 0px 0px 0px;\r\n  fill: none;\r\n  position: absolute;\r\n  top: 0px;\r\n  left: 0px;\r\n  z-index: 1;\r\n}\r\n\r\n.legend_rect {\r\n  fill: #fff;\r\n  stroke: #aaa;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.legend_title {\r\n  fill: #666;\r\n  font-size: 12px;\r\n  font-weight: bolder;\r\n  font-stretch: expanded;\r\n}\r\n\r\n.legend:hover > .legend_rect:hover, .legend_title:hover {\r\n  cursor:move;\r\n}\r\n\r\n.legend:hover > .legend_rect {\r\n  stroke: #f00;\r\n}\r\n\r\n.legend_element_g text {\r\n  fill: #666;\r\n  font-size: 12px;\r\n  cursor:pointer;\r\n}\r\n\r\n.legend_element rect {\r\n  stroke: #fff;\r\n  stroke-width: 0.25px;\r\n  cursor:pointer;\r\n}\r\n\r\n.time_elapsed {\r\n  fill:#aaa;\r\n  stroke: #aaa;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.timeline_frame {\r\n  fill:transparent;\r\n  opacity: 0.1;\r\n  stroke: none;\r\n}\r\n\r\n.timeline_frame:hover {\r\n  stroke: #999;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.timeline_facet_frame {\r\n  fill:none;\r\n  stroke: #999;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.timeline_segment_frame {\r\n  fill:none;\r\n  stroke: #999;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.form-group {\r\n  margin-bottom: 0px;\r\n  display:inline-block;\r\n}\r\n\r\n.radio-inline {\r\n  padding-left: 0px;\r\n  margin-left: 0px;\r\n}\r\n\r\n.radio-inline label {\r\n  padding-left: 0px;\r\n}\r\n\r\n.radio-inline input[type=radio] {\r\n  margin-left: 0px;\r\n}\r\n\r\n.unit_circle {\r\n  fill: #fff;\r\n  stroke: #000;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.x_axis path, .interim_duration_axis path, .timeline_axis path {\r\n  fill: none;\r\n  stroke: #999;\r\n  stroke-width: 1px;\r\n  z-index: -1;\r\n}\r\n\r\n.radial_axis_tick path {\r\n  fill: none;\r\n  stroke: #999;\r\n  stroke-width: 1px;\r\n  stroke-dasharray: 2;\r\n  z-index: -1;\r\n}\r\n\r\n@keyframes dash {\r\n  to {\r\n    stroke-dashoffset: 0;\r\n  }\r\n}\r\n\r\n@keyframes undash {\r\n  from {\r\n    stroke-dashoffset: 0;\r\n  }\r\n  to {\r\n    stroke-dashoffset: -110%;\r\n  }\r\n}\r\n\r\n.x_axis line, .interim_duration_axis line, .timeline_axis line {\r\n  fill: none;\r\n  stroke: #999;\r\n  shape-rendering: crispEdges;\r\n  stroke-width: 1px;\r\n  stroke-dasharray: 2;\r\n  z-index: -1;\r\n}\r\n\r\n.x_axis text, .interim_duration_axis text, .timeline_axis text {\r\n  font-size: 12px;\r\n  z-index: 1;\r\n}\r\n\r\n.event_rect {\r\n  fill: #8dd3c7;\r\n  stroke: #fff;\r\n}\r\n\r\n.event_rect:hover {\r\n  fill: #8dd3c7;\r\n  stroke: #00f;\r\n}\r\n\r\n.event_span, .event_span_component {\r\n  stroke: #fff;\r\n  stroke-width: 0.25px;\r\n  cursor:pointer;\r\n}\r\n\r\n.event_span_selected {\r\n  stroke: #000;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.event_dropline {\r\n  stroke: #00f;\r\n  stroke-width: 0px;\r\n}\r\n\r\n.frame_resizer:hover {\r\n  cursor: ew-resize;\r\n}\r\n\r\n.start_end_label, .radial_axis_tick, .weekday_label {\r\n  font-size: 12px;\r\n}\r\n\r\n.facet_title, .segment_title {\r\n  font-size: 13px;\r\n  font-weight:bold;\r\n  font-stretch: extra-expanded;\r\n}\r\n\r\n.event_label {\r\n  fill: #f00;\r\n  font-size: 12px;\r\n  position: absolute;\r\n  display: inline-block;\r\n  top: 0;\r\n  left: 0;\r\n  font-weight: normal;\r\n}\r\n\r\n.event_date {\r\n  font: 10px sans-serif;\r\n  display: none;\r\n}\r\n\r\n.spiral_seq_number {\r\n  font: 10px sans-serif;\r\n  fill: #666;\r\n}\r\n\r\n.event_text {\r\n  font: 10px sans-serif;\r\n  display: none;\r\n}\r\n\r\n.year_cell, .day_cell, .rad_center, .day_cell_rect {\r\n  stroke: #aaa;\r\n  stroke-width: 0.25px;\r\n  fill: none;\r\n}\r\n\r\n.rad_track {\r\n  stroke: #999;\r\n  stroke-width: 0.5px;\r\n  fill: none;\r\n  z-index: -1;\r\n}\r\n\r\n.timeline_start_line {\r\n  stroke: #aaa;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.year_label {\r\n  font-size: 10px;\r\n}\r\n\r\n.day_cell_label {\r\n  font-size: 7px;\r\n}\r\n\r\n.month {\r\n  fill: none;\r\n  stroke: #999;\r\n  stroke-width: 1px;\r\n}\r\n\r\n.time_elapsed {\r\n  stroke: #aaa;\r\n  stroke-width: 0.5px;\r\n  fill: #ccc;\r\n}\r\n\r\n.time_elapsed:hover {\r\n  stroke: #00f;\r\n  stroke-width: 0.5px;\r\n  fill: #00f;\r\n  fill-opacity: 0.25;\r\n}\r\n\r\n.point_event {\r\n  fill: #000;\r\n  fill-opacity: .1;\r\n  stroke: #000;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.event_start {\r\n  fill: #f00;\r\n  fill-opacity: .1;\r\n  stroke: #f00;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.event_end {\r\n  fill: #00f;\r\n  fill-opacity: .1;\r\n  stroke: #00f;\r\n  stroke-width: 0.5px;\r\n}\r\n\r\n.non_event {\r\n  display: none;\r\n}\r\n\r\n.span_line {\r\n  stroke: #00f;\r\n  stroke-opacity: 0.2;\r\n  stroke-width: 5px;\r\n}\r\n\r\n.span_line:hover {\r\n  stroke: #ff0;\r\n  stroke-opacity: 1;\r\n  stroke-width: 5px;\r\n}\r\n\r\n.arc {\r\n  fill: #aaa;\r\n}\r\n\r\n.line {\r\n  fill: none;\r\n  stroke: #aaa;\r\n  stroke-width: 1px;\r\n  stroke-linejoin: round;\r\n  stroke-linecap: round;\r\n  z-index:-1;\r\n}\r\n\r\n.image_div_error {\r\n  color: red;\r\n}\r\n\r\n.path_end_indicator {\r\n  fill: none;\r\n  stroke: #fff;\r\n}\r\n\r\n#timecurve{\r\n  fill:none;\r\n  stroke-width:10px;\r\n  stroke:#777777;\r\n  opacity: .2;\r\n  transition: all 0.5s ease;\r\n  -webkit-transition: all 0.5s ease;\r\n}\r\n\r\n/* introjs overrides */\r\n\r\n.introjs-overlay {\r\n  background-color: #999;\r\n  background: -webkit-radial-gradient(center,ellipse cover,rgba(153,153,153,0.4) 0,rgba(153,153,153,0.9) 100%)\r\n}\r\n\r\n.introjs-helperLayer {\r\n  border: 1px solid #f00;\r\n  background-color: transparent;\r\n}\r\n\r\n.timeline_storyteller-container {\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: auto;\r\n  box-sizing: border-box;\r\n  padding-bottom: 50px;\r\n  padding-top: 50px;\r\n  padding-left: 50px;\r\n  padding-right: 50px;\r\n  text-align: center;\r\n}\r\n\r\n.playback_mode .timeline_storyteller-container {\r\n  padding-left: 0;\r\n  padding-right: 0;\r\n}\r\n\r\nhtml, body {\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n\r\n.timeline_storyteller {\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: hidden;\r\n  position: relative;\r\n}\r\n\r\n.loading_data_indicator {\r\n  font-weight: bold;\r\n  margin-bottom: 10px;\r\n}\r\n\r\n\r\n/* Add Image Popup */\r\n.add_image_popup h4 {\r\n  margin: 3px;\r\n}\r\n.add_image_popup h5 {\r\n  margin: 3px;\r\n}\r\n\r\n.resize_width, .resize_height {\r\n  width: 55px;\r\n}\r\n\r\n.resize_options {\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.add_image_selected_file {\r\n  font-size: 14px;\r\n  cursor: pointer;\r\n}\r\n\r\n.add_image_file_chooser {\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.selected_file_remove_btn {\r\n  width: 18px;\r\n  height: 18px;\r\n  float: right;\r\n}\r\n\r\n.selected_files_container {\r\n  vertical-align: middle;\r\n  margin: 5px;\r\n}\r\n\r\n.image_div_container {\r\n   position: relative;\r\n}\r\n\r\n.image_div_container .add_image_link {\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n}\r\n.image_local_add_drop_zone {\r\n  border: 2px dashed #bbb;\r\n  -moz-border-radius: 5px;\r\n  -webkit-border-radius: 5px;\r\n  border-radius: 5px;\r\n  padding: 10px;\r\n  color: #bbb;\r\n  width: 100%;\r\n  box-sizing: border-box;\r\n}\r\n\r\n.image_local_add_drop_zone.dragging {\r\n  border-color: #333;\r\n  color: #333;\r\n}\r\n\r\n.add_image_btn {\r\n  float: right;\r\n}\r\n\r\n.add_image_popup {\r\n  font-size: 14px;\r\n}\r\n\r\n.add_image_popup input[type=\"checkbox\"] {\r\n  vertical-align: middle;\r\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n\nbody, input, textarea, select, text {\n  font-family: \"Segoe UI Web Regular\",\"wf_segoe-ui_normal\",\"Segoe UI\",\"Segoe UI Symbol\",\"Myriad\",\"Calibri\",\"UnDotum\",\"Optima\",\"Tahoma\",\"Century Gothic\",\"Helvetica Neue\",\"BBAlpha Sans\",\"S60 Sans\",\"Arial\",sans-serif;\n  margin: 0px;\n}\n\na {\n  text-decoration: none;\n  color: #626262;\n}\n\na:hover {\n  text-decoration: underline;\n}\n\n.img_btn_enabled {\n  filter: grayscale(0%);\n  cursor: pointer;\n  opacity: 1;\n  transition: all 0.3s ease;\n  border: 1px solid #CCCCCC;\n  margin: 2px;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px;\n  display:inline-block;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n  user-select: none;\n}\n\n.img_btn_enabled:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.import-button-container {\n  position:absolute;\n  left:0;\n  top:0;\n  width:100%;\n  height:100%;\n  margin:2px;\n}\n\n.import-button {\n  margin-top:20px;\n  margin-bottom:10px;\n  margin-right:6px;\n  position:relative;\n}\n\n.import-button:hover {\n  cursor: pointer;\n}\n\n.import-button:hover img {\n  border: 1px solid #f00;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.img_btn_disabled {\n  filter: grayscale(100%);\n  cursor: default;\n  border: 1px solid #cccccc;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n  user-select: none;\n}\n\n.filter_header_icon {\n  cursor: default;\n  border: 1px solid transparent;\n  user-select: none;\n  border-radius: 5px;\n  -webkit-box-shadow: #FEFFFF 0px 1px 1px ;\n  -moz-box-shadow: #FEFFFF 0px 1px 1px ;\n  box-shadow: #FEFFFF 0px 1px 1px ;\n  -webkit-border-radius: 5px;\n  -moz-border-radius: 5px5px;\n  margin: 2px;\n}\n\n.intro_btn {\n  width: 36px;\n  height: 36px;\n  float: left;\n}\n\n.text_input {\n  margin: 0px ;\n  line-height: 18px;\n  font-size: 14px;\n  padding: 9px;\n  border: 0;\n}\n\n/* This css rule is TOO broad, it makes it difficult to add new elements */\ninput {\n  display: block;\n  float: left;\n}\n\n/* Undo global input changes */\n.offline_image_cb,\n.add_image_popup input {\n  display: inline;\n  float: none;\n}\n\nlabel.option_rb > input,\nlabel.menu_rb > input,\nlabel.nav_cb > input  { /* HIDE RADIO */\n  visibility: hidden; /* Makes input not-clickable */\n  position: absolute; /* Remove input from document flow */\n  height: 0px;\n  width: 0px;\n}\n\ntext {\n  color: #666;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  user-select: none;\n  -ms-user-select: none;\n  cursor: default;\n}\n\n#footer {\n  bottom: 0px;\n  left: 0px;\n  position: absolute;\n  z-index: 1;\n  background: #F2F2F2;\n  border: 1px solid #999;\n  text-align: right;\n  vertical-align: middle;\n  width: 100%;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select:none;\n}\n\n#footer_left {\n  bottom: 0px;\n  left: 0px;\n  z-index: 1;\n  text-align: left;\n  vertical-align: middle;\n  margin-right: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: left;\n}\n\n#footer_right {\n  bottom: 0px;\n  right: 0px;\n  z-index: 1;\n  text-align: right;\n  vertical-align: middle;\n  margin-left: 0px;\n  height: 25px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  float: right;\n}\n\n.control_div {\n  background: #F2F2F2;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.ui_label {\n  margin-left: auto;\n  margin-right: auto;\n  position: absolute;\n  text-align: center;\n  vertical-align: top;\n  font-size: 12px;\n}\n\n#menu_div {\n  left: -50px;\n  top: 50%;\n  width: 34px;\n  margin-top: -166px;\n  position: absolute;\n  padding: 5px;\n}\n\n.menu_label {\n  font-weight: normal;\n  font-size: 10px;\n}\n\n.menu_hr {\n  margin-bottom: 0px;\n  margin-top: 5px\n}\n\n.menu_rb {\n  float: left;\n}\n\n.menu_rb > input:disabled + img{ /* IMAGE STYLES */\n  cursor:default;\n  opacity: 0.3;\n}\n\n.menu_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #ccc;\n  cursor:pointer;\n  opacity: 1;\n}\n\n.menu_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.menu_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.menu_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n\n#menu_div input {\n  margin-top: 5px;\n  margin-bottom: 5px;\n}\n\n\n#export_formats .img_btn_disabled, #control_panel .img_btn_disabled{\n  opacity: 0.3;\n}\n\n#filter_div {\n  left: 56px;\n  top: 50%;\n  margin-top: -166px;\n  padding: 5px;\n  position: absolute;\n  min-width: 280px;\n}\n\n.filter_div_section {\n  position: relative;\n  clear: both;\n}\n\n.filter_div_header {\n  float: left;\n  width: 44px;\n  margin: 5px;\n  top: 50%;\n  transform: translate(0%,50%);\n}\n\n.filter_div_header text {\n  margin-left: -5px;\n}\n\n\n.filter_label {\n  display: block;\n}\n\n.filter_select {\n  margin-top: 5px;\n  width: 225px;\n  font-size: 10px;\n  border: solid #999 1px;\n  cursor:pointer;\n}\n\n.filter_select option:focus {\n  background-color: #000;\n}\n\nselect > option:focus:active {\n  background-color: #000;\n}\n\nselect > option {\n  background-color: #fff;\n  color: black;\n}\n\nselect > option:hover {\n  background-color: #999;\n  color: white;\n}\n\n#option_div {\n  top: 10px;\n  left: 50%;\n  width:712px;\n  margin-left: -356px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 5px;\n  user-select:none;\n}\n\n.option_rb {\n  margin-top: 20px;\n  vertical-align: top;\n  display: inline-block;\n  text-align: center;\n}\n\n.option_rb > input + img{ /* IMAGE STYLES */\n  cursor:pointer;\n  border: 2px solid transparent;\n}\n\n.option_rb > input:enabled:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:checked:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #f00;\n  border-right: 2px solid #f00;\n}\n.option_rb > input:enabled:hover + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 2px solid #666;\n  border-right: 2px solid #666;\n}\n\n.option_rb > input:enabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  border: 2px solid #eee;\n  background-color: #fff;\n}\n\n.option_rb > .img_btn_enabled {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#fff));\n  background-image: -webkit-linear-gradient(top, #fff, #fff);\n  background-image: -moz-linear-gradient(top, #fff, #fff);\n  background-image: -ms-linear-gradient(top, #fff, #fff);\n  background-image: -o-linear-gradient(top, #fff, #fff);\n  background-image: linear-gradient(to bottom, #fff, #fff);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#fff);\n}\n\n.option_rb > .img_btn_enabled:hover {\n  background-color: #fff;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));\n  background-image: -webkit-linear-gradient(top, #fff, #eee);\n  background-image: -moz-linear-gradient(top, #fff, #eee);\n  background-image: -ms-linear-gradient(top, #fff, #eee);\n  background-image: -o-linear-gradient(top, #fff, #eee);\n  background-image: linear-gradient(to bottom, #fff, #eee);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#fff, endColorstr=#eee);\n}\n\n.option_rb > input:disabled + img{ /* (RADIO CHECKED) IMAGE STYLES */\n  filter: grayscale(100%);\n}\n\n.option_rb_label {\n  font-weight: normal;\n  font-size: 9px;\n  display: block;\n  color: #777;\n  user-select:none;\n}\n\n#rb_hint {\n  position: absolute;\n  border: 1px solid #444;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n  border-radius: 10px;\n  max-width: 220px;\n  z-index: 1;\n  font-size: 12px;\n  padding: 5px;\n  font-style: italic;\n  background-color: #444;\n  color: #fff;\n  -webkit-box-shadow: 2px 2px 4px #888;\n  -moz-box-shadow: 2px 2px 4px #888;\n  box-shadow: 2px 2px 4px #888;\n}\n\n.rb_hint_left:before {\n  content: ' ';\n  position: absolute;\n  width: 0;\n  height: 0;\n  left: -15px;\n  top: 10px;\n  border-width: 10px 15px 10px 0;\n  border-style: solid;\n  border-color: transparent #444;\n}\n\n.rb_hint_right:before {\n  content: ' ';\n  position: absolute;\n  width: 0;\n  height: 0;\n  right: -15px;\n  top: 10px;\n  border-width: 10px 0px 10px 15px;\n  border-style: solid;\n  border-color: transparent #444;\n}\n\n.rb_hint_rep_highlight {\n  font-weight: bolder;\n  color: #2DAAE1;\n}\n\n.rb_hint_scale_highlight {\n  font-weight: bolder;\n  color: #E94E1B;\n}\n\n.rb_hint_layout_highlight {\n  font-weight: bolder;\n  color: #94C11F;\n}\n\n#hint_div {\n  right: 15px;\n  top: 20px;\n  height: 34px;\n  position: absolute;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.introjs-hints a {\n    margin-left: -15px;\n    margin-top: -30px;\n}\n\n.introjs-hint-dot {\n  border: 10px solid rgba(255,165,0,0.7);\n}\n\n#export_div {\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#export_formats {\n  text-align: center;\n  display: inline-flex;\n}\n\n#opt_out_div {\n  margin-top: 10px;\n}\n\n#import_div {\n  text-align: center;\n  position: absolute;\n  top: -70px;\n  left: 50%;\n  width: 650px;\n  margin-left: -325px;\n  user-select:none;\n}\n\n#boilerplate {\n  justify-content: center;\n  height: 25px;\n}\n\n#disclaimer {\n  justify-content: center;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  padding: 5px;\n  clear: both;\n}\n\n.boilerplate_title {\n  text-align: center;\n  font-weight: 600;\n  font-stretch: ultra-expanded;\n  font-size: 16px;\n  color: #000;\n  bottom: 0px;\n  margin-left: -17px\n}\n\n.disclaimer_title {\n  text-align: center;\n  font-size: 12px;\n  color: #333;\n  margin-left: -17px\n}\n\n.metadata_title {\n  font-weight: bold;\n  font-size: 12px;\n  color: #333;\n  vertical-align: sub;\n}\n\n.boilerplate_text {\n  text-align: center;\n  font-size: 12px;\n  font-weight: bold;\n  color: #777;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.disclaimer_text {\n  font-weight: normal;\n  font-size: 10px;\n  text-align: center;\n  color: #333;\n}\n\n.metadata_content {\n  font-weight: normal;\n  font-size: 12px;\n  text-align: left;\n  color: #333;\n  margin-right: 10px;\n}\n\n.category_element {\n  width: auto;\n}\n\ninput[type=\"color\"]::-webkit-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-webkit-color-swatch {\n\tborder: none;\n}\n\ninput[type=\"color\"]::-moz-color-swatch-wrapper {\n\tpadding: 0;\n}\ninput[type=\"color\"]::-moz-color-swatch {\n\tborder: none;\n}\n\n.colorpicker_wrapper {\n  float: left;\n  width: 12px;\n  height: 12px;\n  margin-right: 5px;\n  margin-top: 2px;\n  cursor: pointer;\n  border: 1px solid #999;\n  padding: 0;\n  box-shadow: #999 0px 1px 1px;\n  -webkit-box-shadow: #999 0px 1px 1px;\n  -moz-box-shadow: #999 0px 1px 1px ;\n}\n\n.colorpicker {\n  /*width: 10px;\n  height: 10px;*/\n  width: 100%;\n  height: 100%;\n  cursor: pointer;\n  /*margin-right: 5px;\n  margin-top: 2px;*/\n  padding: 0;\n  /*opacity: 0;*/\n}\n\n.colorpicker:hover {\n  border: 1px solid #f00;\n}\n\n.colorpicker_wrapper:hover {\n  border: 1px solid #f00;\n}\n\n.footer_text_left {\n  text-align: left;\n  font-size: .8em;\n  margin-left: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n.footer_text {\n  text-align: right;\n  font-size: .8em;\n  margin-right: 24px;\n  color: #626262;\n  bottom: 0px;\n  text-decoration: none;\n}\n\n#logo_div {\n  left: 10px;\n  top: 10px;\n  position: absolute;\n  width: 34px;\n  height: 34px;\n  padding: 5px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  user-select: none;\n}\n\n.ms-logo {\n  height: 23px;\n  max-height: 23px;\n  display: block;\n  vertical-align: baseline;\n}\n\n#data_picker {\n  width: 650px;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  display: flex;\n}\n\n.data_story_picker {\n  /*float: left;*/\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  margin-top: 0px;\n  margin-right: 0px;\n  margin-left: 0px;\n  margin-bottom: 0px;\n  width: 320px;\n  border-right: 1px solid #999;\n}\n\n#timeline_metadata {\n  width: 650px;\n  transition: all 0.5s ease;\n  border-top: 1px solid #999;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n  font-size: 12px;\n}\n\n#timeline_metadata_contents{\n  width: 630px;\n  float: left;\n  padding-left: 10px;\n  padding-right: 10px;\n  padding-bottom: 0px;\n}\n\n.timeline_metadata_contents_div{\n  width: 630px;\n  clear: both;\n}\n\n#draw_timeline {\n  margin-left: 5px;\n  margin-left: 5px;\n  margin-bottom: 5px;\n  margin-top: 0px;\n  width: 320px;\n  padding-top: 15px;\n  padding-bottom: 15px;\n  height: 25px;\n  bottom: 0px;\n  right: 0px;\n  border-radius: 10px;\n  background-color: #ff7f0e;\n  border-color: #da6600;\n  background: #ff7f0e;\n  background-image: -webkit-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -moz-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -ms-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: -o-linear-gradient(top, #ff7f0e, #da6600);\n  background-image: linear-gradient(to bottom, #ff7f0e, #da6600);\n}\n\n#draw_timeline:hover {\n  background-color: #da6600;\n  border-color: #ff7f0e;\n  background: #da6600;\n  background-image: -webkit-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -moz-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -ms-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: -o-linear-gradient(top, #da6600, #ff7f0e);\n  background-image: linear-gradient(to bottom, #da6600, #ff7f0e);\n}\n\n#gdocs_info {\n  width: 650px;\n  height: 0px;\n  justify-content: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 0px;\n  padding-bottom: 0px;\n  float: left;\n}\n\n.gdocs_info_element {\n  display: none;\n  vertical-align: middle;\n  text-align: center;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n  margin: 0px;\n  float: left;\n  height: 27px;\n}\n\n.gdocs_info_element .text_input {\n  padding: 0;\n  padding-left: 5px;\n  margin-bottom: 5px;\n  border-top: 1px solid #999;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  border-left: none;\n}\n\n#gdoc_spreadsheet_key_input {\n  margin-left: 0px;\n  width: 319px;\n}\n\n#gdoc_worksheet_title_input {\n  margin-left: 0px;\n  width: 295px;\n}\n\n.gdocs_info_element .img_btn_enabled {\n  margin-left: 2px;\n  margin-top: 0px;\n}\n\n.inputfile {\n  width: 0px;\n  height: 0px;\n  opacity: 0;\n  overflow: hidden;\n  position: absolute;\n  z-index: -1;\n  margin: auto;\n}\n\n#demo_dataset_picker {\n  width: 40px;\n  height: 40px;\n  opacity: 0;\n  border: 0px solid transparent;\n  cursor: pointer;\n  position: absolute;\n  z-index: 1;\n  font-size: 10px;\n  background: transparent;\n}\n\n.import_label > select + img {\n  border:1px solid #cccccc;\n}\n\n.import_label > select:hover + img:hover{ /* (RADIO CHECKED) IMAGE STYLES */\n  border-bottom: 1px solid #f00;\n}\n.import_label {\n  margin-top: 10px;\n}\n\n.demo_dataset_label {\n  border: 1px solid #cccccc;\n  width: 40px;\n  height: 40px;\n  margin-right: 2px;\n  margin-top: 20px;\n  border-radius: 5px;\n  background-color: #f4f5f5;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));\n  background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);\n  background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);\n}\n\n.demo_dataset_label:hover {\n  border: 1px solid #ff0000;\n  background-color: #d9dddd;\n  background-image: -webkit-gradient(linear, left top, left bottom, from(#d9dddd), to(#c6c3c3));\n  background-image: -webkit-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -moz-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -ms-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: -o-linear-gradient(top, #d9dddd, #c6c3c3);\n  background-image: linear-gradient(to bottom, #d9dddd, #c6c3c3);\n  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#d9dddd, endColorstr=#c6c3c3);\n}\n\n.annotation_div {\n  position: absolute;\n  text-align: center;\n  position: absolute;\n  padding: 5px 5px 5px 5px;\n  vertical-align: middle;\n  left: 56px;\n  top: 50%;\n}\n\n.annotation_circle {\n  fill: #fff;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.annotation_line {\n  fill: none;\n  stroke: #f00;\n  stroke-width: 1px;\n}\n\n.event_annotation_line {\n  stroke: dashed .5px #aaa;\n}\n\n.annotation_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.annotation_control {\n  border: 1px solid #ccc;\n  stroke-width: 1px;\n  stroke: #ccc;\n  cursor: pointer;\n  fill: transparent;\n}\n\n#caption_div {\n  margin-top: -95px;\n}\n\n.caption_frame, .image_frame {\n  fill:#fff;\n  stroke-width: 1px;\n  stroke:transparent;\n}\n\n.caption_drag_area, .annotation_drag_area, .image_drag_area {\n  fill: transparent;\n  fill-opacity: 0;\n  stroke-width: 1px;\n  stroke: transparent;\n  cursor: move;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n}\n\n.caption_label {\n  font-size: 18px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n#add_caption_text_input {\n  resize: vertical;\n  display: block;\n  float: left;\n  padding: 10px;\n}\n\n.add_image_popup {\n  margin-top: -55px;\n}\n\n.onhover {\n  opacity: 0.33;\n}\n\n.onhover:hover {\n  opacity: 1;\n}\n\n#playback_bar {\n  display: flex;\n  align-items: center;\n  width: 100%;\n}\n\n#navigation_div {\n  left: 50%;\n  width: 70%;\n  margin-left: -35%;\n  bottom: -100px;\n  position: absolute;\n  padding-bottom: 5px;\n  padding-left: 0px;\n  padding-right: 0px;\n  padding-top: 5px;\n}\n\n.playback_mode #navigation_div {\n  width: auto;\n  left: 10px;\n  margin-left: 0;\n  -webkit-transition: all 0.5s;\n  transition: all 0.5s;\n}\n\n.nav_cb > input:enabled:checked + img {\n  border: 1px solid #f00;\n}\n\n\n#playback_bar .nav_bttn {\n  display: flex;\n  flex: 0 1 26px;\n}\n\n.nav_bttn .nav_cb {\n  display: inline-flex;\n}\n\n#stepper_container {\n  height: 50px;\n  padding: 0px;\n  margin-right: 5px;\n  background-color: white;\n  border: 1px solid #999;\n  padding: 5px;\n  border-radius: 5px;\n  vertical-align: middle;\n  overflow-y: hidden;\n  overflow-x: overlay;\n  flex: 1;\n}\n\n.playback_mode #stepper_container {\n  display: none;\n}\n\n#stepper_svg {\n  height: 50px;\n  padding: 0px;\n  float: left;\n}\n\n#stepper_svg_placeholder {\n  fill: #ccc;\n  font-size: 0.8em;\n}\n\n.scene_delete rect {\n  fill: transparent;\n  stroke: #ccc;\n  stroke-width: '1px';\n}\n\n.frame_hover {\n  height: 300px;\n  width: 300px;\n  background: #fff;\n  border: 1px solid #999;\n  z-index: 1;\n  box-shadow: 2px 2px 2px #888888;\n  -webkit-box-shadow: 2px 2px 2px #888888;\n  -moz-box-shadow: 2px 2px 2px #888888;\n  border-radius: 10px;\n  text-align: center;\n  position: absolute;\n  vertical-align: middle;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.option_picker {\n  float: left;\n  display: flex;\n  justify-content: center;\n  border-right: 1px solid #999;\n  padding-bottom: 0px;\n  padding-top: 0px;\n  padding-left: 5px;\n  padding-right: 5px;\n  margin: 0px;\n}\n\n#main_svg {\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n.legend {\n  margin: 0px 0px 0px 0px;\n  fill: none;\n  position: absolute;\n  top: 0px;\n  left: 0px;\n  z-index: 1;\n}\n\n.legend_rect {\n  fill: #fff;\n  stroke: #aaa;\n  stroke-width: 1px;\n}\n\n.legend_title {\n  fill: #666;\n  font-size: 12px;\n  font-weight: bolder;\n  font-stretch: expanded;\n}\n\n.legend:hover > .legend_rect:hover, .legend_title:hover {\n  cursor:move;\n}\n\n.legend:hover > .legend_rect {\n  stroke: #f00;\n}\n\n.legend_element_g text {\n  fill: #666;\n  font-size: 12px;\n  cursor:pointer;\n}\n\n.legend_element rect {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.time_elapsed {\n  fill:#aaa;\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.timeline_frame {\n  fill:transparent;\n  opacity: 0.1;\n  stroke: none;\n}\n\n.timeline_frame:hover {\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_facet_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.timeline_segment_frame {\n  fill:none;\n  stroke: #999;\n  stroke-width: 0.5px;\n}\n\n.form-group {\n  margin-bottom: 0px;\n  display:inline-block;\n}\n\n.radio-inline {\n  padding-left: 0px;\n  margin-left: 0px;\n}\n\n.radio-inline label {\n  padding-left: 0px;\n}\n\n.radio-inline input[type=radio] {\n  margin-left: 0px;\n}\n\n.unit_circle {\n  fill: #fff;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.x_axis path, .interim_duration_axis path, .timeline_axis path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  z-index: -1;\n}\n\n.radial_axis_tick path {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n@keyframes dash {\n  to {\n    stroke-dashoffset: 0;\n  }\n}\n\n@keyframes undash {\n  from {\n    stroke-dashoffset: 0;\n  }\n  to {\n    stroke-dashoffset: -110%;\n  }\n}\n\n.x_axis line, .interim_duration_axis line, .timeline_axis line {\n  fill: none;\n  stroke: #999;\n  shape-rendering: crispEdges;\n  stroke-width: 1px;\n  stroke-dasharray: 2;\n  z-index: -1;\n}\n\n.x_axis text, .interim_duration_axis text, .timeline_axis text {\n  font-size: 12px;\n  z-index: 1;\n}\n\n.event_rect {\n  fill: #8dd3c7;\n  stroke: #fff;\n}\n\n.event_rect:hover {\n  fill: #8dd3c7;\n  stroke: #00f;\n}\n\n.event_span, .event_span_component {\n  stroke: #fff;\n  stroke-width: 0.25px;\n  cursor:pointer;\n}\n\n.event_span_selected {\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.event_dropline {\n  stroke: #00f;\n  stroke-width: 0px;\n}\n\n.frame_resizer:hover {\n  cursor: ew-resize;\n}\n\n.start_end_label, .radial_axis_tick, .weekday_label {\n  font-size: 12px;\n}\n\n.facet_title, .segment_title {\n  font-size: 13px;\n  font-weight:bold;\n  font-stretch: extra-expanded;\n}\n\n.event_label {\n  fill: #f00;\n  font-size: 12px;\n  position: absolute;\n  display: inline-block;\n  top: 0;\n  left: 0;\n  font-weight: normal;\n}\n\n.event_date {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.spiral_seq_number {\n  font: 10px sans-serif;\n  fill: #666;\n}\n\n.event_text {\n  font: 10px sans-serif;\n  display: none;\n}\n\n.year_cell, .day_cell, .rad_center, .day_cell_rect {\n  stroke: #aaa;\n  stroke-width: 0.25px;\n  fill: none;\n}\n\n.rad_track {\n  stroke: #999;\n  stroke-width: 0.5px;\n  fill: none;\n  z-index: -1;\n}\n\n.timeline_start_line {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n}\n\n.year_label {\n  font-size: 10px;\n}\n\n.day_cell_label {\n  font-size: 7px;\n}\n\n.month {\n  fill: none;\n  stroke: #999;\n  stroke-width: 1px;\n}\n\n.time_elapsed {\n  stroke: #aaa;\n  stroke-width: 0.5px;\n  fill: #ccc;\n}\n\n.time_elapsed:hover {\n  stroke: #00f;\n  stroke-width: 0.5px;\n  fill: #00f;\n  fill-opacity: 0.25;\n}\n\n.point_event {\n  fill: #000;\n  fill-opacity: .1;\n  stroke: #000;\n  stroke-width: 0.5px;\n}\n\n.event_start {\n  fill: #f00;\n  fill-opacity: .1;\n  stroke: #f00;\n  stroke-width: 0.5px;\n}\n\n.event_end {\n  fill: #00f;\n  fill-opacity: .1;\n  stroke: #00f;\n  stroke-width: 0.5px;\n}\n\n.non_event {\n  display: none;\n}\n\n.span_line {\n  stroke: #00f;\n  stroke-opacity: 0.2;\n  stroke-width: 5px;\n}\n\n.span_line:hover {\n  stroke: #ff0;\n  stroke-opacity: 1;\n  stroke-width: 5px;\n}\n\n.arc {\n  fill: #aaa;\n}\n\n.line {\n  fill: none;\n  stroke: #aaa;\n  stroke-width: 1px;\n  stroke-linejoin: round;\n  stroke-linecap: round;\n  z-index:-1;\n}\n\n.image_div_error {\n  color: red;\n}\n\n.path_end_indicator {\n  fill: none;\n  stroke: #fff;\n}\n\n#timecurve{\n  fill:none;\n  stroke-width:10px;\n  stroke:#777777;\n  opacity: .2;\n  transition: all 0.5s ease;\n  -webkit-transition: all 0.5s ease;\n}\n\n/* introjs overrides */\n\n.introjs-overlay {\n  background-color: #999;\n  background: -webkit-radial-gradient(center,ellipse cover,rgba(153,153,153,0.4) 0,rgba(153,153,153,0.9) 100%)\n}\n\n.introjs-helperLayer {\n  border: 1px solid #f00;\n  background-color: transparent;\n}\n\n.timeline_storyteller-container {\n  width: 100%;\n  height: 100%;\n  overflow: auto;\n  box-sizing: border-box;\n  padding-bottom: 50px;\n  padding-top: 50px;\n  padding-left: 50px;\n  padding-right: 50px;\n  text-align: center;\n}\n\n.playback_mode .timeline_storyteller-container {\n  padding-left: 0;\n  padding-right: 0;\n}\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n}\n\n.timeline_storyteller {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n}\n\n.loading_data_indicator {\n  font-weight: bold;\n  margin-bottom: 10px;\n}\n\n\n/* Add Image Popup */\n.add_image_popup h4 {\n  margin: 3px;\n}\n.add_image_popup h5 {\n  margin: 3px;\n}\n\n.resize_width, .resize_height {\n  width: 55px;\n}\n\n.resize_options {\n  margin-bottom: 5px;\n}\n\n.add_image_selected_file {\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.add_image_file_chooser {\n  margin-bottom: 5px;\n}\n\n.selected_file_remove_btn {\n  width: 18px;\n  height: 18px;\n  float: right;\n}\n\n.selected_files_container {\n  vertical-align: middle;\n  margin: 5px;\n}\n\n.image_div_container {\n   position: relative;\n}\n\n.image_div_container .add_image_link {\n  width: 100%;\n  box-sizing: border-box;\n}\n.image_local_add_drop_zone {\n  border: 2px dashed #bbb;\n  -moz-border-radius: 5px;\n  -webkit-border-radius: 5px;\n  border-radius: 5px;\n  padding: 10px;\n  color: #bbb;\n  width: 100%;\n  box-sizing: border-box;\n}\n\n.image_local_add_drop_zone.dragging {\n  border-color: #333;\n  color: #333;\n}\n\n.add_image_btn {\n  float: right;\n}\n\n.add_image_popup {\n  font-size: 14px;\n}\n\n.add_image_popup input[type=\"checkbox\"] {\n  vertical-align: middle;\n}\n\n.timeline_storyteller-error {\n  position: absolute;\n  top: 150px;\n  width: 100%;\n  margin: 0 auto;\n}", ""]);
 
 // exports
 
 
 /***/ }),
 /* 85 */
+/***/ (function(module, exports) {
+
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isNaN(val) === false) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  if (ms >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (ms >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (ms >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (ms >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  return plural(ms, d, 'day') ||
+    plural(ms, h, 'hour') ||
+    plural(ms, m, 'minute') ||
+    plural(ms, s, 'second') ||
+    ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, n, name) {
+  if (ms < n) {
+    return;
+  }
+  if (ms < n * 1.5) {
+    return Math.floor(ms / n) + ' ' + name;
+  }
+  return Math.ceil(ms / n) + ' ' + name + 's';
+}
+
+
+/***/ }),
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -14689,7 +14914,7 @@ exports.coerce = coerce;
 exports.disable = disable;
 exports.enable = enable;
 exports.enabled = enabled;
-exports.humanize = __webpack_require__(87);
+exports.humanize = __webpack_require__(85);
 
 /**
  * The currently active debug mode names, and names to skip.
@@ -14881,7 +15106,7 @@ function coerce(val) {
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -14967,164 +15192,6 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
   buffer[offset + i - d] |= s * 128
-}
-
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports) {
-
-/**
- * Helpers.
- */
-
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-  throw new Error(
-    'val is not a non-empty string or a valid number. val=' +
-      JSON.stringify(val)
-  );
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 100) {
-    return;
-  }
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
-    str
-  );
-  if (!match) {
-    return;
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  if (ms >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-  if (ms >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-  if (ms >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-  if (ms >= s) {
-    return Math.round(ms / s) + 's';
-  }
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  return plural(ms, d, 'day') ||
-    plural(ms, h, 'hour') ||
-    plural(ms, m, 'minute') ||
-    plural(ms, s, 'second') ||
-    ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, n, name) {
-  if (ms < n) {
-    return;
-  }
-  if (ms < n * 1.5) {
-    return Math.floor(ms / n) + ' ' + name;
-  }
-  return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
 

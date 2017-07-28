@@ -90,9 +90,11 @@ Add the following to your `index.html` page:
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" charset="UTF-8">
 
 <!-- Runtime Dependencies -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" charset="UTF-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js" charset="UTF-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ellipsize/0.0.3/ellipsize.min.js" charset="UTF-8"></script>
 ```
 
 Then you can use Timeline Storyteller in a couple of ways:
