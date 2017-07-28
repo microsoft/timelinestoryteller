@@ -24,7 +24,6 @@ module.exports = {
         d3: "d3",
         moment: "moment",
         "intro.js": "introJs",
-        "socket.io": "io",
-        "ellipsize": "ellipsize"
+        "socket.io": "io"
     }
 };
