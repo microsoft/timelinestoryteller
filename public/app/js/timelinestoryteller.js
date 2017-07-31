@@ -658,7 +658,7 @@ module.exports = utils;
  * Expose `debug()` as the module.
  */
 
-exports = module.exports = __webpack_require__(87);
+exports = module.exports = __webpack_require__(85);
 exports.log = log;
 exports.formatArgs = formatArgs;
 exports.save = save;
@@ -11985,7 +11985,8 @@ END Timeline Storyteller Modification
 
   out$.svgAsDataUri = function (el, options, cb) {
     out$.prepareSvg(el, options, function (svg) {
-      var uri = 'data:image/svg+xml;base64,' + window.btoa(reEncode(doctype + svg));
+      // svg.replace - https://stackoverflow.com/questions/30273775/namespace-prefix-ns1-for-href-on-tagelement-is-not-defined-setattributens
+      var uri = 'data:image/svg+xml;base64,' + window.btoa(reEncode(doctype + svg.replace(/NS\d+:href/g, 'xlink:href')));
       if (cb) {
         cb(uri);
       }
@@ -12525,7 +12526,7 @@ var toElement = __webpack_require__(29);
  * @returns {HTMLElement} The add image popup element
  */
 module.exports = function () {
-  return toElement("\n  <div id=\"image_div\" class=\"add_image_popup annotation_div control_div\" style=\"display:none\">\n    <div class=\"image_div_container\">\n      <div class=\"image_div_error\" style=\"display:none\"></div>\n      <div class=\"image_url_add_container\">\n        <h4>Add from image URL</h4>\n        <input type=\"text\" placeholder=\"Image URL\" class=\"text_input add_image_link\">\n        <div>\n          <label title=\"If true, this will allow for offline playback.\">\n            Keep Offline?\n            <input type=\"checkbox\" class=\"offline_enabled_cb\" checked>\n          </label>\n        </div>\n      </div>\n      <div class=\"image_local_add_container\">\n        <hr/>\n        <h4>Add from your computer</h4>\n        <div class=\"file_selection_container\">\n          <div class=\"image_local_add_drop_zone\">Drop files here</div>\n          <h5>OR</h5>\n          <input type=\"file\" class=\"add_image_file_chooser\" accept=\".jpg,.jpeg,.png,.gif\">\n        </div>\n        <div class=\"selected_files_container\" style=\"display:none\">\n          No files selected\n        </div>\n      </div>\n      <div>\n        <hr/>\n        <h4>Options</h4>\n        <div class=\"resize_options\">\n          <label title=\"Smaller images should be preferred as larger images increase the final size of the story, this will automatically resize your images to the given size\">\n            <input class=\"resize_enabled_cb\" type=\"checkbox\" checked>\n            <span>Resize To:&nbsp;</span>\n          </label>\n          <input type=\"number\" class=\"resize_width\" placeholder=\"Width\" value=400>\n          x\n          <input type=\"number\" class=\"resize_height\" placeholder=\"Height\" value=400>\n        </div>\n      </div>\n      <div>\n        <button class=\"add_image_btn\" title=\"Add Image\">OK</button>\n      </div>\n    </div>\n  </div>\n");
+  return toElement("\n  <div id=\"image_div\" class=\"add_image_popup annotation_div control_div\" style=\"display:none\">\n    <div class=\"image_div_container\">\n      <div class=\"image_div_error\" style=\"display:none\"></div>\n      <div class=\"image_url_add_container\">\n        <h4>Add from image URL</h4>\n        <input type=\"text\" placeholder=\"Image URL\" class=\"text_input add_image_link\">\n        <div class=\"offline_option_container\">\n          <label title=\"If true, this will allow for offline playback.\">\n            Keep Offline?\n            <input type=\"checkbox\" class=\"offline_enabled_cb\" checked>\n          </label>\n        </div>\n      </div>\n      <div class=\"image_local_add_container\">\n        <hr/>\n        <h4>Add from your computer</h4>\n        <div class=\"file_selection_container\">\n          <div class=\"image_local_add_drop_zone\">Drop files here</div>\n          <h5>OR</h5>\n          <input type=\"file\" class=\"add_image_file_chooser\" accept=\".jpg,.jpeg,.png,.gif\">\n        </div>\n        <div class=\"selected_files_container\" style=\"display:none\">\n          No files selected\n        </div>\n      </div>\n      <div class=\"options_container\">\n        <hr/>\n        <h4>Options</h4>\n        <div class=\"resize_options\">\n          <label title=\"Smaller images should be preferred as larger images increase the final size of the story, this will automatically resize your images to the given size\">\n            <input class=\"resize_enabled_cb\" type=\"checkbox\" checked>\n            <span>Resize To:&nbsp;</span>\n          </label>\n          <input type=\"number\" class=\"resize_width\" placeholder=\"Width\" value=400>\n          x\n          <input type=\"number\" class=\"resize_height\" placeholder=\"Height\" value=400>\n        </div>\n      </div>\n      <div>\n        <button class=\"add_image_btn\" title=\"Add Image\">OK</button>\n      </div>\n    </div>\n  </div>\n");
 };
 
 /***/ }),
@@ -12583,22 +12584,22 @@ function placeHoldersCount (b64) {
 
 function byteLength (b64) {
   // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
+  return (b64.length * 3 / 4) - placeHoldersCount(b64)
 }
 
 function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
+  var i, l, tmp, placeHolders, arr
   var len = b64.length
   placeHolders = placeHoldersCount(b64)
 
-  arr = new Arr(len * 3 / 4 - placeHolders)
+  arr = new Arr((len * 3 / 4) - placeHolders)
 
   // if there are placeholders, only get up to the last complete 4 chars
   l = placeHolders > 0 ? len - 4 : len
 
   var L = 0
 
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+  for (i = 0; i < l; i += 4) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
     arr[L++] = (tmp >> 16) & 0xFF
     arr[L++] = (tmp >> 8) & 0xFF
@@ -12986,8 +12987,8 @@ module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000Z\u
 
 
 var base64 = __webpack_require__(30)
-var ieee754 = __webpack_require__(88)
-var isArray = __webpack_require__(83)
+var ieee754 = __webpack_require__(86)
+var isArray = __webpack_require__(87)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -14769,17 +14770,6 @@ function isnan (val) {
 
 /***/ }),
 /* 83 */
-/***/ (function(module, exports) {
-
-var toString = {}.toString;
-
-module.exports = Array.isArray || function (arr) {
-  return toString.call(arr) == '[object Array]';
-};
-
-
-/***/ }),
-/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(9)(undefined);
@@ -14793,7 +14783,7 @@ exports.push([module.i, "/* Common stuff */\r\n.picker-wrapper,\r\n.slide-wrappe
 
 
 /***/ }),
-/* 85 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(9)(undefined);
@@ -14807,165 +14797,7 @@ exports.push([module.i, "@charset \"UTF-8\";\n\nbody, input, textarea, select, t
 
 
 /***/ }),
-/* 86 */
-/***/ (function(module, exports) {
-
-/**
- * Helpers.
- */
-
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isNaN(val) === false) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-  throw new Error(
-    'val is not a non-empty string or a valid number. val=' +
-      JSON.stringify(val)
-  );
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 100) {
-    return;
-  }
-  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
-    str
-  );
-  if (!match) {
-    return;
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  if (ms >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-  if (ms >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-  if (ms >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-  if (ms >= s) {
-    return Math.round(ms / s) + 's';
-  }
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  return plural(ms, d, 'day') ||
-    plural(ms, h, 'hour') ||
-    plural(ms, m, 'minute') ||
-    plural(ms, s, 'second') ||
-    ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, n, name) {
-  if (ms < n) {
-    return;
-  }
-  if (ms < n * 1.5) {
-    return Math.floor(ms / n) + ' ' + name;
-  }
-  return Math.ceil(ms / n) + ' ' + name + 's';
-}
-
-
-/***/ }),
-/* 87 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -14981,7 +14813,7 @@ exports.coerce = coerce;
 exports.disable = disable;
 exports.enable = enable;
 exports.enabled = enabled;
-exports.humanize = __webpack_require__(86);
+exports.humanize = __webpack_require__(88);
 
 /**
  * The currently active debug mode names, and names to skip.
@@ -15173,7 +15005,7 @@ function coerce(val) {
 
 
 /***/ }),
-/* 88 */
+/* 86 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -15259,6 +15091,175 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
   buffer[offset + i - d] |= s * 128
+}
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports) {
+
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isNaN(val) === false) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  if (ms >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (ms >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (ms >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (ms >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  return plural(ms, d, 'day') ||
+    plural(ms, h, 'hour') ||
+    plural(ms, m, 'minute') ||
+    plural(ms, s, 'second') ||
+    ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, n, name) {
+  if (ms < n) {
+    return;
+  }
+  if (ms < n * 1.5) {
+    return Math.floor(ms / n) + ' ' + name;
+  }
+  return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
 
@@ -15560,7 +15561,7 @@ module.exports = function (css) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(84);
+var content = __webpack_require__(83);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
 var update = __webpack_require__(11)(content, {});
@@ -15586,7 +15587,7 @@ if(false) {
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(85);
+var content = __webpack_require__(84);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
 var update = __webpack_require__(11)(content, {});
