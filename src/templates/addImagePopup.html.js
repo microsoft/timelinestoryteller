@@ -11,7 +11,7 @@ module.exports = () => toElement(`
       <div class="image_url_add_container">
         <h4>Add from image URL</h4>
         <input type="text" placeholder="Image URL" class="text_input add_image_link">
-        <div>
+        <div class="offline_option_container">
           <label title="If true, this will allow for offline playback.">
             Keep Offline?
             <input type="checkbox" class="offline_enabled_cb" checked>
@@ -30,7 +30,7 @@ module.exports = () => toElement(`
           No files selected
         </div>
       </div>
-      <div>
+      <div class="options_container">
         <hr/>
         <h4>Options</h4>
         <div class="resize_options">

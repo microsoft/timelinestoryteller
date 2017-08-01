@@ -248,7 +248,8 @@ END Timeline Storyteller Modification
 
   out$.svgAsDataUri = function(el, options, cb) {
     out$.prepareSvg(el, options, function(svg) {
-      var uri = 'data:image/svg+xml;base64,' + window.btoa(reEncode(doctype + svg));
+      // svg.replace - https://stackoverflow.com/questions/30273775/namespace-prefix-ns1-for-href-on-tagelement-is-not-defined-setattributens
+      var uri = 'data:image/svg+xml;base64,' + window.btoa(reEncode(doctype + svg.replace(/NS\d+:href/g, 'xlink:href')));
       if (cb) {
         cb(uri);
       }

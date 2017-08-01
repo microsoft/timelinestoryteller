@@ -6,6 +6,7 @@
   "dependencies": {
     "binary-loader": "0.0.1",
     "css-loader": "^0.27.3",
+    "ellipsize": "^0.0.3",
     "exports-loader": "^0.6.4",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.16.0",
@@ -43,8 +44,7 @@
     "d3": "^3.5.5",
     "intro.js": "^2.3.0",
     "moment": "^2.18.1",
-    "socket.io": "^1.7.2",
-    "ellipsize": "^0.0.3"
+    "socket.io": "^1.7.2"
   },
   "scripts": {
     "start": "node app.js",
