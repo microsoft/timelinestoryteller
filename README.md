@@ -1,14 +1,12 @@
 # Timeline Storyteller
 
-!["Build Status"](https://api.travis-ci.org/Microsoft/timelinestoryteller.svg?branch=master)
-
-!["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
+!["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
 
 [Timeline Storyteller](https://timelinestoryteller.com/) is an expressive browser-based visual storytelling environment for presenting timelines.
 
 You can use Timeline Storyteller to present different aspects of your data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation. You can export images of a timeline or assemble and record a story about your data and present it within the application.
 
-![Timeline Design dimensions](public/img/dims.png "Timeline Design dimensions")
+![Timeline Design dimensions](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dims.png "Timeline Design dimensions")
 
 To learn more about the research that informed this project, see [timelinesrevisited.github.io](https://timelinesrevisited.github.io/), which includes a survey of timeline tools and more than 200 bespoke timelines.
 
@@ -19,25 +17,24 @@ See [these examples](https://timelinestoryteller.com/#examples) of timelines and
 - [Matthew Brehmer](http://mattbrehmer.github.io/)
 - [Bonghsin Lee](http://research.microsoft.com/en-us/um/people/bongshin/)
 - [Nathalie Henry Riche](http://research.microsoft.com/en-us/um/people/nath/)
+- [Darren Edge](https://www.microsoft.com/en-us/research/people/daedge/)
+- [Christopher White](https://www.microsoft.com/en-us/research/people/chwh/)
+- [Kate Lytvynets](mailto:kalytv@microsoft.com)
+- [David Tittsworth](mailto:David.Tittsworth@microsoft.com)
 
 ## Setup / Testing
 
 1. Clone the main branch of this repository: `git clone https://github.com/Microsoft/timelinestoryteller.git`
 
-2. Ensure that [nodejs](https://nodejs.org/) and [npm](https://www.npmjs.com/) are installed.
+2. Ensure that [nodejs](https://nodejs.org/), [npm](https://www.npmjs.com/), and [yarn](https://yarnpkg.com/en/) are installed.
 
-3. Open a terminal at the root of the repository and run `npm install`.
+3. Open a terminal at the root of the repository and install node modules: `yarn`, 
 
-4. Test and package the Timeline Storyteller component: `npm test`
+4. Start the node server: `npm start`
 
-5. Start the node server: `npm start`
- > Optionally, run with `NODE_ENV=production npm start` which will run the server in production mode.
+5. Open [localhost:8000](http://localhost:8000/)
 
-6. Open [localhost:8000](http://localhost:8000/)
-
-* The Timeline Storyteller component source code can be found in the [src](/src) directory.
-* The images & css for the component can be found in the [assets](/assets) directory.
-* The website can be found in the [public](/public) directory.
+The application source code can be found in the [src/](https://github.com/Microsoft/timelinestoryteller/tree/master/src) directory.
 
 ## Preparing your data
 
@@ -45,7 +42,7 @@ Timeline Storyteller currently supports datasets of events in CSV, JSON, or Goog
 
 Each event is specified by the following attributes:
 
-- __Required__: `start_date`, date: YYYY, YYYY-MM-DD, or YYYY-MM-DD HH:MMZ formats are supported (Z necessary for specifying UTC, otherwise HH:MM will be time-zone dependent). BC dates are permitted, e.g., -27, -13800000000
+- __Required__: `start_date`, date: YYYY, YYYY-MM-DD, or YYYY-MM-DD HH:MMZ (ISO 8601) formats are supported (Z necessary for specifying UTC, otherwise HH:MM will be time-zone dependent). BC dates are permitted, e.g., -27, -13800000000
 - __Optional__: `end_date`, date: using same format as `start_date`
 - __Optional__: `category`, a string corresponding to the category of the event (which Timeline Storyteller encodes as colour)
 - __Optional__: `facet`,a string corresponding to another category of the event (which Timeline Storyteller uses to create a faceted timeline layout; `category` and `facet` can be identical if desired)
@@ -81,71 +78,7 @@ Here is the [The Daily Routines of Famous Creative People](https://podio.com/sit
 - __Optional__: Worksheet title (i.e., tab name) for this dataset: `dailyroutines`
 - Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.
 
-## Component Usage
-
-Add the following to your `index.html` page:
-
-```
-<! -- Runtime css -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/introjs.min.css" charset="UTF-8">
-
-<!-- Runtime Dependencies -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" charset="UTF-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.3.0/intro.min.js" charset="UTF-8"></script>
-```
-
-Then you can use Timeline Storyteller in a couple of ways:
-
-### Traditional
-
-```
-<!-- Timeline Storyteller -->
-<script type="text/javascript" src="dist/timelinestoryteller.js" charset="UTF-8"></script>
-<script>
-  new TimelineStoryteller(false); // Create a new Timeline Storyteller instance
-</script>
-```
-
-### Webpack
-
-- Configure your `webpack.config.js` to add a few configuration settings:
-```
-module.exports = {
-
-    // These rules are necessary to bundle correctly
-    rules: [{
-        test: /\.css$/,
-        loaders: ["style-loader", "css-loader"]
-    }, {
-        test: /\.(png|svg)$/,
-        loader: "binary-loader"
-    }]
-
-    // Optional if you have the cdn versions of these libraries from above in your index.html, otherwise these dependencies
-    // can be removed from your externals section.
-    externals: {
-        d3: "d3",
-        moment: "moment",
-        "intro.js": "{ introJs: introJs }",
-    },
-    plugins: [
-        new webpack.IgnorePlugin(/socket.io/) // Ignores the socket.io dependency as this is only necessary for the timelinestoryteller.com website.
-    ]
-};
-```
-- If you are bundling the dependencies with your application bundle, then include the following in your entry file:
-```
-require("intro.js/introjs.css"); // Loads the intro.js css
-```
-
-- Instantiate the Timeline Storyteller
-```
-var TimelineStoryteller = require("timeline_storyteller");
-var instance = new TimelineStoryteller(true);
-```
-
-## Application Usage
+## Usage
 
 Note that more detailed usage instructions are available at [timelinestoryteller.com](https://timelinestoryteller.com/)
 
@@ -204,31 +137,13 @@ Or you can cite our recent journal paper about the timeline design space:
 author = {Matthew Brehmer and Bongshin Lee and Benjamin Bach and Nathalie Henry Riche and Tamara Munzner},
 title = {Timelines Revisited: A Design Space and Considerations for Expressive Storytelling},
 journal = {IEEE Transactions on Visualization and Computer Graphics (TVCG)},
-year = {2016},
-volume = {in press},
+year = {2017},
+volume = {23},
+issue = {9},
+pages = {2151--2164},
 doi = {10.1109/TVCG.2016.2614803},
 ISSN = {1077-2626}
 }`
-
-### OSS Libraries / scripts used in this project
-
-- [d3 v3.5.5](http://d3js.org/) for visual encoding, scales, animation
-- [d3-time v0.0.2](https://github.com/d3/d3-time) for date parsing / temporal arithmetic
-- [moment.js v2.10.6](http://momentjs.com/) for date parsing / temporal arithmetic
-- [saveSvgAsPng.js](https://github.com/exupero/saveSvgAsPng) for image export
-- [flexi-color-picker](https://github.com/DavidDurman/FlexiColorPicker) for legacy color picking
-- [intro.js 2.3.0](http://usablica.github.com/intro.js/) for tour
-- [gif.js](https://github.com/jnordberg/gif.js) for GIF exporting
-- [gsheets 2.0.0](https://github.com/interactivethings/gsheets) for Google Spreadsheet import
-- [nodejs](https://nodejs.org/)
-- [express](https://www.npmjs.com/package/express)
-- [socket.io](https://www.npmjs.com/package/socket.io)
-- [webpack](https://webpack.github.io/)
-- [karma](https://karma-runner.github.io)
-- [mocha](https://mochajs.org/)
-- [chai](http://chaijs.com/)
-- [eslint](http://eslint.org/)
-- [debug](https://github.com/visionmedia/debug)
 
 ### Demo dataset provenance
 
@@ -246,7 +161,7 @@ ISSN = {1077-2626}
 - [Presidents of the USA](https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json)
 - [C4-5 Hurricanes: 1960-2010](http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html)
 - [The Daily Routines of Famous Creative People](https://podio.com/site/creative-routines)
-- ['Visualizing painters' lives" by Accurat](http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/)
+-['Visualizing painters' lives" by Accurat](http://www.brainpickings.org/2013/06/07/painters-lives-accurat-giorgia-lupi/)
 - ['From first published to masterpieces' by Accurat](http://www.brainpickings.org/2013/11/29/accurat-modern-library/)
 - [Kurzweil's 'Countdown to Singularity'](http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg)
 - ['A Perspective on Time' by mayra.artes for Wait But Why](http://visual.ly/perspective-time)
