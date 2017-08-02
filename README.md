@@ -28,11 +28,13 @@ See [these examples](https://timelinestoryteller.com/#examples) of timelines and
 
 2. Ensure that [nodejs](https://nodejs.org/), [npm](https://www.npmjs.com/), and [yarn](https://yarnpkg.com/en/) are installed.
 
-3. Open a terminal at the root of the repository and install node modules: `yarn`, 
+3. Open a terminal at the root of the repository and install node modules: `yarn` OR `npm_install`.
 
-4. Start the node server: `npm start`
+4. Build public/app/timelinestoryteller.js: `npm test`
 
-5. Open [localhost:8000](http://localhost:8000/)
+5. Start the node server: `npm start`
+
+6. Open [localhost:8000](http://localhost:8000/)
 
 The application source code can be found in the [src/](https://github.com/Microsoft/timelinestoryteller/tree/master/src) directory.
 
