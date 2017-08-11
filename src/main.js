@@ -2152,58 +2152,60 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       .append("title")
       .text("Delete Scene");
 
-    navigation_step_svg.selectAll(".framePoint")
-      .on("mouseover", function () {
-        const popupSize = 300;
-        const frameRect = this.getBoundingClientRect();
-        const relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
-        const offscreenAmount = (frameRect.right + popupSize) - relativeParentRect.right;
+    if (!isIE11) {
+      navigation_step_svg.selectAll(".framePoint")
+        .on("mouseover", function () {
+          const popupSize = 300;
+          const frameRect = this.getBoundingClientRect();
+          const relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
+          const offscreenAmount = (frameRect.right + popupSize) - relativeParentRect.right;
 
-        // If we're offscreen, then adjust the position to take the offsceen amount into account
-        const x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
-        const y_pos = frameRect.top - relativeParentRect.top;
+          // If we're offscreen, then adjust the position to take the offsceen amount into account
+          const x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
+          const y_pos = frameRect.top - relativeParentRect.top;
 
-        var img_src = d3.select(this).select("image").attr("href");
+          var img_src = d3.select(this).select("image").attr("href");
 
-        d3.select(this).select("rect")
-          .style("stroke", "#666");
-
-        d3.select(this).select(".scene_delete")
-          .style("opacity", 1);
-
-        selectWithParent().append("div")
-          .attr("class", "frame_hover")
-          .style("left", `${x_pos}px`)
-          .style("top", `${y_pos - popupSize - 20}px`)
-          .append("svg")
-          .style("padding", "0px")
-          .style("width", `${popupSize}px`)
-          .style("height", `${popupSize}px`)
-          .append("svg:image")
-          .attr("xlink:href", img_src)
-          .attr("x", 2)
-          .attr("y", 2)
-          .attr("width", 296)
-          .attr("height", 296);
-      })
-      .on("mouseout", function (d) {
-        d3.select(this).select(".scene_delete")
-          .style("opacity", 0);
-
-        if (d.s_order === instance._currentSceneIndex) {
           d3.select(this).select("rect")
-            .style("stroke", function () {
-              return "#f00";
-            });
-        } else {
-          d3.select(this).select("rect")
-            .style("stroke", function () {
-              return "#ccc";
-            });
-        }
+            .style("stroke", "#666");
 
-        selectAllWithParent(".frame_hover").remove();
-      });
+          d3.select(this).select(".scene_delete")
+            .style("opacity", 1);
+
+          selectWithParent().append("div")
+            .attr("class", "frame_hover")
+            .style("left", `${x_pos}px`)
+            .style("top", `${y_pos - popupSize - 20}px`)
+            .append("svg")
+            .style("padding", "0px")
+            .style("width", `${popupSize}px`)
+            .style("height", `${popupSize}px`)
+            .append("svg:image")
+            .attr("xlink:href", img_src)
+            .attr("x", 2)
+            .attr("y", 2)
+            .attr("width", 296)
+            .attr("height", 296);
+        })
+        .on("mouseout", function (d) {
+          d3.select(this).select(".scene_delete")
+            .style("opacity", 0);
+
+          if (d.s_order === instance._currentSceneIndex) {
+            d3.select(this).select("rect")
+              .style("stroke", function () {
+                return "#f00";
+              });
+          } else {
+            d3.select(this).select("rect")
+              .style("stroke", function () {
+                return "#ccc";
+              });
+          }
+
+          selectAllWithParent(".frame_hover").remove();
+        });
+    }
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
 
