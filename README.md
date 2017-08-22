@@ -127,7 +127,7 @@ THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 If you use Timeline Storyteller to make a timeline for a research paper, you can cite us in two ways. You can cite the tool itself:
 
 `@misc{TimelineStoryteller,
-author = {Matthew Brehmer and Bongshin Lee and Nathalie Henry Riche},
+author = {Matthew Brehmer and Bongshin Lee and Nathalie Henry Riche and Darren Edge and Christopher White and Kate Lytvynets and David Tittsworth},
 title = {Microsoft Timeline Storyteller},
 year = {2017},
 note = {\url{https://timelinestoryteller.com}}
