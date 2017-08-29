@@ -2,7 +2,7 @@
 
 !["The Daily Routines of Famous Creative People": A Story made with Timeline Storyteller](https://github.com/Microsoft/timelinestoryteller/blob/master/public/img/dailyroutines.gif "'The Daily Routines of Famous Creative People': A Story made with Timeline Storyteller")
 
-[Timeline Storyteller](https://timelinestoryteller.com/) is an expressive visual storytelling environment for presenting timelines in the browser or in [https://powerbi.microsoft.com/en-us/](Microsoft Power BI).
+[Timeline Storyteller](https://timelinestoryteller.com/) is an expressive visual storytelling environment for presenting timelines in the browser or in [Microsoft Power BI](https://powerbi.microsoft.com/en-us/).
 
 Use it to present different aspects of timeline data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation.
 
