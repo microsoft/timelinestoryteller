@@ -40,7 +40,7 @@ The application source code can be found in the [src/](https://github.com/Micros
 
 ## The Timeline Storyteller Power BI custom visual
 
-This respository contains the source for Timeline Storyteller as a standalone web application. To compile the Timeline Storyteller custom visual for Power BI, refer to [github.com/Microsoft/PowerBI-visuals-TimelineStoryteller](https://github.com/Microsoft/PowerBI-visuals-TimelineStoryteller). 
+This respository contains the source for Timeline Storyteller as a standalone web application. To generate the Timeline Storyteller custom visual for Power BI, refer to [github.com/Microsoft/PowerBI-visuals-TimelineStoryteller](https://github.com/Microsoft/PowerBI-visuals-TimelineStoryteller). 
 
 ## Preparing your data
 
