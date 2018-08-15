@@ -38,6 +38,10 @@ See [these examples](https://timelinestoryteller.com/#examples) of timelines and
 
 The application source code can be found in the [src/](https://github.com/Microsoft/timelinestoryteller/tree/master/src) directory.
 
+## The Timeline Storyteller Power BI custom visual
+
+This respository contains the source for Timeline Storyteller as a standalone web application. To compile the Timeline Storyteller custom visual for Power BI, refer to [github.com/Microsoft/PowerBI-visuals-TimelineStoryteller](https://github.com/Microsoft/PowerBI-visuals-TimelineStoryteller). 
+
 ## Preparing your data
 
 Timeline Storyteller currently supports datasets of events in CSV, JSON, or Google Spreadsheet format.
