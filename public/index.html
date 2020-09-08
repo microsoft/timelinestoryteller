@@ -1,5 +1,6 @@
-﻿<!doctype html>
+<!doctype html>
 <html xmnls="http://www.w3.org/1999/xhtml">
+
 <head>
 
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -7,56 +8,60 @@
   <meta http-equiv="cache-control" content="no-cache, no-store">
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="expires" content="0">
-  <meta name="description" content="An expressive visual storytelling environment for presenting timelines - a Microsoft Research project">
+  <meta name="description"
+    content="An expressive visual storytelling environment for presenting timelines - a Microsoft Research project">
   <meta name="keywords" content="timeline,storytelling,visualization">
   <meta name="author" content="Microsoft">
   <title>Timeline Storyteller</title>
   <link rel="stylesheet" href="css/about.css" charset="UTF-8">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
-
 </head>
 
 <body class="timeline_storyteller_site">
 
-  <a href="https://github.com/Microsoft/timelinestoryteller"><img style="position: absolute; box-shadow: none; z-index: 2; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+  <a href="https://github.com/Microsoft/timelinestoryteller"><img
+      style="position: absolute; box-shadow: none; z-index: 2; top: 0; right: 0; border: 0;"
+      src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+      alt="Fork me on GitHub"
+      data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
 
-	<div id="content-wrapper">
+  <div id="content-wrapper">
 
-		<div id="header-wrapper">
-			 <div id = "header">
-				<div id="logo">
+    <div id="header-wrapper">
+      <div id="header">
+        <div id="logo">
           <div>
             <a href='https://microsoft.com'><img class='ms-logo' src='img/ms-logo.svg'></a>
           </div>
-					<div id="page-title">
-						Timeline Storyteller
-					</div>
-				</div>
-				<!--/logo-->
-				<div id="nav" class="right">
-					<a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>contact us</a>
+          <div id="page-title">
+            Timeline Storyteller
+          </div>
+        </div>
+        <!--/logo-->
+        <div id="nav" class="right">
+          <a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>contact
+            us</a>
           <a href="">top</a>
-				</div>
-				<!--/nav-->
-			</div>
-			<!--/header-->
-		</div>
+        </div>
+        <!--/nav-->
+      </div>
+      <!--/header-->
+    </div>
 
-		<div id="content">
+    <div id="content">
 
-			<div id="left-column">
+      <div id="left-column">
 
         <p><a href="#examples">Examples</a></p>
-				<p><a href="#preparing">Preparing data</a></p>
+        <p><a href="#preparing">Preparing data</a></p>
         <p><a href="#usage">How do I use it?</a></p>
-				<p><a href="#code">Source code</a></p>
+        <p><a href="#code">Source code</a></p>
         <p><a href="#ack">Acknowledgements</a></p>
 
-				<h3>Project Team:</h3>
+        <h3>Project Team:</h3>
 
         <p><a href="http://mattbrehmer.github.io/" target="_blank">Matthew Brehmer</a></p>
         <p><a href="http://research.microsoft.com/en-us/um/people/bongshin/" target="_blank">Bongshin Lee</a></p>
@@ -66,44 +71,60 @@
         <p><a href="mailto:kalytv@microsoft.com" target="_blank">Kate Lytvynets</a></p>
         <p><a href="mailto:David.Tittsworth@microsoft.com" target="_blank">David Tittsworth</a></p>
 
-			</div>
-			<!--/left-column-->
+      </div>
+      <!--/left-column-->
 
-			<div id="right-column">
-
-        <div class="section">
-					<span id="about" class="anchor"></span>
-					<div class="text">
-            <p>
-              <img style="box-shadow: none;" src="img/dims.png" width="560" alt="A palette of timeline representations, scales, and layouts." title="A palette of timeline representations, scales, and layouts.">
-            </p>            
-						<p>
-							<strong><a href="app/" target="_blank">Timeline Storyteller</a></strong> is an <a href="https://github.com/Microsoft/timelinestoryteller" target="_blank">open-source</a> expressive visual storytelling environment for presenting timelines in the browser or in <a href="https://powerbi.microsoft.com/en-us/" target="_blank">Microsoft Power BI</a>.
-						</p>
-            <p>
-              Use it to present different aspects of timeline data using a palette of timeline representations, scales, and layouts, as well as controls for filtering, highlighting, and annotation.
-            </p>
-					</div>
-        </div>
+      <div id="right-column">
 
         <div class="section">
-
-						<a href="img/dailyroutines.gif" target="_blank"><img src="img/dailyroutines.gif" width="560" alt="Click to view in full resolution in a new tab" title="Click to view in full resolution in a new tab"></a>
-
-        </div>
-
-        <div class="section" style="margin-bottom:0px">
+          <span id="about" class="anchor"></span>
           <div class="text">
             <p>
-              <a href="app/" target="_blank" id="launch_btn"><button id="draw_timeline" class="img_btn_enabled import_label" title="Use Timeline Storyteller in the browser"><span class="boilerplate_title" style="color: white; cursor: pointer; position: relative; font-weight:bold">Use Timeline Storyteller in the Browser</span></button></a>
+              <img style="box-shadow: none;" src="img/dims.png" width="560"
+                alt="A palette of timeline representations, scales, and layouts."
+                title="A palette of timeline representations, scales, and layouts.">
+            </p>
+            <p>
+              <strong><a href="app/" target="_blank">Timeline Storyteller</a></strong> is an <a
+                href="https://github.com/Microsoft/timelinestoryteller" target="_blank">open-source</a> expressive
+              visual storytelling environment for presenting timelines in the browser or in <a
+                href="https://powerbi.microsoft.com/en-us/" target="_blank">Microsoft Power BI</a>.
+            </p>
+            <p>
+              Use it to present different aspects of timeline data using a palette of timeline representations, scales,
+              and layouts, as well as controls for filtering, highlighting, and annotation.
             </p>
           </div>
-        </div>			
-        
+        </div>
+
+        <div class="section">
+
+          <a href="img/dailyroutines.gif" target="_blank"><img src="img/dailyroutines.gif" width="560"
+              alt="Click to view in full resolution in a new tab"
+              title="Click to view in full resolution in a new tab"></a>
+
+        </div>
+
         <div class="section" style="margin-bottom:0px">
           <div class="text">
             <p>
-              <a href="https://store.office.com/en-us/app.aspx?assetid=WA104381136&ui=en-US&rs=en-US&ad=US&appredirect=false" target="_blank" id="launch_btn"><button id="draw_timeline" class="img_btn_enabled import_label" title="Get Timeline Storyteller for Power BI"><span class="boilerplate_title" style="color: white; cursor: pointer; position: relative; font-weight:bold">Get Timeline Storyteller for Power BI</span></button></a>
+              <a href="app/" target="_blank" id="launch_btn"><button id="draw_timeline"
+                  class="img_btn_enabled import_label" title="Use Timeline Storyteller in the browser"><span
+                    class="boilerplate_title"
+                    style="color: white; cursor: pointer; position: relative; font-weight:bold">Use Timeline Storyteller
+                    in the Browser</span></button></a>
+            </p>
+          </div>
+        </div>
+
+        <div class="section" style="margin-bottom:0px">
+          <div class="text">
+            <p>
+              <a href="https://store.office.com/en-us/app.aspx?assetid=WA104381136&ui=en-US&rs=en-US&ad=US&appredirect=false"
+                target="_blank" id="launch_btn"><button id="draw_timeline" class="img_btn_enabled import_label"
+                  title="Get Timeline Storyteller for Power BI"><span class="boilerplate_title"
+                    style="color: white; cursor: pointer; position: relative; font-weight:bold">Get Timeline Storyteller
+                    for Power BI</span></button></a>
             </p>
           </div>
         </div>
@@ -111,18 +132,13 @@
         <div class="section">
           <span id="examples" class="anchor"></span>
           <h3>Examples</h3>
-
           <p>
-            Here is an interactive story produced with the Timeline Storyteller custom visual for Power BI, a story about the champions of the US Open golf tournament:
-          </p>
-					<div class="text">
-					  <iframe width="560" height="420" src="https://msit.powerbi.com/view?r=eyJrIjoiMTZjNTUzNDgtZDA3Ny00ZTgwLWFhOTMtYzk4NDM4MzFhZDBiIiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9" frameborder="0" allowFullScreen="true"></iframe>
-          </div>          
-        </div>
-
-        <div class="section">          
-           <p>
-            For another interactive story produced with the Timeline Storyteller for Power BI, see <a href="https://msit.powerbi.com/view?r=eyJrIjoiODY3Y2M0MDQtYTEyMi00MTZmLTkwMDYtZmYzYzljN2Y3NjQ3IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9&pageName=ReportSection" target="_blank">this story about the history of artificial intelligence</a>.
+            Here is an interactive story produced with the Timeline Storyteller custom visual for Power BI, a <strong><a
+                href="https://msit.powerbi.com/view?r=eyJrIjoiMTZjNTUzNDgtZDA3Ny00ZTgwLWFhOTMtYzk4NDM4MzFhZDBiIiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9&pageName=ReportSection"
+                target="_blank">story about the champions of the US Open golf tournament</a></strong>.
+            For another interactive story produced with the Timeline Storyteller for Power BI, see <strong><a
+                href="https://msit.powerbi.com/view?r=eyJrIjoiODY3Y2M0MDQtYTEyMi00MTZmLTkwMDYtZmYzYzljN2Y3NjQ3IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9&pageName=ReportSection"
+                target="_blank">this story about the history of artificial intelligence</a></strong>.
           </p>
         </div>
 
@@ -131,39 +147,30 @@
           <h4>Example gallery</h4>
 
           <div class="carousel_element">
-            <img id="img_presidents" title='US presidents' alt='US presidents' class="carousel_element_img" src="img/presidents.png" onclick="modalClick('img_presidents')">
+            <img id="img_presidents" title='US presidents' alt='US presidents' class="carousel_element_img"
+              src="img/presidents.png" onclick="modalClick('img_presidents')">
           </div>
           <div class="carousel_element">
-            <iframe src="https://player.vimeo.com/video/208523365" width="538" height="538" frameborder="0" title='The daily routines of olympians' alt='The daily routines of olympians' class="carousel_element_img" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+            <img id="img_war" title='US armed conflicts' alt='US armed conflicts' class="carousel_element_img"
+              src="img/war.png" onclick="modalClick('img_war')">
           </div>
           <div class="carousel_element">
-            <iframe src="https://player.vimeo.com/video/230678735" width="538" height="538" class="carousel_element_img" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen title='The Progress of Artificial Intelligence: A Timeline Story' alt='The Progress of Artificial Intelligence: A Timeline Story'></iframe>              
+            <img id="img_canada" title='A history of Canada' alt='A history of Canada' class="carousel_element_img"
+              src="img/canada.gif" onclick="modalClick('img_canada')">
           </div>
           <div class="carousel_element">
-            <iframe src="https://player.vimeo.com/video/208522461" width="538" height="538" class="carousel_element_img" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen title='A Timeline of Presidential Executive Orders' alt='A Timeline of Presidential Executive Orders'></iframe>
+            <img id="img_mb" title="Matthew Brehmer's biogaphical timeline" alt="Matthew Brehmer's biogaphical timeline"
+              class="carousel_element_img" src="img/mb.gif" onclick="modalClick('img_mb')">
           </div>
           <div class="carousel_element">
-            <img id="img_war" title='US armed conflicts' alt='US armed conflicts' class="carousel_element_img" src="img/war.png" onclick="modalClick('img_war')">
+            <img id="img_dailyroutines" title='The daily routines of creative people'
+              alt='The daily routines of creative people' class="carousel_element_img" src="img/dailyroutines.png"
+              onclick="modalClick('img_dailyroutines')">
           </div>
           <div class="carousel_element">
-            <img id="img_canada" title='A history of Canada' alt='A history of Canada' class="carousel_element_img" src="img/canada.gif" onclick="modalClick('img_canada')">
+            <img id="img_empires" title='Empires of China, Korea, Japan' alt='Empires of China, Korea, Japan'
+              class="carousel_element_img" src="img/empires.png" onclick="modalClick('img_empires')">
           </div>
-          <div class="carousel_element">
-            <img id="img_mb" title="Matthew Brehmer's biogaphical timeline" alt="Matthew Brehmer's biogaphical timeline" class="carousel_element_img" src="img/mb.gif" onclick="modalClick('img_mb')">
-          </div>
-          <div class="carousel_element">
-            <img id="img_dailyroutines" title='The daily routines of creative people' alt='The daily routines of creative people' class="carousel_element_img" src="img/dailyroutines.png" onclick="modalClick('img_dailyroutines')">
-          </div>
-          <div class="carousel_element">
-            <iframe src="https://player.vimeo.com/video/208525317" width="538" height="538" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen title='The daily routines of creative people' alt='The daily routines of creative people' class="carousel_element_img"></iframe>
-          </div>
-          <div class="carousel_element">
-            <img id="img_empires" title='Empires of China, Korea, Japan' alt='Empires of China, Korea, Japan' class="carousel_element_img" src="img/empires.png" onclick="modalClick('img_empires')">
-          </div>
-          <div class="carousel_element">
-            <iframe src="https://player.vimeo.com/video/208526435" title='The Lives of Famous 20th Century Painters' alt='The Lives of Famous 20th Century Painters' class="carousel_element_img" width="538" height="538" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-          </div>
-
 
           <div class="carousel_control_div">
             <div class="carousel_control carousel_left" onclick="plusDivs(-1)">&#10094;</div>
@@ -174,18 +181,22 @@
             <span class="carousel_control carousel_indicator" onclick="currentDiv(4)"></span>
             <span class="carousel_control carousel_indicator" onclick="currentDiv(5)"></span>
             <span class="carousel_control carousel_indicator" onclick="currentDiv(6)"></span>
-            <span class="carousel_control carousel_indicator" onclick="currentDiv(7)"></span>
-            <span class="carousel_control carousel_indicator" onclick="currentDiv(8)"></span>
-            <span class="carousel_control carousel_indicator" onclick="currentDiv(9)"></span>
-            <span class="carousel_control carousel_indicator" onclick="currentDiv(10)"></span>
-            <span class="carousel_control carousel_indicator" onclick="currentDiv(11)"></span>
           </div>
 
           <p>
-            <br>For more inspiration, see our <strong><a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">gallery of timelines</a></strong> spanning the timeline design space as well as <strong><a href="https://vimeo.com/user64195480" target="_blank">videos of timeline stories</a></strong>.
+            <br>For more inspiration, see our <strong><a
+                href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">gallery of
+                timelines</a></strong> spanning the timeline design space as well as <strong><a
+                href="https://vimeo.com/user64195480" target="_blank">videos of timeline stories</a></strong>.
+          </p>
+          <p>
+            Also watch these videos of Timeline Storyteller in the <strong><a
+                href="https://youtu.be/zaVGt-IbuhU?t=28m1s" target="_blank">2017 Microsoft Data Insights Summit
+                keynote</a></strong> and during the summit's <strong><a href="https://youtu.be/mmdqZXm0n-4?t=39m48s"
+                target="_blank">BI Power Hour</a></strong>.
           </p>
 
-				</div>
+        </div>
 
         <!-- The Modal -->
         <div id="modal" class="modal">
@@ -201,27 +212,37 @@
         </div>
 
         <div class="section">
-					<span id="preparing" class="anchor"></span>
-					<div class="text">
-						<h3>Preparing your data</h3>
-						<p>
-              Timeline Storyteller currently supports datasets of events in CSV, JSON, or Google Spreadsheet format.
+          <span id="preparing" class="anchor"></span>
+          <div class="text">
+            <h3>Preparing your data</h3>
+            <p>
+              Timeline Storyteller for the web currently supports datasets of events in CSV, JSON, or Google Spreadsheet
+              format, while Timeline Storyteller for Power BI supports datasets of events in any format that Power BI
+              can ingest; please see <strong><a href="https://youtu.be/bwiMfwBVsSQ?t=16m7s" target="_blank">this
+                  tutorial</a></strong> for loading data into Timeline Storyteller for Power BI.
             </p>
             <p>
               Each event is specified by the following attributes:
             </p>
-              <ul>
-                <li><strong>Required</strong>: <code>start_date</code>, a date formatted as YYYY, YYYY-MM-DD, or YYYY-MM-DD HH:MMZ (Z necessary for specifying UTC, otherwise HH:MM will be time-zone dependent). BC dates are permitted, e.g., -27, -13800000000.</li>
-                <li><strong>Optional</strong>: <code>end_date</code>, a date using same format as <code>start_date</code>.</li>
-                <li><strong>Optional</strong>: <code>category</code>, a string corresponding to the category of the event (which Timeline Storyteller encodes as colour).</li>
-                <li><strong>Optional</strong>: <code>facet</code>, a string corresponding to another category of the event (which Timeline Storyteller uses to create a faceted timeline layout; <code>category</code> and <code>facet</code> can be identical if desired).</li>
-                <li><strong>Optional</strong>: <code>content_text</code>, a string description of the event (which Timeline Storyteller exposes as event annotations).</li>
-              </ul>
+            <ul>
+              <li><strong>Required</strong>: <code>start_date</code>, a date formatted as YYYY, YYYY-MM-DD, or
+                YYYY-MM-DD HH:MMZ (Z necessary for specifying UTC, otherwise HH:MM will be time-zone dependent). BC
+                dates are permitted, e.g., -27, -13800000000.</li>
+              <li><strong>Optional</strong>: <code>end_date</code>, a date using same format as <code>start_date</code>.
+              </li>
+              <li><strong>Optional</strong>: <code>category</code>, a string corresponding to the category of the event
+                (which Timeline Storyteller encodes as colour).</li>
+              <li><strong>Optional</strong>: <code>facet</code>, a string corresponding to another category of the event
+                (which Timeline Storyteller uses to create a faceted timeline layout; <code>category</code> and
+                <code>facet</code> can be identical if desired).</li>
+              <li><strong>Optional</strong>: <code>content_text</code>, a string description of the event (which
+                Timeline Storyteller exposes as event annotations).</li>
+            </ul>
 
-              <h4>Example events in JSON:</h4>
+            <h4>Example events in JSON:</h4>
 
-              <h5>Example 1:</h5>
-              <pre><code class="json">
+            <h5>Example 1:</h5>
+            <pre><code class="json">
 {
   "start_date":"1775",
   "end_date":"1783",
@@ -231,8 +252,8 @@
 },
               </code></pre>
 
-              <h5>Example 2 (small-scale timeline):</h5>
-              <pre><code class="json">
+            <h5>Example 2 (small-scale timeline):</h5>
+            <pre><code class="json">
 {
   "facet":"Hugo, Victor",
   "category":"other",
@@ -242,8 +263,8 @@
 },
               </code></pre>
 
-              <h5>Example 3 (epoch scale timeline):</h5>
-              <pre><code class="json">
+            <h5>Example 3 (epoch scale timeline):</h5>
+            <pre><code class="json">
 {
   "content_text":"Human ancestors walk upright",
   "start_date":"-4200000",
@@ -252,93 +273,147 @@
               </code></pre>
 
 
-              <h4>Example CSV / Google Spreadsheet:</h4>
+            <h4>Example CSV / Google Spreadsheet:</h4>
 
-              <p>The <a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous Creative People"</a> demo dataset used in Timeline Storyteller:</p>
-              <iframe width="560" height="320" src="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml?widget=true&amp;headers=false"></iframe>
-              <h5>Loading Google Spreadsheets</h5>
-              <ul>
-                <li>Refer to the URL of a spreadsheet, such as: <a href="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml" target="_blank"><code>https://docs.google.com/spreadsheets</code><br><code>/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml</code></a></li>
-                <li>Ensure that the spreadsheet is published (open the Google Spreadsheet 'File' menu, select 'Publish to the Web').</li>
-                <li>Ensure that <code>start_date</code> and <code>end_date</code> columns are formatted as text and not as dates (e.g., <code>'1926-06-29</code>).</li>
-                <li><strong>Required</strong>: Spreadsheet URL</li>
-                <li><strong>Optional</strong>: Worksheet title (i.e., tab name) for this dataset: <code>dailyroutines</code></li>
-                <li>Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.</li>
-              </ul>
-					</div>
-				</div>
+            <p>The <a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous
+                Creative People"</a> <strong><a
+                  href="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml?">demo
+                  dataset</a></strong> used in Timeline Storyteller:</p>
+            <h5>Loading Google Spreadsheets</h5>
+            <ul>
+              <li>Refer to the URL of a spreadsheet, such as: <a
+                  href="https://docs.google.com/spreadsheets/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml"
+                  target="_blank"><code>https://docs.google.com/spreadsheets</code><br><code>/d/1x8N7Z9RUrA9Jmc38Rvw1VkHslp8rgV2Ws3h_5iM-I8M/pubhtml</code></a>
+              </li>
+              <li>Ensure that the spreadsheet is published (open the Google Spreadsheet 'File' menu, select 'Publish to
+                the Web').</li>
+              <li>Ensure that <code>start_date</code> and <code>end_date</code> columns are formatted as text and not as
+                dates (e.g., <code>'1926-06-29</code>).</li>
+              <li><strong>Required</strong>: Spreadsheet URL</li>
+              <li><strong>Optional</strong>: Worksheet title (i.e., tab name) for this dataset:
+                <code>dailyroutines</code></li>
+              <li>Enter the spreadsheet URL and worksheet title into Timeline Storyteller's load dialog.</li>
+            </ul>
+          </div>
+        </div>
 
         <div class="section">
-					<span id="usage" class="anchor"></span>
-					<div class="text">
-						<h3>How to use Timeline Storyteller</h3>
+          <span id="usage" class="anchor"></span>
+          <div class="text">
+            <h3>How to use Timeline Storyteller</h3>
+            <p>To use Timeline Storyteller for Power BI, watch <strong><a href="https://youtu.be/bwiMfwBVsSQ?t=16m7s"
+                  target="_blank">this tutorial</a></strong>.</p>
+            <p>To use Timeline Storyteller in the browser, follow these steps:</p>
             <ol>
-              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob with extension .cdc; see step 5).<br><br>
+              <li>Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story (a JSON Blob
+                with extension .cdc; see step 5).<br><br>
 
-              <img src="img/load.png" width="520" alt="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story" title="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story">
+                <img src="img/load.png" width="520"
+                  alt="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story"
+                  title="Load timeline data (demo dataset, JSON, CSV, Google Spreadsheet) or saved timeline story">
 
-              <ul><li><strong>A note about privacy</strong>: Your data remains on your machine and is not shared with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a> unless you export the content you create and provide your email address. If you share your content with <a title='Microsoft' href='http://microsoft.com'>Microsoft</a>, we will use it for research and to improve our products and services. We may also include it in a future research publication.</li></ul></li>
+                <ul>
+                  <li><strong>A note about privacy</strong>: Your data remains on your machine and is not shared with <a
+                      title='Microsoft' href='http://microsoft.com'>Microsoft</a>.</li>
+                </ul>
+              </li>
 
-              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only some combinations are valid; see <strong><a href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on selecting appropriate combinations for your story</a></strong>. Mouseover these options to view a tooltip that describes how they might be useful.</li>
+              <li>Select a combination of representation, scale, and layout from the menu at the top of the screen; only
+                some combinations are valid; see <strong><a
+                    href="http://timelinesrevisited.github.io/supplemental/gallery/" target="_blank">our guidance on
+                    selecting appropriate combinations for your story</a></strong>. Mouseover these options to view a
+                tooltip that describes how they might be useful.</li>
 
-              <img src="img/menu.png" width="520" alt="Select a combination of representation, scale, and layout from the menu at the top of the screen" title="Select a combination of representation, scale, and layout from the menu at the top of the screen">
+              <img src="img/menu.png" width="520"
+                alt="Select a combination of representation, scale, and layout from the menu at the top of the screen"
+                title="Select a combination of representation, scale, and layout from the menu at the top of the screen">
 
               <li>Edit the canvas:
                 <ul>
-              	<li>Click on events to annotate with their <code>content_text</code> label; resize and reposition these labels; SHIFT + click to highlight events without showing label.</li>
+                  <li>Click on events to annotate with their <code>content_text</code> label; resize and reposition
+                    these labels; SHIFT + click to highlight events without showing label.</li>
 
-                <a href="img/annotation.gif" target="_blank"><img src="img/annotation.gif" width="480" alt="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label" title="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label"></a>
+                  <a href="img/annotation.gif" target="_blank"><img src="img/annotation.gif" width="480"
+                      alt="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label"
+                      title="Click on events to annotate with their content_text label; resize and reposition these labels; SHIFT + click to highlight events without showing label"></a>
 
-              	<li>Annotate the canvas with captions and images; resize and reposition captions and images.</li>
+                  <li>Annotate the canvas with captions and images; resize and reposition captions and images.</li>
 
-                <a href="img/caption.gif" target="_blank"><img src="img/caption.gif" width="480" alt="Annotate the canvas with captions and images; resize and reposition captions and images." title="Annotate the canvas with captions and images; resize and reposition captions and images."></a>
+                  <a href="img/caption.gif" target="_blank"><img src="img/caption.gif" width="480"
+                      alt="Annotate the canvas with captions and images; resize and reposition captions and images."
+                      title="Annotate the canvas with captions and images; resize and reposition captions and images."></a>
 
-               	<li>Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events).</li>
+                  <li>Filter events by category, facet, or segment. Filter by highlighting matching events
+                    (de-emphasizing non-matching events).</li>
 
-                <a href="img/highlight.gif" target="_blank"><img src="img/highlight.gif" width="480" alt="Filter events by category, facet, or segment. Filter by highlighting matching events (de-emphasizing non-matching events)." title="Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events)."></a>
+                  <a href="img/highlight.gif" target="_blank"><img src="img/highlight.gif" width="480"
+                      alt="Filter events by category, facet, or segment. Filter by highlighting matching events (de-emphasizing non-matching events)."
+                      title="Filter events by category, facet, or segment. Filter by highlighting  matching events (de-emphasizing non-matching events)."></a>
 
-                <li>You can also filter by hiding non-matching events:</li>
+                  <li>You can also filter by hiding non-matching events:</li>
 
-                <a href="img/filter.gif" target="_blank"><img src="img/filter.gif" width="480" alt="Filter events by category, facet, or segment. Filter by hiding non-matching events." title="Filter events by category, facet, or segment. Filter by hiding non-matching events."></a>
+                  <a href="img/filter.gif" target="_blank"><img src="img/filter.gif" width="480"
+                      alt="Filter events by category, facet, or segment. Filter by hiding non-matching events."
+                      title="Filter events by category, facet, or segment. Filter by hiding non-matching events."></a>
 
-                </ul></li>
+                </ul>
+              </li>
 
-              <li>Record current canvas as a scene, which retains labels, captions, and images; enter playback mode, navigate to previous / next recorded scene</li>
+              <li>Record current canvas as a scene, which retains labels, captions, and images; enter playback mode,
+                navigate to previous / next recorded scene</li>
 
-              <a href="img/record.gif" target="_blank"><img src="img/record.gif" width="520" alt="Record current canvas as a scene, which retains labels, captions, and images" title="Record current canvas as a scene, which retains labels, captions, and images"></a>
+              <a href="img/record.gif" target="_blank"><img src="img/record.gif" width="520"
+                  alt="Record current canvas as a scene, which retains labels, captions, and images"
+                  title="Record current canvas as a scene, which retains labels, captions, and images"></a>
 
-              <li>Export the current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob (.cdc extension). By providing an email address you agree that Microsoft may contact you to request feedback and for user research. You may withdraw this consent at any time. You can also opt out and not share your content with Microsoft.</li>
+              <li>Export the current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a
+                JSON Blob (.cdc extension). By providing an email address you agree that Microsoft may contact you to
+                request feedback and for user research. You may withdraw this consent at any time. You can also opt out
+                and not share your content with Microsoft.</li>
 
-              <img src="img/export.png" width="520" alt="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob" title="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob">
-            <ol>
-					</div>
-				</div>
+              <img src="img/export.png" width="520"
+                alt="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob"
+                title="Export current canvas as a PNG or SVG, or export the series of scenes as an animated GIF or as a JSON Blob">
+              <ol>
+          </div>
+        </div>
 
         <div class="section">
-					<span id="code" class="anchor"></span>
-					<div class="text">
-						<h3>Source code</h3>
-						<p>
-							Timeline Storyteller was developed at <a href="https://www.microsoft.com/en-us/research/" target="_blank">Microsoft Research</a> and deployed as an <a href="https://azure.microsoft.com/en-us/services/app-service/web/" target="_blank">Azure web app</a>.
-						</p>
-            <p> This is an open source project released under a <a href="https://opensource.org/licenses/MIT" target="_blank">MIT license</a>. Contribute to this project by submitting issues and pull requests at <strong><a href="https://github.com/Microsoft/timelinestoryteller" target="_blank">github.com/Microsoft/timelinestoryteller</a></strong>.
-            </p>            
+          <span id="code" class="anchor"></span>
+          <div class="text">
+            <h3>Source code</h3>
+            <p>
+              Timeline Storyteller was developed at <a href="https://www.microsoft.com/en-us/research/"
+                target="_blank">Microsoft Research</a> and deployed as an <a
+                href="https://azure.microsoft.com/en-us/services/app-service/web/" target="_blank">Azure web app</a>.
+            </p>
+            <p> This is an open source project released under a <a href="https://opensource.org/licenses/MIT"
+                target="_blank">MIT license</a>. Contribute to this project by submitting issues and pull requests at
+              <strong><a href="https://github.com/Microsoft/timelinestoryteller"
+                  target="_blank">github.com/Microsoft/timelinestoryteller</a></strong>.
+            </p>
 
-					</div>
-				</div>
+          </div>
+        </div>
 
         <div class="section">
-					<span id="ack" class="anchor"></span>
-					<div class="text">
+          <span id="ack" class="anchor"></span>
+          <div class="text">
             <h3>Acknowledgements</h3>
 
             <p>
-              To learn more about the <a href="https://www.microsoft.com/en-us/research/research-area/human-computer-interaction/" target="_blank">Microsoft Research</a> project that informed the design of Timeline Storyteller, see <strong><a href="https://timelinesrevisited.github.io/" target="_blank">timelinesrevisited.github.io</a></strong>, which includes a survey of timeline tools and more than 200 bespoke timelines.
+              To learn more about the <a
+                href="https://www.microsoft.com/en-us/research/research-area/human-computer-interaction/"
+                target="_blank">Microsoft Research</a> project that informed the design of Timeline Storyteller, see
+              <strong><a href="https://timelinesrevisited.github.io/"
+                  target="_blank">timelinesrevisited.github.io</a></strong>, which includes a survey of timeline tools
+              and more than 200 bespoke timelines.
             </p>
-            
+
             <h4>Citing us</h4>
-<p>If you use Timeline Storyteller to make a timeline for a research paper, you can cite us in two ways. You can cite the tool itself:</p>
-<pre><code class="tex">
+            <p>If you use Timeline Storyteller to make a timeline for a research paper, you can cite us in two ways. You
+              can cite the tool itself:</p>
+            <pre><code class="tex">
 @misc{TimelineStoryteller,
 author = {Matthew Brehmer and Bongshin Lee and Nathalie Henry Riche and Darren Edge and Christopher White and Kate Lytvynets and David Tittsworth},
 title = {Microsoft Timeline Storyteller},
@@ -346,8 +421,8 @@ year = {2017},
 note = {\url{https://timelinestoryteller.com}}
 }
 </code></pre>
-<p>Or you can cite our recent journal paper about the timeline design space:</p>
-<pre><code class="tex">
+            <p>Or you can cite our recent journal paper about the timeline design space:</p>
+            <pre><code class="tex">
 @article{Brehmer2016,
 author = {Matthew Brehmer and Bongshin Lee and Benjamin Bach and Nathalie Henry Riche and Tamara Munzner},
 title = {Timelines Revisited: A Design Space and Considerations for Expressive Storytelling},
@@ -363,89 +438,132 @@ ISSN = {1077-2626}
             <h4>Demo dataset provenance:</h4>
             <ul>
 
-              <li><a href="https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif" target="_blank">Joseph Priestley's Chart of Biography</a></li>
+              <li><a href="https://upload.wikimedia.org/wikipedia/commons/9/98/PriestleyChart.gif"
+                  target="_blank">Joseph Priestley's Chart of Biography</a></li>
 
-              <li>Great Philosophers since the 8th Century BC: data from <a href="http://bl.ocks.org/rengel-de/5603464" target="_blank">a bl.ocks.org Block by rengel-de</a></li>
+              <li>Great Philosophers since the 8th Century BC: data from <a href="http://bl.ocks.org/rengel-de/5603464"
+                  target="_blank">a bl.ocks.org Block by rengel-de</a></li>
 
-              <li><a href="http://nowherenearithaca.github.io/empires/index.html" target="_blank">History's Largest Empires by Edward Lee</a> (scraped using <a href="https://ucbvislab.github.io/d3-deconstructor/" target="_blank">D3 Deconstructor (UC Berkeley VisLab)</a>)</li>
+              <li><a href="http://nowherenearithaca.github.io/empires/index.html" target="_blank">History's Largest
+                  Empires by Edward Lee</a> (scraped using <a href="https://ucbvislab.github.io/d3-deconstructor/"
+                  target="_blank">D3 Deconstructor (UC Berkeley VisLab)</a>)</li>
 
-              <li>East Asian Dynasties: data from <a href="http://bl.ocks.org/bunkat/2338034" target="_blank">a bl.ocks.org Block by bunkat</a></li>
+              <li>East Asian Dynasties: data from <a href="http://bl.ocks.org/bunkat/2338034" target="_blank">a
+                  bl.ocks.org Block by bunkat</a></li>
 
-              <li><a href="https://en.wikipedia.org/wiki/List_of_epidemics" target="_blank">Epidemics since the 14th Century</a> (generated using <a href="http://timelinecurator.org/" target="_blank">TimeLineCurator (UBC InfoVis Group)</a>)</li>
+              <li><a href="https://en.wikipedia.org/wiki/List_of_epidemics" target="_blank">Epidemics since the 14th
+                  Century</a> (generated using <a href="http://timelinecurator.org/" target="_blank">TimeLineCurator
+                  (UBC InfoVis Group)</a>)</li>
 
-              <li><a href="http://www.downloadexcelfiles.com/ca_en/download-excel-file-list-prime-ministers-canada" target="_blank">Prime Ministers of Canada</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/ca_en/download-excel-file-list-prime-ministers-canada"
+                  target="_blank">Prime Ministers of Canada</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/fr_en/download-excel-file-list-presidents-france" target="_blank">Presidents of France</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/fr_en/download-excel-file-list-presidents-france"
+                  target="_blank">Presidents of France</a></li>
 
-              <li><a href="https://en.wikipedia.org/wiki/List_of_Chancellors_of_Germany" target="_blank">Chancellors of Germany</a></li>
+              <li><a href="https://en.wikipedia.org/wiki/List_of_Chancellors_of_Germany" target="_blank">Chancellors of
+                  Germany</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/it_en/download-excel-file-list-presidents-italy" target="_blank">Presidents of Italy</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/it_en/download-excel-file-list-presidents-italy"
+                  target="_blank">Presidents of Italy</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/jp_en/download-excel-file-list-prime-ministers-japan" target="_blank">Prime Ministers of Japan</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/jp_en/download-excel-file-list-prime-ministers-japan"
+                  target="_blank">Prime Ministers of Japan</a></li>
 
-              <li><a href="http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-prime-ministers-uk" target="_blank">Prime Ministers of the UK</a></li>
+              <li><a href="http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-prime-ministers-uk"
+                  target="_blank">Prime Ministers of the UK</a></li>
 
-              <li><a href="https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json" target="_blank">Presidents of the USA</a></li>
+              <li><a href="https://raw.githubusercontent.com/hitch17/sample-data/master/presidents.json"
+                  target="_blank">Presidents of the USA</a></li>
 
-              <li><a href="http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html" target="_blank">C4-5 Hurricanes: 1910-2010</a></li>
+              <li><a href="http://www.aoml.noaa.gov/hrd/hurdat/easyread-2011.html" target="_blank">C4-5 Hurricanes:
+                  1910-2010</a></li>
 
-              <li><a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous Creative People" by Podio</a></li>
+              <li><a href="https://podio.com/site/creative-routines" target="_blank">"The Daily Routines of Famous
+                  Creative People" by Podio</a></li>
 
-              <li><a href="https://www.flickr.com/photos/accurat/8961090259/" target="_blank">"Visualizing painters' lives" by Accurat</a></li>
+              <li><a href="https://www.flickr.com/photos/accurat/8961090259/" target="_blank">"Visualizing painters'
+                  lives" by Accurat</a></li>
 
 
-              <li><a href="https://www.flickr.com/photos/accurat/11052331736" target="_blank">"From first published to masterpieces" by Accurat</a></li>
+              <li><a href="https://www.flickr.com/photos/accurat/11052331736" target="_blank">"From first published to
+                  masterpieces" by Accurat</a></li>
 
-              <li><a href="http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg" target="_blank">"Countdown to Singularity" by Ray Kurzweil</a></li>
+              <li><a href="http://www.singularity.com/images/charts/CountdowntoSingularityLog.jpg"
+                  target="_blank">"Countdown to Singularity" by Ray Kurzweil</a></li>
 
-              <li><a href="http://visual.ly/perspective-time" target="_blank">"A Perspective on Time" by mayra.artes for Wait But Why</a></li>
+              <li><a href="http://visual.ly/perspective-time" target="_blank">"A Perspective on Time" by mayra.artes for
+                  Wait But Why</a></li>
 
-              <li><a href="http://waitbutwhy.com/2014/05/life-weeks.html" target="_blank">"Life of a Typical American" by Tim Urban for Wait But Why</a></li>
+              <li><a href="http://waitbutwhy.com/2014/05/life-weeks.html" target="_blank">"Life of a Typical American"
+                  by Tim Urban for Wait But Why</a></li>
 
             </ul>
 
-            <h4>Noun Project icons (<a href="https://creativecommons.org/licenses/by/3.0/us/" target="_blank">CC BY 3.0</a>) used in the user interface:</h4>
+            <h4>Noun Project icons (<a href="https://creativecommons.org/licenses/by/3.0/us/" target="_blank">CC BY
+                3.0</a>) used in the user interface:</h4>
             <ul>
-              <li>"<a href="https://thenounproject.com/term/check-mark/608852" target="_blank">check-mark</a>" by Arthur Shlain</li>
-              <li>"<a href="https://thenounproject.com/term/calendar/38869" target="_blank">calendar</a>" by Kiril Tomilov</li>
-              <li>"<a href="https://thenounproject.com/term/timeline/152347" target="_blank">timeline</a>" by Alecander Bickov</li>
-              <li>"<a href="https://thenounproject.com/term/gif-file/446903" target="_blank">gif-file</a>" by Pranav Grover</li>
-              <li>"<a href="https://thenounproject.com/term/png-file/446907" target="_blank">png-file</a>" by Pranav Grover</li>
-              <li>"<a href="https://thenounproject.com/term/svg-file/446904" target="_blank">svg-file</a>" by Pranav Grover</li>
-              <li>"<a href="https://thenounproject.com/term/json-file/446959" target="_blank">json-file</a>" by Pranav Grover</li>
-              <li>"<a href="https://thenounproject.com/term/csv-file/446962" target="_blank">csv-file</a>" by Pranav Grover</li>
-              <li>"<a href="https://thenounproject.com/term/drive/128372" target="_blank">drive</a>" by Denis Klyuchnikov</li>
+              <li>"<a href="https://thenounproject.com/term/check-mark/608852" target="_blank">check-mark</a>" by Arthur
+                Shlain</li>
+              <li>"<a href="https://thenounproject.com/term/calendar/38869" target="_blank">calendar</a>" by Kiril
+                Tomilov</li>
+              <li>"<a href="https://thenounproject.com/term/timeline/152347" target="_blank">timeline</a>" by Alecander
+                Bickov</li>
+              <li>"<a href="https://thenounproject.com/term/gif-file/446903" target="_blank">gif-file</a>" by Pranav
+                Grover</li>
+              <li>"<a href="https://thenounproject.com/term/png-file/446907" target="_blank">png-file</a>" by Pranav
+                Grover</li>
+              <li>"<a href="https://thenounproject.com/term/svg-file/446904" target="_blank">svg-file</a>" by Pranav
+                Grover</li>
+              <li>"<a href="https://thenounproject.com/term/json-file/446959" target="_blank">json-file</a>" by Pranav
+                Grover</li>
+              <li>"<a href="https://thenounproject.com/term/csv-file/446962" target="_blank">csv-file</a>" by Pranav
+                Grover</li>
+              <li>"<a href="https://thenounproject.com/term/drive/128372" target="_blank">drive</a>" by Denis
+                Klyuchnikov</li>
               <li>"<a href="https://thenounproject.com/term/grid/539919" target="_blank">grid</a>" by Doejo</li>
               <li>"<a href="https://thenounproject.com/term/folder/43216" target="_blank">folder</a>" by iconoci</li>
-              <li>"<a href="https://thenounproject.com/term/filter/132317" target="_blank">filter</a>" by Creative Shell</li>
-              <li>"<a href="https://thenounproject.com/term/image/332296" target="_blank">image</a>" by Creative Shell</li>
-              <li>"<a href="https://thenounproject.com/term/quotation-mark/378366" target="_blank">quotation-mark</a>" by Veronika Krpciarova</li>
-              <li>"<a href="https://thenounproject.com/term/pin/172903" target="_blank">pin</a>" by Alexandr Cherkinsky</li>
-              <li>"<a href="https://thenounproject.com/term/eraser/3715" target="_blank">eraser</a>" by Terrence Kevin Oleary</li>
-              <li>"<a href="https://thenounproject.com/term/invisible/506290" target="_blank">invisible</a>" by Kid A</li>
-              <li>"<a href="https://thenounproject.com/term/book/861149" target="_blank">book</a>" by Setyo Ari Wibowo</li>
+              <li>"<a href="https://thenounproject.com/term/filter/132317" target="_blank">filter</a>" by Creative Shell
+              </li>
+              <li>"<a href="https://thenounproject.com/term/image/332296" target="_blank">image</a>" by Creative Shell
+              </li>
+              <li>"<a href="https://thenounproject.com/term/quotation-mark/378366" target="_blank">quotation-mark</a>"
+                by Veronika Krpciarova</li>
+              <li>"<a href="https://thenounproject.com/term/pin/172903" target="_blank">pin</a>" by Alexandr Cherkinsky
+              </li>
+              <li>"<a href="https://thenounproject.com/term/eraser/3715" target="_blank">eraser</a>" by Terrence Kevin
+                Oleary</li>
+              <li>"<a href="https://thenounproject.com/term/invisible/506290" target="_blank">invisible</a>" by Kid A
+              </li>
+              <li>"<a href="https://thenounproject.com/term/book/861149" target="_blank">book</a>" by Setyo Ari Wibowo
+              </li>
 
             </ul>
-					</div>
-				</div>
+          </div>
+        </div>
 
-			</div>
-			<!--/right-column-->
-		</div>
-		<!--/content-->
-	</div>
+      </div>
+      <!--/right-column-->
+    </div>
+    <!--/content-->
+  </div>
 
   <div id="footer">
 
     <div id="footer_left">
-      <span class='footer_text_left'><a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com' target='_top'>Contact the project team</a></span>
+      <span class='footer_text_left'><a title='Contact the project team' href='mailto:timelinestoryteller@microsoft.com'
+          target='_top'>Contact the project team</a></span>
     </div>
 
     <div>
-      <span class='footer_text'><a title='Privacy & cookies' href='https://go.microsoft.com/fwlink/?LinkId=521839' target='_blank'>Privacy & cookies</a></span>
-      <span class='footer_text'><a title='Terms of use' href='https://go.microsoft.com/fwlink/?LinkID=760869' target='_blank'>Terms of use</a></span>
-      <span class='footer_text'><a title='Trademarks' href='http://go.microsoft.com/fwlink/?LinkId=506942' target='_blank'>Trademarks</a></span>
-      <span class='footer_text'><a title='About our ads' href='http://choice.microsoft.com/' target='_blank'>About our ads</a></span>
+      <span class='footer_text'><a title='Privacy & cookies' href='https://go.microsoft.com/fwlink/?LinkId=521839'
+          target='_blank'>Privacy & cookies</a></span>
+      <span class='footer_text'><a title='Terms of use' href='https://go.microsoft.com/fwlink/?LinkID=760869'
+          target='_blank'>Terms of use</a></span>
+      <span class='footer_text'><a title='Trademarks' href='http://go.microsoft.com/fwlink/?LinkId=506942'
+          target='_blank'>Trademarks</a></span>
+      <span class='footer_text'><a title='About our ads' href='http://choice.microsoft.com/' target='_blank'>About our
+          ads</a></span>
       <span class='footer_text'>© 2017 Microsoft</span>
     </div>
 
@@ -458,29 +576,29 @@ ISSN = {1077-2626}
   showDivs(slideIndex);
 
   function plusDivs(n) {
-      showDivs(slideIndex += n);
+    showDivs(slideIndex += n);
   }
 
   function currentDiv(n) {
-      slideIndex = +n;
-      showDivs(slideIndex);
+    slideIndex = +n;
+    showDivs(slideIndex);
   }
 
   function showDivs(n) {
-      var i;
-      var x = document.getElementsByClassName("carousel_element");
-      if (n > x.length) {slideIndex = 1}
-      if (n < 1) {slideIndex = x.length} ;
-      for (i = 0; i < x.length; i++) {
-          x[i].style.display = "none";
-      }
-      x[slideIndex-1].style.display = "flex";
+    var i;
+    var x = document.getElementsByClassName("carousel_element");
+    if (n > x.length) { slideIndex = 1 }
+    if (n < 1) { slideIndex = x.length };
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    x[slideIndex - 1].style.display = "flex";
 
-      var y = document.getElementsByClassName("carousel_indicator");
-      for (i = 0; i < y.length; i++) {
-          y[i].id = "";
-      }
-      y[slideIndex-1].id = "carousel_selected";
+    var y = document.getElementsByClassName("carousel_indicator");
+    for (i = 0; i < y.length; i++) {
+      y[i].id = "";
+    }
+    y[slideIndex - 1].id = "carousel_selected";
   }
 
   // Get the modal
@@ -490,7 +608,7 @@ ISSN = {1077-2626}
   var modal_image = document.getElementById("modal_image");
   var caption_text = document.getElementById("modal_caption");
 
-  function modalClick(id){
+  function modalClick(id) {
     var img = document.getElementById(id);
     modal.style.display = "block";
     modal_image.src = img.src;
@@ -501,7 +619,7 @@ ISSN = {1077-2626}
   var span = document.getElementsByClassName("close")[0];
 
   // When the user clicks on <span> (x), close the modal
-  span.onclick = function() {
+  span.onclick = function () {
     modal.style.display = "none";
   }
 
