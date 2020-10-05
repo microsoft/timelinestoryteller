@@ -147,7 +147,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
   };
 
-  window.onload = function () {
+  window.addEventListener("load", function () {
     logEvent("Initializing Timeline Storyteller");
 
     if (globals.socket) {
@@ -155,7 +155,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
 
     instance._onResized(false);
-  };
+  });
 
   instance._container.on("scroll", function () {
     var axis = instance._container.select(".timeline_axis");

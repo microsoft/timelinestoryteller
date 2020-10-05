@@ -1864,7 +1864,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
   };
 
-  window.onload = function () {
+  window.addEventListener("load", function () {
     logEvent("Initializing Timeline Storyteller");
 
     if (globals.socket) {
@@ -1872,7 +1872,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
     }
 
     instance._onResized(false);
-  };
+  });
 
   instance._container.on("scroll", function () {
     var axis = instance._container.select(".timeline_axis");
@@ -3431,38 +3431,40 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
       }
     }).append("title").text("Delete Scene");
 
-    navigation_step_svg.selectAll(".framePoint").on("mouseover", function () {
-      var popupSize = 300;
-      var frameRect = this.getBoundingClientRect();
-      var relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
-      var offscreenAmount = frameRect.right + popupSize - relativeParentRect.right;
+    if (!isIE11) {
+      navigation_step_svg.selectAll(".framePoint").on("mouseover", function () {
+        var popupSize = 300;
+        var frameRect = this.getBoundingClientRect();
+        var relativeParentRect = selectWithParent(".timeline_storyteller-container").node().getBoundingClientRect();
+        var offscreenAmount = frameRect.right + popupSize - relativeParentRect.right;
 
-      // If we're offscreen, then adjust the position to take the offsceen amount into account
-      var x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
-      var y_pos = frameRect.top - relativeParentRect.top;
+        // If we're offscreen, then adjust the position to take the offsceen amount into account
+        var x_pos = frameRect.left - relativeParentRect.left - (offscreenAmount > 0 ? offscreenAmount : 0);
+        var y_pos = frameRect.top - relativeParentRect.top;
 
-      var img_src = d3.select(this).select("image").attr("href");
+        var img_src = d3.select(this).select("image").attr("href");
 
-      d3.select(this).select("rect").style("stroke", "#666");
+        d3.select(this).select("rect").style("stroke", "#666");
 
-      d3.select(this).select(".scene_delete").style("opacity", 1);
+        d3.select(this).select(".scene_delete").style("opacity", 1);
 
-      selectWithParent().append("div").attr("class", "frame_hover").style("left", x_pos + "px").style("top", y_pos - popupSize - 20 + "px").append("svg").style("padding", "0px").style("width", popupSize + "px").style("height", popupSize + "px").append("svg:image").attr("xlink:href", img_src).attr("x", 2).attr("y", 2).attr("width", 296).attr("height", 296);
-    }).on("mouseout", function (d) {
-      d3.select(this).select(".scene_delete").style("opacity", 0);
+        selectWithParent().append("div").attr("class", "frame_hover").style("left", x_pos + "px").style("top", y_pos - popupSize - 20 + "px").append("svg").style("padding", "0px").style("width", popupSize + "px").style("height", popupSize + "px").append("svg:image").attr("xlink:href", img_src).attr("x", 2).attr("y", 2).attr("width", 296).attr("height", 296);
+      }).on("mouseout", function (d) {
+        d3.select(this).select(".scene_delete").style("opacity", 0);
 
-      if (d.s_order === instance._currentSceneIndex) {
-        d3.select(this).select("rect").style("stroke", function () {
-          return "#f00";
-        });
-      } else {
-        d3.select(this).select("rect").style("stroke", function () {
-          return "#ccc";
-        });
-      }
+        if (d.s_order === instance._currentSceneIndex) {
+          d3.select(this).select("rect").style("stroke", function () {
+            return "#f00";
+          });
+        } else {
+          d3.select(this).select("rect").style("stroke", function () {
+            return "#ccc";
+          });
+        }
 
-      selectAllWithParent(".frame_hover").remove();
-    });
+        selectAllWithParent(".frame_hover").remove();
+      });
+    }
 
     navigation_step_svg.attr("width", (globals.scenes.length + 1) * (STEPPER_STEP_WIDTH + 5));
 
@@ -12565,68 +12567,103 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i
 }
 
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62
 revLookup['_'.charCodeAt(0)] = 63
 
-function placeHoldersCount (b64) {
+function getLens (b64) {
   var len = b64.length
+
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
 }
 
+// base64 is 4/3 + up to two characters of the original data
 function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return (b64.length * 3 / 4) - placeHoldersCount(b64)
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
 }
 
 function toByteArray (b64) {
-  var i, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
 
-  arr = new Arr((len * 3 / 4) - placeHolders)
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
 
   // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
 
-  var L = 0
-
-  for (i = 0; i < l; i += 4) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
   return arr
 }
 
 function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
 }
 
 function encodeChunk (uint8, start, end) {
   var tmp
   var output = []
   for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
     output.push(tripletToBase64(tmp))
   }
   return output.join('')
@@ -12636,30 +12673,33 @@ function fromByteArray (uint8) {
   var tmp
   var len = uint8.length
   var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
   var parts = []
   var maxChunkLength = 16383 // must be multiple of 3
 
   // go through the array every three bytes, we'll deal with trailing stuff later
   for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
   }
 
   // pad the end with zeros, but make sure to not forget the extra bytes
   if (extraBytes === 1) {
     tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
   } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
   }
-
-  parts.push(output)
 
   return parts.join('')
 }
@@ -12813,7 +12853,7 @@ module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000$\u
 /* 55 */
 /***/ (function(module, exports) {
 
-module.exports = "ï»¿<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n<svg\r\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\r\n   xmlns=\"http://www.w3.org/2000/svg\"\r\n   version=\"1.1\"\r\n   width=\"1033.7455\"\r\n   height=\"220.69501\"\r\n   id=\"svg5358\">\r\n  <defs\r\n     id=\"defs5360\" />\r\n  <path\r\n     d=\"m 1033.7455,99.8385 0,-18.18 -22.5763,0 0,-28.26375 -0.7599,0.23375 -21.20505,6.4875 -0.4175,0.1275 0,21.415 -33.46875,0 0,-11.92875 c 0,-5.555 1.2425,-9.80625 3.69,-12.64125 2.43125,-2.80125 5.90875,-4.225 10.3425,-4.225 3.18875,0 6.49,0.75125 9.81125,2.2325 l 0.8325,0.37125 0,-19.14625 -0.39125,-0.14375 c -3.09875,-1.11375 -7.315,-1.675 -12.53875,-1.675 -6.585,0 -12.56875,1.4325 -17.78625,4.2725 -5.22125,2.84375 -9.32875,6.90375 -12.205,12.06625 -2.8675,5.15625 -4.3225,11.11125 -4.3225,17.70125 l 0,13.11625 -15.72,0 0,18.18 15.72,0 0,76.58875 22.5675,0 0,-76.58875 33.46875,0 0,48.67125 c 0,20.045 9.455,30.20375 28.10125,30.20375 3.065,0 6.2888,-0.36 9.5825,-1.06375 3.3513,-0.72125 5.6338,-1.4425 6.9775,-2.2125 l 0.2975,-0.175 0,-18.34875 -0.9175,0.6075 c -1.225,0.8175 -2.75,1.48375 -4.5387,1.97875 -1.7963,0.505 -3.2963,0.75875 -4.4575,0.75875 -4.3688,0 -7.6,-1.1775 -9.6063,-3.5 -2.0275,-2.34375 -3.0562,-6.44375 -3.0562,-12.1775 l 0,-44.7425 22.5762,0 z m -167.11175,60.42175 c -8.19125,0 -14.64875,-2.71625 -19.2,-8.06625 -4.57875,-5.3775 -6.89875,-13.04375 -6.89875,-22.78375 0,-10.04875 2.32,-17.91375 6.90125,-23.38625 4.55375,-5.43625 10.95,-8.195 19.01375,-8.195 7.825,0 14.05375,2.635 18.515,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14,18.19625 -6.36,23.48375 -4.19,5.24875 -10.49125,7.915 -18.73125,7.915 m 1.005,-80.885 c -15.6275,0 -28.04,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.32875,21.53125 -13.32875,37.15375 0,14.8375 4.3775,26.7725 13.01125,35.4675 8.63375,8.69875 20.38375,13.105 34.92,13.105 15.14875,0 27.31375,-4.6425 36.16,-13.79875 8.845,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.205,-27.09375 -12.5025,-35.73125 -8.30125,-8.64125 -19.9775,-13.02125 -34.6975,-13.02125 m -86.60313,-5e-4 c -10.63,0 -19.4225,2.71875 -26.14,8.08 -6.7575,5.3925 -10.185,12.46625 -10.185,21.025 0,4.44875 0.74,8.40125 2.19625,11.7525 1.465,3.36375 3.7325,6.32375 6.74375,8.80875 2.99,2.465 7.6025,5.0475 13.7175,7.67375 5.13875,2.115 8.9725,3.905 11.4075,5.315 2.38,1.38125 4.07,2.77125 5.02375,4.12375 0.92625,1.32375 1.3975,3.135 1.3975,5.3725 0,6.36625 -4.7675,9.46375 -14.57875,9.46375 -3.63875,0 -7.79,-0.75875 -12.3375,-2.2575 -4.55,-1.49625 -8.80125,-3.6475 -12.63375,-6.40625 l -0.93625,-0.67125 0,21.72625 0.34375,0.16 c 3.19375,1.47375 7.21875,2.71625 11.96375,3.695 4.73625,0.97875 9.03875,1.4775 12.7775,1.4775 11.535,0 20.82375,-2.7325 27.60125,-8.125 6.82125,-5.43 10.27875,-12.67 10.27875,-21.52625 0,-6.3875 -1.86125,-11.86625 -5.53,-16.28375 -3.6425,-4.3825 -9.965,-8.405 -18.785,-11.96125 -7.02625,-2.82 -11.5275,-5.16125 -13.38375,-6.9575 -1.79,-1.73625 -2.69875,-4.19125 -2.69875,-7.3 0,-2.75625 1.12125,-4.96375 3.425,-6.7525 2.32125,-1.7975 5.55125,-2.71125 9.60375,-2.71125 3.76,0 7.6075,0.59375 11.4325,1.7575 3.82375,1.16375 7.18125,2.7225 9.985,4.63 l 0.92125,0.63 0,-20.61 -0.35375,-0.1525 c -2.58625,-1.10875 -5.99625,-2.0575 -10.1375,-2.8275 -4.125,-0.7625 -7.86625,-1.14875 -11.11875,-1.14875 m -95.1575,80.8855 c -8.18875,0 -14.64875,-2.71625 -19.19875,-8.06625 -4.58,-5.3775 -6.89625,-13.04125 -6.89625,-22.78375 0,-10.04875 2.31875,-17.91375 6.90125,-23.38625 4.55,-5.43625 10.945,-8.195 19.0125,-8.195 7.8225,0 14.05125,2.635 18.51375,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14125,18.19625 -6.36125,23.48375 -4.19,5.24875 -10.48875,7.915 -18.73125,7.915 m 1.0075,-80.885 c -15.63125,0 -28.04375,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.33125,21.53125 -13.33125,37.15375 0,14.84375 4.38,26.7725 13.01375,35.4675 8.63375,8.69875 20.3825,13.105 34.92,13.105 15.145,0 27.31375,-4.6425 36.16,-13.79875 8.8425,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.20625,-27.09375 -12.505,-35.73125 -8.30375,-8.64125 -19.9775,-13.02125 -34.695,-13.02125 m -84.47675,18.6945 0,-16.41125 -22.2925,0 0,94.76625 22.2925,0 0,-48.47625 c 0,-8.24375 1.86875,-15.015 5.55625,-20.13 3.64125,-5.05375 8.49375,-7.615 14.4175,-7.615 2.0075,0 4.26125,0.33125 6.7025,0.98625 2.41625,0.65125 4.16625,1.3575 5.19875,2.10125 l 0.93625,0.67875 0,-22.47375 -0.36125,-0.155 c -2.07625,-0.8825 -5.0125,-1.3275 -8.72875,-1.3275 -5.60125,0 -10.615,1.8 -14.90875,5.34375 -3.76875,3.115 -6.49375,7.38625 -8.57625,12.7125 l -0.23625,0 z m -62.21312,-18.695 c -10.22625,0 -19.34875,2.19375 -27.10875,6.51625 -7.775,4.3325 -13.7875,10.51875 -17.87875,18.385 -4.0725,7.8475 -6.14,17.01375 -6.14,27.235 0,8.95375 2.005,17.17125 5.9675,24.4125 3.965,7.25375 9.5775,12.92875 16.68125,16.865 7.09375,3.93125 15.2925,5.925 24.37,5.925 10.59375,0 19.63875,-2.11875 26.89125,-6.295 l 0.2925,-0.16875 0,-20.4225 -0.93625,0.68375 c -3.285,2.3925 -6.95625,4.3025 -10.90625,5.67875 -3.94,1.375 -7.5325,2.07 -10.68125,2.07 -8.7475,0 -15.76875,-2.7375 -20.86625,-8.1325 -5.10875,-5.40375 -7.69875,-12.99 -7.69875,-22.5375 0,-9.6075 2.70125,-17.38875 8.025,-23.13125 5.30625,-5.725 12.34125,-8.62875 20.9075,-8.62875 7.3275,0 14.4675,2.48125 21.2225,7.38125 l 0.93375,0.67875 0,-21.51875 -0.30125,-0.17 c -2.5425,-1.4225 -6.00875,-2.5975 -10.31375,-3.48875 -4.285,-0.88875 -8.47625,-1.3375 -12.46,-1.3375 m -66.48075,2.284 -22.2925,0 0,94.76625 22.2925,0 0,-94.76625 z M 462.79625,41.2875 c -3.66875,0 -6.86875,1.24875 -9.4975,3.72375 -2.64,2.4825 -3.98,5.6075 -3.98,9.295 0,3.63 1.32375,6.6975 3.9375,9.11375 2.5975,2.40875 5.8075,3.63 9.54,3.63 3.73125,0 6.95375,-1.22125 9.5825,-3.62625 2.64625,-2.42 3.9875,-5.4875 3.9875,-9.1175 0,-3.55875 -1.305,-6.6525 -3.87875,-9.195 -2.57,-2.5375 -5.83125,-3.82375 -9.69125,-3.82375 m -55.61988,33.3795 0,101.7575 22.75,0 0,-132.235 -31.48625,0 -40.0225,98.22 -38.83875,-98.22 -32.76875,0 0,132.235 21.37875,0 0,-101.7675 0.735,0 41.0125,101.7675 16.13375,0 40.3725,-101.7575 0.73375,0 z\"\r\n     id=\"path5056\"\r\n     style=\"fill:#777777;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\r\n  <path\r\n     d=\"M 104.8675,104.8675 0,104.8675 0,0 l 104.8675,0 0,104.8675 z\"\r\n     id=\"path5058\"\r\n     style=\"fill:#F35325;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\r\n  <path\r\n     d=\"m 220.65375,104.8675 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\r\n     id=\"path5060\"\r\n     style=\"fill:#81BC06;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\r\n  <path\r\n     d=\"m 104.865,220.695 -104.865,0 0,-104.8675 104.865,0 0,104.8675 z\"\r\n     id=\"path5062\"\r\n     style=\"fill:#05A6F0;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\r\n  <path\r\n     d=\"m 220.65375,220.695 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\r\n     id=\"path5064\"\r\n     style=\"fill:#FFBA08;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\r\n</svg>"
+module.exports = "ï»¿<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg\n   xmlns:svg=\"http://www.w3.org/2000/svg\"\n   xmlns=\"http://www.w3.org/2000/svg\"\n   version=\"1.1\"\n   width=\"1033.7455\"\n   height=\"220.69501\"\n   id=\"svg5358\">\n  <defs\n     id=\"defs5360\" />\n  <path\n     d=\"m 1033.7455,99.8385 0,-18.18 -22.5763,0 0,-28.26375 -0.7599,0.23375 -21.20505,6.4875 -0.4175,0.1275 0,21.415 -33.46875,0 0,-11.92875 c 0,-5.555 1.2425,-9.80625 3.69,-12.64125 2.43125,-2.80125 5.90875,-4.225 10.3425,-4.225 3.18875,0 6.49,0.75125 9.81125,2.2325 l 0.8325,0.37125 0,-19.14625 -0.39125,-0.14375 c -3.09875,-1.11375 -7.315,-1.675 -12.53875,-1.675 -6.585,0 -12.56875,1.4325 -17.78625,4.2725 -5.22125,2.84375 -9.32875,6.90375 -12.205,12.06625 -2.8675,5.15625 -4.3225,11.11125 -4.3225,17.70125 l 0,13.11625 -15.72,0 0,18.18 15.72,0 0,76.58875 22.5675,0 0,-76.58875 33.46875,0 0,48.67125 c 0,20.045 9.455,30.20375 28.10125,30.20375 3.065,0 6.2888,-0.36 9.5825,-1.06375 3.3513,-0.72125 5.6338,-1.4425 6.9775,-2.2125 l 0.2975,-0.175 0,-18.34875 -0.9175,0.6075 c -1.225,0.8175 -2.75,1.48375 -4.5387,1.97875 -1.7963,0.505 -3.2963,0.75875 -4.4575,0.75875 -4.3688,0 -7.6,-1.1775 -9.6063,-3.5 -2.0275,-2.34375 -3.0562,-6.44375 -3.0562,-12.1775 l 0,-44.7425 22.5762,0 z m -167.11175,60.42175 c -8.19125,0 -14.64875,-2.71625 -19.2,-8.06625 -4.57875,-5.3775 -6.89875,-13.04375 -6.89875,-22.78375 0,-10.04875 2.32,-17.91375 6.90125,-23.38625 4.55375,-5.43625 10.95,-8.195 19.01375,-8.195 7.825,0 14.05375,2.635 18.515,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14,18.19625 -6.36,23.48375 -4.19,5.24875 -10.49125,7.915 -18.73125,7.915 m 1.005,-80.885 c -15.6275,0 -28.04,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.32875,21.53125 -13.32875,37.15375 0,14.8375 4.3775,26.7725 13.01125,35.4675 8.63375,8.69875 20.38375,13.105 34.92,13.105 15.14875,0 27.31375,-4.6425 36.16,-13.79875 8.845,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.205,-27.09375 -12.5025,-35.73125 -8.30125,-8.64125 -19.9775,-13.02125 -34.6975,-13.02125 m -86.60313,-5e-4 c -10.63,0 -19.4225,2.71875 -26.14,8.08 -6.7575,5.3925 -10.185,12.46625 -10.185,21.025 0,4.44875 0.74,8.40125 2.19625,11.7525 1.465,3.36375 3.7325,6.32375 6.74375,8.80875 2.99,2.465 7.6025,5.0475 13.7175,7.67375 5.13875,2.115 8.9725,3.905 11.4075,5.315 2.38,1.38125 4.07,2.77125 5.02375,4.12375 0.92625,1.32375 1.3975,3.135 1.3975,5.3725 0,6.36625 -4.7675,9.46375 -14.57875,9.46375 -3.63875,0 -7.79,-0.75875 -12.3375,-2.2575 -4.55,-1.49625 -8.80125,-3.6475 -12.63375,-6.40625 l -0.93625,-0.67125 0,21.72625 0.34375,0.16 c 3.19375,1.47375 7.21875,2.71625 11.96375,3.695 4.73625,0.97875 9.03875,1.4775 12.7775,1.4775 11.535,0 20.82375,-2.7325 27.60125,-8.125 6.82125,-5.43 10.27875,-12.67 10.27875,-21.52625 0,-6.3875 -1.86125,-11.86625 -5.53,-16.28375 -3.6425,-4.3825 -9.965,-8.405 -18.785,-11.96125 -7.02625,-2.82 -11.5275,-5.16125 -13.38375,-6.9575 -1.79,-1.73625 -2.69875,-4.19125 -2.69875,-7.3 0,-2.75625 1.12125,-4.96375 3.425,-6.7525 2.32125,-1.7975 5.55125,-2.71125 9.60375,-2.71125 3.76,0 7.6075,0.59375 11.4325,1.7575 3.82375,1.16375 7.18125,2.7225 9.985,4.63 l 0.92125,0.63 0,-20.61 -0.35375,-0.1525 c -2.58625,-1.10875 -5.99625,-2.0575 -10.1375,-2.8275 -4.125,-0.7625 -7.86625,-1.14875 -11.11875,-1.14875 m -95.1575,80.8855 c -8.18875,0 -14.64875,-2.71625 -19.19875,-8.06625 -4.58,-5.3775 -6.89625,-13.04125 -6.89625,-22.78375 0,-10.04875 2.31875,-17.91375 6.90125,-23.38625 4.55,-5.43625 10.945,-8.195 19.0125,-8.195 7.8225,0 14.05125,2.635 18.51375,7.83625 4.485,5.2275 6.76,13.03 6.76,23.19625 0,10.29125 -2.14125,18.19625 -6.36125,23.48375 -4.19,5.24875 -10.48875,7.915 -18.73125,7.915 m 1.0075,-80.885 c -15.63125,0 -28.04375,4.57875 -36.88875,13.61 -8.84375,9.0325 -13.33125,21.53125 -13.33125,37.15375 0,14.84375 4.38,26.7725 13.01375,35.4675 8.63375,8.69875 20.3825,13.105 34.92,13.105 15.145,0 27.31375,-4.6425 36.16,-13.79875 8.8425,-9.1475 13.32625,-21.5275 13.32625,-36.785 0,-15.07 -4.20625,-27.09375 -12.505,-35.73125 -8.30375,-8.64125 -19.9775,-13.02125 -34.695,-13.02125 m -84.47675,18.6945 0,-16.41125 -22.2925,0 0,94.76625 22.2925,0 0,-48.47625 c 0,-8.24375 1.86875,-15.015 5.55625,-20.13 3.64125,-5.05375 8.49375,-7.615 14.4175,-7.615 2.0075,0 4.26125,0.33125 6.7025,0.98625 2.41625,0.65125 4.16625,1.3575 5.19875,2.10125 l 0.93625,0.67875 0,-22.47375 -0.36125,-0.155 c -2.07625,-0.8825 -5.0125,-1.3275 -8.72875,-1.3275 -5.60125,0 -10.615,1.8 -14.90875,5.34375 -3.76875,3.115 -6.49375,7.38625 -8.57625,12.7125 l -0.23625,0 z m -62.21312,-18.695 c -10.22625,0 -19.34875,2.19375 -27.10875,6.51625 -7.775,4.3325 -13.7875,10.51875 -17.87875,18.385 -4.0725,7.8475 -6.14,17.01375 -6.14,27.235 0,8.95375 2.005,17.17125 5.9675,24.4125 3.965,7.25375 9.5775,12.92875 16.68125,16.865 7.09375,3.93125 15.2925,5.925 24.37,5.925 10.59375,0 19.63875,-2.11875 26.89125,-6.295 l 0.2925,-0.16875 0,-20.4225 -0.93625,0.68375 c -3.285,2.3925 -6.95625,4.3025 -10.90625,5.67875 -3.94,1.375 -7.5325,2.07 -10.68125,2.07 -8.7475,0 -15.76875,-2.7375 -20.86625,-8.1325 -5.10875,-5.40375 -7.69875,-12.99 -7.69875,-22.5375 0,-9.6075 2.70125,-17.38875 8.025,-23.13125 5.30625,-5.725 12.34125,-8.62875 20.9075,-8.62875 7.3275,0 14.4675,2.48125 21.2225,7.38125 l 0.93375,0.67875 0,-21.51875 -0.30125,-0.17 c -2.5425,-1.4225 -6.00875,-2.5975 -10.31375,-3.48875 -4.285,-0.88875 -8.47625,-1.3375 -12.46,-1.3375 m -66.48075,2.284 -22.2925,0 0,94.76625 22.2925,0 0,-94.76625 z M 462.79625,41.2875 c -3.66875,0 -6.86875,1.24875 -9.4975,3.72375 -2.64,2.4825 -3.98,5.6075 -3.98,9.295 0,3.63 1.32375,6.6975 3.9375,9.11375 2.5975,2.40875 5.8075,3.63 9.54,3.63 3.73125,0 6.95375,-1.22125 9.5825,-3.62625 2.64625,-2.42 3.9875,-5.4875 3.9875,-9.1175 0,-3.55875 -1.305,-6.6525 -3.87875,-9.195 -2.57,-2.5375 -5.83125,-3.82375 -9.69125,-3.82375 m -55.61988,33.3795 0,101.7575 22.75,0 0,-132.235 -31.48625,0 -40.0225,98.22 -38.83875,-98.22 -32.76875,0 0,132.235 21.37875,0 0,-101.7675 0.735,0 41.0125,101.7675 16.13375,0 40.3725,-101.7575 0.73375,0 z\"\n     id=\"path5056\"\n     style=\"fill:#777777;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"M 104.8675,104.8675 0,104.8675 0,0 l 104.8675,0 0,104.8675 z\"\n     id=\"path5058\"\n     style=\"fill:#F35325;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 220.65375,104.8675 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\n     id=\"path5060\"\n     style=\"fill:#81BC06;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 104.865,220.695 -104.865,0 0,-104.8675 104.865,0 0,104.8675 z\"\n     id=\"path5062\"\n     style=\"fill:#05A6F0;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n  <path\n     d=\"m 220.65375,220.695 -104.86625,0 0,-104.8675 104.86625,0 0,104.8675 z\"\n     id=\"path5064\"\n     style=\"fill:#FFBA08;fill-opacity:1;fill-rule:nonzero;stroke:none\" />\n</svg>"
 
 /***/ }),
 /* 56 */
@@ -12979,7 +13019,7 @@ module.exports = "PNG\r\n\u001a\n\u0000\u0000\u0000\rIHDR\u0000\u0000\u0000Z\u
 /* WEBPACK VAR INJECTION */(function(global) {/*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <http://feross.org>
  * @license  MIT
  */
 /* eslint-disable no-proto */
@@ -14777,7 +14817,7 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, "/* Common stuff */\r\n.picker-wrapper,\r\n.slide-wrapper {\r\n    position: relative;\r\n    float: left;\r\n}\r\n.picker-indicator,\r\n.slide-indicator {\r\n    position: absolute;\r\n    left: 0;\r\n    top: 0;\r\n    pointer-events: none;\r\n}\r\n.picker,\r\n.slide {\r\n    cursor: crosshair;\r\n    float: left;\r\n}\r\n\r\n/* Default skin */\r\n\r\n.cp-default {\r\n    background-color: gray;\r\n    padding: 12px;\r\n    box-shadow: 0 0 40px #000;\r\n    border-radius: 15px;\r\n    float: left;\r\n}\r\n.cp-default .picker {\r\n    width: 200px;\r\n    height: 200px;\r\n}\r\n.cp-default .slide {\r\n    width: 30px;\r\n    height: 200px;\r\n}\r\n.cp-default .slide-wrapper {\r\n    margin-left: 10px;\r\n}\r\n.cp-default .picker-indicator {\r\n    width: 5px;\r\n    height: 5px;\r\n    border: 2px solid darkblue;\r\n    -moz-border-radius: 4px;\r\n    -o-border-radius: 4px;\r\n    -webkit-border-radius: 4px;\r\n    border-radius: 4px;\r\n    opacity: .5;\r\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\r\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\r\n    filter: alpha(opacity=50);\r\n    background-color: white;\r\n}\r\n.cp-default .slide-indicator {\r\n    width: 100%;\r\n    height: 10px;\r\n    left: -4px;\r\n    opacity: .6;\r\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\r\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\r\n    filter: alpha(opacity=60);\r\n    border: 4px solid lightblue;\r\n    -moz-border-radius: 4px;\r\n    -o-border-radius: 4px;\r\n    -webkit-border-radius: 4px;\r\n    border-radius: 4px;\r\n    background-color: white;\r\n}\r\n\r\n/* Small skin */\r\n\r\n.cp-small {\r\n    padding: 5px;\r\n    background-color: white;\r\n    /*float: left;*/\r\n    border-radius: 5px;\r\n}\r\n.cp-small .picker {\r\n    width: 100px;\r\n    height: 100px;\r\n}\r\n.cp-small .slide {\r\n    width: 15px;\r\n    height: 100px;\r\n}\r\n.cp-small .slide-wrapper {\r\n    margin-left: 5px;\r\n}\r\n.cp-small .picker-indicator {\r\n    width: 1px;\r\n    height: 1px;\r\n    border: 1px solid black;\r\n    background-color: white;\r\n}\r\n.cp-small .slide-indicator {\r\n    width: 100%;\r\n    height: 2px;\r\n    left: 0px;\r\n    background-color: black;\r\n}\r\n\r\n/* Fancy skin */\r\n\r\n.cp-fancy {\r\n    padding: 10px;\r\n/*    background-color: #C5F7EA; */\r\n    background: -webkit-linear-gradient(top, #aaa 0%, #222 100%);\r\n    float: left;\r\n    border: 1px solid #999;\r\n    box-shadow: inset 0 0 10px white;\r\n}\r\n.cp-fancy .picker {\r\n    width: 200px;\r\n    height: 200px;\r\n}\r\n.cp-fancy .slide {\r\n    width: 30px;\r\n    height: 200px;\r\n}\r\n.cp-fancy .slide-wrapper {\r\n    margin-left: 10px;\r\n}\r\n.cp-fancy .picker-indicator {\r\n    width: 24px;\r\n    height: 24px;\r\n    background-image: url(http://cdn1.iconfinder.com/data/icons/fugue/bonus/icons-24/target.png);\r\n}\r\n.cp-fancy .slide-indicator {\r\n    width: 30px;\r\n    height: 31px;\r\n    left: 30px;\r\n    background-image: url(http://cdn1.iconfinder.com/data/icons/bluecoral/Left.png);\r\n}\r\n\r\n/* Normal skin */\r\n\r\n.cp-normal {\r\n    padding: 10px;\r\n    background-color: white;\r\n    float: left;\r\n    border: 4px solid #d6d6d6;\r\n    box-shadow: inset 0 0 10px white;\r\n}\r\n.cp-normal .picker {\r\n    width: 200px;\r\n    height: 200px;\r\n}\r\n.cp-normal .slide {\r\n    width: 30px;\r\n    height: 200px;\r\n}\r\n.cp-normal .slide-wrapper {\r\n    margin-left: 10px;\r\n}\r\n.cp-normal .picker-indicator {\r\n    width: 5px;\r\n    height: 5px;\r\n    border: 1px solid gray;\r\n    opacity: .5;\r\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\r\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\r\n    filter: alpha(opacity=50);\r\n    background-color: white;\r\n    pointer-events: none;\r\n}\r\n.cp-normal .slide-indicator {\r\n    width: 100%;\r\n    height: 10px;\r\n    left: -4px;\r\n    opacity: .6;\r\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\r\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\r\n    filter: alpha(opacity=60);\r\n    border: 4px solid gray;\r\n    background-color: white;\r\n    pointer-events: none;\r\n}", ""]);
+exports.push([module.i, "/* Common stuff */\n.picker-wrapper,\n.slide-wrapper {\n    position: relative;\n    float: left;\n}\n.picker-indicator,\n.slide-indicator {\n    position: absolute;\n    left: 0;\n    top: 0;\n    pointer-events: none;\n}\n.picker,\n.slide {\n    cursor: crosshair;\n    float: left;\n}\n\n/* Default skin */\n\n.cp-default {\n    background-color: gray;\n    padding: 12px;\n    box-shadow: 0 0 40px #000;\n    border-radius: 15px;\n    float: left;\n}\n.cp-default .picker {\n    width: 200px;\n    height: 200px;\n}\n.cp-default .slide {\n    width: 30px;\n    height: 200px;\n}\n.cp-default .slide-wrapper {\n    margin-left: 10px;\n}\n.cp-default .picker-indicator {\n    width: 5px;\n    height: 5px;\n    border: 2px solid darkblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    opacity: .5;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\n    filter: alpha(opacity=50);\n    background-color: white;\n}\n.cp-default .slide-indicator {\n    width: 100%;\n    height: 10px;\n    left: -4px;\n    opacity: .6;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\n    filter: alpha(opacity=60);\n    border: 4px solid lightblue;\n    -moz-border-radius: 4px;\n    -o-border-radius: 4px;\n    -webkit-border-radius: 4px;\n    border-radius: 4px;\n    background-color: white;\n}\n\n/* Small skin */\n\n.cp-small {\n    padding: 5px;\n    background-color: white;\n    /*float: left;*/\n    border-radius: 5px;\n}\n.cp-small .picker {\n    width: 100px;\n    height: 100px;\n}\n.cp-small .slide {\n    width: 15px;\n    height: 100px;\n}\n.cp-small .slide-wrapper {\n    margin-left: 5px;\n}\n.cp-small .picker-indicator {\n    width: 1px;\n    height: 1px;\n    border: 1px solid black;\n    background-color: white;\n}\n.cp-small .slide-indicator {\n    width: 100%;\n    height: 2px;\n    left: 0px;\n    background-color: black;\n}\n\n/* Fancy skin */\n\n.cp-fancy {\n    padding: 10px;\n/*    background-color: #C5F7EA; */\n    background: -webkit-linear-gradient(top, #aaa 0%, #222 100%);\n    float: left;\n    border: 1px solid #999;\n    box-shadow: inset 0 0 10px white;\n}\n.cp-fancy .picker {\n    width: 200px;\n    height: 200px;\n}\n.cp-fancy .slide {\n    width: 30px;\n    height: 200px;\n}\n.cp-fancy .slide-wrapper {\n    margin-left: 10px;\n}\n.cp-fancy .picker-indicator {\n    width: 24px;\n    height: 24px;\n    background-image: url(http://cdn1.iconfinder.com/data/icons/fugue/bonus/icons-24/target.png);\n}\n.cp-fancy .slide-indicator {\n    width: 30px;\n    height: 31px;\n    left: 30px;\n    background-image: url(http://cdn1.iconfinder.com/data/icons/bluecoral/Left.png);\n}\n\n/* Normal skin */\n\n.cp-normal {\n    padding: 10px;\n    background-color: white;\n    float: left;\n    border: 4px solid #d6d6d6;\n    box-shadow: inset 0 0 10px white;\n}\n.cp-normal .picker {\n    width: 200px;\n    height: 200px;\n}\n.cp-normal .slide {\n    width: 30px;\n    height: 200px;\n}\n.cp-normal .slide-wrapper {\n    margin-left: 10px;\n}\n.cp-normal .picker-indicator {\n    width: 5px;\n    height: 5px;\n    border: 1px solid gray;\n    opacity: .5;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);\n    filter: alpha(opacity=50);\n    background-color: white;\n    pointer-events: none;\n}\n.cp-normal .slide-indicator {\n    width: 100%;\n    height: 10px;\n    left: -4px;\n    opacity: .6;\n    -ms-filter: \"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)\";\n    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);\n    filter: alpha(opacity=60);\n    border: 4px solid gray;\n    background-color: white;\n    pointer-events: none;\n}", ""]);
 
 // exports
 
@@ -15010,7 +15050,7 @@ function coerce(val) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var nBits = -7
@@ -15023,12 +15063,12 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   e = s & ((1 << (-nBits)) - 1)
   s >>= (-nBits)
   nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   m = e & ((1 << (-nBits)) - 1)
   e >>= (-nBits)
   nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
     e = 1 - eBias
@@ -15043,7 +15083,7 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
@@ -15076,7 +15116,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
       m = 0
       e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
+      m = ((value * c) - 1) * Math.pow(2, mLen)
       e = e + eBias
     } else {
       m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
