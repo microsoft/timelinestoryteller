@@ -2403,7 +2403,7 @@ function TimelineStoryteller(isServerless, showDemo, parentElement) {
 
   timeline_metadata.append("div").attr({
     id: "draw_timeline",
-    class: "img_btn_enabled import_label",
+    class: "img_btn_enabled import_label draw_timeline",
     title: "Draw Timeline"
   }).on("click", function () {
     selectWithParent("#gdocs_info").style("height", 0 + "px");

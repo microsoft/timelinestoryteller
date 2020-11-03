@@ -722,7 +722,7 @@ input[type="color"]::-moz-color-swatch {
   clear: both;
 }
 
-#draw_timeline {
+.draw_timeline {
   margin-left: 5px;
   margin-left: 5px;
   margin-bottom: 5px;
@@ -744,7 +744,7 @@ input[type="color"]::-moz-color-swatch {
   background-image: linear-gradient(to bottom, #ff7f0e, #da6600);
 }
 
-#draw_timeline:hover {
+.draw_timeline:hover {
   background-color: #da6600;
   border-color: #ff7f0e;
   background: #da6600;
