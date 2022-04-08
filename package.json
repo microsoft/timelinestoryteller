@@ -43,7 +43,7 @@
   "optionalDependencies": {
     "d3": "^3.5.5",
     "intro.js": "^2.3.0",
-    "moment": "^2.18.1",
+    "moment": "^2.29.2",
     "socket.io": "^1.7.2"
   },
   "scripts": {
